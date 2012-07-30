@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.');    ///  It must be included from a Moodle page
+    die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }
 require_once($CFG->dirroot.'/lib/formslib.php');
 
 class compilatio_setup_form extends moodleform {
 
-    /// Define the form
-    function definition () {
+    // Define the form.
+    protected function definition () {
         global $CFG;
 
         $mform =& $this->_form;
@@ -48,8 +48,8 @@ class compilatio_setup_form extends moodleform {
 
 class compilatio_defaults_form extends moodleform {
 
-    /// Define the form
-    function definition () {
+    // Define the form.
+    protected function definition () {
         $mform =& $this->_form;
         compilatio_get_form_elements($mform, true);
         $this->add_action_buttons(true);

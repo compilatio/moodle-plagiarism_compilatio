@@ -51,7 +51,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     }
     foreach ($data as $field => $value) {
         if (strpos($field, 'compilatio')===0) {
-            if ($field == 'compilatio_api') { //strip trailing slash from api
+            if ($field == 'compilatio_api') { // Strip trailing slash from api.
                 $value = rtrim($value, '/');
             }
             if ($configfield = $DB->get_record('config_plugins', array('name'=>$field, 'plugin'=>'plagiarism'))) {
@@ -70,10 +70,10 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             }
         }
     }
-    //TODO - check settings to see if valid.
+    // TODO - check settings to see if valid.
     $quotas = compilatio_getquotas();
-    if ($quotas == NULL) {
-        //disable compilatio as this config isn't correct.
+    if ($quotas == null) {
+        // Disable compilatio as this config isn't correct.
         $rec = $DB->get_record('config_plugins', array('name'=>'compilatio_use', 'plugin'=>'plagiarism'));
         $rec->value = 0;
         $DB->update_record('config_plugins', $rec);
@@ -86,8 +86,8 @@ $mform->set_data($plagiarismsettings);
 
 if (!empty($plagiarismsettings['compilatio_use'])) {
     $quotas = compilatio_getquotas();
-    if ($quotas == NULL) {
-        //disable compilatio as this config isn't correct.
+    if ($quotas == null) {
+        // Disable compilatio as this config isn't correct.
         $rec = $DB->get_record('config_plugins', array('name'=>'compilatio_use', 'plugin'=>'plagiarism'));
         $rec->value = 0;
         $DB->update_record('config_plugins', $rec);
@@ -104,7 +104,7 @@ if (!empty($plagiarismsettings['compilatio_use'])) {
     }
     $plagiarismsettings = get_config('plagiarism');
 
-    $compilatio = new compilatioservice($plagiarismsettings->compilatio_password,$plagiarismsettings->compilatio_api,
+    $compilatio = new compilatioservice($plagiarismsettings->compilatio_password, $plagiarismsettings->compilatio_api,
         $CFG->proxyhost, $CFG->proxyport, $CFG->proxyuser, $CFG->proxypassword);
 
 }

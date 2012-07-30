@@ -39,7 +39,8 @@ $resetuser = optional_param('reset', 0, PARAM_INT);
 $page = optional_param('page', 0, PARAM_INT);
 
 $mform = new compilatio_defaults_form(null);
-$plagiarismdefaults = $DB->get_records_menu('plagiarism_compilatio_config', array('cm'=>0), '', 'name, value'); //cmid(0) is the default list.
+// Get the defaults - cmid(0) is the default list.
+$plagiarismdefaults = $DB->get_records_menu('plagiarism_compilatio_config', array('cm'=>0), '', 'name, value');
 if (!empty($plagiarismdefaults)) {
     $mform->set_data($plagiarismdefaults);
 }
@@ -56,10 +57,10 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             $newelement->cm = 0;
             $newelement->name = $element;
             $newelement->value = $data->$element;
-            if (isset($plagiarismdefaults[$element])) { //update
+            if (isset($plagiarismdefaults[$element])) { // Update.
                 $newelement->id = $DB->get_field('plagiarism_compilatio_config', 'id', (array('cm'=>0, 'name'=>$element)));
                 $DB->update_record('plagiarism_compilatio_config', $newelement);
-            } else { //insert
+            } else { // Insert.
                 $DB->insert_record('plagiarism_compilatio_config', $newelement);
             }
         }
