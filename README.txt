@@ -1,4 +1,4 @@
-Compilatio.net Plagiarism plugin for Moodle 2.0
+Compilatio.net Plagiarism plugin for Moodle 2
 
 Author: Dan Marsden <dan@danmarsden.com>
 Copyright 2012 Dan Marsden http://danmarsden.com
