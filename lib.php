@@ -1021,3 +1021,25 @@ function compilatio_check_analysis($plagiarism_file) {
     $plagiarism_file->attempt = $plagiarism_file->attempt+1;
     $DB->update_record('plagiarism_compilatio_files', $plagiarism_file);
 }
+
+
+//function to check for invalid event_handlers
+function compilatio_check_event_handlers() {
+    global $DB, $CFG;
+    $invalidhandlers = array();
+    $eventhandlers = $DB->get_records('events_handlers');
+    foreach ($eventhandlers as $handler) {
+        $function = unserialize($handler->handlerfunction);
+
+        if (is_callable($function)) { //this function is fine.
+            continue;
+        } else if (file_exists($CFG->dirroot.$handler->handlerfile)) {
+            include_once($CFG->dirroot.$handler->handlerfile);
+            if (is_callable($function)) { //this function is fine.
+                continue;
+            }
+        }
+        $invalidhandlers[] = $handler; //this function can't be found.
+    }
+    return $invalidhandlers;
+}
