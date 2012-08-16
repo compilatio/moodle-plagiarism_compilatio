@@ -652,7 +652,7 @@ function compilatio_get_form_elements($mform, $defaults=false) {
     $mform->setDefault('compilatio_analysistype', COMPILATIO_ANALYSISTYPE_AUTO);
 
     if (!$defaults) { // Only show this inside a module page - not on default settings pages.
-        $mform->addElement('date_time_selector', 'compilatio_timeanalyse', get_string('analysisdate', 'compilatioassignment'),
+        $mform->addElement('date_time_selector', 'compilatio_timeanalyse', get_string('analysisdate', 'plagiarism_compilatio'),
             array('optional'=>false));
         $mform->setDefault('compilatio_timeanalyse', time()+7*24*3600);
         $mform->disabledif('compilatio_timeanalyse', 'compilatio_analysistype', 'noteq', COMPILATIO_ANALYSISTYPE_PROG);
