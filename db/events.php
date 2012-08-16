@@ -29,6 +29,16 @@ $handlers = array (
         'handlerfunction'  => 'event_files_done',
         'schedule'         => 'cron'
     ),
+    'assessable_content_uploaded' => array (
+        'handlerfile'      => '/plagiarism/compilatio/lib.php',
+        'handlerfunction'  => 'event_content_uploaded',
+        'schedule'         => 'cron'
+    ),
+    'assessable_content_done' => array (
+        'handlerfile'      => '/plagiarism/compilatio/lib.php',
+        'handlerfunction'  => 'event_content_done',
+        'schedule'         => 'cron'
+    ),
     'mod_created' => array (
         'handlerfile'      => '/plagiarism/compilatio/lib.php',
         'handlerfunction'  => 'event_mod_created',
