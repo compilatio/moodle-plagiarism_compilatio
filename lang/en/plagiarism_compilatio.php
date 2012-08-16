@@ -77,4 +77,5 @@ $string['analysisdate'] = 'Analysis Date';
 $string['enabledandworking'] = 'The Compilatio plugin is enabled and working.';
 $string['usedcredits'] = '<strong>You have used {$a->used} credit(s) of {$a->credits} and have {$a->remaining} credit(s) remaining</strong>';
 $string['startanalysis'] = 'Start analysis';
+$string['compilatio_enableplugin'] = 'Enable Compilatio for {$a}';
 $string['failedanalysis'] = 'Compilatio failed to analyse your document: ';

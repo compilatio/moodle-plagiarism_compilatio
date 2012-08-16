@@ -42,6 +42,14 @@ class compilatio_setup_form extends moodleform {
         $mform->addHelpButton('compilatio_student_disclosure', 'studentdisclosure', 'plagiarism_compilatio');
         $mform->setDefault('compilatio_student_disclosure', get_string('studentdisclosuredefault', 'plagiarism_compilatio'));
 
+        $mods = get_plugin_list('mod');
+        foreach ($mods as $mod => $modname) {
+            if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
+                $modstring = 'compilatio_enable_mod_' . $mod;
+                $mform->addElement('checkbox', $modstring, get_string('compilatio_enableplugin', 'plagiarism_compilatio', $mod));
+            }
+        }
+
         $this->add_action_buttons(true);
     }
 }

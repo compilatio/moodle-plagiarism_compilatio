@@ -49,6 +49,18 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     if (!isset($data->compilatio_use)) {
         $data->compilatio_use = 0;
     }
+    if (!isset($data->compilatio_enable_mod_assign)) {
+        $data->compilatio_enable_mod_assign = 0;
+    }
+    if (!isset($data->compilatio_enable_mod_assignment)) {
+        $data->compilatio_enable_mod_assignment = 0;
+    }
+    if (!isset($data->compilatio_enable_mod_forum)) {
+        $data->compilatio_enable_mod_forum = 0;
+    }
+    if (!isset($data->compilatio_enable_mod_workshop)) {
+        $data->compilatio_enable_mod_workshop = 0;
+    }
     foreach ($data as $field => $value) {
         if (strpos($field, 'compilatio')===0) {
             if ($field == 'compilatio_api') { // Strip trailing slash from api.
