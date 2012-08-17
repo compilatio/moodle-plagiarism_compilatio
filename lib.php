@@ -513,7 +513,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             return true;
         }
 
-        if (empty($eventdata->pathnamehashes)) {
+        if (empty($eventdata->files)) {
             // Assignment-specific functionality:
             // This is a 'finalize' event. No files from this event itself,
             // but need to check if files from previous events need to be submitted for processing.
@@ -552,15 +552,16 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
 
         // Normal situation: 1 or more assessable files attached to event, ready to be checked.
         $result = true;
-        foreach ($eventdata->pathnamehashes as $hash) {
-            $fs = get_file_storage();
-            $efile = $fs->get_file_by_hash($hash);
-
-            if (empty($efile)) {
-                mtrace("nofilefound!");
-                continue;
-            } else if ($efile->get_filename() ==='.') {
+        foreach ($eventdata->files as $efile) {
+            if ($efile->get_filename() ==='.') {
                 // This 'file' is actually a directory - nothing to submit.
+                continue;
+            }
+            // Check file still exists
+            $fs = get_file_storage();
+            $fileid = $fs->get_file_by_id($efile->get_id());
+            if (empty($fileid)) {
+                mtrace("nofilefound!");
                 continue;
             }
 
