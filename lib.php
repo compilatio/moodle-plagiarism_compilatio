@@ -358,8 +358,17 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                 } else { // Insert.
                     $DB->insert_record('plagiarism_compilatio_config', $newelement);
                 }
-
             }
+            //check if we are changing from timed or manual to instant
+            //if changing to instant, make all existing files to get a report.
+            if ($existingelements['compilatio_analysistype'] !== $data->compilatio_analysistype &&
+                $data->compilatio_analysistype == COMPILATIO_ANALYSISTYPE_AUTO) {
+                //get all existing files in this assignment set to manual status
+                $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files',
+                    array('cm'=>$data->coursemodule, 'statuscode'=>COMPILATIO_STATUSCODE_ACCEPTED));
+                compilatio_analyse_files($plagiarismfiles);
+            }
+
         }
     }
 
@@ -468,13 +477,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                 AND cc3.name = 'compilatio_timeanalyse'
                 AND " . $DB->sql_cast_char2int('cc3.value'). " < ?";
         $plagiarismfiles = $DB->get_records_sql($sql, array(time()));
-        foreach ($plagiarismfiles as $plagiarism_file) {
-            $analyse = compilatio_startanalyse($plagiarism_file->externalid);
-            if ($analyse->code == 'NOT_ENOUGH_CREDITS') {
-                // Don't process any more in this run.
-                return true;
-            }
-        }
+        compilatio_analyse_files($plagiarismfiles);
     }
     /**
      * generic handler function for all events - triggers sending of files.
@@ -1032,4 +1035,16 @@ function compilatio_check_event_handlers() {
         $invalidhandlers[] = $handler; //this function can't be found.
     }
     return $invalidhandlers;
+}
+
+function compilatio_analyse_files($plagiarismfiles) {
+    $plagiarismsettings = (array)get_config('plagiarism');
+    foreach ($plagiarismfiles as $plagiarism_file) {
+        $analyse = compilatio_startanalyse($plagiarism_file, $plagiarismsettings);
+        if ($analyse->code == 'NOT_ENOUGH_CREDITS') {
+            // Don't process any more in this run.
+            debugging("Not enough credits to process files");
+            return true;
+        }
+    }
 }
