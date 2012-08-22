@@ -175,13 +175,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                 $output .= get_string('similarity', 'plagiarism_compilatio') . ':';
                 $output .= '<span class="' . $rank . '">' . $results['score'] . '%</span>';
             }
-            if (!empty($results['optoutlink'])) {
-                // Display opt-out link.
-                $output .= '&nbsp;<span class"plagiarismoptout">' .
-                        '<a href="' . $results['optoutlink'] . '" target="_blank">' .
-                        get_string('optout', 'plagiarism_compilatio') .
-                        '</a></span>';
-            }
             if (!empty($results['renamed'])) {
                 $output .= $results['renamed'];
             }
@@ -322,7 +315,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         // Returns after this point will include a result set describing information about
         // interactions with compilatio servers.
         $results = array('statuscode' => '', 'error' => '', 'reporturl' => '',
-                'score' => '', 'pid' => '', 'optoutlink' => '', 'renamed' => '',
+                'score' => '', 'pid' => '',  'renamed' => '',
                 'analyzed' => 0,
                 );
         if ($plagiarismfile->statuscode == 'pending') {
@@ -350,9 +343,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             }
             if ($viewreport) {
                 $results['reporturl'] = $plagiarismfile->reporturl;
-            }
-            if (!empty($plagiarismfile->optout) && $selfreport) {
-                $results['optoutlink'] = $plagiarismfile->optout;
             }
             $results['renamed'] = $previouslysubmitted;
         }
@@ -865,7 +855,7 @@ function compilatio_check_attempt_timeout($plagiarism_file) {
         $maxsubmissiondelay = COMPILATIO_MAX_SUBMISSION_DELAY;
         // Maximum number of times to try and send a submission.
         $maxattempts = COMPILATIO_MAX_SUBMISSION_ATTEMPTS;
-    } else if ($plagiarism_file->statuscode ==COMPILATIO_STATUSCODE_ACCEPTED) {
+    } else if ($plagiarism_file->statuscode ==COMPILATIO_STATUSCODE_ANALYSING) {
         // Initial wait time - this is doubled each time a check is made until the max delay is met.
         $submissiondelay = COMPILATIO_STATUS_DELAY;
         // Maximum time to wait between checks.
