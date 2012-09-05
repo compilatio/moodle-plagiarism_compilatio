@@ -484,8 +484,26 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
      * @return string
      */
     public function update_status($course, $cm) {
-        // Called at top of submissions/grading pages - allows printing of admin style links or updating status.
-        return '';
+        global $PAGE, $OUTPUT, $DB;
+
+        $output = '';
+        $update = optional_param('compilatioupdate', '', PARAM_BOOL);
+        if ($update) {
+            $sql = "cm = ? AND (statuscode = ? OR statuscode = ?)";
+            $params = array($cm->id, COMPILATIO_STATUSCODE_COMPLETE, COMPILATIO_STATUSCODE_ANALYSING);
+            $plagiarism_files = $DB->get_records_select('plagiarism_compilatio_files', $sql, $params);
+            foreach ($plagiarism_files as $pf) {
+                compilatio_check_analysis($pf);
+            }
+            $output .= $OUTPUT->notification(get_string('updatedanalysis', 'plagiarism_compilatio'), 'notifysuccess');
+        }
+
+        $url = $PAGE->url;
+        $url->param('compilatioupdate', true);
+        $url->param('action', optional_param('action', '', PARAM_TEXT)); //add action to params for mod_assign page.
+
+        $output .= "<span class='compilatioupdate'>".$OUTPUT->single_button($url, get_string('updatecompilatioanalysis', 'plagiarism_compilatio'))."</span>";
+        return $output;
     }
 
     /**
@@ -500,10 +518,11 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             compilatio_get_scores($plagiarismsettings);
         }
         // Now check for any assignments with a scheduled processing time that is after now.
-        $sql = "SELECT cf.* FROM mdl_plagiarism_compilatio_files cf
-                LEFT JOIN mdl_plagiarism_compilatio_config cc1 ON cc1.cm = cf.cm
-                LEFT JOIN mdl_plagiarism_compilatio_config cc2 ON cc2.cm = cf.cm
-                LEFT JOIN mdl_plagiarism_compilatio_config cc3 ON cc3.cm = cf.cm
+        $sql = "SELECT cf.* FROM {plagiarism_compilatio_files} cf
+                LEFT JOIN {plagiarism_compilatio_config} cc1 ON cc1.cm = cf.cm
+                LEFT JOIN {plagiarism_compilatio_config} cc2 ON cc2.cm = cf.cm
+                LEFT JOIN {plagiarism_compilatio_config} cc3 ON cc3.cm = cf.cm
+                LEFT JOIN {plagiarism_compilatio_config} cc3 ON cc3.cm = cf.cm
                 WHERE cf.statuscode = '".COMPILATIO_STATUSCODE_ACCEPTED."'
                 AND cc1.name = 'use_compilatio' AND cc1.value='1'
                 AND cc2.name = 'compilatio_analysistype' AND cc2.value = '".COMPILATIO_ANALYSISTYPE_PROG."'
