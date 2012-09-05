@@ -79,3 +79,5 @@ $string['usedcredits'] = '<strong>You have used {$a->used} credit(s) of {$a->cre
 $string['startanalysis'] = 'Start analysis';
 $string['failedanalysis'] = 'Compilatio failed to analyse your document: ';
 $string['waitingforanalysis'] = 'This file will be processed on {$a}';
+$string['updatecompilatioanalysis'] = 'Update Compilatio Analysis';
+$string['updatedanalysis'] = 'Compilatio analysis has been updated';
