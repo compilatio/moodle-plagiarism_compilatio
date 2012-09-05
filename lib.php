@@ -139,7 +139,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                     $plagiarism_file->statuscode = COMPILATIO_STATUSCODE_ANALYSING;
                     $DB->update_record('plagiarism_compilatio_files', $plagiarism_file);
                     $output .= '<span class="plagiarismreport">'.
-                        '<img src="'.$OUTPUT->pix_url('processing', 'plagiarism_compilatio') .
+                        '<img src="'.$OUTPUT->pix_url('cog', 'plagiarism_compilatio') .
                         '" alt="'.get_string('processing', 'plagiarism_compilatio').'" '.
                         '" title="'.get_string('processing', 'plagiarism_compilatio').'" />'.
                         '</span>';
@@ -153,7 +153,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         if ($results['statuscode'] == 'pending') {
             // TODO: check to make sure there is a pending event entry for this file - if not add one.
             $output .= '<span class="plagiarismreport">'.
-                       '<img src="'.$OUTPUT->pix_url('processing', 'plagiarism_compilatio') .
+                       '<img src="'.$OUTPUT->pix_url('cog', 'plagiarism_compilatio') .
                         '" alt="'.get_string('pending', 'plagiarism_compilatio').'" '.
                         '" title="'.get_string('pending', 'plagiarism_compilatio').'" />'.
                         '</span>';
@@ -180,37 +180,43 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             }
             $output .= '</span>';
         } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_ACCEPTED) {
+            //check if this is a timed release and add hourglass image.
+            $plagiarismvalues = $DB->get_records_menu('plagiarism_compilatio_config', array('cm'=>$cmid), '', 'name, value');
+            // Check settings to see if we need to tell compilatio to process this file now.
+            $output .= '<span class="plagiarismreport">';
+            if ($plagiarismvalues['compilatio_analysistype'] == COMPILATIO_ANALYSISTYPE_PROG) {
+               $output .= '<img src="'.$OUTPUT->pix_url('hourglass', 'plagiarism_compilatio').
+                   '" alt="'.get_string('waitingforanalysis', 'plagiarism_compilatio', userdate($plagiarismvalues['compilatio_timeanalyse'])).'" '.
+                   '" title="'.get_string('waitingforanalysis', 'plagiarism_compilatio', userdate($plagiarismvalues['compilatio_timeanalyse'])).'" />';
+            } else {
+                $output .= '<img src="'.$OUTPUT->pix_url('cog', 'plagiarism_compilatio') .
+                    '" alt="'.get_string('processing', 'plagiarism_compilatio').'" '.
+                    '" title="'.get_string('processing', 'plagiarism_compilatio').'" />';
+            }
             if (has_capability('moodle/plagiarism_compilatio:triggeranalysis', $modulecontext)) {
                 $url = new moodle_url($PAGE->url, array('compilatioprocess' => $results['pid']));
                 $action = optional_param('action', '', PARAM_TEXT); // Hack to add action to params for mod/assign.
                 if (!empty($action)) {
                     $url->param('action', $action);
                 }
-                $output .= '<span class="plagiarismreport">'.
-                    "<a href='$url'>".get_string('startanalysis', 'plagiarism_compilatio')."</a>" .
-                    '</span>';
-            } else {
-                $output .= '<span class="plagiarismreport">'.
-                           '<img src="'.$OUTPUT->pix_url('processing', 'plagiarism_compilatio') .
-                            '" alt="'.get_string('processing', 'plagiarism_compilatio').'" '.
-                           '" title="'.get_string('processing', 'plagiarism_compilatio').'" />'.
-                            '</span>';
+                $output .=  "<a href='$url'>".get_string('startanalysis', 'plagiarism_compilatio')."</a>";
             }
+            $output .= '</span>';
         } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_ANALYSING) {
             $output .= '<span class="plagiarismreport">'.
-                '<img src="'.$OUTPUT->pix_url('processing', 'plagiarism_compilatio') .
+                '<img src="'.$OUTPUT->pix_url('cog', 'plagiarism_compilatio') .
                 '" alt="'.get_string('processing', 'plagiarism_compilatio').'" '.
                 '" title="'.get_string('processing', 'plagiarism_compilatio').'" />'.
                 '</span>';
         } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_UNSUPPORTED) {
             $output .= '<span class="plagiarismreport">'.
-                       '<img src="'.$OUTPUT->pix_url('warning', 'plagiarism_compilatio') .
+                       '<img src="'.$OUTPUT->pix_url('exclamation', 'plagiarism_compilatio') .
                         '" alt="'.get_string('unsupportedfiletype', 'plagiarism_compilatio').'" '.
                         '" title="'.get_string('unsupportedfiletype', 'plagiarism_compilatio').'" />'.
                         '</span>';
         } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_TOO_LARGE) {
             $output .= '<span class="plagiarismreport">'.
-                       '<img src="'.$OUTPUT->pix_url('warning', 'plagiarism_compilatio') .
+                       '<img src="'.$OUTPUT->pix_url('exclamation', 'plagiarism_compilatio') .
                         '" alt="'.get_string('toolarge', 'plagiarism_compilatio').'" '.
                         '" title="'.get_string('toolarge', 'plagiarism_compilatio').'" />'.
                         '</span>';
@@ -229,7 +235,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                 $reset = "<a href='$url'>".get_string('reset')."</a>";
             }
             $output .= '<span class="plagiarismreport">'.
-                       '<img src="'.$OUTPUT->pix_url('warning', 'plagiarism_compilatio') .
+                       '<img src="'.$OUTPUT->pix_url('exclamation', 'plagiarism_compilatio') .
                         '" alt="'.get_string('unknownwarning', 'plagiarism_compilatio').'" '.
                         '" title="'.$title.'" />'.$reset.'</span>';
         }
@@ -326,8 +332,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         // Now check for differing filename and display info related to it.
         $previouslysubmitted = '';
         if ($file->filename !== $plagiarismfile->filename) {
-            $previouslysubmitted = '('.get_string('previouslysubmitted', 'plagiarism_compilatio').
-                ': '.$plagiarismfile->filename.')';
+            $previouslysubmitted = '<span class="prevsubmitted">('.get_string('previouslysubmitted', 'plagiarism_compilatio').
+                ': '.$plagiarismfile->filename.')</span>';
         }
 
         $results['statuscode'] = $plagiarismfile->statuscode;
