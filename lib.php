@@ -184,7 +184,19 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             $plagiarismvalues = $DB->get_records_menu('plagiarism_compilatio_config', array('cm'=>$cmid), '', 'name, value');
             // Check settings to see if we need to tell compilatio to process this file now.
             $output .= '<span class="plagiarismreport">';
-            if ($plagiarismvalues['compilatio_analysistype'] == COMPILATIO_ANALYSISTYPE_PROG) {
+            if (has_capability('moodle/plagiarism_compilatio:triggeranalysis', $modulecontext)) {
+                $url = new moodle_url($PAGE->url, array('compilatioprocess' => $results['pid']));
+                $action = optional_param('action', '', PARAM_TEXT); // Hack to add action to params for mod/assign.
+                if (!empty($action)) {
+                    $url->param('action', $action);
+                }
+                $output .= "<span class='compilatiostartanalysis'><a href='$url'>";
+                $output .= '<span class="compilatiostartanalysis_icon"><img src="'.$OUTPUT->pix_url('control_play_blue', 'plagiarism_compilatio').
+                    '" alt="'.get_string('startanalysis', 'plagiarism_compilatio').'" '.
+                    '" title="'.get_string('startanalysis', 'plagiarism_compilatio').'" /></span>';
+                $output .= "<span class='compilatiostartanalysis_text'>".get_string('startanalysis', 'plagiarism_compilatio')."</span>";
+                $output .= "</a></span>";
+            } else if ($plagiarismvalues['compilatio_analysistype'] == COMPILATIO_ANALYSISTYPE_PROG) {
                $output .= '<img src="'.$OUTPUT->pix_url('hourglass', 'plagiarism_compilatio').
                    '" alt="'.get_string('waitingforanalysis', 'plagiarism_compilatio', userdate($plagiarismvalues['compilatio_timeanalyse'])).'" '.
                    '" title="'.get_string('waitingforanalysis', 'plagiarism_compilatio', userdate($plagiarismvalues['compilatio_timeanalyse'])).'" />';
@@ -193,14 +205,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                     '" alt="'.get_string('processing', 'plagiarism_compilatio').'" '.
                     '" title="'.get_string('processing', 'plagiarism_compilatio').'" />';
             }
-            if (has_capability('moodle/plagiarism_compilatio:triggeranalysis', $modulecontext)) {
-                $url = new moodle_url($PAGE->url, array('compilatioprocess' => $results['pid']));
-                $action = optional_param('action', '', PARAM_TEXT); // Hack to add action to params for mod/assign.
-                if (!empty($action)) {
-                    $url->param('action', $action);
-                }
-                $output .=  "<a href='$url'>".get_string('startanalysis', 'plagiarism_compilatio')."</a>";
-            }
+
             $output .= '</span>';
         } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_ANALYSING) {
             $output .= '<span class="plagiarismreport">'.
