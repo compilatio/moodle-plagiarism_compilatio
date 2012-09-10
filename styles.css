@@ -65,6 +65,7 @@ span.plagiarismreport span.prevsubmitted {
     padding-left: 2px;
     font-size: smaller;
 }
-span.plagiarismreport span.compilatiostartanalysis_text {
+span.plagiarismreport span.compilatiostartanalysis_text,
+span.plagiarismreport span.compilatioanalysis_text{
     display: none;
 }
