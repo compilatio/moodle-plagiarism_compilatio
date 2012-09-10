@@ -139,7 +139,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                     $plagiarism_file->statuscode = COMPILATIO_STATUSCODE_ANALYSING;
                     $DB->update_record('plagiarism_compilatio_files', $plagiarism_file);
                     $output .= '<span class="plagiarismreport">'.
-                        '<img src="'.$OUTPUT->pix_url('cog', 'plagiarism_compilatio') .
+                        '<img src="'.$OUTPUT->pix_url('inprogress', 'plagiarism_compilatio') .
                         '" alt="'.get_string('processing', 'plagiarism_compilatio').'" '.
                         '" title="'.get_string('processing', 'plagiarism_compilatio').'" />'.
                         '</span>';
@@ -153,7 +153,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         if ($results['statuscode'] == 'pending') {
             // TODO: check to make sure there is a pending event entry for this file - if not add one.
             $output .= '<span class="plagiarismreport">'.
-                       '<img src="'.$OUTPUT->pix_url('cog', 'plagiarism_compilatio') .
+                       '<img src="'.$OUTPUT->pix_url('inprogress', 'plagiarism_compilatio') .
                         '" alt="'.get_string('pending', 'plagiarism_compilatio').'" '.
                         '" title="'.get_string('pending', 'plagiarism_compilatio').'" />'.
                         '</span>';
@@ -201,7 +201,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                    '" alt="'.get_string('waitingforanalysis', 'plagiarism_compilatio', userdate($plagiarismvalues['compilatio_timeanalyse'])).'" '.
                    '" title="'.get_string('waitingforanalysis', 'plagiarism_compilatio', userdate($plagiarismvalues['compilatio_timeanalyse'])).'" />';
             } else {
-                $output .= '<img src="'.$OUTPUT->pix_url('cog', 'plagiarism_compilatio') .
+                $output .= '<img src="'.$OUTPUT->pix_url('inprogress', 'plagiarism_compilatio') .
                     '" alt="'.get_string('processing', 'plagiarism_compilatio').'" '.
                     '" title="'.get_string('processing', 'plagiarism_compilatio').'" />';
             }
@@ -209,7 +209,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             $output .= '</span>';
         } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_ANALYSING) {
             $output .= '<span class="plagiarismreport">'.
-                '<img src="'.$OUTPUT->pix_url('cog', 'plagiarism_compilatio') .
+                '<img src="'.$OUTPUT->pix_url('inprogress', 'plagiarism_compilatio') .
                 '" alt="'.get_string('processing', 'plagiarism_compilatio').'" '.
                 '" title="'.get_string('processing', 'plagiarism_compilatio').'" />'.
                 '</span>';
