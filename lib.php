@@ -152,7 +152,10 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                 // User is allowed to view the report
                 // Score is contained in report, so they can see the score too.
                 $output .= '<a href="'.$results['reporturl'].'" target="_blank">';
-                $output .= get_string('similarity', 'plagiarism_compilatio') . ':';
+                $output .= '<span class="compilatioanalysis_icon"><img src="'.$OUTPUT->pix_url('tick', 'plagiarism_compilatio').
+                    '" alt="'.get_string('startanalysis', 'plagiarism_compilatio').'" '.
+                    '" title="'.get_string('startanalysis', 'plagiarism_compilatio').'" /></span>';
+                $output .= '<span class="compilatioanalysis_text">'.get_string('similarity', 'plagiarism_compilatio') . ':</span>';
                 $output .= '<span class="'.$rank.'">'.$results['score'].'%</span>';
                 $output .= '</a>';
             } else if ($results['score'] !== '') {
