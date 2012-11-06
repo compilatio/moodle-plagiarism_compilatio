@@ -467,10 +467,10 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             compilatio_get_scores($plagiarismsettings);
         }
         // Now check for any assignments with a scheduled processing time that is after now.
-        $sql = "SELECT cf.* FROM mdl_plagiarism_compilatio_files cf
-                LEFT JOIN mdl_plagiarism_compilatio_config cc1 ON cc1.cm = cf.cm
-                LEFT JOIN mdl_plagiarism_compilatio_config cc2 ON cc2.cm = cf.cm
-                LEFT JOIN mdl_plagiarism_compilatio_config cc3 ON cc3.cm = cf.cm
+        $sql = "SELECT cf.* FROM {plagiarism_compilatio_files} cf
+                LEFT JOIN {plagiarism_compilatio_config} cc1 ON cc1.cm = cf.cm
+                LEFT JOIN {plagiarism_compilatio_config} cc2 ON cc2.cm = cf.cm
+                LEFT JOIN {plagiarism_compilatio_config} cc3 ON cc3.cm = cf.cm
                 WHERE cf.statuscode = '".COMPILATIO_STATUSCODE_ACCEPTED."'
                 AND cc1.name = 'use_compilatio' AND cc1.value='1'
                 AND cc2.name = 'compilatio_analysistype' AND cc2.value = '".COMPILATIO_ANALYSISTYPE_PROG."'
