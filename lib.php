@@ -456,7 +456,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
     }
 
     /**
-     * called by admin/cron.php 
+     * called by admin/cron.php
      *
      */
     public function cron() {
