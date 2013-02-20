@@ -121,15 +121,22 @@ class compilatioservice {
         return true;
 	}
 	/*M�thode qui permet de r�cup�r� les quotas du compte compilatio*/
-	function GetQuotas() {
+	function GetQuotas($debug=false) {
+        global $OUTPUT;
 		try	{
 			if (!is_object($this->soapcli)) {
+                if ($debug) {
+                    echo $OUTPUT->notification($this->soapcli);
+                }
                 return null;
             }
 			$param=array($this->key);
 			$resultat=$this->soapcli->__call('getAccountQuotas',$param);
 			return $resultat;
 		} catch (SoapFault $fault) {
+            if ($debug) {
+                echo $OUTPUT->notification($fault);
+            }
 			return null;
 		}
 	}

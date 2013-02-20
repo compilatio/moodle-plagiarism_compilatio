@@ -83,7 +83,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         }
     }
     // TODO - check settings to see if valid.
-    $quotas = compilatio_getquotas();
+    $quotas = compilatio_getquotas(true);
     if ($quotas == null) {
         // Disable compilatio as this config isn't correct.
         $rec = $DB->get_record('config_plugins', array('name'=>'compilatio_use', 'plugin'=>'plagiarism'));

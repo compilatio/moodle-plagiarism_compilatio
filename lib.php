@@ -690,30 +690,30 @@ function compilatio_create_temp_file($cmid, $eventdata) {
     return $file;
 }
 
-function event_file_uploaded($eventdata) {
+function compilatio_event_file_uploaded($eventdata) {
     $eventdata->eventtype = 'file_uploaded';
     $compilatio = new plagiarism_plugin_compilatio();
     return $compilatio->event_handler($eventdata);
 }
-function event_files_done($eventdata) {
+function compilatio_event_files_done($eventdata) {
     $eventdata->eventtype = 'files_done';
     $compilatio = new plagiarism_plugin_compilatio();
     return $compilatio->event_handler($eventdata);
 }
 
-function event_content_uploaded($eventdata) {
+function compilatio_event_content_uploaded($eventdata) {
     $eventdata->eventtype = 'content_uploaded';
     $compilatio = new plagiarism_plugin_compilatio();
     return $compilatio->event_handler($eventdata);
 }
 
-function event_content_done($eventdata) {
+function compilatio_event_content_done($eventdata) {
     $eventdata->eventtype = 'content_done';
     $compilatio = new plagiarism_plugin_compilatio();
     return $compilatio->event_handler($eventdata);
 }
 
-function event_mod_created($eventdata) {
+function compilatio_event_mod_created($eventdata) {
     $result = true;
         // A new module has been created - this is a generic event that is called for all module types
         // make sure you check the type of module before handling if needed.
@@ -721,7 +721,7 @@ function event_mod_created($eventdata) {
     return $result;
 }
 
-function event_mod_updated($eventdata) {
+function compilatio_event_mod_updated($eventdata) {
     $result = true;
         // A module has been updated - this is a generic event that is called for all module types
         // make sure you check the type of module before handling if needed.
@@ -729,7 +729,7 @@ function event_mod_updated($eventdata) {
     return $result;
 }
 
-function event_mod_deleted($eventdata) {
+function compilatio_event_mod_deleted($eventdata) {
     $result = true;
         // A module has been deleted - this is a generic event that is called for all module types
         // make sure you check the type of module before handling if needed.
@@ -1082,14 +1082,14 @@ function compilatio_update_allowed_filetypes() {
  * Fonction to return current compilatio quota.
  * @return $quotas
  */
-function compilatio_getquotas() {
+function compilatio_getquotas($debug=false) {
     global $CFG;
     $plagiarismsettings = (array)get_config('plagiarism');
 
     $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'], $plagiarismsettings['compilatio_api'],
                                  $CFG->proxyhost, $CFG->proxyport, $CFG->proxyuser, $CFG->proxypassword);
 
-    return $compilatio->GetQuotas();
+    return $compilatio->GetQuotas($debug);
 }
 
 function compilatio_startanalyse($plagiarism_file, $plagiarismsettings = '') {

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$plugin->version =  2012081700;
+$plugin->version =  2012081702;
 $plugin->requires = 2012080900.00;
 $plugin->cron     = 300; // Only run every 5 minutes.
 $plugin->component = 'plagiarism_compilatio';
