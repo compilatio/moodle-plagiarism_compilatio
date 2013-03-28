@@ -375,7 +375,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             }
             //check if we are changing from timed or manual to instant
             //if changing to instant, make all existing files to get a report.
-            if ($existingelements['compilatio_analysistype'] !== $data->compilatio_analysistype &&
+            if (isset($existingelements['compilatio_analysistype']) && $existingelements['compilatio_analysistype'] !== $data->compilatio_analysistype &&
                 $data->compilatio_analysistype == COMPILATIO_ANALYSISTYPE_AUTO) {
                 //get all existing files in this assignment set to manual status
                 $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files',
