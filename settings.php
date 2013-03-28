@@ -82,6 +82,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             }
         }
     }
+    cache_helper::invalidate_by_definition('core', 'config', array(), 'plagiarism');
     // TODO - check settings to see if valid.
     $quotas = compilatio_getquotas(true);
     if ($quotas == null) {
