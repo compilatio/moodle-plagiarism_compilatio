@@ -32,7 +32,7 @@ require_once($CFG->dirroot.'/plagiarism/compilatio/compilatio_form.php');
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
 
-$context = get_context_instance(CONTEXT_SYSTEM);
+$context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
 $mform = new compilatio_setup_form();
