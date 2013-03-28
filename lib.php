@@ -130,7 +130,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         $output = '';
         $trigger = optional_param('compilatioprocess', 0, PARAM_INT);
         if ($results['statuscode'] == COMPILATIO_STATUSCODE_ACCEPTED && $trigger == $results['pid']) {
-            if (has_capability('moodle/plagiarism_compilatio:triggeranalysis', $modulecontext)) {
+            if (has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext)) {
                 // Trigger manual analysis call.
                 $plagiarism_file = compilatio_get_plagiarism_file($cmid, $userid, $file);
                 $analyse = compilatio_startanalyse($plagiarism_file);
@@ -187,7 +187,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             $plagiarismvalues = $DB->get_records_menu('plagiarism_compilatio_config', array('cm'=>$cmid), '', 'name, value');
             // Check settings to see if we need to tell compilatio to process this file now.
             $output .= '<span class="plagiarismreport">';
-            if (has_capability('moodle/plagiarism_compilatio:triggeranalysis', $modulecontext)) {
+            if (has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext)) {
                 $url = new moodle_url($PAGE->url, array('compilatioprocess' => $results['pid']));
                 $action = optional_param('action', '', PARAM_TEXT); // Hack to add action to params for mod/assign.
                 if (!empty($action)) {
@@ -231,7 +231,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         } else {
             $title = get_string('unknownwarning', 'plagiarism_compilatio');
             $reset = '';
-            if (has_capability('moodle/plagiarism_compilatio:resetfile', $modulecontext) &&
+            if (has_capability('plagiarism/compilatio:resetfile', $modulecontext) &&
                 !empty($results['error'])) { // This is a teacher viewing the responses.
                 // Strip out some possible known text to tidy it up.
                 $erroresponse = format_text($results['error'], FORMAT_PLAIN);
@@ -281,7 +281,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
 
         $modulecontext = get_context_instance(CONTEXT_MODULE, $cmid);
         // If the user has permission to see result of all items in this course module.
-        $viewscore = $viewreport = has_capability('moodle/plagiarism_compilatio:viewreport', $modulecontext);
+        $viewscore = $viewreport = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
 
         // Determine if the activity is closed.
         // If report is closed, this can make the report available to more users.
@@ -429,7 +429,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         // The cmid(0) is the default list.
         $plagiarismdefaults = $DB->get_records_menu('plagiarism_compilatio_config', array('cm'=>0), '', 'name, value');
         $plagiarismelements = $this->config_options();
-        if (has_capability('moodle/plagiarism_compilatio:enable', $context)) {
+        if (has_capability('plagiarism/compilatio:enable', $context)) {
             compilatio_get_form_elements($mform);
             if ($mform->elementExists('compilatio_draft_submit')) {
                 if ($mform->elementExists('var4')) {

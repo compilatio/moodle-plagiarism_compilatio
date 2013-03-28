@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $capabilities = array(
-    'moodle/plagiarism_compilatio:enable' => array(
+    'plagiarism/compilatio:enable' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
          'legacy' => array(
@@ -23,7 +23,7 @@ $capabilities = array(
          'manager' => CAP_ALLOW
         )
     ),
-    'moodle/plagiarism_compilatio:triggeranalysis' => array(
+    'plagiarism/compilatio:triggeranalysis' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'legacy' => array(
@@ -31,7 +31,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-    'moodle/plagiarism_compilatio:viewreport' => array(
+    'plagiarism/compilatio:viewreport' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
          'legacy' => array(
@@ -40,7 +40,7 @@ $capabilities = array(
          'manager' => CAP_ALLOW
         )
     ),
-    'moodle/plagiarism_compilatio:resetfile' => array(
+    'plagiarism/compilatio:resetfile' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
          'legacy' => array(

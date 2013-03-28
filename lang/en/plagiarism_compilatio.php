@@ -82,3 +82,7 @@ $string['failedanalysis'] = 'Compilatio failed to analyse your document: ';
 $string['waitingforanalysis'] = 'This file will be processed on {$a}';
 $string['updatecompilatioanalysis'] = 'Update Compilatio Analysis';
 $string['updatedanalysis'] = 'Compilatio analysis has been updated';
+$string['compilatio:enable'] = 'Allow the teacher to enable/disable Compilatio inside an activity';
+$string['compilatio:resetfile'] = 'Allow the teacher to resubmit the file to Compilatio after an error';
+$string['compilatio:triggeranalysis'] = 'Allow the teacher to manually trigger analysis';
+$string['compilatio:viewreport'] = 'Allow the teacher to view the full report from Compilatio';
