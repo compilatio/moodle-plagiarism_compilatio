@@ -279,7 +279,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             return false;
         }
 
-        $modulecontext = module_context::instance($cmid);
+        $modulecontext = context_module::instance($cmid);
         // If the user has permission to see result of all items in this course module.
         $viewscore = $viewreport = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
 
