@@ -759,7 +759,7 @@ function compilatio_get_form_elements($mform, $defaults=false) {
             PLAGIARISM_COMPILATIO_DRAFTSUBMIT_FINAL => get_string("submitonfinal", "plagiarism_compilatio")
             );
 
-    $mform->addElement('header', 'plagiarismdesc');
+    $mform->addElement('header', 'plagiarismdesc', get_string('compilatio', 'plagiarism_compilatio'));
     $mform->addElement('select', 'use_compilatio', get_string("usecompilatio", "plagiarism_compilatio"), $ynoptions);
 
     $analysistypes = array(COMPILATIO_ANALYSISTYPE_AUTO   => get_string('analysistypeauto', 'plagiarism_compilatio'),
