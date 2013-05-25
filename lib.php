@@ -493,7 +493,9 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
      */
     public function update_status($course, $cm) {
         global $PAGE, $OUTPUT, $DB;
-
+        if (!compilatio_cm_use($cm->id)) {
+            return '';
+        }
         $output = '';
         $update = optional_param('compilatioupdate', '', PARAM_BOOL);
         if ($update) {
