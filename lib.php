@@ -856,7 +856,7 @@ function compilatio_send_file($cmid, $userid, $file, $plagiarismsettings) {
         return false;
     }
     // Increment attempt number.
-    $plagiarism_file->attempt = $plagiarism_file->attempt++;
+    $plagiarism_file->attempt = $plagiarism_file->attempt+1;
     $DB->update_record('plagiarism_compilatio_files', $plagiarism_file);
 
     $compid = compilatio_send_file_to_compilatio($plagiarism_file, $plagiarismsettings, $file);
