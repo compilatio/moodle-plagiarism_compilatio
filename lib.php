@@ -870,6 +870,8 @@ function compilatio_send_file_to_compilatio(&$plagiarism_file, $plagiarismsettin
     }
     debugging("invalid compilatio response received - will try again later.".$id_compi);
     // Invalid response returned - increment attempt value and return false to allow this to be called again.
+    $plagiarism_file->attempt = $plagiarism_file->attempt++;
+    $DB->update_record('plagiarism_compilatio_files', $plagiarism_file);
     return false;
 }
 
