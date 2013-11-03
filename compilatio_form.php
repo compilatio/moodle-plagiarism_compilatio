@@ -46,7 +46,7 @@ class compilatio_setup_form extends moodleform {
         foreach ($mods as $mod => $modname) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
                 $modstring = 'compilatio_enable_mod_' . $mod;
-                $mform->addElement('checkbox', $modstring, get_string('compilatio_enableplugin', 'plagiarism_compilatio', $mod));
+                $mform->addElement('checkbox', $modstring, get_string('compilatio_enableplugin', 'plagiarism_compilatio', get_string('pluginname', 'mod_'.$mod)));
             }
         }
 
