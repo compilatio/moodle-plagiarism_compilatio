@@ -32,7 +32,7 @@ require_once('compilatio_form.php');
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
 
-$context = get_context_instance(CONTEXT_SYSTEM);
+$context = context_system::instance();
 
 $fileid = optional_param('fileid', 0, PARAM_INT);
 $resetuser = optional_param('reset', 0, PARAM_INT);

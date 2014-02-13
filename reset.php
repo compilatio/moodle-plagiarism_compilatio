@@ -36,7 +36,7 @@ $cm = get_coursemodule_from_id('', $cmid, 0, false, MUST_EXIST);
 $PAGE->set_url($url);
 require_login($cm->course, true, $cm);
 
-$modulecontext = get_context_instance(CONTEXT_MODULE, $cmid);
+$modulecontext = context_module::instance($cmid);
 require_capability('moodle/plagiarism_compilatio:resetfile', $modulecontext);
 
 $plagiarism_file = $DB->get_record('plagiarism_compilatio_files', array('id'=>$pf), '*', MUST_EXIST);
