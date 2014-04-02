@@ -76,3 +76,4 @@ $string['enabledandworking'] = 'Le plugin Compilatio est actif et fonctionnel.';
 $string['usedcredits'] = '<strong>Vous avez utilisé {$a->used} credit(s) sur {$a->credits} et il vous reste {$a->remaining} credit(s)</strong>';
 $string['startanalysis'] = 'Démarrer l\'analyse';
 $string['failedanalysis'] = 'Compilatio n\'a pas réussi à analyser votre document : ';
+$string['unextractablefile'] = 'Compilatio n\'a pas réussi à extraire le contenu de votre document ';
