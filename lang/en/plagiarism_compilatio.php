@@ -82,3 +82,4 @@ $string['failedanalysis'] = 'Compilatio failed to analyse your document: ';
 $string['waitingforanalysis'] = 'This file will be processed on {$a}';
 $string['updatecompilatioanalysis'] = 'Update Compilatio Analysis';
 $string['updatedanalysis'] = 'Compilatio analysis has been updated';
+$string['unextractablefile'] = 'Compilatio failed to extract the content of your document';
