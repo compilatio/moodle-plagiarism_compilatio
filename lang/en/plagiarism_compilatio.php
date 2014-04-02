@@ -86,3 +86,4 @@ $string['compilatio:enable'] = 'Allow the teacher to enable/disable Compilatio i
 $string['compilatio:resetfile'] = 'Allow the teacher to resubmit the file to Compilatio after an error';
 $string['compilatio:triggeranalysis'] = 'Allow the teacher to manually trigger analysis';
 $string['compilatio:viewreport'] = 'Allow the teacher to view the full report from Compilatio';
+$string['unextractablefile'] = 'Compilatio failed to extract the content of your document';
