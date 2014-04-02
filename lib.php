@@ -975,7 +975,7 @@ function compilatio_send_file_to_compilatio(&$plagiarism_file, $plagiarismsettin
         return $id_compi;
     }
     //correctif blocage moodle doc non extractable
-	$plagiarism_file->attempt = 0; // Reset attempts for status checks.
+    $plagiarism_file->attempt = 0; // Reset attempts for status checks.
     $plagiarism_file->statuscode = COMPILATIO_STATUSCODE_UNEXTRACTABLE;
     $DB->update_record('plagiarism_compilatio_files', $plagiarism_file);
     debugging("invalid compilatio response received - will try again later.".$id_compi);
