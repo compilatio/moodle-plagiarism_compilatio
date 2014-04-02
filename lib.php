@@ -235,7 +235,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
 						'" alt="'.get_string('unextractablefile', 'plagiarism_compilatio').'" '.											
 						'" title="'.get_string('unextractablefile', 'plagiarism_compilatio').'" />'.											
 						'</span>';
-		} else {
+	} else {
             $title = get_string('unknownwarning', 'plagiarism_compilatio');
             $reset = '';
             if (has_capability('plagiarism/compilatio:resetfile', $modulecontext) &&
