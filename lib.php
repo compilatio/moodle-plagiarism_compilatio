@@ -46,6 +46,7 @@ define('COMPILATIO_STATUSCODE_ANALYSING', '203');
 define('COMPILATIO_STATUSCODE_BAD_REQUEST', '400');
 define('COMPILATIO_STATUSCODE_NOT_FOUND', '404');
 define('COMPILATIO_STATUSCODE_UNSUPPORTED', '415');
+define('COMPILATIO_STATUSCODE_UNEXTRACTABLE', '416');
 define('COMPILATIO_STATUSCODE_TOO_LARGE', '413');
 define('COMPILATIO_STATUSCODE_COMPLETE', 'Analyzed');
 
@@ -199,7 +200,13 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                         '" alt="'.get_string('toolarge', 'plagiarism_compilatio').'" '.
                         '" title="'.get_string('toolarge', 'plagiarism_compilatio').'" />'.
                         '</span>';
-        } else {
+        } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_UNEXTRACTABLE) {           
+			$output .= '<span class="plagiarismreport">'.							   
+						'<img src="'.$OUTPUT->pix_url('exclamation', 'plagiarism_compilatio') .											
+						'" alt="'.get_string('unextractablefile', 'plagiarism_compilatio').'" '.											
+						'" title="'.get_string('unextractablefile', 'plagiarism_compilatio').'" />'.											
+						'</span>';
+		} else {
             $title = get_string('unknownwarning', 'plagiarism_compilatio');
             $reset = '';
             if (has_capability('moodle/plagiarism_compilatio:resetfile', $modulecontext) &&
@@ -837,6 +844,10 @@ function compilatio_send_file_to_compilatio(&$plagiarism_file, $plagiarismsettin
         $DB->update_record('plagiarism_compilatio_files', $plagiarism_file);
         return $id_compi;
     }
+    //correctif blocage moodle doc non extractable
+	$plagiarism_file->attempt = 0; // Reset attempts for status checks.
+    $plagiarism_file->statuscode = COMPILATIO_STATUSCODE_UNEXTRACTABLE;
+    $DB->update_record('plagiarism_compilatio_files', $plagiarism_file);
     debugging("invalid compilatio response received - will try again later.".$id_compi);
     // Invalid response returned - increment attempt value and return false to allow this to be called again.
     return false;
