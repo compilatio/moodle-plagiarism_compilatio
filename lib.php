@@ -519,7 +519,12 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         $url->param('compilatioupdate', true);
         $url->param('action', optional_param('action', '', PARAM_TEXT)); //add action to params for mod_assign page.
 
-        $output .= "<span class='compilatioupdate'>".$OUTPUT->single_button($url, get_string('updatecompilatioanalysis', 'plagiarism_compilatio'))."</span>";
+        $sql = "select value from {plagiarism_compilatio_config} where cm=? and name='use_compilatio'";
+	$active_compilatio = $DB->get_record_sql($sql, array($cm->id));
+		
+	if($active_compilatio->value == 1) {
+		$output .= "<span class='compilatioupdate'>".$OUTPUT->single_button($url, get_string('updatecompilatioanalysis', 'plagiarism_compilatio'))."</span>";
+	}
         return $output;
     }
 
