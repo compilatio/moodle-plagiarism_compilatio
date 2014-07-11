@@ -319,7 +319,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         }
         // End of rights checking.
 
-        if (!$viewscore && !$viewreport && !$selfreport) {
+        if (!$viewscore && !$viewreport && $selfreport) {
             // User is not permitted to see any details.
             return false;
         }
