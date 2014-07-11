@@ -25,13 +25,13 @@ class compilatioservice {
                                    'soap_version'=>SOAP_1_2,
                                    'exceptions'=>true);
 					if(!empty($proxy_host)) {
-						$param['proxy_host'] = '"' . $proxy_host . '"';
+						$param['proxy_host'] = $proxy_host;
                         if (!empty($proxy_port)) {
                             $param['proxy_port'] = $proxy_port;
                         }
                         if(!empty($proxy_username) && !empty($proxy_password)) {
-                            $param['proxy_login'] = '"' . $proxy_username . '"';
-                            $param['proxy_password'] = '"' .$proxy_password. '"';
+                            $param['proxy_login'] = $proxy_username;
+                            $param['proxy_password'] = $proxy_password;
                         }
 					}
                     $this->soapcli = new SoapClient($urlsoap,$param);
