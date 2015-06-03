@@ -41,6 +41,8 @@ $plagiarismplugin = new plagiarism_plugin_compilatio();
 if ($mform->is_cancelled()) {
     redirect('');
 }
+//Boolean to test only once the connection if it has failed.
+$incorrectConfing = false;
 
 echo $OUTPUT->header();
 $currenttab='compilatiosettings';
@@ -82,15 +84,23 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             }
         }
     }
+
     cache_helper::invalidate_by_definition('core', 'config', array(), 'plagiarism');
-    // TODO - check settings to see if valid.
-    $quotas = compilatio_getquotas(true);
-    if ($quotas == null) {
+    // TODO - check settings to see if valid
+	
+	
+
+    $quotas = compilatio_getquotas();
+    if ($quotas["quotas"] == null) {
         // Disable compilatio as this config isn't correct.
         $rec = $DB->get_record('config_plugins', array('name'=>'compilatio_use', 'plugin'=>'plagiarism'));
         $rec->value = 0;
         $DB->update_record('config_plugins', $rec);
-        echo $OUTPUT->notification(get_string('savedconfigfailed', 'plagiarism_compilatio'));
+
+        //echo $OUTPUT->notification(get_string('savedconfigfailed', 'plagiarism_compilatio', $error));
+
+		echo $OUTPUT->notification(get_string("saved_config_failed","plagiarism_compilatio").$quotas["error"]);
+		$incorrectConfing = true;
     }
 }
 
@@ -111,22 +121,23 @@ $plagiarismsettings = (array)get_config('plagiarism');
 $mform->set_data($plagiarismsettings);
 
 
-if (!empty($plagiarismsettings['compilatio_use'])) {
-    $quotas = compilatio_getquotas();
+if (!empty($plagiarismsettings['compilatio_use']) && !$incorrectConfing) {
+    $quotasarray = compilatio_getquotas();
+	$quotas = $quotasarray['quotas'];
     if ($quotas == null) {
         // Disable compilatio as this config isn't correct.
         $rec = $DB->get_record('config_plugins', array('name'=>'compilatio_use', 'plugin'=>'plagiarism'));
         $rec->value = 0;
         $DB->update_record('config_plugins', $rec);
-        echo $OUTPUT->notification(get_string('savedconfigfailed', 'plagiarism_compilatio'));
+
+        echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio").$quotasarray['error']);
     } else {
         echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
         echo $OUTPUT->notification(get_string('enabledandworking', 'plagiarism_compilatio'), 'notifysuccess');
         $a = new stdClass();
         $a->used = $quotas->usedCredits;
-        $a->credits = $quotas->credits;
-        $a->remaining = $quotas->remainingCredits;
-        echo "<p>".get_string('usedcredits', 'plagiarism_compilatio', $a).'</p>';
+        $a->end_date = strtolower(formatEndDate(compilatio_getAccountExpirationDate()));
+        echo "<p>".get_string('subscription_state', 'plagiarism_compilatio', $a).'</p>';
         echo $OUTPUT->box_end();
     }
     $plagiarismsettings = get_config('plagiarism');

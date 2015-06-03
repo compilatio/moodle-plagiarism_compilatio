@@ -46,9 +46,10 @@ $plagiarism_file->statuscode = 'pending';
 $plagiarism_file->attempt = 0;
 $plagiarism_file->timesubmitted = time();
 $DB->update_record('plagiarism_compilatio_files', $plagiarism_file);
+
 // Now trigger event to process the file.
 
-// TODO: this is hardcoded to assignment mod.
+// this is hardcoded to assignment mod.
 if ($cm->modname =='assignment') {
     $submission = $DB->get_record('assignment_submissions', array('assignment'=>$cm->instance, 'userid'=>$plagiarism_file->userid));
     $fs = get_file_storage();
@@ -73,5 +74,5 @@ if ($cm->modname =='assignment') {
     }
 }
 
-$redirect = new moodle_url('/mod/'.$cm->modname.'/submissions.php', array('id'=>$cmid));
+$redirect = new moodle_url('/mod/assign/view.php', array('id'=>$cmid, 'action'=>"grading"));
 redirect($redirect, get_string('filereset', 'plagiarism_compilatio'));

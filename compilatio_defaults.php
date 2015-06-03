@@ -67,7 +67,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     }
     echo $OUTPUT->notification(get_string('defaultupdated', 'plagiarism_compilatio'), 'notifysuccess');
 }
-echo $OUTPUT->box(get_string('defaultsdesc', 'plagiarism_compilatio'));
+echo $OUTPUT->box(get_string('defaults_desc', 'plagiarism_compilatio'));
 
 $mform->display();
 echo $OUTPUT->footer();

@@ -26,27 +26,38 @@ class compilatio_setup_form extends moodleform {
 
         $mform =& $this->_form;
         $mform->addElement('html', get_string('compilatioexplain', 'plagiarism_compilatio'));
-        $mform->addElement('checkbox', 'compilatio_use', get_string('usecompilatio', 'plagiarism_compilatio'));
+        $mform->addElement('checkbox', 'compilatio_use', get_string('activate_compilatio', 'plagiarism_compilatio'));
 
-        $mform->addElement('text', 'compilatio_api', get_string('compilatio_api', 'plagiarism_compilatio'));
-        $mform->addHelpButton('compilatio_api', 'compilatio_api', 'plagiarism_compilatio');
+	
+		$mform->addElement('html', '<p style="font-size: 12px;font-style: italic;">'.get_string("disclaimer_data", "plagiarism_compilatio").'</p>');
+		
+		
+        $mform->addElement('text', 'compilatio_api', get_string('compilatioapi', 'plagiarism_compilatio'));
+        $mform->addHelpButton('compilatio_api', 'compilatioapi', 'plagiarism_compilatio');
         $mform->addRule('compilatio_api', null, 'required', null, 'client');
         $mform->setDefault('compilatio_api', 'http://service.compilatio.net/webservices/CompilatioUserClient2.wsdl');
-
-        $mform->addElement('passwordunmask', 'compilatio_password', get_string('compilatio_password', 'plagiarism_compilatio'));
-        $mform->addHelpButton('compilatio_password', 'compilatio_password', 'plagiarism_compilatio');
+		$mform->setType('compilatio_api', PARAM_URL);
+		
+        $mform->addElement('passwordunmask', 'compilatio_password', get_string('compilatiopassword', 'plagiarism_compilatio'));
+        $mform->addHelpButton('compilatio_password', 'compilatiopassword', 'plagiarism_compilatio');
         $mform->addRule('compilatio_password', null, 'required', null, 'client');
 
-        $mform->addElement('textarea', 'compilatio_student_disclosure', get_string('studentdisclosure', 'plagiarism_compilatio'),
+        $mform->addElement('textarea', 'compilatio_student_disclosure', get_string('student_disclosure', 'plagiarism_compilatio'),
                            'wrap="virtual" rows="6" cols="50"');
-        $mform->addHelpButton('compilatio_student_disclosure', 'studentdisclosure', 'plagiarism_compilatio');
+        $mform->addHelpButton('compilatio_student_disclosure', 'student_disclosure', 'plagiarism_compilatio');
         $mform->setDefault('compilatio_student_disclosure', get_string('studentdisclosuredefault', 'plagiarism_compilatio'));
 
         $mods = get_plugin_list('mod');
         foreach ($mods as $mod => $modname) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
                 $modstring = 'compilatio_enable_mod_' . $mod;
-                $mform->addElement('checkbox', $modstring, get_string('compilatio_enableplugin', 'plagiarism_compilatio', get_string('pluginname', 'mod_'.$mod)));
+				$string="";
+				if(string_exists($modstring, "plagiarism_compilatio"))
+					$string = get_string($modstring, 'plagiarism_compilatio');
+				else
+					$string = get_string('compilatioenableplugin', 'plagiarism_compilatio', $mod);
+				$mform->addElement('checkbox', $modstring, $string);
+
             }
         }
 
@@ -62,4 +73,9 @@ class compilatio_defaults_form extends moodleform {
         compilatio_get_form_elements($mform, true);
         $this->add_action_buttons(true);
     }
+}
+
+function string_exists($string, $component)
+{
+	return strpos(@get_string($string, $component), '[[') === false;
 }
