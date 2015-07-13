@@ -56,7 +56,7 @@ class compilatioservice {
 			if (!is_object($this->soapcli)) {
 				return("Error in constructor compilatio() " . $this->soapcli);
             }
-			$idDocument = $this->soapcli->__call('addDocumentBase64',array($this->key,utf8_encode($title),utf8_encode($description),utf8_encode($filename),utf8_encode($mimetype),base64_encode($content)));
+			$idDocument = $this->soapcli->__call('addDocumentBase64',array($this->key,($title),($description),($filename),($mimetype),base64_encode($content)));
 			return $idDocument;
 		} catch (SoapFault $fault) {
 			return("Erreur SendDoc()" . $fault->faultcode ." " .$fault->faultstring);

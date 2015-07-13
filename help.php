@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,14 +16,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * plagiarism.php - allows the admin to configure plagiarism stuff
+ * help.php - Display help for the administrator
  *
  * @package   plagiarism_compilatio
  * @author    Dan Marsden <dan@danmarsden.com>
  * @copyright 2012 Dan Marsden http://danmarsden.com
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->libdir.'/plagiarismlib.php');
@@ -56,6 +56,9 @@ switch($language)
 {
 	case "fr":
 		require("help/FAQ-fr.php");
+	break;
+    	case "it":
+		require("help/FAQ-it.php");
 	break;
 	default:
 		require("help/FAQ-en.php");

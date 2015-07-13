@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -20,26 +21,25 @@
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-$string['pluginname'] = 'Plugin Compilatio de détection de plagiat';
-$string['studentdisclosuredefault'] ='L\'ensemble des fichiers envoyés seront soumis au service de détection de plagiat de Compilatio';
-$string['student_disclosure'] = 'Prévention des étudiants';
-$string['student_disclosure_help'] = 'Ce texte sera affiché à tous les étudiants sur la page de téléchargement de fichier.';
+$string['pluginname'] = 'Compilatio - Plugin de détection de plagiat';
+$string['studentdisclosuredefault'] = 'L\'ensemble des fichiers envoyés seront soumis au service de détection de plagiat de Compilatio';
+$string['students_disclosure'] = 'Message de prévention pour les étudiants';
+$string['students_disclosure_help'] = 'Ce texte sera affiché à tous les étudiants sur la page de téléchargement de fichier.';
 $string['compilatioexplain'] = 'Pour obtenir des informations complémentaires sur ce plugin, voir : <a href="http://compilatio.net" target="_blank">compilatio.net</a>';
 $string['compilatio'] = 'Plugin de détection de plagiat Compilatio';
 $string['compilatioapi'] = 'Adresse de l\'API';
 $string['compilatioapi_help'] = 'Il s\'agit de l\'adresse de l\'API Compilatio';
 $string['compilatiopassword'] = 'Clé API';
 $string['compilatiopassword_help'] = 'Code personnel fourni par Compilatio pour accéder à l\'API';
-$string['use_compilatio'] ='Permettre la détection des similitudes avec Compilatio';
-$string['activate_compilatio'] ='Activer Compilatio';
-$string['savedconfigsuccess'] = 'Les paramètres ont bien été sauvegardés'; 
+$string['use_compilatio'] = 'Détecter des similitudes avec Compilatio';
+$string['activate_compilatio'] = 'Activer le plug-in Compilatio';
+$string['savedconfigsuccess'] = 'Les paramètres ont bien été sauvegardés';
 $string['compilatio_display_student_score_help'] = 'Le pourcentage de similitudes indique la quantité de texte dans le document qui a été retrouvée dans d’autres documents.';
 $string['compilatio_display_student_score'] = 'Rendre le pourcentage de similitudes visible par les étudiants';
 $string['compilatio_display_student_report'] = 'Permettre à l\'étudiant de visualiser le rapport d\'analyse';
 $string['compilatio_display_student_report_help'] = 'Le rapport d’analyse d’un document présente les passages similaires avec les sources détectées et leurs pourcentages de similitudes.';
 $string['compilatio_draft_submit'] = 'Quand le fichier doit être soumis à Compilatio';
-$string['showwhenclosed'] = 'Quand il n\'y a plus d\'activité';
+$string['showwhenclosed'] = 'Quand l\'activité est fermée';
 $string['submitondraft'] = 'Soumettre un fichier quand le premier est chargé';
 $string['submitonfinal'] = 'Soumettre un fichier lorsqu\'un étudiant l\'envoie pour l\'analyse';
 $string['defaultupdated'] = 'Les valeurs par défaut ont été mises à jour';
@@ -53,8 +53,8 @@ $string['unsupportedfiletype'] = 'Ce type de fichier n\'est pas supporté par Co
 $string['toolarge'] = 'Le fichier est trop volumineux pour être traité par Compilatio';
 $string['compilatio_studentemail'] = 'Envoyer un mail à l\'étudiant';
 $string['compilatio_studentemail_help'] = 'Ceci enverra un e-mail à l\'élève quand un fichier a été traité pour leur faire savoir que le rapport est disponible.';
-$string['studentemailsubject'] = 'Le fichier est en cours de traitement chez Compilatio';
-$string['studentemailcontent'] = 'Le fichier que vous avez soumis à {$a->modulename} dans {$a->coursename} a été traitée par l\'outil de détection de plagiat Compilatio
+$string['studentemailsubject'] = 'Le fichier a été traité par Compilatio';
+$string['studentemailcontent'] = 'Le fichier que vous avez soumis à {$a->modulename} dans {$a->coursename} a été traité par l\'outil de détection de plagiat Compilatio
 {$a->modulelink}';
 
 $string['filereset'] = 'Un fichier a été remis à zéro pour re-soumission à Compilatio';
@@ -80,14 +80,14 @@ $string['unextractablefile'] = 'Votre document ne contient pas assez de mots, ou
 
 //Auto diagnostic
 $string["auto_diagnosis_title"] = "Auto-diagnostic";
-	//API key
+//API key
 $string["api_key_valid"] = "La clé API enregistrée est valide.";
 $string["api_key_not_tested"] = "La clé API n'a pas pû être vérifiée car la connexion au service Compilatio.net à échouée.";
 $string["api_key_not_valid"] = "La clé API enregistrée est invalide. Elle est spécifique à la plateforme utilisée. Vous pouvez en obtenir une en contactant <a href='mailto:ent@compilatio.net'>ent@compilatio.net</a>.";
 
-	//CRON
+//CRON
 $string['cron_check_never_called'] = "CRON n'a pas été exécuté depuis l'activation du plugin. Il est possible qu'il soit mal configuré.";
-$string['cron_check'] = 'Le CRON a été exécuté le {$a} pour la dernière fois.';
+$string['cron_check'] = 'CRON a été exécuté le {$a} pour la dernière fois.';
 
 $string['cron_check_not_ok'] = 'Il n\'a pas été exécuté depuis plus d\'une heure.';
 
@@ -96,15 +96,15 @@ $string['cron_recommandation'] = 'Nous recommandons d\'utiliser un délai infér
 
 
 
-	//Connect to webservice
+//Connect to webservice
 $string['webservice_ok'] = "Le serveur est capable de contacter le webservice.";
 $string['webservice_not_ok'] = "Le webservice n'a pas pu être contacté. Il est possible que votre pare-feu bloque la connexion.";
 
-	//Plugin enabled
+//Plugin enabled
 $string['plugin_enabled'] = "Le plugin est activé pour la plateforme Moodle.";
 $string['plugin_disabled'] = "Le plugin n'est pas activé pour la plateforme Moodle.";
 
-	//Plugin enabled for "assign"
+//Plugin enabled for "assign"
 $string['plugin_enabled_assign'] = "Le plugin est activé pour les devoirs.";
 $string['plugin_disabled_assign'] = "Le plugin n'est pas activé pour les devoirs.";
 
@@ -122,6 +122,11 @@ $string['programmed_analysis_past'] = 'Les documents ont été soumis pour analy
 
 
 
+$string['compilatio:enable'] = 'Autoriser l\'enseignant à activer/désactiver Compilatio au sein d\'une activité';
+$string['compilatio:resetfile'] = 'Autoriser l\'enseignant à soumettre à nouveau le fichier à Compilatio après une erreur';
+$string['compilatio:triggeranalysis'] = 'Autoriser l\'enseignant à déclencher manuellement l\'analyse ';
+$string['compilatio:viewreport'] = 'Autoriser l\'enseignant à consulter le rapport complet depuis Compilatio';
+
 
 
 $string['webservice_unreachable_title'] = "Indisponibilité Compilatio.net";
@@ -133,7 +138,7 @@ $string['webservice_unreachable_content'] = "Le service Compilatio.net est actue
 $string['saved_config_failed'] = '<strong>La combinaison adresse - clé API est incorrecte. Le plugin est désactivé, merci de réessayer.<br/>
 								La page d\'<a href="autodiagnosis.php">auto-diagnostic</a> peut vous aider à configurer ce plugin.</strong><br/> 
 								Erreur : ';
-								
+
 $string['startallcompilatioanalysis'] = "Analyser tous les documents";
 $string['numeric_threshold'] = "Le seuil doit être numérique.";
 
@@ -269,7 +274,6 @@ $string['compilatio_enable_mod_forum'] = 'Activer Compilatio pour les forums';
 $string['planned'] = "Planifié";
 
 
-$string['warning_enable'] = "ATTENTION : cette option doit est activée avant le chargement des documents par les étudiants.";
 
 $string['immediately'] = "Immédiatement";
 
@@ -277,3 +281,35 @@ $string['immediately'] = "Immédiatement";
 
 $string['enable_javascript'] = "Veuillez activer Javascript pour profiter de toutes les fonctionnalités du plugin Compilatio. <br/> Voici les <a href='http://www.enable-javascript.com/fr/' target='_blank'>
  instructions pour activer JavaScript dans votre navigateur Web</a>.";
+
+
+
+
+$string["manual_send_confirmation"] = '{$a} fichier(s) soumis à Compilatio.';
+$string["unsent_documents"] = 'Document(s) non-soumis';
+$string["unsent_documents_content"] = 'Attention, ce devoir contient un (des) document(s) non soumis à Compilatio.';
+
+
+$string["statistics_title"] = 'Statistiques';
+$string["no_statistics_yet"] = 'Aucunes statistiques ne sont disponibles pour le moment.';
+
+$string["minimum"] = 'Minimum';
+$string["maximum"] = 'Maximum';
+$string["average"] = 'Moyenne';
+$string["documents_number"] = 'Documents analysés';
+
+
+$string["export_raw_csv"] = 'Cliquez-ici pour exporter les données brutes au format CSV';
+$string["export_global_csv"] = 'Cliquez-ici pour exporter ces données au format CSV';
+$string["global_statistics"] = 'Statistiques globales';
+$string["assign_statistics"] = 'Statistiques des devoirs';
+$string["similarities"] = 'Similitudes';
+$string["context"] = 'Contexte';
+$string["pending_status"] = 'Attente';
+
+
+
+$string["allow_teachers_to_show_reports"] = "Permettre aux enseignants de mettre les rapports d'analyse à disposition des étudiants";
+$string["admin_disabled_reports"] = "L'administrateur a désactivé l'affichage des rapports de similitudes aux étudiants.";
+$string["teacher"] = "Enseignant";
+$string["loading"] = "Chargement en cours, veuillez patienter...";

@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,16 +23,19 @@ $strplagiarism = get_string('compilatio', 'plagiarism_compilatio');
 $strplagiarismdefaults = get_string('compilatiodefaults', 'plagiarism_compilatio');
 
 $strautodiagnosis = get_string('auto_diagnosis_title', 'plagiarism_compilatio');
-
+$strstatistics = get_string('statistics_title', 'plagiarism_compilatio');
 
 $strhelp = get_string('tabs_title_help', 'plagiarism_compilatio');
 
-
+// Display Compilatio logo.
+echo compilatio_get_logo();
+echo '<div style="clear:both"></div>';
 
 $tabs = array();
 $tabs[] = new tabobject('compilatiosettings', 'settings.php', $strplagiarism, $strplagiarism, false);
 $tabs[] = new tabobject('compilatiodefaults', 'compilatio_defaults.php', $strplagiarismdefaults, $strplagiarismdefaults, false);
 $tabs[] = new tabobject('compilatioautodiagnosis', 'autodiagnosis.php', $strautodiagnosis, $strautodiagnosis, false);
+$tabs[] = new tabobject('compilatiostatistics', 'statistics.php', $strstatistics, $strstatistics, false);
 $tabs[] = new tabobject('compilatiohelp', 'help.php', $strhelp, $strhelp, false);
 print_tabs(array($tabs), $currenttab);
 

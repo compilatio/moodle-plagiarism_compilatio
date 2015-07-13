@@ -1,200 +1,200 @@
 .clear {
-	clear: both;
+    clear: both;
 }
 /*
 Compilatio document area : 
 */
 
-	.plagiarismreport {
-		float: left;
-		padding: 0 0 0 2px;
-		border-radius: 3px;
-		background-color:#F2F2F2;
-		border: solid thin #E3E3E3;
-		margin-left: 16px;
-	}
-	
-	.plagiarismreport, .plagiarsimreport a{
-		font-size: 12px;
-		text-align: center;
-		line-height: 19px;
-		font-weight: bold;
-	}
-	
-	.plagiarismreport .compilatio-error{
-		color: #c0392b;
-		line-height: 19px;
-	}
+.plagiarismreport {
+    float: left;
+    padding: 0 0 0 2px;
+    border-radius: 3px;
+    background-color:#F2F2F2;
+    border: solid thin #E3E3E3;
+    margin-left: 16px;
+}
 
-	.plagiarismreport a{
-		color: #444;
-	}
-	.plagiarismreport a:hover{
-		color: #111;
-		text-decoration: underline;
-	}
+.plagiarismreport, .plagiarsimreport a{
+    font-size: 12px;
+    text-align: center;
+    line-height: 19px;
+    font-weight: bold;
+}
 
-	.plagiarismreport-link, .plagiarismreport{
-		width: 105px;
-		height: 20px;
-	}
-	.plagiarismreport-link{
-		display: block;
-		position: relative;
-	}
+.plagiarismreport .compilatio-error{
+    color: #c0392b;
+    line-height: 19px;
+}
 
-	a.plagiarismreport-link:hover{
-		text-decoration: none !important;
-	}
-	
-	a.plagiarismreport-link span.link:hover{
-		text-decoration: underline !important;
-	}
+.plagiarismreport a{
+    color: #444;
+}
+.plagiarismreport a:hover{
+    color: #111;
+    text-decoration: underline;
+}
 
-	.plagiarismreport .small-logo{
-		float:left;
-	}
-	.plagiarismreport .float-right, .plagiarismreport .similarity, .plagiarismreport .similarity-image {
-		float: right;
-	}
+.plagiarismreport-link, .plagiarismreport{
+    width: 105px;
+    height: 20px;
+}
+.plagiarismreport-link{
+    display: block;
+    position: relative;
+}
 
-	.plagiarismreport img {
-		vertical-align: bottom;
-		padding-right: 2px;
-		height:18px;
-	}
-	.prevsubmitted {
-		font-size: 12px;
-		line-height: normal;
-	}
-	/* Similarities */
-	.similarity-green{
-		color: #6ab35a; 
-	}
-	.similarity-orange{
-		color: #f39c12; 
-	}
-	.similarity-red{
-		color: #e7685a;; 
-	}
-	.similarity-image{
-		display:inline-block;
-		padding:0;
-	}
-	.similarity .percentage{
-	font-size: 13px;
-	font-weight: normal;
-	line-height: 22px;
-	}
-	.similarity{
-		font-weight: bold;
-		display: inline-block;
-		line-height: 18px;
-		font-size: 18px;
-		text-decoration: none !important;
-	}
+a.plagiarismreport-link:hover{
+    text-decoration: none !important;
+}
 
-	/* Compilatio small logo*/
-	.small-logo{
-		background: url("/plagiarism/compilatio/pix/logo_compilatio_carre.png") no-repeat scroll 0% 0% transparent;
-		display: inline-block;
-		overflow: hidden;
-		text-indent: -99999px;
-		width: 25px;
-		height: 19px; 
-		background-size: 50px 19px;
-		background-position: 0px 0px;
-		-webkit-transition: background-position 0.5s; /* Safari */
-		transition: background-position 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0s;
-	}
-	.plagiarismreport:hover .small-logo{
-		background-position: -25px 0px;
-	}
+a.plagiarismreport-link span.link:hover{
+    text-decoration: underline !important;
+}
+
+.plagiarismreport .small-logo{
+    float:left;
+}
+.plagiarismreport .float-right, .plagiarismreport .similarity, .plagiarismreport .similarity-image {
+    float: right;
+}
+
+.plagiarismreport img {
+    vertical-align: bottom;
+    padding-right: 2px;
+    height:18px;
+}
+.prevsubmitted {
+    font-size: 12px;
+    line-height: normal;
+}
+/* Similarities */
+.similarity-green{
+    color: #6ab35a; 
+}
+.similarity-orange{
+    color: #f39c12; 
+}
+.similarity-red{
+    color: #e7685a;; 
+}
+.similarity-image{
+    display:inline-block;
+    padding:0;
+}
+.similarity .percentage{
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 22px;
+}
+.similarity{
+    font-weight: bold;
+    display: inline-block;
+    line-height: 18px;
+    font-size: 18px;
+    text-decoration: none !important;
+}
+
+/* Compilatio small logo*/
+.small-logo{
+    /*background: url("/plagiarism/compilatio/pix/logo_compilatio_carre.png") no-repeat scroll 0% 0% transparent;*/
+    display: inline-block;
+    overflow: hidden;
+    text-indent: -99999px;
+    width: 25px;
+    height: 19px; 
+    background-size: 50px 19px;
+    background-position: 0px 0px;
+    -webkit-transition: background-position 0.5s; /* Safari */
+    transition: background-position 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0s;
+}
+.plagiarismreport:hover .small-logo{
+    background-position: -25px 0px;
+}
 
 /*
 Head area in assignment
 */
 #compilatio-hide-area{
-	float: right;
+    float: right;
 }
 
 #compilatio-logo{
-	width: 200px;
-	float:left;
-	margin-bottom: 15px;
-	cursor:pointer;
+    width: 200px;
+    float:left;
+    margin-bottom: 15px;
+    cursor:pointer;
 }
 
 .compilatio-help{
-	float:left;
+    float:left;
 }
 
 .compilatio-help img{
-	width:24px;
+    width:24px;
 }
 
 .greyBackgroundBorder
 {
-	border-radius: 3px;
-	background-color:#F2F2F2;
-	border: solid thin #E3E3E3;
+    border-radius: 3px;
+    background-color:#F2F2F2;
+    border: solid thin #E3E3E3;
 }
 
 #sommaire{
-	display: inline-block;
-	padding: 10px;
+    display: inline-block;
+    padding: 10px;
 }
 
 .help-title{
-	margin: 10px 0;
-	font-weight: bold;
-	line-height: 20px;
-	font-size: 16px;
-	text-align: left;
+    margin: 10px 0;
+    font-weight: bold;
+    line-height: 20px;
+    font-size: 16px;
+    text-align: left;
 }
 
 .help-content{
-	color: #555;
-	margin-bottom: 10px;
+    color: #555;
+    margin-bottom: 10px;
 }
 
 .compilatio-icon{
-	margin: 2px;
-	color:#616262;
+    margin: 2px;
+    color:#616262;
 }
 
 .compilatio-icon.active{
-	color:#202121;
+    color:#202121;
 }
 
 .compilatio-icon:hover{
-	color:#303030;
+    color:#303030;
 }
 
 .compilatio-icon:focus{
-	color:#252525;
+    color:#252525;
 }
 
 #compilatio-tabs .compilatio-icon{
-	margin-left: 35px;
-	display:inline;
-	cursor:pointer;
+    margin-left: 35px;
+    display:inline;
+    cursor:pointer;
 }
 
 #compilatio-tabs{
-	padding-bottom: 20px;
-	border-bottom: 2px solid #E3E3E3;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #E3E3E3;
 }
 
 #show-notifications span{
-	position: relative;
-	top: 7px;
-	left: -14px;
-	background-color: #F00;
-	color: #FFF;
-	border-radius: 20px;
-	padding: 1px 4px;
-	font-size: 11px;
+    position: relative;
+    top: 7px;
+    left: -14px;
+    background-color: #F00;
+    color: #FFF;
+    border-radius: 20px;
+    padding: 1px 4px;
+    font-size: 11px;
 }
 
 .compilatio-button {
@@ -208,57 +208,57 @@ Head area in assignment
 }
 
 #compilatio-container{
-	min-width:565px;
-	border-color: #E3E3E3;
-	min-height: 20px;
-	padding: 19px;
-	margin-bottom: 20px;
-	background-color: #F5F5F5;
-	border: 1px solid #E3E3E3;
-	border-radius: 4px;
-	box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05) inset;
-	margin-top: 15px;
-	color: #444;
+    min-width:565px;
+    border-color: #E3E3E3;
+    min-height: 20px;
+    padding: 19px;
+    margin-bottom: 20px;
+    background-color: #F5F5F5;
+    border: 1px solid #E3E3E3;
+    border-radius: 4px;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05) inset;
+    margin-top: 15px;
+    color: #444;
 }
 
 #compilatio-container h5{
-	text-align: left;
-	margin: 10px 0px;
+    text-align: left;
+    margin: 10px 0px;
 }
 
 /* Triangle */
-	.compilatio-icon::before{
-		border-style: solid;
-		border-width: 0 6px 10px 6px;
-		border-color: transparent transparent #e3e3e3;
-		content: "";
-		position: relative;
-		top: 13px;
-		left: 19px;
-		height: 0;
-		width: 0;
-		visibility:hidden;
-		cursor: auto;
-	}
+.compilatio-icon::before{
+    border-style: solid;
+    border-width: 0 6px 10px 6px;
+    border-color: transparent transparent #e3e3e3;
+    content: "";
+    position: relative;
+    top: 13px;
+    left: 19px;
+    height: 0;
+    width: 0;
+    visibility:hidden;
+    cursor: auto;
+}
 
-	.compilatio-icon.active::before{
-		visibility:visible;
-	}
+.compilatio-icon.active::before{
+    visibility:visible;
+}
 
 ul#compilatio-help-items > li > strong{
-	cursor: pointer;
+    cursor: pointer;
 }
 ul#compilatio-help-items > li > div{
-	display:none;
-	margin-bottom:15px;
+    display:none;
+    margin-bottom:15px;
 }
 
 #programmed-analysis{
-	border-top: 2px solid #E3E3E3;
-	text-align: center;
-	font-style: italic;
-	margin-top: -3px;
-	padding-top: 2px;
+    border-top: 2px solid #E3E3E3;
+    text-align: center;
+    font-style: italic;
+    margin-top: -3px;
+    padding-top: 2px;
 }
 
 /*!
@@ -268,24 +268,24 @@ ul#compilatio-help-items > li > div{
  */
 
 .alert{
-	padding: 8px 35px 8px 14px;
-	margin-bottom: 20px;
-	background-color: #FCF8E3;
-	border: 1px solid #FBEED5;
-	border-radius: 4px;
-	color: #C09853;
+    padding: 8px 35px 8px 14px;
+    margin-bottom: 20px;
+    background-color: #FCF8E3;
+    border: 1px solid #FBEED5;
+    border-radius: 4px;
+    color: #C09853;
 }
 
 .alert-danger{
-	color: #B94A48;
-	background-color: #F2DEDE;
-	border-color: #EED3D7;
+    color: #B94A48;
+    background-color: #F2DEDE;
+    border-color: #EED3D7;
 }
 
 .alert-success{
-	color: #468847;
-	background-color: #DFF0D8;
-	border-color: #D6E9C6;
+    color: #468847;
+    background-color: #DFF0D8;
+    border-color: #D6E9C6;
 }
 .alert-info {
     color: #3A87AD;
@@ -320,27 +320,40 @@ ul#compilatio-help-items > li > div{
     text-decoration: none;
     background-position: 0px -15px;
     transition: background-position 0.1s linear 0s;
-	background-color: #E6E6E6;
+    background-color: #E6E6E6;
 }
 .button:active{
-  background-image: none;
-  outline: 0;
-  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
-          box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+    background-image: none;
+    outline: 0;
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
 }
+
+legend.compilatio_legend{
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 20px;
+    font-size: 21px;
+    line-height: 40px;
+    color: #333;
+    border: 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
 /* Config activity */
 .after-input{
-	margin-left: 10px;
+    margin-left: 10px;
 }
 
 .reinit{
-	font-size: 10px !important;
+    font-size: 10px !important;
 }
 
 .plagiarismreport-link:empty {
-	display: none;
+    display: none;
 }
 
 #compilatio-container ul{
-	margin: 0px 0px 10px 25px;
+    margin: 0px 0px 10px 25px;
 }

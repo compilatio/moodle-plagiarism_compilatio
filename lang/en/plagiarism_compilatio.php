@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -20,19 +21,18 @@
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 $string['pluginname'] = 'Compilatio plagiarism plugin';
-$string['studentdisclosuredefault']  ='All files uploaded here will be submitted to the plagiarism detection service Compilatio';
-$string['student_disclosure'] = 'Student Disclosure';
-$string['student_disclosure_help'] = 'This text will be displayed to all students on the file upload page.';
+$string['studentdisclosuredefault'] = 'All files uploaded here will be submitted to the plagiarism detection service Compilatio';
+$string['students_disclosure'] = 'Student Disclosure';
+$string['students_disclosure_help'] = 'This text will be displayed to all students on the file upload page.';
 $string['compilatioexplain'] = 'For more information on this plugin see: <a href="http://www.compilatio.net/en/" target="_blank">compilatio.net</a>';
 $string['compilatio'] = 'Compilatio plagiarism plugin';
 $string['compilatioapi'] = 'Compilatio API Address';
 $string['compilatioapi_help'] = 'This is the address of the Compilatio API';
 $string['compilatiopassword'] = 'API key';
 $string['compilatiopassword_help'] = 'Personal code provided by Compilatio to access the API';
-$string['use_compilatio'] ='Allow similarity detection with Compilatio';
-$string['activate_compilatio'] ='Enable Compilatio';
+$string['use_compilatio'] = 'Allow similarity detection with Compilatio';
+$string['activate_compilatio'] = 'Enable Compilatio';
 $string['savedconfigsuccess'] = 'Plagiarism Settings Saved';
 
 $string['compilatio_display_student_score'] = 'Show similarity score to student';
@@ -46,6 +46,12 @@ $string['submitonfinal'] = 'Submit file when student sends for marking';
 $string['defaultupdated'] = 'Default values updated';
 $string['defaults_desc'] = 'The following settings are the defaults set when enabling Compilatio within an Activity Module';
 $string['compilatiodefaults'] = 'Compilatio defaults';
+
+
+$string['compilatio:enable'] = 'Allow the teacher to enable/disable Compilatio inside an activity';
+$string['compilatio:resetfile'] = 'Allow the teacher to resubmit the file to Compilatio after an error';
+$string['compilatio:triggeranalysis'] = 'Allow the teacher to manually trigger analysis';
+$string['compilatio:viewreport'] = 'Allow the teacher to view the full report from Compilatio';
 
 $string['processing_doc'] = 'Compilatio is analyzing this file.';
 $string['pending'] = 'This file is pending submission to Compilatio';
@@ -83,10 +89,10 @@ $string['waitingforanalysis'] = 'This file will be processed on {$a}';
 $string['updatecompilatioresults'] = 'Refresh the informations';
 $string['updated_analysis'] = 'Compilatio analysis results have been updated.';
 /*
-$string['compilatio:enable'] = 'Allow the teacher to enable/disable Compilatio inside an activity';
-$string['compilatio:resetfile'] = 'Allow the teacher to resubmit the file to Compilatio after an error';
-$string['compilatio:triggeranalysis'] = 'Allow the teacher to manually trigger analysis';
-$string['compilatio:viewreport'] = 'Allow the teacher to view the full report from Compilatio';*/
+  $string['compilatio:enable'] = 'Allow the teacher to enable/disable Compilatio inside an activity';
+  $string['compilatio:resetfile'] = 'Allow the teacher to resubmit the file to Compilatio after an error';
+  $string['compilatio:triggeranalysis'] = 'Allow the teacher to manually trigger analysis';
+  $string['compilatio:viewreport'] = 'Allow the teacher to view the full report from Compilatio'; */
 
 $string['unextractablefile'] = 'Your document doesn’t contain enough words, or text cannot be extracted.';
 
@@ -95,12 +101,12 @@ $string['immediately'] = "Immediately";
 
 //Auto diagnostic
 $string["auto_diagnosis_title"] = "Auto-diagnosis";
-	//API key
+//API key
 $string["api_key_valid"] = "Your API key is valid.";
 $string["api_key_not_tested"] = "Your API key haven't been verified because the connection to Compilatio.net has failed.";
 $string["api_key_not_valid"] = "Your API key is not valid. It is specific to the used platform. You can obtain one by contacting <a href='mailto:ent@compilatio.net'>ent@compilatio.net</a>.";
 
-	//CRON
+//CRON
 $string['cron_check_never_called'] = 'CRON has never been executed since the activation of the plugin. It may be misconfigured in your server.';
 $string['cron_check'] = 'CRON has been executed on {$a} for the last time.';
 
@@ -109,23 +115,23 @@ $string['cron_check_not_ok'] = 'It hasn\'t been executed in the last hour.';
 $string['cron_frequency'] = ' It seems to be run every {$a} minutes.';
 $string['cron_recommandation'] = 'We recommend using a delay below 15 minutes between each CRON execution.';
 
-	//Connect to webservice
+//Connect to webservice
 $string['webservice_ok'] = "The server is able to connect to the web service.";
 $string['webservice_not_ok'] = "The server wasn't able to connect to the web service. Your firewall may be blocking the connection.";
 
-	//Plugin enabled
+//Plugin enabled
 $string['plugin_enabled'] = "The plugin is enabled in the Moodle platform.";
 $string['plugin_disabled'] = "The plugin isn't enabled in the Moodle platform.";
 
-	//Plugin enabled for "assign"
+//Plugin enabled for "assign"
 $string['plugin_enabled_assign'] = "The plugin is enabled for assignments.";
 $string['plugin_disabled_assign'] = "The plugin isn't enabled for assignments.";
 
-	//Plugin enabled for "workshop"
+//Plugin enabled for "workshop"
 $string['plugin_enabled_workshop'] = "The plugin is enabled for workshops.";
 $string['plugin_disabled_workshop'] = "The plugin isn't enabled for workshops.";
 
-	//Plugin enabled for "forum"
+//Plugin enabled for "forum"
 $string['plugin_enabled_forum'] = "The plugin is enabled for forums.";
 $string['plugin_disabled_forum'] = "The plugin isn't enabled for forums.";
 
@@ -167,7 +173,7 @@ $string['documents_analyzing'] = '{$a} document(s) are being analyzed.';
 $string['documents_in_queue'] = '{$a} document(s) are in the queue to be analyzed.';
 
 
-	
+
 
 
 $string['documents_analyzed'] = '{$a->countAnalyzed} document(s) out of {$a->documentsCount} have been sent and analyzed.';
@@ -184,7 +190,7 @@ $string['unextractable_files'] = 'The following file(s) can\'t be analyzed by Co
 
 $string['no_document_available_for_analysis'] = 'No documents were available for analysis';
 
-$string["analysis_started"] = '{$a} analysis have started.';
+$string["analysis_started"] = '{$a} analysis have been requested.';
 $string["start_analysis_title"] = 'Analysis start';
 
 $string["not_analyzed"] = "The following documents can't be analyzed :";
@@ -263,9 +269,39 @@ $string['compilatio_enable_mod_forum'] = 'Enable Compilatio for forums';
 $string['planned'] = "Planned";
 
 
-$string['warning_enable'] = "Be careful : this option must be activated before the upload of the students files.";
 
 
 $string['enable_javascript'] = "Please enable Javacript in order to have a better experience with Compilatio plugin.<br/>
  Here are the <a href='http://www.enable-javascript.com/' target='_blank'>
  instructions how to enable JavaScript in your web browser</a>.";
+
+
+$string["manual_send_confirmation"] = '{$a} file(s) have been submitted to Compilatio.';
+$string["unsent_documents"] = 'Document(s) not sent';
+$string["unsent_documents_content"] = 'This assignment contains document(s) not submitted to Compilatio.';
+$string["statistics_title"] = 'Statistics';
+$string["no_statistics_yet"] = 'No documents have been analyzed yet.';
+
+$string["minimum"] = 'Minimum rate';
+$string["maximum"] = 'Maximum rate';
+$string["average"] = 'Average rate';
+$string["documents_number"] = 'Analyzed documents';
+
+
+
+$string["export_raw_csv"] = 'Click here to export raw data in CSV format';
+$string["export_global_csv"] = 'Click here to export this data in CSV format';
+$string["global_statistics"] = 'Global statistics';
+$string["assign_statistics"] = 'Statistics about assignments';
+
+
+$string["similarities"] = 'Similarities';
+$string["context"] = 'Context';
+
+$string["pending_status"] = 'Pending';
+
+$string["allow_teachers_to_show_reports"] = "Allow teachers to show similarity reports to their students";
+$string["admin_disabled_reports"] = "The administrator does not allow the teachers to display the similarity reports to the students.";
+$string["teacher"] = "Teacher";
+$string["loading"] = "Loading, please wait...";
+
