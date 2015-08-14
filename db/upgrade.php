@@ -73,7 +73,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015052000, 'plagiarism', 'compilatio');
     }
 
-    if ($oldversion <= 2015071300) {
+    if ($oldversion <= 2015081400) {
         $DB->execute("UPDATE {plagiarism_compilatio_config} SET value='1' WHERE name='compilatio_analysistype' AND cm=0");
     }
 
