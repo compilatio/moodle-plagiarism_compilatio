@@ -24,10 +24,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
-require_once($CFG->libdir.'/adminlib.php');
-require_once($CFG->libdir.'/plagiarismlib.php');
-require_once($CFG->dirroot.'/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot.'/plagiarism/compilatio/compilatio_form.php');
+require_once($CFG->libdir . '/adminlib.php');
+require_once($CFG->libdir . '/plagiarismlib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
 
 require_login();
 
@@ -43,38 +43,20 @@ $plagiarismplugin = new plagiarism_plugin_compilatio();
 
 echo $OUTPUT->header();
 
-$currenttab='compilatiohelp';
+$currenttab = 'compilatiohelp';
 require_once('compilatio_tabs.php');
 
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 
-//Get the moodle language -> function used by "get_string" to define language
-$language = current_language();
-//Include the file containing the help in the used language, english by default.
-//Help for the admins will be stocked in the array $admins, containing associative arrays like : array("title"=>"", "content"=>"")
-switch($language)
-{
-	case "fr":
-		require("help/FAQ-fr.php");
-	break;
-    	case "it":
-		require("help/FAQ-it.php");
-	break;
-	default:
-		require("help/FAQ-en.php");
-	break;
-}
-	
-$items = $admin;
-	
+$items = array("api");
+
 
 echo "<ul>";
-foreach($items as $item)
-{
-	echo "<li>";
-	echo "<h5 class='help-title'>".$item["title"]."</h5>";
-	echo "<p class='help-content'>".$item["content"]."</p>";
-	echo "</li>";
+foreach ($items as $item) {
+    echo "<li>";
+    echo "<h5 class='help-title'>" . get_string("admin_help_compilatio_" . $item . "_title", "plagiarism_compilatio") . "</h5>";
+    echo "<p class='help-content'>" . get_string("admin_help_compilatio_" . $item . "_content", "plagiarism_compilatio") . "</p>";
+    echo "</li>";
 }
 echo "</ul>";
 

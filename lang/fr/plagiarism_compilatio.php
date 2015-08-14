@@ -313,3 +313,75 @@ $string["allow_teachers_to_show_reports"] = "Permettre aux enseignants de mettre
 $string["admin_disabled_reports"] = "L'administrateur a désactivé l'affichage des rapports de similitudes aux étudiants.";
 $string["teacher"] = "Enseignant";
 $string["loading"] = "Chargement en cours, veuillez patienter...";
+
+
+
+/* HELP */
+
+$string['help_compilatio_settings_title'] = 'Quels réglages choisir dans les paramètres Compilatio d’une activité?';
+$string['help_compilatio_settings_content'] = 'Trois types d’analyse sont disponibles avec le plugin Compilatio :
+<ul>
+<li>
+Immédiat : <br/>
+Chaque document est envoyé à Compilatio et analysé dès le dépôt par l’étudiant. 
+Recommandé si vous souhaitez avoir vos résultats au plus vite et qu’il n’est pas nécessaire que tous les documents de l’activité soient comparés mutuellement.
+</li>
+<li>
+Programmé : <br/>
+Choisissez une date de démarrage des analyses Compilatio postérieure à la date limite de rendu par les étudiants. 
+Recommandé si vous souhaitez comparer tous les documents de votre activité entre eux.
+</li>
+<li>
+Manuel : <br/>
+Les documents de votre activité ne sont analysés que si vous démarrez vous-même les analyses.
+Pour lancer l’analyse d’un document, cliquez sur le bouton “analyser” de chaque document.
+Le bouton “Analyser tous les documents” vous permet de lancer l’analyse de tous les documents présents dans un devoir.
+</li>
+</ul>
+';
+
+
+
+$string['help_compilatio_thresholds_title'] = 'Comment modifier la couleur du résultat d’analyse des documents ?';
+$string['help_compilatio_thresholds_content'] = 'Les couleurs des résultats peuvent être définies dans la configuration de chaque devoir, dans la rubrique “Plugin de détection de plagiat Compilatio”.<br/>
+ Il est possible de choisir les seuils qui déterminent la couleur d’affichage des taux de similitudes.';
+
+$string['help_compilatio_format_title'] = 'Quels sont les formats de documents supportés?';
+$string['help_compilatio_format_content'] = "Compilatio.net prend en charge la plupart des formats utilisés en bureautique et sur Internet.
+Les formats suivants sont acceptés :
+<ul>
+	<li>
+		Texte '.txt'
+	</li>
+	<li>
+		Adobe Acrobat '.pdf'
+	</li>
+	<li>
+		Texte enrichi '.rtf'
+	</li>
+	<li>
+		Traitement de texte '.doc', '.docx', '.odt'
+	</li>
+	<li>
+		Tableur '.xls ', '.xlsx'
+	</li>
+	<li>
+		Diaporamas '.ppt ', '.pptx'
+	</li>
+	<li>
+		Fichiers '.html'
+	</li>
+</ul>";
+
+$string['help_compilatio_languages_title'] = 'Quelles sont les langues supportées?';
+$string['help_compilatio_languages_content'] = "Les analyses de similitudes peuvent être effectuées avec plus de 40 langues (dont toutes les langues latines).<br/>
+Le chinois, le japonais, l’arabe et l’alphabet cyrillique ne sont pas encore supportés.";
+
+$string['admin_help_compilatio_api_title'] = 'Comment obtenir une clé API?';
+$string['admin_help_compilatio_api_content'] = "Ce plugin nécessite un abonnement aux services Compilatio.net pour fonctionner. <br/>
+Contactez votre interlocuteur commercial, ou faites une demande de clé API à l’adresse <a href='mailto:ent@compilatio.net'>ent@compilatio.net</a>.";
+
+$string['compilatio_faq'] = "<a target='_blank' href='https://www.compilatio.net/faq/'>Questions fréquemment posées - Compilatio.net</a>";
+
+
+/* END HELP */

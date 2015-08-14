@@ -630,11 +630,11 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         //Handle the action of the button.
         $update = optional_param('compilatioupdate', '', PARAM_BOOL);
         if ($update) {
-            $sql = "cm = ? AND (statuscode = ? OR statuscode = ? OR statuscode = ? OR statuscode = ?)";
-            $params = array($cm->id, COMPILATIO_STATUSCODE_COMPLETE, COMPILATIO_STATUSCODE_ANALYSING, COMPILATIO_STATUSCODE_IN_QUEUE, "pending");
+            $sql = "cm = ? AND externalid IS NOT NULL";
+            $params = array($cm->id);
             $plagiarism_files = $DB->get_records_select('plagiarism_compilatio_files', $sql, $params);
             foreach ($plagiarism_files as $pf) {
-                compilatio_check_analysis($pf);
+                compilatio_check_analysis($pf, true);
             }
 
             $alerts[] = array(
@@ -655,7 +655,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             $params = array($cm->id);
             $record = $DB->get_record_select('plagiarism_compilatio_config', $sql, $params);
 
-            if ($record != null && $record->value == COMPILATIO_ANALYSISTYPE_MANUAL){
+            if ($record != null && $record->value == COMPILATIO_ANALYSISTYPE_MANUAL) {
                 $sql = "cm = ? AND statuscode = ?";
                 $params = array($cm->id, COMPILATIO_STATUSCODE_ACCEPTED);
                 $plagiarism_files = $DB->get_records_select('plagiarism_compilatio_files', $sql, $params);
@@ -811,7 +811,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                 "class" => "danger",
                 "title" => get_string("unsent_documents", "plagiarism_compilatio"),
                 "content" => get_string("unsent_documents_content", "plagiarism_compilatio"));
-            
+
             $url = $PAGE->url;
             $url->param('compilatiostartanalysis', true);
             $StartAllAnalysisButton = "
@@ -1266,14 +1266,10 @@ function compilatio_get_form_elements($mform, $defaults = false) {
     $analysistypes = array(COMPILATIO_ANALYSISTYPE_AUTO => get_string('analysistype_direct', 'plagiarism_compilatio'),
         COMPILATIO_ANALYSISTYPE_MANUAL => get_string('analysistype_manual', 'plagiarism_compilatio'),
         COMPILATIO_ANALYSISTYPE_PROG => get_string('analysistype_prog', 'plagiarism_compilatio'));
-    if ($defaults) {
-        $mform->addElement('html', '<div style="display:none">');
-    }
-    $mform->addElement('select', 'compilatio_analysistype', get_string('analysis_type', 'plagiarism_compilatio'), $analysistypes);
-    $mform->addHelpButton('compilatio_analysistype', 'analysis_type', 'plagiarism_compilatio');
-    $mform->setDefault('compilatio_analysistype', COMPILATIO_ANALYSISTYPE_MANUAL);
-    if ($defaults) {
-        $mform->addElement('html', '</div>');
+    if (!$defaults) { // Only show this inside a module page - not on default settings pages.
+        $mform->addElement('select', 'compilatio_analysistype', get_string('analysis_type', 'plagiarism_compilatio'), $analysistypes);
+        $mform->addHelpButton('compilatio_analysistype', 'analysis_type', 'plagiarism_compilatio');
+        $mform->setDefault('compilatio_analysistype', COMPILATIO_ANALYSISTYPE_MANUAL);
     }
 
     if (!$defaults) { // Only show this inside a module page - not on default settings pages.
@@ -1315,7 +1311,7 @@ function compilatio_get_form_elements($mform, $defaults = false) {
     $jquery_url = new moodle_url("/plagiarism/compilatio/jquery.min.js");
 
     //Used to append text nicely after the inputs. If Javascript is disabled, it will be displayed on the line below the input.
-    $mform->addElement('html', '<script src="'.$jquery_url.'"></script>');
+    $mform->addElement('html', '<script src="' . $jquery_url . '"></script>');
     $mform->addElement('html', '<script>
 	$(document).ready(function(){
 		var txtGreen = $("<span>", {class:"after-input"}).text("' . get_string('similarity_percent', "plagiarism_compilatio") . '");
@@ -1645,7 +1641,7 @@ function compilatio_valid_md5($hash) {
     }
 }
 
-function compilatio_check_analysis($plagiarism_file) {
+function compilatio_check_analysis($plagiarism_file, $manually_triggered = false) {
     global $CFG, $DB;
     $plagiarismsettings = (array) get_config('plagiarism');
     $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'], $plagiarismsettings['compilatio_api'], $CFG->proxyhost, $CFG->proxyport, $CFG->proxyuser, $CFG->proxypassword);
@@ -1673,9 +1669,13 @@ function compilatio_check_analysis($plagiarism_file) {
             $plagiarism_file->statuscode = COMPILATIO_STATUSCODE_IN_QUEUE;
         } else if ($docstatus->documentStatus->status == "ANALYSE_PROCESSING") {
             $plagiarism_file->statuscode = COMPILATIO_STATUSCODE_ANALYSING;
+        } else if ($docstatus->documentStatus->status == "ANALYSE_NOT_STARTED") {
+            $plagiarism_file->statuscode = COMPILATIO_STATUSCODE_ACCEPTED;
         }
     }
-    $plagiarism_file->attempt = $plagiarism_file->attempt + 1;
+    if (!$manually_triggered) {
+        $plagiarism_file->attempt = $plagiarism_file->attempt + 1;
+    }
     $DB->update_record('plagiarism_compilatio_files', $plagiarism_file);
 }
 
@@ -1766,7 +1766,8 @@ function compilatio_get_technical_news() {
  */
 
 function compilatio_test_connection($password, $compilatio_api) {
-    $compi = new compilatioservice($password, $compilatio_api);
+    global $CFG;
+    $compi = new compilatioservice($password, $compilatio_api, $CFG->proxyhost, $CFG->proxyport, $CFG->proxyuser, $CFG->proxypassword);
     $quotasArray = $compi->GetQuotas();
     return $quotasArray['quotas'] != null;
 }
@@ -2300,33 +2301,20 @@ function compilatio_csv_export($cmid) {
 
 function compilatio_display_help() {
 
-    //Get the moodle language -> function used by "get_string" to define language
-    //Include the file containing the help in the used language, english by default.
-    //Help for the teachers will be stocked in the array $teacher, containing associative arrays like : array("title"=>"", "content"=>"")
-    switch (current_language()) {
-        case "fr":
-            require("help/FAQ-fr.php");
-            break;
-        case "it":
-            require("help/FAQ-it.php");
-            break;
-        default:
-            require("help/FAQ-en.php");
-            break;
-    }
-
-    //Display the questions contained in the array $teacher in the file help/FAQ-{language}.php
-    $items = $teacher;
+    $items = array("settings",
+        "thresholds",
+        "format",
+        "languages");
     $string = "<ul id='compilatio-help-items'>";
     foreach ($items as $item) {
         $string.= "<li>";
-        $string.= "<strong>" . $item["title"] . "</strong>";
-        $string.= "<div>" . $item["content"] . "</div>";
+        $string.= "<strong>" . get_string("help_compilatio_" . $item . "_title", "plagiarism_compilatio") . "</strong>";
+        $string.= "<div>" . get_string("help_compilatio_" . $item . "_content", "plagiarism_compilatio") . "</div>";
 
         $string.= "</li>";
     }
     $string.= "</ul>";
-    $string.= "<p>$more</p>";
+    $string.= "<p>" . get_string("compilatio_faq", "plagiarism_compilatio") . "</p>";
     //Expand the response on click on a question :
     $string.= "<script>
 		$(document).ready(function(){

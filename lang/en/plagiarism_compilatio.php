@@ -305,3 +305,71 @@ $string["admin_disabled_reports"] = "The administrator does not allow the teache
 $string["teacher"] = "Teacher";
 $string["loading"] = "Loading, please wait...";
 
+
+
+/* HELP */
+
+$string['help_compilatio_settings_title'] = 'Which mode should I use in the Compilatio settings of an activity?';
+$string['help_compilatio_settings_content'] = '
+Three analysis types are available with Compilatio plugin :
+<ul>
+<li>
+Direct : <br/>
+Each document is sent to Compilatio and analyzed as soon as it is uploaded by the student.<br/>
+Recommended if you wish to get the results quickly and if it is not necessary that all documents are compared with each others.
+</li>
+<li>
+Timed : <br/>
+Choose date to start Compilatio analysis, later than the deadline for the students.<br/>
+Recommended if you wish to compare all the documents of the activity mutually.
+</li>
+<li>
+Manual : <br/>
+The documents of the activity will not be analyzed until you trigger the analysis.<br/>
+You can click on the “Start analysis” button of each document to trigger its analysis.
+</li>
+</ul>
+';
+
+$string['help_compilatio_thresholds_title'] = 'How can I change the colors of the documents’ analysis results?';
+$string['help_compilatio_thresholds_content'] = 'The results\' colors can be defined in the settings of each activities, in the section “Compilatio plagiarism plugin”.<br/>
+It is possible to choose the thresholds that determines the display color of similarities ratios.';
+
+$string['help_compilatio_format_title'] = 'Which documents formats are accepted?';
+$string['help_compilatio_format_content'] = "Compilatio.net handles most formats used in word processors and on the internet.
+The following formats are supported :
+<ul>
+<li>
+Text '.txt'
+</li>
+<li>
+Adobe Acrobat '.pdf'
+</li>
+<li>
+Rich Text Format '.rtf'
+</li>
+<li>
+Text Processors '.doc', '.docx', '.odt'
+</li>
+<li>
+Spreadsheet '.xls ', '.xlsx'
+</li>
+<li>
+Slideshows '.ppt ', '.pptx'
+</li>
+<li>
+Web files '.html'
+</li>
+</ul>";
+
+$string['help_compilatio_languages_title'] = 'Which languages are supported?';
+$string['help_compilatio_languages_content'] = "Compilatio analysis can be performed in more than 40 languages (including all latin languages).<br/>
+Chinese, Japanese, Arabic and Cyrillic alphabet are not supported yet.";
+
+$string['admin_help_compilatio_api_title'] = 'How to get an API Key?';
+$string['admin_help_compilatio_api_content'] = "This plugin requires a subscription to Compilatio.net services in order to operate.<br/>
+Please reach your commercial contact, or ask for an API key to <a href='mailto:ent@compilatio.net'>ent@compilatio.net</a>.";
+
+$string['compilatio_faq'] = "<a target='_blank' href='https://www.compilatio.net/en/faq/'>Compilatio.net - Frequently Asked Questions.</a>";
+
+/* END HELP */

@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -13,7 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 // This file keeps track of upgrades to
 // the plagiarism compilatio plugin.
 
@@ -26,7 +26,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     global $CFG, $DB;
 
     $dbman = $DB->get_manager();
-	if ($oldversion <= 2014111000) {
+    if ($oldversion <= 2014111000) {
 
         // Define table plagiarism_compilatio_data to be created.
         $table = new xmldb_table('plagiarism_compilatio_data');
@@ -72,6 +72,11 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         // Compilatio savepoint reached.
         upgrade_plugin_savepoint(true, 2015052000, 'plagiarism', 'compilatio');
     }
+
+    if ($oldversion <= 2015071300) {
+        $DB->execute("UPDATE {plagiarism_compilatio_config} SET value='1' WHERE name='compilatio_analysistype' AND cm=0");
+    }
+
 
     return true;
 }
