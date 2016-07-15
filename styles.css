@@ -51,7 +51,7 @@ a.plagiarismreport-link span.link:hover{
     text-decoration: underline !important;
 }
 
-.plagiarismreport .small-logo{
+.plagiarismreport .small-logo-compi{
     float:left;
 }
 .plagiarismreport .float-right, .plagiarismreport .similarity, .plagiarismreport .similarity-image {
@@ -95,7 +95,7 @@ a.plagiarismreport-link span.link:hover{
 }
 
 /* Compilatio small logo*/
-.small-logo{
+.small-logo-compi{
     /*background: url("/plagiarism/compilatio/pix/logo_compilatio_carre.png") no-repeat scroll 0% 0% transparent;*/
     display: inline-block;
     overflow: hidden;
@@ -107,7 +107,7 @@ a.plagiarismreport-link span.link:hover{
     -webkit-transition: background-position 0.5s; /* Safari */
     transition: background-position 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0s;
 }
-.plagiarismreport:hover .small-logo{
+.plagiarismreport:hover .small-logo-compi{
     background-position: -25px 0px;
 }
 
