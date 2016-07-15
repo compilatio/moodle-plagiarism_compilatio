@@ -511,7 +511,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             // First get existing values.
             $existingelements = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => $data->coursemodule), '', 'name, id');
             foreach ($plagiarismelements as $element) {
-                $newelement = new object();
+                $newelement = new stdClass();
                 $newelement->cm = $data->coursemodule;
                 $newelement->name = $element;
                 $newelement->value = (isset($data->$element) ? $data->$element : 0);
@@ -1354,7 +1354,7 @@ function compilatio_get_plagiarism_file($cmid, $userid, $file) {
     if (!empty($plagiarism_file)) {
         return $plagiarism_file;
     } else {
-        $plagiarism_file = new object();
+        $plagiarism_file = new stdClass();
         $plagiarism_file->cm = $cmid;
         $plagiarism_file->userid = $userid;
         $plagiarism_file->identifier = $filehash;
@@ -2010,7 +2010,7 @@ function compilatio_update_account_expiration_date() {
     $date = $DB->get_record('plagiarism_compilatio_data', array('name' => 'account_expire_on'));
 
     if ($date == null) {
-        $item = new object();
+        $item = new stdClass();
         $item->name = "account_expire_on";
         $item->value = $expirationDate;
         $DB->insert_record('plagiarism_compilatio_data', $item);
@@ -2488,7 +2488,7 @@ function compilatio_update_cron_frequency() {
         $lastFrequency = $DB->get_record('plagiarism_compilatio_data', array('name' => 'cron_frequency'));
 
         if ($lastFrequency == null) {//Create if not exists
-            $item = new object();
+            $item = new stdClass();
             $item->name = "cron_frequency";
             $item->value = $frequency;
             $DB->insert_record('plagiarism_compilatio_data', $item);
@@ -2509,7 +2509,7 @@ function compilatio_update_last_cron_date($lastCron) {
     global $DB;
     //Insert or update the last cron date
     if ($lastCron == null) {//Create if not exists
-        $item = new object();
+        $item = new stdClass();
         $item->name = "last_cron";
         $item->value = strtotime("now");
         $DB->insert_record('plagiarism_compilatio_data', $item);
@@ -2533,7 +2533,7 @@ function compilatio_update_connection_status() {
     $oldConnectionStatus = $DB->get_record('plagiarism_compilatio_data', array('name' => 'connection_webservice'));
     if ($oldConnectionStatus == null) {
         //Create if not exists
-        $item = new object();
+        $item = new stdClass();
         $item->name = "connection_webservice";
         $item->value = (int) $connectionStatus;
         $DB->insert_record('plagiarism_compilatio_data', $item);
