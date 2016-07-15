@@ -79,9 +79,14 @@ if (count($rows) === 0) {
         }
     </script>
 
-    <link rel="stylesheet" href="http://moodle.romain.compilatio.net:8200/dev/plagiarism/compilatio/table/table.css">
-    <script src="http://moodle.romain.compilatio.net:8200/dev/plagiarism/compilatio/table/table.js"></script>
+    <?php
+    $tablecssURL = new moodle_url("/plagiarism/compilatio/table/table.css");
+    $tablejsURL = new moodle_url("/plagiarism/compilatio/table/table.js");
 
+    echo "<link rel='stylesheet' href='$tablecssURL'>";
+    echo "<script src='$tablejsURL'></script>";
+    ?>
+    
     <?php $url = new moodle_url("/plagiarism/compilatio/stats_json.php"); ?>
 
     <noscript>
