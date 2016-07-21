@@ -106,6 +106,8 @@ a.plagiarismreport-link span.link:hover{
     background-position: 0px 0px;
     -webkit-transition: background-position 0.5s; /* Safari */
     transition: background-position 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0s;
+    background: no-repeat scroll 0% 0% transparent;
+    background-size: 50px 19px;
 }
 .plagiarismreport:hover .small-logo-compi{
     background-position: -25px 0px;

@@ -385,3 +385,9 @@ $string['compilatio_faq'] = "<a target='_blank' href='https://www.compilatio.net
 
 
 /* END HELP */
+
+
+$string['get_scores'] = "Récupère les taux de similitudes depuis Compilatio.net";
+$string['send_files'] = "Envoie les fichiers à Compilatio.net pour détection de plagiat";
+$string['update_meta'] = "Exécute les tâches planifiées par Compilatio.net";
+$string['trigger_timed_analyses'] = "Déclenche les analyses de plagiat programmées";

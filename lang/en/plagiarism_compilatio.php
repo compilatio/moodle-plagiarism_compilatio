@@ -373,3 +373,8 @@ Please reach your commercial contact, or ask for an API key to <a href='mailto:e
 $string['compilatio_faq'] = "<a target='_blank' href='https://www.compilatio.net/en/faq/'>Compilatio.net - Frequently Asked Questions.</a>";
 
 /* END HELP */
+
+$string['get_scores'] = "Retrieve plagiarism scores from Compilatio.net";
+$string['send_files'] = "Upload files to Compilatio.net for plagiarism detection";
+$string['update_meta'] = "Perform Compilatio.net's scheduled operations";
+$string['trigger_timed_analyses'] = "Trigger scheduled plagiarism analysis";

@@ -172,3 +172,8 @@ $string["help_compilatio_languages_content"] = 'Los análisis de similitudes pue
 $string["admin_help_compilatio_api_title"] = '¿Cómo obtener una clave API?';
 $string["admin_help_compilatio_api_content"] = 'Para funcionar, este plugin necesita una suscripción a los servicios Compilatio.net. <br/> Póngase en contacto con su interlocutor comerical, o pregunte por una clave API en la dirección <a href=\'mailto:ent@compilatio.net\'>ent@compilatio.net</a>.';
 $string["compilatio_faq"] = '<a target=\'_blank\' href=\'https://www.compilatio.net/es/faq/\'>Preguntas más frecuentes - Compilatio.net</a>';
+
+$string['get_scores'] = "Recupera los grados de similitudes de Compilatio.net";
+$string['send_files'] = "Envia los documentos a Compilatio.net";
+$string['update_meta'] = "Realiza las tareas programadas de Compilatio.net";
+$string['trigger_timed_analyses'] = "Provoca los análisis programadas";

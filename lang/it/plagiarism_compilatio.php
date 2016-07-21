@@ -242,3 +242,9 @@ $string['compilatio:enable'] = "Autorizzare l'insegnante a attivare/disattivare 
 $string['compilatio:resetfile'] = "Autorizzare l'insegnante a caricare nuovamente il documento all'interno di Compilatio dopo un errore";
 $string['compilatio:triggeranalysis'] = "Autorizzare l'insegnante ad avviare manualmente l'analisi";
 $string['compilatio:viewreport'] = "Autorizzare l'insegnante a consultare il rapporto completo dopo l'analisi Compilatio";
+
+
+$string['get_scores'] = "Recupera la percentuale di similitudini da Compilatio.net";
+$string['send_files'] = "Carica i files su Compilatio.net per il rilevamento del plagio";
+$string['update_meta'] = "Esegui le operazioni pianificate da Compilatio.net";
+$string['trigger_timed_analyses'] = "Avvia le analisi anti plagio programmate";
