@@ -1,71 +1,361 @@
-span.plagiarismreport {
+.clear {
+    clear: both;
+}
+/*
+Compilatio document area : 
+*/
+
+.plagiarismreport {
+    float: left;
+    padding: 0 0 0 2px;
+    border-radius: 3px;
+    background-color:#F2F2F2;
+    border: solid thin #E3E3E3;
+    margin-left: 16px;
+}
+
+.plagiarismreport, .plagiarsimreport a{
+    font-size: 12px;
+    text-align: center;
+    line-height: 19px;
+    font-weight: bold;
+}
+
+.plagiarismreport .compilatio-error{
+    color: #c0392b;
+    line-height: 19px;
+}
+
+.plagiarismreport a{
+    color: #444;
+}
+.plagiarismreport a:hover{
+    color: #111;
+    text-decoration: underline;
+}
+
+.plagiarismreport-link, .plagiarismreport{
+    width: 105px;
+    height: 20px;
+}
+.plagiarismreport-link{
+    display: block;
+    position: relative;
+}
+
+a.plagiarismreport-link:hover{
+    text-decoration: none !important;
+}
+
+a.plagiarismreport-link span.link:hover{
+    text-decoration: underline !important;
+}
+
+.plagiarismreport .small-logo-compi{
+    float:left;
+}
+.plagiarismreport .float-right, .plagiarismreport .similarity, .plagiarismreport .similarity-image {
     float: right;
-    padding-left: 4px;
-}
-span.plagiarismreport span.rank10,
-span.plagiarismreport span.rank9,
-span.plagiarismreport span.rank8,
-span.plagiarismreport span.rank7,
-span.plagiarismreport span.rank6,
-span.plagiarismreport span.rank5,
-span.plagiarismreport span.rank4,
-span.plagiarismreport span.rank3,
-span.plagiarismreport span.rank2,
-span.plagiarismreport span.rank1 {
-       color: #FFFFFF;
-       font-weight: bold;
-       padding: 2px;
 }
 
-span.plagiarismreport span.rank1 {
-       background: #000000;
-}
-
-span.plagiarismreport span.rank2 {
-       background: #000000;
-}
-
-span.plagiarismreport span.rank3 {
-       background: #ae2721;
-}
-
-span.plagiarismreport span.rank4 {
-       background: #d82c2a;
-}
-
-span.plagiarismreport span.rank5 {
-       background: #ee5d5a;
-}
-
-span.plagiarismreport span.rank6 {
-       background: #f07110;
-}
-
-span.plagiarismreport span.rank7 {
-       background: #ffca08;
-}
-
-span.plagiarismreport span.rank8 {
-       background: #ffea59;
-}
-
-span.plagiarismreport span.rank9 {
-       background: #ffff9d;
-}
-
-span.plagiarismreport span.rank10 {
-       background: #669934;
-}
-
-span.plagiarismreport img {
+.plagiarismreport img {
     vertical-align: bottom;
     padding-right: 2px;
+    height:18px;
 }
-span.plagiarismreport span.prevsubmitted {
-    padding-left: 2px;
-    font-size: smaller;
+.prevsubmitted {
+    font-size: 12px;
+    line-height: normal;
 }
-span.plagiarismreport span.compilatiostartanalysis_text,
-span.plagiarismreport span.compilatioanalysis_text{
+/* Similarities */
+.similarity-green{
+    color: #6ab35a; 
+}
+.similarity-orange{
+    color: #f39c12; 
+}
+.similarity-red{
+    color: #e7685a;; 
+}
+.similarity-image{
+    display:inline-block;
+    padding:0;
+}
+.similarity .percentage{
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 22px;
+}
+.similarity{
+    font-weight: bold;
+    display: inline-block;
+    line-height: 18px;
+    font-size: 18px;
+    text-decoration: none !important;
+}
+
+/* Compilatio small logo*/
+.small-logo-compi{
+    /*background: url("/plagiarism/compilatio/pix/logo_compilatio_carre.png") no-repeat scroll 0% 0% transparent;*/
+    display: inline-block;
+    overflow: hidden;
+    text-indent: -99999px;
+    width: 25px;
+    height: 19px; 
+    background-size: 50px 19px;
+    background-position: 0px 0px;
+    -webkit-transition: background-position 0.5s; /* Safari */
+    transition: background-position 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0s;
+    background: no-repeat scroll 0% 0% transparent;
+    background-size: 50px 19px;
+}
+.plagiarismreport:hover .small-logo-compi{
+    background-position: -25px 0px;
+}
+
+/*
+Head area in assignment
+*/
+#compilatio-hide-area{
+    float: right;
+}
+
+#compilatio-logo{
+    width: 200px;
+    float:left;
+    margin-bottom: 15px;
+    cursor:pointer;
+}
+
+.compilatio-help{
+    float:left;
+}
+
+.compilatio-help img{
+    width:24px;
+}
+
+.greyBackgroundBorder
+{
+    border-radius: 3px;
+    background-color:#F2F2F2;
+    border: solid thin #E3E3E3;
+}
+
+#sommaire{
+    display: inline-block;
+    padding: 10px;
+}
+
+.help-title{
+    margin: 10px 0;
+    font-weight: bold;
+    line-height: 20px;
+    font-size: 16px;
+    text-align: left;
+}
+
+.help-content{
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.compilatio-icon{
+    margin: 2px;
+    color:#616262;
+}
+
+.compilatio-icon.active{
+    color:#202121;
+}
+
+.compilatio-icon:hover{
+    color:#303030;
+}
+
+.compilatio-icon:focus{
+    color:#252525;
+}
+
+#compilatio-tabs .compilatio-icon{
+    margin-left: 35px;
+    display:inline;
+    cursor:pointer;
+}
+
+#compilatio-tabs{
+    padding-bottom: 20px;
+    border-bottom: 2px solid #E3E3E3;
+}
+
+#show-notifications span{
+    position: relative;
+    top: 7px;
+    left: -14px;
+    background-color: #F00;
+    color: #FFF;
+    border-radius: 20px;
+    padding: 1px 4px;
+    font-size: 11px;
+}
+
+.compilatio-button {
+    width: 37%;
+    margin: 0px 2%;
+}
+
+#button-container{
+    margin: 0px auto;
+    width: 75%;
+}
+
+#compilatio-container{
+    min-width:565px;
+    border-color: #E3E3E3;
+    min-height: 20px;
+    padding: 19px;
+    margin-bottom: 20px;
+    background-color: #F5F5F5;
+    border: 1px solid #E3E3E3;
+    border-radius: 4px;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05) inset;
+    margin-top: 15px;
+    color: #444;
+}
+
+#compilatio-container h5{
+    text-align: left;
+    margin: 10px 0px;
+}
+
+/* Triangle */
+.compilatio-icon::before{
+    border-style: solid;
+    border-width: 0 6px 10px 6px;
+    border-color: transparent transparent #e3e3e3;
+    content: "";
+    position: relative;
+    top: 13px;
+    left: 19px;
+    height: 0;
+    width: 0;
+    visibility:hidden;
+    cursor: auto;
+}
+
+.compilatio-icon.active::before{
+    visibility:visible;
+}
+
+ul#compilatio-help-items > li > strong{
+    cursor: pointer;
+}
+ul#compilatio-help-items > li > div{
+    display:none;
+    margin-bottom:15px;
+}
+
+#programmed-analysis{
+    border-top: 2px solid #E3E3E3;
+    text-align: center;
+    font-style: italic;
+    margin-top: -3px;
+    padding-top: 2px;
+}
+
+/*!
+ * CSS adapted from Bootstrap (http://getbootstrap.com)
+ * Copyright 2011-2015 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
+
+.alert{
+    padding: 8px 35px 8px 14px;
+    margin-bottom: 20px;
+    background-color: #FCF8E3;
+    border: 1px solid #FBEED5;
+    border-radius: 4px;
+    color: #C09853;
+}
+
+.alert-danger{
+    color: #B94A48;
+    background-color: #F2DEDE;
+    border-color: #EED3D7;
+}
+
+.alert-success{
+    color: #468847;
+    background-color: #DFF0D8;
+    border-color: #D6E9C6;
+}
+.alert-info {
+    color: #3A87AD;
+    background-color: #D9EDF7;
+    border-color: #BCE8F1;
+}
+
+.button {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #333;
+    text-align: center;
+    cursor: pointer;
+    background-color: #F5F5F5;
+    background-image: linear-gradient(to bottom, #FFF, #E6E6E6);
+    background-repeat: repeat-x;
+    border-width: 1px;
+    border-style: solid;
+    -moz-border-top-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    border-image: none;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) #B3B3B3;
+    border-radius: 4px;
+    box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.2) inset, 0px 1px 2px rgba(0, 0, 0, 0.05);
+}
+.button:hover, .button:focus {
+    color: #333;
+    text-decoration: none;
+    background-position: 0px -15px;
+    transition: background-position 0.1s linear 0s;
+    background-color: #E6E6E6;
+}
+.button:active{
+    background-image: none;
+    outline: 0;
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+}
+
+legend.compilatio_legend{
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 20px;
+    font-size: 21px;
+    line-height: 40px;
+    color: #333;
+    border: 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+/* Config activity */
+.after-input{
+    margin-left: 10px;
+}
+
+.reinit{
+    font-size: 10px !important;
+}
+
+.plagiarismreport-link:empty {
     display: none;
+}
+
+#compilatio-container ul{
+    margin: 0px 0px 10px 25px;
 }

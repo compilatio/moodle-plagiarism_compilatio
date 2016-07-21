@@ -21,7 +21,8 @@ class compilatioservice {
 			if (!empty($key)) {
 				$this->key = $key;
 				if (!empty($urlsoap)) {
-                    $param = array('trace'=>false,
+                    $param = array(
+								   'trace'=>false,
                                    'soap_version'=>SOAP_1_2,
                                    'exceptions'=>true);
 					if(!empty($proxy_host)) {
@@ -55,7 +56,7 @@ class compilatioservice {
 			if (!is_object($this->soapcli)) {
 				return("Error in constructor compilatio() " . $this->soapcli);
             }
-			$idDocument = $this->soapcli->__call('addDocumentBase64',array($this->key,utf8_encode($title),utf8_encode($description),utf8_encode($filename),utf8_encode($mimetype),base64_encode($content)));
+			$idDocument = $this->soapcli->__call('addDocumentBase64',array($this->key,($title),($description),($filename),($mimetype),base64_encode($content)));
 			return $idDocument;
 		} catch (SoapFault $fault) {
 			return("Erreur SendDoc()" . $fault->faultcode ." " .$fault->faultstring);
@@ -121,23 +122,59 @@ class compilatioservice {
         return true;
 	}
 	/*M�thode qui permet de r�cup�r� les quotas du compte compilatio*/
-	function GetQuotas($debug=false) {
-        global $OUTPUT;
+	function GetQuotas() {
 		try	{
 			if (!is_object($this->soapcli)) {
-                if ($debug) {
-                    echo $OUTPUT->notification($this->soapcli);
-                }
-                return null;
+                return array("quotas"=>null, "error"=>$this->soapcli);
             }
 			$param=array($this->key);
 			$resultat=$this->soapcli->__call('getAccountQuotas',$param);
-			return $resultat;
+			return array("quotas"=>$resultat, "error"=>null);
 		} catch (SoapFault $fault) {
-            if ($debug) {
-                echo $OUTPUT->notification($fault);
+             return array("quotas"=>null, "error"=>$fault);
+		}
+	}
+	/* Get expiration date of the account linked to the API key. */
+	function GetAccountExpirationDate()
+	{
+		try	{
+			if (!is_object($this->soapcli)) {
+                return false;
             }
-			return null;
+			$param=array($this->key);
+			return $this->soapcli->__call('getSubscriptionEndDate',$param);
+			$resultat;
+		} catch (SoapFault $fault) {
+            return false;
+		}
+	}
+	
+	/* Post Moodle Configuration to Compilatio */
+	function PostConfiguration($releasePHP,$releaseMoodle,$releasePlugin,$language,$cronFrequency)
+	{
+		try	{
+			if (!is_object($this->soapcli)) {
+                return false;
+            }
+			$param=array($this->key,$releasePHP,$releaseMoodle,$releasePlugin,$language,$cronFrequency);
+			$resultat=$this->soapcli->__call('postMoodleConfiguration',$param);
+			return $resultat==1;
+		} catch (SoapFault $fault) {
+             return false;
+		}
+	}
+	
+	/* Get a list of the current Compilatio news */
+	function GetTechnicalNews()
+	{
+		try	{
+			if (!is_object($this->soapcli)) {
+                return false;
+            }
+			$param=array($this->key);
+			return $this->soapcli->__call('getTechnicalNews',$param);
+		} catch (SoapFault $fault) {
+             return false;
 		}
 	}
 }

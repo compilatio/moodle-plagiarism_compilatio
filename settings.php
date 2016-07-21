@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,12 +23,11 @@
  * @copyright 2012 Dan Marsden http://danmarsden.com
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
-require_once($CFG->libdir.'/adminlib.php');
-require_once($CFG->libdir.'/plagiarismlib.php');
-require_once($CFG->dirroot.'/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot.'/plagiarism/compilatio/compilatio_form.php');
+require_once($CFG->libdir . '/adminlib.php');
+require_once($CFG->libdir . '/plagiarismlib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -41,9 +41,11 @@ $plagiarismplugin = new plagiarism_plugin_compilatio();
 if ($mform->is_cancelled()) {
     redirect('');
 }
+//Boolean to test only once the connection if it has failed.
+$incorrectConfing = false;
 
 echo $OUTPUT->header();
-$currenttab='compilatiosettings';
+$currenttab = 'compilatiosettings';
 require_once('compilatio_tabs.php');
 if (($data = $mform->get_data()) && confirm_sesskey()) {
     if (!isset($data->compilatio_use)) {
@@ -61,14 +63,18 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     if (!isset($data->compilatio_enable_mod_workshop)) {
         $data->compilatio_enable_mod_workshop = 0;
     }
+    if (!isset($data->compilatio_allow_teachers_to_show_reports)) {
+        $data->compilatio_allow_teachers_to_show_reports = 0;
+    }
+
     foreach ($data as $field => $value) {
-        if (strpos($field, 'compilatio')===0) {
+        if (strpos($field, 'compilatio') === 0) {
             if ($field == 'compilatio_api') { // Strip trailing slash from api.
                 $value = rtrim($value, '/');
             }
-            if ($configfield = $DB->get_record('config_plugins', array('name'=>$field, 'plugin'=>'plagiarism'))) {
+            if ($configfield = $DB->get_record('config_plugins', array('name' => $field, 'plugin' => 'plagiarism'))) {
                 $configfield->value = $value;
-                if (! $DB->update_record('config_plugins', $configfield)) {
+                if (!$DB->update_record('config_plugins', $configfield)) {
                     error("errorupdating");
                 }
             } else {
@@ -76,64 +82,58 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
                 $configfield->value = $value;
                 $configfield->plugin = 'plagiarism';
                 $configfield->name = $field;
-                if (! $DB->insert_record('config_plugins', $configfield)) {
+                if (!$DB->insert_record('config_plugins', $configfield)) {
                     error("errorinserting");
                 }
             }
         }
     }
+
     cache_helper::invalidate_by_definition('core', 'config', array(), 'plagiarism');
-    // TODO - check settings to see if valid.
-    $quotas = compilatio_getquotas(true);
-    if ($quotas == null) {
+    // TODO - check settings to see if valid
+
+
+
+    $quotas = compilatio_getquotas();
+    if ($quotas["quotas"] == null) {
         // Disable compilatio as this config isn't correct.
-        $rec = $DB->get_record('config_plugins', array('name'=>'compilatio_use', 'plugin'=>'plagiarism'));
+        $rec = $DB->get_record('config_plugins', array('name' => 'compilatio_use', 'plugin' => 'plagiarism'));
         $rec->value = 0;
         $DB->update_record('config_plugins', $rec);
-        echo $OUTPUT->notification(get_string('savedconfigfailed', 'plagiarism_compilatio'));
+
+        //echo $OUTPUT->notification(get_string('savedconfigfailed', 'plagiarism_compilatio', $error));
+
+        echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $quotas["error"]);
+        $incorrectConfing = true;
     }
 }
 
-$invalidhandlers = compilatio_check_event_handlers();
-if (!empty($invalidhandlers)) {
-    echo $OUTPUT->notification("There are invalid event handlers - these MUST be fixed. Please use the correct procedure to uninstall any components listed in the table below.<br>
-The existence of these events may cause this plugin to function incorrectly.");
-    $table = new html_table();
-    $table->head = array('eventname', 'plugin', 'handlerfile');
-    foreach($invalidhandlers as $handler) {
-        $table->data[] = array($handler->eventname, $handler->component, $handler->handlerfile);
-    }
-    echo html_writer::table($table);
-
-}
-
-$plagiarismsettings = (array)get_config('plagiarism');
+$plagiarismsettings = (array) get_config('plagiarism');
 $mform->set_data($plagiarismsettings);
 
 
-if (!empty($plagiarismsettings['compilatio_use'])) {
-    $quotas = compilatio_getquotas();
+if (!empty($plagiarismsettings['compilatio_use']) && !$incorrectConfing) {
+    $quotasarray = compilatio_getquotas();
+    $quotas = $quotasarray['quotas'];
     if ($quotas == null) {
         // Disable compilatio as this config isn't correct.
-        $rec = $DB->get_record('config_plugins', array('name'=>'compilatio_use', 'plugin'=>'plagiarism'));
+        $rec = $DB->get_record('config_plugins', array('name' => 'compilatio_use', 'plugin' => 'plagiarism'));
         $rec->value = 0;
         $DB->update_record('config_plugins', $rec);
-        echo $OUTPUT->notification(get_string('savedconfigfailed', 'plagiarism_compilatio'));
+
+        echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $quotasarray['error']);
     } else {
         echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
         echo $OUTPUT->notification(get_string('enabledandworking', 'plagiarism_compilatio'), 'notifysuccess');
         $a = new stdClass();
         $a->used = $quotas->usedCredits;
-        $a->credits = $quotas->credits;
-        $a->remaining = $quotas->remainingCredits;
-        echo "<p>".get_string('usedcredits', 'plagiarism_compilatio', $a).'</p>';
+        $a->end_date = strtolower(compilatio_format_date(compilatio_get_account_expiration_date()));
+        echo "<p>" . get_string('subscription_state', 'plagiarism_compilatio', $a) . '</p>';
         echo $OUTPUT->box_end();
     }
     $plagiarismsettings = get_config('plagiarism');
 
-    $compilatio = new compilatioservice($plagiarismsettings->compilatio_password, $plagiarismsettings->compilatio_api,
-        $CFG->proxyhost, $CFG->proxyport, $CFG->proxyuser, $CFG->proxypassword);
-
+    $compilatio = new compilatioservice($plagiarismsettings->compilatio_password, $plagiarismsettings->compilatio_api, $CFG->proxyhost, $CFG->proxyport, $CFG->proxyuser, $CFG->proxypassword);
 }
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 $mform->display();
