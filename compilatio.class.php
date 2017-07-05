@@ -16,7 +16,7 @@ class compilatioservice {
 	var $soapcli;
 	/*Constructeur -> on cr�er la connexion avec le webservice*/
 	//MODIF 2009-03-19: passage des param�tres
-	function compilatioservice($key,$urlsoap,$proxy_host='',$proxy_port='', $proxy_username='', $proxy_password='') {
+	function __construct($key,$urlsoap,$proxy_host='',$proxy_port='', $proxy_username='', $proxy_password='') {
 		try {
 			if (!empty($key)) {
 				$this->key = $key;
