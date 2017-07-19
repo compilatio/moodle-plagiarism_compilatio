@@ -174,8 +174,8 @@ $string['documents_analyzed_between_thresholds'] = '{$a->documentsBetweenThresho
 $string['documents_analyzed_higher_red'] = '{$a->documentsAboveRedThreshold} document(s) supérieur(s) à {$a->redThreshold}%.';
 
 
-$string['unsupported_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio car leur format n\'est pas supporté :';
-$string['unextractable_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio. Ils ne contenaient pas assez de mots ou leur contenu n\'a pas pu être extrait correctement :';
+$string['unsupported_files'] = 'Le(s) fichier(s) suivant(s) n\'ont pas pu être analysés par Compilatio car leur format n\'est pas supporté :';
+$string['unextractable_files'] = 'Le(s) fichier(s) suivant(s) n\'ont pas pu être analysés par Compilatio. Ils ne contenaient pas assez de mots ou leur contenu n\'a pas pu être extrait correctement :';
 
 
 $string['no_document_available_for_analysis'] = "Aucun document n'était disponible pour analyse.";
@@ -363,12 +363,11 @@ $string['compilatio_faq'] = "<a target='_blank' href='https://www.compilatio.net
 
 /* END HELP */
 
+
 $string['get_scores'] = "Récupère les taux de similitudes depuis Compilatio.net";
 $string['send_files'] = "Envoie les fichiers à Compilatio.net pour détection de plagiat";
 $string['update_meta'] = "Exécute les tâches planifiées par Compilatio.net";
 $string['trigger_timed_analyses'] = "Déclenche les analyses de plagiat programmées";
-
-
 
 /* MAJ 06/2017 */
 
@@ -383,10 +382,3 @@ $string['information_settings'] = "Informations";
 
 // Max file size allowed.
 $string['max_file_size_allowed'] = 'Taille maximale des documents : <strong>{$a->Mo} Mo</strong>';
-
-// Failed documents.
-$string['restart_failed_analysis'] = 'Relancer les analyses échouées';
-$string['restart_failed_analysis_title'] = 'Relance des analyses échouées :';
-
-// Max attempt reached.
-$string['max_attempts_reach_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio. La limite de relance d\'analyses a été atteinte :';

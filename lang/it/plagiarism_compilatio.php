@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string["pluginname"] = 'Plug-in Compilatio per il rilevamento del plagio';
 $string["studentdisclosuredefault"] = 'L\'insieme dei documenti inviati sarà analizzato dal servizio di rilevamento del plagio di Compilatio';
@@ -29,7 +43,7 @@ $string["pending"] = 'Il documento è in attesa di essere sottoposto a Compilati
 $string["previouslysubmitted"] = 'Sottoposto in precedenza come';
 $string["unknownwarning"] = 'Si è verificato un errore durante l\'invio del documento a Compilatio';
 $string["unsupportedfiletype"] = 'Questo tipo di documento non è supportato da Compilatio';
-$string["toolarge"] = 'Il documento è troppo esteso per essere analizzato da Compilatio';
+$string["toolarge"] = 'Il documento è troppo esteso per essere analizzato da Compilatio. Maximum size : {$a->Mo} MB';
 $string["compilatio_studentemail"] = 'Inviare una mail allo studente';
 $string["compilatio_studentemail_help"] = 'Questo invierà una mail allo studente quando un documento sarà stato analizzato per fargli sapere che il rapporto di analisi è disponibile';
 $string["studentemailsubject"] = 'Il documento è stato analizzato da Compilatio';
@@ -200,30 +214,7 @@ $string['help_compilatio_thresholds_content'] = "Il codice colore dei risultati 
 
 $string['help_compilatio_format_title'] = 'Quali sono i formati di files supportati?';
 $string['help_compilatio_format_content'] = "Compilatio.net prende in considerazione la maggior parte dei formati utilizzati.
-I seguenti formati sono accettati 
-<ul>
-<li>
-Testo '.txt'
-</li>
-<li>
-Adobe Acrobat '.pdf'
-</li>
-<li>
-Rich Text Format '.rtf'
-</li>
-<li>
-Trattamento del testo '.doc', '.docx', '.odt'
-</li>
-<li>
-Tabelle '.xls ', '.xlsx'
-</li>
-<li>
-Presentazioni '.ppt ', '.pptx'
-</li>
-<li>
-Files '.html'
-</li>
-</ul>";
+I seguenti formati sono accettati";
 
 $string['help_compilatio_languages_title'] = 'Quali lingue sono supportate?';
 $string['help_compilatio_languages_content'] = "Le analisi possono essere effettuate in più di 40 lingue (di cui tutte le lingue scritte in alfabeto latino).
@@ -248,3 +239,24 @@ $string['get_scores'] = "Recupera la percentuale di similitudini da Compilatio.n
 $string['send_files'] = "Carica i files su Compilatio.net per il rilevamento del plagio";
 $string['update_meta'] = "Esegui le operazioni pianificate da Compilatio.net";
 $string['trigger_timed_analyses'] = "Avvia le analisi anti plagio programmate";
+
+/* MAJ 06/2017 */
+
+// Indexing state.
+$string['indexing_state'] = "Ajouter les documents à la bibliothèque de références";
+$string['indexing_state_help'] = "Le contenu des documents est indexé à la bibliothèque de références. Il sera utilisé comme matériel de comparaison pour les analyses ultérieures.";
+$string['indexed_document'] = "Document indexé dans la bibliothèque de références";
+$string['not_indexed_document'] = "Document non indexé dans la bibliothèque de références";
+
+// Information settings.
+$string['information_settings'] = "Informations";
+
+// Max file size allowed.
+$string['max_file_size_allowed'] = 'Taille maximale des documents : <strong>{$a->Mo} Mo</strong>';
+
+// Failed documents.
+$string['restart_failed_analysis'] = 'Relancer les analyses échouées';
+$string['restart_failed_analysis_title'] = 'Relance des analyses échouées :';
+
+// Max attempt reached.
+$string['max_attempts_reach_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio. La limite de relance d\'analyses a été atteinte :';

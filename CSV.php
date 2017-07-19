@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -23,16 +22,18 @@
  * @copyright 2012 Dan Marsden http://danmarsden.com
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+define('MOODLE_INTERNAL', true);
+defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+
 global $CFG;
+global $DB;
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
-
-
-global $DB;
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -45,11 +46,10 @@ $url = new moodle_url('/plagiarism/compilatio/CSV.php');
 $PAGE->set_url($url);
 
 
-$raw_csv = optional_param('raw', 1, PARAM_BOOL);
+$rawcsv = optional_param('raw', 1, PARAM_BOOL);
 
-if ($raw_csv) {
+if ($rawcsv) {
     $sql = 'SELECT plagiarism_compilatio_files.id "id",
-        
         course.id "course_id",
         course.fullname "course_name",
         teacher.id "teacher_id",
@@ -95,13 +95,13 @@ if ($raw_csv) {
     unset($header["id"]);
     $return .= '"' . implode('","', array_keys($header)) . "\"\n";
     foreach ($rows as $row) {
-        $return .= '"' . implode('","', cleanRow($row)) . "\"\n";
+        $return .= '"' . implode('","', clean_row($row)) . "\"\n";
     }
 
     print chr(255) . chr(254) . mb_convert_encoding("sep=,\n" . $return, 'UTF-16LE', 'UTF-8');
-}else{
+} else {
     $rows = compilatio_get_global_statistics(false);
-    
+
     $filename = "compilatio_moodle_" . date("Y_m_d") . ".csv";
 
     header('HTTP/1.1 200 OK');
@@ -120,8 +120,8 @@ if ($raw_csv) {
     print chr(255) . chr(254) . mb_convert_encoding("sep=,\n" . $return, 'UTF-16LE', 'UTF-8');
 }
 
-//Format the data for CSV export : Replacing statuscode with readable status.
-function cleanRow($row) {
+// Format the data for CSV export : Replacing statuscode with readable status.
+function clean_row($row) {
     $data = (array) $row;
     unset($data["id"]);
 
