@@ -358,20 +358,20 @@ $string['trigger_timed_analyses'] = "Trigger scheduled plagiarism analysis";
 /* MAJ 06/2017 */
 
 // Indexing state.
-$string['indexing_state'] = "Ajouter les documents à la bibliothèque de références";
-$string['indexing_state_help'] = "Le contenu des documents est indexé à la bibliothèque de références. Il sera utilisé comme matériel de comparaison pour les analyses ultérieures.";
-$string['indexed_document'] = "Document indexé dans la bibliothèque de références";
-$string['not_indexed_document'] = "Document non indexé dans la bibliothèque de références";
+$string['indexing_state'] = "Add documents into the Document Database";
+$string['indexing_state_help'] = "The content of documents is indexed into the Document Database. It will be used as a comparison content for later analysis.";
+$string['indexed_document'] = "The document is indexed into the Document Database";
+$string['not_indexed_document'] = "The document is not indexed into the Document Database";
 
 // Information settings.
 $string['information_settings'] = "Informations";
 
 // Max file size allowed.
-$string['max_file_size_allowed'] = 'Taille maximale des documents : <strong>{$a->Mo} Mo</strong>';
+$string['max_file_size_allowed'] = 'Maximum document size : <strong>{$a->Mo} MB</strong>';
 
 // Failed documents.
-$string['restart_failed_analysis'] = 'Relancer les analyses échouées';
-$string['restart_failed_analysis_title'] = 'Relance des analyses échouées :';
+$string['restart_failed_analysis'] = 'Restart interrupted analysis';
+$string['restart_failed_analysis_title'] = 'Restart interrupted analysis :';
 
 // Max attempt reached.
-$string['max_attempts_reach_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio. La limite de relance d\'analyses a été atteinte :';
+$string['max_attempts_reach_files'] = 'Analysis has been interrupted for the following files. Analyses were sent too many times, you cannot restart them anymore :';

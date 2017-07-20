@@ -43,7 +43,7 @@ $string["pending"] = 'Il documento è in attesa di essere sottoposto a Compilati
 $string["previouslysubmitted"] = 'Sottoposto in precedenza come';
 $string["unknownwarning"] = 'Si è verificato un errore durante l\'invio del documento a Compilatio';
 $string["unsupportedfiletype"] = 'Questo tipo di documento non è supportato da Compilatio';
-$string["toolarge"] = 'Il documento è troppo esteso per essere analizzato da Compilatio. Maximum size : {$a->Mo} MB';
+$string["toolarge"] = 'Il documento è troppo esteso per essere analizzato da Compilatio. Grandezza massima : {$a->Mo} MB';
 $string["compilatio_studentemail"] = 'Inviare una mail allo studente';
 $string["compilatio_studentemail_help"] = 'Questo invierà una mail allo studente quando un documento sarà stato analizzato per fargli sapere che il rapporto di analisi è disponibile';
 $string["studentemailsubject"] = 'Il documento è stato analizzato da Compilatio';
@@ -243,20 +243,20 @@ $string['trigger_timed_analyses'] = "Avvia le analisi anti plagio programmate";
 /* MAJ 06/2017 */
 
 // Indexing state.
-$string['indexing_state'] = "Ajouter les documents à la bibliothèque de références";
-$string['indexing_state_help'] = "Le contenu des documents est indexé à la bibliothèque de références. Il sera utilisé comme matériel de comparaison pour les analyses ultérieures.";
-$string['indexed_document'] = "Document indexé dans la bibliothèque de références";
-$string['not_indexed_document'] = "Document non indexé dans la bibliothèque de références";
+$string['indexing_state'] = "Aggiungere i documenti alla biblioteca di riferimento";
+$string['indexing_state_help'] ="Il contenuto dei documenti è indicizzato nella biblioteca di riferimento. Verrà utilizzato come materiale di confronto per le future analisi.";
+$string['indexed_document'] = "Documento indicizzato nella biblioteca di riferimento";
+$string['not_indexed_document'] = "Documento non indicizzato nella biblioteca di riferimento";
 
 // Information settings.
-$string['information_settings'] = "Informations";
+$string['information_settings'] = "Informazioni";
 
 // Max file size allowed.
-$string['max_file_size_allowed'] = 'Taille maximale des documents : <strong>{$a->Mo} Mo</strong>';
+$string['max_file_size_allowed'] = 'Grandezza massima dei documenti : <strong>{$a->Mo} MB</strong>';
 
 // Failed documents.
-$string['restart_failed_analysis'] = 'Relancer les analyses échouées';
-$string['restart_failed_analysis_title'] = 'Relance des analyses échouées :';
+$string['restart_failed_analysis'] = 'Riavviare le analisi errate';
+$string['restart_failed_analysis_title'] = 'Riavvio delle analisi errate :';
 
 // Max attempt reached.
-$string['max_attempts_reach_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio. La limite de relance d\'analyses a été atteinte :';
+$string['max_attempts_reach_files'] = 'I file seguenti non sono stati analizzati da Compilatio. Il limite di riavvio delle analisi è stato raggiunto :';
