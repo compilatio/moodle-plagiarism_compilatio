@@ -1,7 +1,8 @@
 Compilatio.net Plagiarism plugin for Moodle 3.3
 
-Author: Dan Marsden <dan@danmarsden.com>
-Copyright 2012 Dan Marsden http://danmarsden.com
+Author: Compilatio <support@compilatio.net>
+Updated by Loïc Balleydier <loic@compilatio.net>
+Copyright 2017 Compilatio.net https://www.compilatio.net
 License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
