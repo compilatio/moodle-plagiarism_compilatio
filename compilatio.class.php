@@ -55,12 +55,12 @@ class compilatioservice {
      * @param string $proxyusername Proxy username
      * @param string $proxypassword Proxy password
      */
-    public function __construct(string $key,
-                                string $urlsoap,
-                                string $proxyhost='',
-                                string $proxyport='',
-                                string $proxyusername='',
-                                string $proxypassword='') {
+    public function __construct($key,
+                                $urlsoap,
+                                $proxyhost='',
+                                $proxyport='',
+                                $proxyusername='',
+                                $proxypassword='') {
 
         $this->key = null;
 
@@ -108,11 +108,11 @@ class compilatioservice {
      * @param  string $content     Content
      * @return string              Return the document ID if succeed, an error otherwise
      */
-    public function send_doc(string $title,
-                             string $description,
-                             string $filename,
-                             string $mimetype,
-                             string $content) {
+    public function send_doc($title,
+                             $description,
+                             $filename,
+                             $mimetype,
+                             $content) {
 
         try {
 
@@ -144,7 +144,7 @@ class compilatioservice {
      * @param  string $compihash External ID of the document
      * @return string            Return the document if succeed, an error message otherwise
      */
-    public function get_doc(string $compihash) {
+    public function get_doc($compihash) {
 
         try {
             if (!is_object($this->soapcli)) {
@@ -166,7 +166,7 @@ class compilatioservice {
      * @param  string $compihash External ID of the document
      * @return string            Return the URL if succeed, an error message otherwise
      */
-    public function get_report_url(string $compihash) {
+    public function get_report_url($compihash) {
 
         try {
             if (!is_object($this->soapcli)) {
@@ -188,7 +188,7 @@ class compilatioservice {
      * @param  string $compihash External ID of the document
      * @return mixed             Return an error message if not succeed
      */
-    public function del_doc(string $compihash) {
+    public function del_doc($compihash) {
 
         try {
             if (!is_object($this->soapcli)) {
@@ -211,7 +211,7 @@ class compilatioservice {
      * @param  string $compihash External ID of the document
      * @return mixed             Return true if succeed, an error object otherwise
      */
-    public function start_analyse(string $compihash) {
+    public function start_analyse($compihash) {
 
         try {
             if (!is_object($this->soapcli)) {
@@ -282,11 +282,11 @@ class compilatioservice {
      * @param  string $cronfrequency CRON frequency
      * @return boolean               Return true if succeed, false otherwise
      */
-    public function post_configuration(string $releasephp,
-                                       string $releasemoodle,
-                                       string $releaseplugin,
-                                       string $language,
-                                       string $cronfrequency) {
+    public function post_configuration($releasephp,
+                                       $releasemoodle,
+                                       $releaseplugin,
+                                       $language,
+                                       $cronfrequency) {
 
         try {
             if (!is_object($this->soapcli)) {
@@ -378,7 +378,7 @@ class compilatioservice {
      * @param  string $compid   Document ID of the document
      * @return boolean          Return a boolean if succeed, null otherwise
      */
-    public function get_indexing_state(string $compid) {
+    public function get_indexing_state($compid) {
 
         try {
             if (!is_object($this->soapcli)) {
@@ -401,7 +401,7 @@ class compilatioservice {
      * @param   bool    $indexed    Indexing state
      * @return  bool                Return true if succeed, false otherwise
      */
-    public function set_indexing_state(string $compid, bool $indexed) {
+    public function set_indexing_state($compid, $indexed) {
 
         try {
             if (!is_object($this->soapcli)) {
@@ -410,7 +410,7 @@ class compilatioservice {
 
             $params = array($this->key, $compid, $indexed);
             $result = $this->soapcli->__call('setIndexRefLibrary', $params);
-            return $result->status == 200;
+            return $result['status'] == 200;
 
         } catch (SoapFault $fault) {
             return "Error set_indexing_state() " . $fault->faultcode . " " . $fault->faultstring;

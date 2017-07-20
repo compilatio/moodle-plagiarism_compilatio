@@ -1620,11 +1620,11 @@ function compilatio_get_plagiarism_file($cmid, $userid, $file) {
  * @param  bool     $sendfile           Optional send file to Compilatio
  * @return bool                         Return true if succeed, false otherwise
  */
-function compilatio_queue_file(int $cmid,
-                               int $userid,
+function compilatio_queue_file($cmid,
+                               $userid,
                                $file,
-                               array $plagiarismsettings,
-                               bool $sendfile = false) {
+                               $plagiarismsettings,
+                               $sendfile = false) {
 
     global $DB;
 
@@ -2893,7 +2893,7 @@ function compilatio_check_allowed_file_max_size($file) {
  * @param  string $filename Filename of the document
  * @return string           Return the MIME type if succeed, an empty string otherwise
  */
-function compilatio_check_file_type(string $filename) {
+function compilatio_check_file_type($filename) {
 
     $pathinfo = pathinfo($filename);
 

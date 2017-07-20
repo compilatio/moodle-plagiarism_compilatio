@@ -88,7 +88,7 @@ class ws_helper
      * @param  string $compid   Document ID
      * @return bool             Indexing state
      */
-    public static function get_indexing_state(string $compid) {
+    public static function get_indexing_state($compid) {
 
         $compilatio = self::get_ws();
         return $compilatio->get_indexing_state($compid);
@@ -101,7 +101,7 @@ class ws_helper
      * @param  bool   $indexingstate    Indexing state
      * @return bool                     Return true if the indexing succeed, false otherwise
      */
-    public static function set_indexing_state(string $compid, bool $indexingstate) {
+    public static function set_indexing_state($compid, $indexingstate) {
 
         $compilatio = self::get_ws();
         return $compilatio->set_indexing_state($compid, $indexingstate);

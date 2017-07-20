@@ -176,9 +176,9 @@ class output_helper
      * @param  int    $redthreshold   Red for $score higher than that threshold
      * @return string                 the HTML string displaying colored score and an image
      */
-    public static function get_image_similarity(float $score,
-                                                int $greenthreshold,
-                                                int $redthreshold) {
+    public static function get_image_similarity($score,
+                                                $greenthreshold,
+                                                $redthreshold) {
 
         global $OUTPUT;
 
