@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -59,7 +58,7 @@ $string['previouslysubmitted'] = 'Previously submitted as';
 $string['report'] = 'report';
 $string['unknownwarning'] = 'An error occurred trying to send this file to Compilatio';
 $string['unsupportedfiletype'] = 'This file type is not supported by Compilatio';
-$string['toolarge'] = 'This file is too large for Compilatio to process';
+$string['toolarge'] = 'This file is too large for Compilatio to process. Maximum size : {$a->Mo} MB';
 $string['compilatio_studentemail'] = 'Send Student email';
 $string['compilatio_studentemail_help'] = 'This will send an e-mail to the student when a file has been processed to let them know that a report is available.';
 $string['studentemailsubject'] = 'File processed by Compilatio';
@@ -88,25 +87,25 @@ $string['failedanalysis'] = 'Compilatio failed to analyse your document: ';
 $string['waitingforanalysis'] = 'This file will be processed on {$a}';
 $string['updatecompilatioresults'] = 'Refresh the informations';
 $string['updated_analysis'] = 'Compilatio analysis results have been updated.';
-/*
-  $string['compilatio:enable'] = 'Allow the teacher to enable/disable Compilatio inside an activity';
-  $string['compilatio:resetfile'] = 'Allow the teacher to resubmit the file to Compilatio after an error';
-  $string['compilatio:triggeranalysis'] = 'Allow the teacher to manually trigger analysis';
-  $string['compilatio:viewreport'] = 'Allow the teacher to view the full report from Compilatio'; */
+
+$string['compilatio:enable'] = 'Allow the teacher to enable/disable Compilatio inside an activity';
+$string['compilatio:resetfile'] = 'Allow the teacher to resubmit the file to Compilatio after an error';
+$string['compilatio:triggeranalysis'] = 'Allow the teacher to manually trigger analysis';
+$string['compilatio:viewreport'] = 'Allow the teacher to view the full report from Compilatio';
 
 $string['unextractablefile'] = 'Your document doesn’t contain enough words, or text cannot be extracted.';
 
 
 $string['immediately'] = "Immediately";
 
-//Auto diagnostic
+// Auto diagnostic.
 $string["auto_diagnosis_title"] = "Auto-diagnosis";
-//API key
+// API key.
 $string["api_key_valid"] = "Your API key is valid.";
 $string["api_key_not_tested"] = "Your API key haven't been verified because the connection to Compilatio.net has failed.";
 $string["api_key_not_valid"] = "Your API key is not valid. It is specific to the used platform. You can obtain one by contacting <a href='mailto:ent@compilatio.net'>ent@compilatio.net</a>.";
 
-//CRON
+// CRON.
 $string['cron_check_never_called'] = 'CRON has never been executed since the activation of the plugin. It may be misconfigured in your server.';
 $string['cron_check'] = 'CRON has been executed on {$a} for the last time.';
 
@@ -115,23 +114,23 @@ $string['cron_check_not_ok'] = 'It hasn\'t been executed in the last hour.';
 $string['cron_frequency'] = ' It seems to be run every {$a} minutes.';
 $string['cron_recommandation'] = 'We recommend using a delay below 15 minutes between each CRON execution.';
 
-//Connect to webservice
+// Connect to webservice.
 $string['webservice_ok'] = "The server is able to connect to the web service.";
 $string['webservice_not_ok'] = "The server wasn't able to connect to the web service. Your firewall may be blocking the connection.";
 
-//Plugin enabled
+// Plugin enabled.
 $string['plugin_enabled'] = "The plugin is enabled in the Moodle platform.";
 $string['plugin_disabled'] = "The plugin isn't enabled in the Moodle platform.";
 
-//Plugin enabled for "assign"
+// Plugin enabled for "assign".
 $string['plugin_enabled_assign'] = "The plugin is enabled for assignments.";
 $string['plugin_disabled_assign'] = "The plugin isn't enabled for assignments.";
 
-//Plugin enabled for "workshop"
+// Plugin enabled for "workshop".
 $string['plugin_enabled_workshop'] = "The plugin is enabled for workshops.";
 $string['plugin_disabled_workshop'] = "The plugin isn't enabled for workshops.";
 
-//Plugin enabled for "forum"
+// Plugin enabled for "forum".
 $string['plugin_enabled_forum'] = "The plugin is enabled for forums.";
 $string['plugin_disabled_forum'] = "The plugin isn't enabled for forums.";
 
@@ -146,7 +145,7 @@ $string['webservice_unreachable_content'] = "Compilatio.net is currently unavail
 
 
 $string['saved_config_failed'] = '<strong>The combination API key - adress entered is invalid. Compilatio is disabled, please try again.<br/>
-								The <a href="autodiagnosis.php">auto-diagnosis</a> page can help you to configure this plugin.</strong><br/> 
+								The <a href="autodiagnosis.php">auto-diagnosis</a> page can help you to configure this plugin.</strong><br/>
 								Error : ';
 
 $string['startallcompilatioanalysis'] = "Analyze all documents";
@@ -216,7 +215,7 @@ $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
 $string["display_notifications"] = "Display notifications";
 
 
-//CSV
+// CSV.
 $string["firstname"] = "First name";
 $string["lastname"] = "Last name";
 $string["filename"] = "Filename";
@@ -337,30 +336,7 @@ It is possible to choose the thresholds that determines the display color of sim
 
 $string['help_compilatio_format_title'] = 'Which documents formats are accepted?';
 $string['help_compilatio_format_content'] = "Compilatio.net handles most formats used in word processors and on the internet.
-The following formats are supported :
-<ul>
-<li>
-Text '.txt'
-</li>
-<li>
-Adobe Acrobat '.pdf'
-</li>
-<li>
-Rich Text Format '.rtf'
-</li>
-<li>
-Text Processors '.doc', '.docx', '.odt'
-</li>
-<li>
-Spreadsheet '.xls ', '.xlsx'
-</li>
-<li>
-Slideshows '.ppt ', '.pptx'
-</li>
-<li>
-Web files '.html'
-</li>
-</ul>";
+The following formats are supported :";
 
 $string['help_compilatio_languages_title'] = 'Which languages are supported?';
 $string['help_compilatio_languages_content'] = "Compilatio analysis can be performed in more than 40 languages (including all latin languages).<br/>
@@ -378,3 +354,24 @@ $string['get_scores'] = "Retrieve plagiarism scores from Compilatio.net";
 $string['send_files'] = "Upload files to Compilatio.net for plagiarism detection";
 $string['update_meta'] = "Perform Compilatio.net's scheduled operations";
 $string['trigger_timed_analyses'] = "Trigger scheduled plagiarism analysis";
+
+/* MAJ 06/2017 */
+
+// Indexing state.
+$string['indexing_state'] = "Ajouter les documents à la bibliothèque de références";
+$string['indexing_state_help'] = "Le contenu des documents est indexé à la bibliothèque de références. Il sera utilisé comme matériel de comparaison pour les analyses ultérieures.";
+$string['indexed_document'] = "Document indexé dans la bibliothèque de références";
+$string['not_indexed_document'] = "Document non indexé dans la bibliothèque de références";
+
+// Information settings.
+$string['information_settings'] = "Informations";
+
+// Max file size allowed.
+$string['max_file_size_allowed'] = 'Taille maximale des documents : <strong>{$a->Mo} Mo</strong>';
+
+// Failed documents.
+$string['restart_failed_analysis'] = 'Relancer les analyses échouées';
+$string['restart_failed_analysis_title'] = 'Relance des analyses échouées :';
+
+// Max attempt reached.
+$string['max_attempts_reach_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio. La limite de relance d\'analyses a été atteinte :';

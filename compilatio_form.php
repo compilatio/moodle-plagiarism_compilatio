@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -14,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 }
@@ -29,9 +29,8 @@ class compilatio_setup_form extends moodleform {
         $mform->addElement('html', get_string('compilatioexplain', 'plagiarism_compilatio'));
         $mform->addElement('checkbox', 'compilatio_use', get_string('activate_compilatio', 'plagiarism_compilatio'));
 
-
-        $mform->addElement('html', '<p style="font-size: 12px;font-style: italic;">' . get_string("disclaimer_data", "plagiarism_compilatio") . '</p>');
-
+        $mform->addElement('html', '<p style="font-size: 12px;font-style: italic;">' .
+                           get_string("disclaimer_data", "plagiarism_compilatio") . '</p>');
 
         $mform->addElement('text', 'compilatio_api', get_string('compilatioapi', 'plagiarism_compilatio'));
         $mform->addHelpButton('compilatio_api', 'compilatioapi', 'plagiarism_compilatio');
@@ -43,11 +42,15 @@ class compilatio_setup_form extends moodleform {
         $mform->addHelpButton('compilatio_password', 'compilatiopassword', 'plagiarism_compilatio');
         $mform->addRule('compilatio_password', null, 'required', null, 'client');
 
-        $mform->addElement('textarea', 'compilatio_student_disclosure', get_string('students_disclosure', 'plagiarism_compilatio'), 'wrap="virtual" rows="6" cols="50"');
+        $mform->addElement('textarea', 'compilatio_student_disclosure',
+                           get_string('students_disclosure', 'plagiarism_compilatio'),
+                           'wrap="virtual" rows="6" cols="50"');
         $mform->addHelpButton('compilatio_student_disclosure', 'students_disclosure', 'plagiarism_compilatio');
         $mform->setDefault('compilatio_student_disclosure', get_string('studentdisclosuredefault', 'plagiarism_compilatio'));
 
-        $mform->addElement('checkbox', 'compilatio_allow_teachers_to_show_reports', get_string("allow_teachers_to_show_reports", "plagiarism_compilatio"));
+        $mform->addElement('checkbox', 'compilatio_allow_teachers_to_show_reports',
+                           get_string("allow_teachers_to_show_reports",
+                           "plagiarism_compilatio"));
         $mform->setDefault('compilatio_allow_teachers_to_show_reports', 0);
 
         $mods = get_plugin_list('mod');

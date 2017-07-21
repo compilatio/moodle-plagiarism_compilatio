@@ -65,7 +65,7 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
         $compilatioconfig = new backup_nested_element('compilatio_config', array('id'), array('plugin', 'name', 'value'));
         $pluginwrapper->add_child($compilatioconfigs);
         $compilatioconfigs->add_child($compilatioconfig);
-        $compilatioconfig->set_source_table('config_plugins', array('name'=> backup::VAR_PARENTID,
+        $compilatioconfig->set_source_table('config_plugins', array('name' => backup::VAR_PARENTID,
             'plugin' => backup_helper::is_sqlparam('plagiarism_compilatio_course')));
         return $plugin;
     }

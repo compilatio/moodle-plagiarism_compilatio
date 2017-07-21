@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -41,8 +40,8 @@ $plagiarismplugin = new plagiarism_plugin_compilatio();
 if ($mform->is_cancelled()) {
     redirect('');
 }
-//Boolean to test only once the connection if it has failed.
-$incorrectConfing = false;
+// Boolean to test only once the connection if it has failed.
+$incorrectconfing = false;
 
 echo $OUTPUT->header();
 $currenttab = 'compilatiosettings';
@@ -90,7 +89,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     }
 
     cache_helper::invalidate_by_definition('core', 'config', array(), 'plagiarism');
-    // TODO - check settings to see if valid
+    // TODO - check settings to see if valid.
 
 
 
@@ -101,10 +100,8 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         $rec->value = 0;
         $DB->update_record('config_plugins', $rec);
 
-        //echo $OUTPUT->notification(get_string('savedconfigfailed', 'plagiarism_compilatio', $error));
-
         echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $quotas["error"]);
-        $incorrectConfing = true;
+        $incorrectconfing = true;
     }
 }
 
@@ -112,7 +109,7 @@ $plagiarismsettings = (array) get_config('plagiarism');
 $mform->set_data($plagiarismsettings);
 
 
-if (!empty($plagiarismsettings['compilatio_use']) && !$incorrectConfing) {
+if (!empty($plagiarismsettings['compilatio_use']) && !$incorrectconfing) {
     $quotasarray = compilatio_getquotas();
     $quotas = $quotasarray['quotas'];
     if ($quotas == null) {
@@ -133,7 +130,12 @@ if (!empty($plagiarismsettings['compilatio_use']) && !$incorrectConfing) {
     }
     $plagiarismsettings = get_config('plagiarism');
 
-    $compilatio = new compilatioservice($plagiarismsettings->compilatio_password, $plagiarismsettings->compilatio_api, $CFG->proxyhost, $CFG->proxyport, $CFG->proxyuser, $CFG->proxypassword);
+    $compilatio = new compilatioservice($plagiarismsettings->compilatio_password,
+                                        $plagiarismsettings->compilatio_api,
+                                        $CFG->proxyhost,
+                                        $CFG->proxyport,
+                                        $CFG->proxyuser,
+                                        $CFG->proxypassword);
 }
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 $mform->display();

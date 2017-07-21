@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -50,7 +49,9 @@ $string['pending'] = 'Le fichier est en attente de soumission à Compilatio.';
 $string['previouslysubmitted'] = 'Auparavant soumis comme';
 $string['unknownwarning'] = 'Une erreur s\'est produite lors de l\'envoi du fichier à Compilatio';
 $string['unsupportedfiletype'] = 'Ce type de fichier n\'est pas supporté par Compilatio';
-$string['toolarge'] = 'Le fichier est trop volumineux pour être traité par Compilatio';
+
+$string['toolarge'] = 'Le fichier est trop volumineux pour être traité par Compilatio. Taille maximale : {$a->Mo} Mo';
+
 $string['compilatio_studentemail'] = 'Envoyer un mail à l\'étudiant';
 $string['compilatio_studentemail_help'] = 'Ceci enverra un e-mail à l\'élève quand un fichier a été traité pour leur faire savoir que le rapport est disponible.';
 $string['studentemailsubject'] = 'Le fichier a été traité par Compilatio';
@@ -78,14 +79,14 @@ $string['failedanalysis'] = 'Compilatio n\'a pas réussi à analyser votre docum
 $string['unextractablefile'] = 'Votre document ne contient pas assez de mots, ou le texte n’a pas pu être extrait correctement.';
 
 
-//Auto diagnostic
+// Auto diagnostic.
 $string["auto_diagnosis_title"] = "Auto-diagnostic";
-//API key
+// API key.
 $string["api_key_valid"] = "La clé API enregistrée est valide.";
 $string["api_key_not_tested"] = "La clé API n'a pas pû être vérifiée car la connexion au service Compilatio.net à échouée.";
 $string["api_key_not_valid"] = "La clé API enregistrée est invalide. Elle est spécifique à la plateforme utilisée. Vous pouvez en obtenir une en contactant <a href='mailto:ent@compilatio.net'>ent@compilatio.net</a>.";
 
-//CRON
+// CRON.
 $string['cron_check_never_called'] = "CRON n'a pas été exécuté depuis l'activation du plugin. Il est possible qu'il soit mal configuré.";
 $string['cron_check'] = 'CRON a été exécuté le {$a} pour la dernière fois.';
 
@@ -96,15 +97,15 @@ $string['cron_recommandation'] = 'Nous recommandons d\'utiliser un délai infér
 
 
 
-//Connect to webservice
+// Connect to webservice.
 $string['webservice_ok'] = "Le serveur est capable de contacter le webservice.";
 $string['webservice_not_ok'] = "Le webservice n'a pas pu être contacté. Il est possible que votre pare-feu bloque la connexion.";
 
-//Plugin enabled
+// Plugin enabled.
 $string['plugin_enabled'] = "Le plugin est activé pour la plateforme Moodle.";
 $string['plugin_disabled'] = "Le plugin n'est pas activé pour la plateforme Moodle.";
 
-//Plugin enabled for "assign"
+// Plugin enabled for "assign".
 $string['plugin_enabled_assign'] = "Le plugin est activé pour les devoirs.";
 $string['plugin_disabled_assign'] = "Le plugin n'est pas activé pour les devoirs.";
 
@@ -136,7 +137,7 @@ $string['webservice_unreachable_content'] = "Le service Compilatio.net est actue
 
 
 $string['saved_config_failed'] = '<strong>La combinaison adresse - clé API est incorrecte. Le plugin est désactivé, merci de réessayer.<br/>
-								La page d\'<a href="autodiagnosis.php">auto-diagnostic</a> peut vous aider à configurer ce plugin.</strong><br/> 
+								La page d\'<a href="autodiagnosis.php">auto-diagnostic</a> peut vous aider à configurer ce plugin.</strong><br/>
 								Erreur : ';
 
 $string['startallcompilatioanalysis'] = "Analyser tous les documents";
@@ -150,11 +151,11 @@ $string['similarity_percent'] = "% de similitudes";
 
 $string['thresholds_settings'] = "Réglage des seuils d'affichage des taux de similitudes :";
 $string['thresholds_description'] = "Indiquez les seuils que vous souhaitez utiliser, afin de faciliter le repérage des rapports d’analyse (% de similitudes) : ";
-//TODO
+// TODO.
 
 
 $string['similarities_disclaimer'] = "Vous pouvez analyser les similitudes présentes dans les documents de ce devoir à l’aide du logiciel <a href='http://compilatio.net' target='_blank'>Compilatio</a>.<br/>
-	Attention, des similitudes mesurées lors d’une analyse ne révèlent pas nécessairement un plagiat. 
+	Attention, des similitudes mesurées lors d’une analyse ne révèlent pas nécessairement un plagiat.
 	Le rapport d’analyse vous aide à comprendre si les similitudes correspondent à des emprunts et citations convenablement identifiés ou à des plagiats.";
 $string['progress'] = "Progression :";
 $string['results'] = "Résultats :";
@@ -173,8 +174,8 @@ $string['documents_analyzed_between_thresholds'] = '{$a->documentsBetweenThresho
 $string['documents_analyzed_higher_red'] = '{$a->documentsAboveRedThreshold} document(s) supérieur(s) à {$a->redThreshold}%.';
 
 
-$string['unsupported_files'] = 'Le(s) fichier(s) suivant(s) n\'ont pas pu être analysés par Compilatio car leur format n\'est pas supporté :';
-$string['unextractable_files'] = 'Le(s) fichier(s) suivant(s) n\'ont pas pu être analysés par Compilatio. Ils ne contenaient pas assez de mots ou leur contenu n\'a pas pu être extrait correctement :';
+$string['unsupported_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio car leur format n\'est pas supporté :';
+$string['unextractable_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio. Ils ne contenaient pas assez de mots ou leur contenu n\'a pas pu être extrait correctement :';
 
 
 $string['no_document_available_for_analysis'] = "Aucun document n'était disponible pour analyse.";
@@ -210,7 +211,7 @@ $string["display_notifications"] = "Afficher les notifications";
 
 
 
-//CSV
+// CSV.
 $string["firstname"] = "Prénom";
 $string["lastname"] = "Nom";
 $string["filename"] = "Nom du fichier";
@@ -323,12 +324,12 @@ $string['help_compilatio_settings_content'] = 'Trois types d’analyse sont disp
 <ul>
 <li>
 Immédiat : <br/>
-Chaque document est envoyé à Compilatio et analysé dès le dépôt par l’étudiant. 
+Chaque document est envoyé à Compilatio et analysé dès le dépôt par l’étudiant.
 Recommandé si vous souhaitez avoir vos résultats au plus vite et qu’il n’est pas nécessaire que tous les documents de l’activité soient comparés mutuellement.
 </li>
 <li>
 Programmé : <br/>
-Choisissez une date de démarrage des analyses Compilatio postérieure à la date limite de rendu par les étudiants. 
+Choisissez une date de démarrage des analyses Compilatio postérieure à la date limite de rendu par les étudiants.
 Recommandé si vous souhaitez comparer tous les documents de votre activité entre eux.
 </li>
 <li>
@@ -347,31 +348,7 @@ $string['help_compilatio_thresholds_content'] = 'Les couleurs des résultats peu
  Il est possible de choisir les seuils qui déterminent la couleur d’affichage des taux de similitudes.';
 
 $string['help_compilatio_format_title'] = 'Quels sont les formats de documents supportés?';
-$string['help_compilatio_format_content'] = "Compilatio.net prend en charge la plupart des formats utilisés en bureautique et sur Internet.
-Les formats suivants sont acceptés :
-<ul>
-	<li>
-		Texte '.txt'
-	</li>
-	<li>
-		Adobe Acrobat '.pdf'
-	</li>
-	<li>
-		Texte enrichi '.rtf'
-	</li>
-	<li>
-		Traitement de texte '.doc', '.docx', '.odt'
-	</li>
-	<li>
-		Tableur '.xls ', '.xlsx'
-	</li>
-	<li>
-		Diaporamas '.ppt ', '.pptx'
-	</li>
-	<li>
-		Fichiers '.html'
-	</li>
-</ul>";
+$string['help_compilatio_format_content'] = "Compilatio.net prend en charge la plupart des formats utilisés en bureautique et sur Internet. Les formats suivants sont acceptés :";
 
 $string['help_compilatio_languages_title'] = 'Quelles sont les langues supportées?';
 $string['help_compilatio_languages_content'] = "Les analyses de similitudes peuvent être effectuées avec plus de 40 langues (dont toutes les langues latines).<br/>
@@ -386,8 +363,30 @@ $string['compilatio_faq'] = "<a target='_blank' href='https://www.compilatio.net
 
 /* END HELP */
 
-
 $string['get_scores'] = "Récupère les taux de similitudes depuis Compilatio.net";
 $string['send_files'] = "Envoie les fichiers à Compilatio.net pour détection de plagiat";
 $string['update_meta'] = "Exécute les tâches planifiées par Compilatio.net";
 $string['trigger_timed_analyses'] = "Déclenche les analyses de plagiat programmées";
+
+
+
+/* MAJ 06/2017 */
+
+// Indexing state.
+$string['indexing_state'] = "Ajouter les documents à la bibliothèque de références";
+$string['indexing_state_help'] = "Le contenu des documents est indexé à la bibliothèque de références. Il sera utilisé comme matériel de comparaison pour les analyses ultérieures.";
+$string['indexed_document'] = "Document indexé dans la bibliothèque de références";
+$string['not_indexed_document'] = "Document non indexé dans la bibliothèque de références";
+
+// Information settings.
+$string['information_settings'] = "Informations";
+
+// Max file size allowed.
+$string['max_file_size_allowed'] = 'Taille maximale des documents : <strong>{$a->Mo} Mo</strong>';
+
+// Failed documents.
+$string['restart_failed_analysis'] = 'Relancer les analyses échouées';
+$string['restart_failed_analysis_title'] = 'Relance des analyses échouées :';
+
+// Max attempt reached.
+$string['max_attempts_reach_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio. La limite de relance d\'analyses a été atteinte :';

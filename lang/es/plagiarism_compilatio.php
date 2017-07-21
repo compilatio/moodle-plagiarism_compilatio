@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 $string["Identifiant"] = 'Texte ES';
 $string["pluginname"] = 'Compilatio - Plugin de detección de plagio';
 $string["studentdisclosuredefault"] = 'La totalidad de los ficheros enviados serán objeto del servicio de detección de plagio de Compilatio';
@@ -29,7 +44,7 @@ $string["pending"] = 'Fichero en espera de entrega a Compilatio.';
 $string["previouslysubmitted"] = 'Ya entregado como';
 $string["unknownwarning"] = 'Un error ocurrió durante el envío del fichero a Compilatio.';
 $string["unsupportedfiletype"] = 'Este tipo de fichero no es compatible con Compilatio.';
-$string["toolarge"] = 'El fichero es demasiado voluminoso para ser tratado por Compilatio.';
+$string["toolarge"] = 'El fichero es demasiado voluminoso para ser tratado por Compilatio. Maximum size : {$a->Mo} MB';
 $string["compilatio_studentemail"] = 'Enviar un e-mail al estudiante';
 $string["compilatio_studentemail_help"] = 'Se enviará un e-mail al alumno cuando un fichero ha sido tratado para informarle que el informe está disponible.';
 $string["studentemailsubject"] = 'Compilatio trató el fichero.';
@@ -166,7 +181,7 @@ $string["help_compilatio_settings_content"] = 'Tres tipos de análisis son dispo
 $string["help_compilatio_thresholds_title"] = '¿Cómo modificar el color del resultado de análisis de los documentos?';
 $string["help_compilatio_thresholds_content"] = 'Se puede definir los colores de los resultados en la configuraciónde cada tarea, en la sección "Plugin de detección de plagio Compilatio".<br/> Es posible elegir los umbrales que determinan el color de visualización de los grados de similitudes.';
 $string["help_compilatio_format_title"] = '¿Cuáles son los formatos de documentos compatibles?';
-$string["help_compilatio_format_content"] = 'Compilatio.net es compatible con la mayoría de los formatos utilizados en la ofimática y en Internet. Se aceptan los formatos siguientes : <ul><li> Texto \'.txt\' </li><li> Adobe Acrobat \'.pdf\' </li><li> Texto enriquecido \'.rtf\' </li><li> Tratamiento de texto \'.doc\', \'.docx\', \'.odt\' </li><li> Hojas de cálculo \'.xls\', \'.xlsx\' </li><li> Diaporama \'.ppt\', \'.pptx\' </li><li> Ficheros \'.html\' </li></ul>';
+$string["help_compilatio_format_content"] = 'Compilatio.net es compatible con la mayoría de los formatos utilizados en la ofimática y en Internet. Se aceptan los formatos siguientes :';
 $string["help_compilatio_languages_title"] = '¿Cuáles son los idiomas compatibles?';
 $string["help_compilatio_languages_content"] = 'Los análisis de similitudes pueden ser realizadas con más de 40 idiomas (incluidos todos las lenguas latinas).<br/> El chino, el japonés, el arabe y el alfabeto cirílico todavía no son compatibles. ';
 $string["admin_help_compilatio_api_title"] = '¿Cómo obtener una clave API?';
@@ -177,3 +192,24 @@ $string['get_scores'] = "Recupera los grados de similitudes de Compilatio.net";
 $string['send_files'] = "Envia los documentos a Compilatio.net";
 $string['update_meta'] = "Realiza las tareas programadas de Compilatio.net";
 $string['trigger_timed_analyses'] = "Provoca los análisis programadas";
+
+/* MAJ 06/2017 */
+
+// Indexing state.
+$string['indexing_state'] = "Ajouter les documents à la bibliothèque de références";
+$string['indexing_state_help'] = "Le contenu des documents est indexé à la bibliothèque de références. Il sera utilisé comme matériel de comparaison pour les analyses ultérieures.";
+$string['indexed_document'] = "Document indexé dans la bibliothèque de références";
+$string['not_indexed_document'] = "Document non indexé dans la bibliothèque de références";
+
+// Information settings.
+$string['information_settings'] = "Informations";
+
+// Max file size allowed.
+$string['max_file_size_allowed'] = 'Taille maximale des documents : <strong>{$a->Mo} Mo</strong>';
+
+// Failed documents.
+$string['restart_failed_analysis'] = 'Relancer les analyses échouées';
+$string['restart_failed_analysis_title'] = 'Relance des analyses échouées :';
+
+// Max attempt reached.
+$string['max_attempts_reach_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio. La limite de relance d\'analyses a été atteinte :';
