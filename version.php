@@ -32,4 +32,4 @@ $plugin->requires   = 2013111810.00;
 $plugin->cron       = 300; // Only run every 5 minutes.
 $plugin->component  = 'plagiarism_compilatio';
 $plugin->maturity   = MATURITY_BETA;
-$plugin->release    = '2.4.3';
+$plugin->release    = '2.4.4';

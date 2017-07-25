@@ -12,7 +12,8 @@ Compilatio document area :
     border: solid thin #e3e3e3;
 }
 
-.plagiarismreport, .plagiarsimreport a {
+.plagiarismreport,
+.plagiarsimreport a {
     font-size: 12px;
     text-align: center;
     line-height: 19px;
@@ -32,7 +33,8 @@ Compilatio document area :
     text-decoration: underline;
 }
 
-.plagiarismreport-link, .plagiarismreport {
+.plagiarismreport-link,
+.plagiarismreport {
     width: 105px;
     height: 20px;
 }
@@ -52,7 +54,9 @@ a.plagiarismreport-link span.link:hover {
 .plagiarismreport .small-logo-compi {
     float: left;
 }
-.plagiarismreport .float-right, .plagiarismreport .similarity, .plagiarismreport .similarity-image {
+.plagiarismreport .float-right,
+.plagiarismreport .similarity,
+.plagiarismreport .similarity-image {
     float: right;
 }
 
@@ -100,14 +104,15 @@ a.plagiarismreport-link span.link:hover {
     text-indent: -99999px;
     width: 25px;
     height: 19px;
+    background: no-repeat scroll 0 0 transparent;
     background-size: 50px 19px;
-    background-position: 0px 0px;
+    background-position: 0 0;
     -webkit-transition: background-position 0.5s; /* Safari */
-    transition: background-position 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0s;
-    background: no-repeat scroll 0% 0% transparent;
+    transition: background-position 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0.11s;
+    
 }
 .plagiarismreport:hover .small-logo-compi {
-    background-position: -25px 0px;
+    background-position: -25px 0;
 }
 
 /*
@@ -132,8 +137,7 @@ Head area in assignment
     width: 24px;
 }
 
-.greyBackgroundBorder
-{
+.greyBackgroundBorder {
     border-radius: 3px;
     background-color: #f2f2f2;
     border: solid thin #e3e3e3;
@@ -189,8 +193,8 @@ Head area in assignment
     position: relative;
     top: 7px;
     left: -14px;
-    background-color: #F00;
-    color: #FFF;
+    background-color: #f00;
+    color: #fff;
     border-radius: 20px;
     padding: 1px 4px;
     font-size: 11px;
@@ -198,16 +202,11 @@ Head area in assignment
 
 .compilatio-button {
     width: 30%;
-    margin: 0px 2%;
+    margin: 0 2%;
 }
 
 #button-container {
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flex;
-    display: -o-flex;
     display: flex;
-
     justify-content: center;
 }
 
@@ -220,14 +219,14 @@ Head area in assignment
     background-color: #f5f5f5;
     border: 1px solid #e3e3e3;
     border-radius: 4px;
-    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05) inset;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
     margin-top: 15px;
     color: #444;
 }
 
 #compilatio-container h5 {
     text-align: left;
-    margin: 10px 0px;
+    margin: 10px 0;
 }
 
 /* Triangle */
@@ -306,7 +305,7 @@ ul#compilatio-help-items > li > div {
     text-align: center;
     cursor: pointer;
     background-color: #f5f5f5;
-    background-image: linear-gradient(to bottom, #FFF, #e6e6e6);
+    background-image: linear-gradient(to bottom, #fff, #e6e6e6);
     background-repeat: repeat-x;
     border-width: 1px;
     border-style: solid;
@@ -317,13 +316,15 @@ ul#compilatio-help-items > li > div {
     border-image: none;
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) #b3b3b3;
     border-radius: 4px;
-    box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.2) inset, 0px 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
 }
-.button:hover, .button:focus {
+
+.button:hover,
+.button:focus {
     color: #333;
     text-decoration: none;
-    background-position: 0px -15px;
-    transition: background-position 0.1s linear 0s;
+    background-position: 0 -15px;
+    transition: background-position 0.11s linear 0.11s;
     background-color: #e6e6e6;
 }
 .button:active {
@@ -359,23 +360,19 @@ legend.compilatio_legend {
 }
 
 #compilatio-container ul {
-    margin: 0px 0px 10px 25px;
+    margin: 0 0 10px 25px;
 }
 
 /* Maj juin 2017 */
 .compilatio-area {
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flex;
-    display: -o-flex;
     display: flex;
-
     justify-content: flex-end;
     -ms-align-items: center;
     align-items: center;
 }
 
-.library-in, .library-out {
+.library-in,
+.library-out {
     width: 20px;
     height: 16px;
 }
