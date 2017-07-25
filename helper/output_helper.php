@@ -14,10 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * output_helper.php - Contains Plagiarism plugin helper methods for display graphics elements.
+ *
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 /**
  * Helper class for display elements
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class output_helper
 {
@@ -95,14 +108,15 @@ class output_helper
     /**
      * Display plagiarism document area
      *
-     * @param $span : One word about the status to be displayed in the area
-     * @param $image : Identifier of an image from Compilatio plugin,
-     *                 rendered using $OUTPUT->pix_url($image, 'plagiarism_compilatio')
-     * @param $content : Content to be appended in the plagiarism area, such as similarity rate.
-     * @param $url : array : index ["target-blank"] contains a boolean : True to open in a new window.
-     *               index ["url"] contains the URL.
-     * @param $error : Span will be stylized as an error if $error is true.
-     * @param mixed $indexed Indexing state of the document.
+     * @param string $span    One word about the status to be displayed in the area
+     * @param object $image   Identifier of an image from Compilatio plugin,
+     *                        rendered using $OUTPUT->pix_url($image, 'plagiarism_compilatio')
+     * @param string $title   Title
+     * @param string $content Content to be appended in the plagiarism area, such as similarity rate.
+     * @param string $url     index ["target-blank"] contains a boolean : True to open in a new window.
+     *                        index ["url"] contains the URL.
+     * @param string $error   Span will be stylized as an error if $error is true.
+     * @param mixed  $indexed Indexing state of the document.
      *
      * @return string Return the HTML formatted string.
      */

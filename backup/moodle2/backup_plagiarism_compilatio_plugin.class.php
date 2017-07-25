@@ -14,10 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
+/**
+ * backup_plagiarism_compilatio_plugin.class.php - Contains Plagiarism plugin methods to backup the plugin.
+ *
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
+defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
+/**
+ * Backup class
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
+
+    /**
+     * Define the plugin's structure
+     * @return object Structure object
+     */
     protected function define_module_plugin_structure() {
         // To know if we are including userinfo.
         $userinfo = $this->get_setting_value('userinfo');
@@ -51,6 +71,10 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
         return $plugin;
     }
 
+    /**
+     * Define course plugin structure
+     * @return object Plugin structure object
+     */
     protected function define_course_plugin_structure() {
         // Define the virtual plugin element without conditions as the global class checks already.
         $plugin = $this->get_plugin_element();

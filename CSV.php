@@ -120,7 +120,11 @@ if ($rawcsv) {
     print chr(255) . chr(254) . mb_convert_encoding("sep=,\n" . $return, 'UTF-16LE', 'UTF-8');
 }
 
-// Format the data for CSV export : Replacing statuscode with readable status.
+/**
+ * Format the data for CSV export : Replacing statuscode with readable status
+ * @param  array $row Row
+ * @return array      Cleaned row
+ */
 function clean_row($row) {
     $data = (array) $row;
     unset($data["id"]);

@@ -14,10 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * csv_helper.php - Contains Plagiarism plugin helper methods for generate CSV files.
+ *
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 /**
  * Helper class for generate csv file
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class csv_helper
 {
@@ -50,7 +63,8 @@ class csv_helper
     /**
      * Generates CSV file for an assignment
      *
-     * @param $cmid course module id of the assignment to export.
+     * @param string $cmid course module id of the assignment to export
+     * @return  void
      */
     public static function generate_assign_csv($cmid) {
 

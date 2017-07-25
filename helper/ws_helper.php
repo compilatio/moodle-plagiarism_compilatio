@@ -14,10 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * ws_helper.php - Contains Plagiarism plugin helper methods for communicate with the web service.
+ *
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 /**
- * Helper class to communicate with web services
+ * Helper class to communicate with web service
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ws_helper
 {

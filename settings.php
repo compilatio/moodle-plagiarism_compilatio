@@ -38,7 +38,7 @@ $mform = new compilatio_setup_form();
 $plagiarismplugin = new plagiarism_plugin_compilatio();
 
 if ($mform->is_cancelled()) {
-    redirect('');
+    redirect('settings.php');
 }
 // Boolean to test only once the connection if it has failed.
 $incorrectconfing = false;

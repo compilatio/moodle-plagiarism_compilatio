@@ -15,19 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Description : compilatioservice - based on original compilatio class
- * établit la communication avec le serveur SOAP de Compilatio.net
- * appelle diverses méthodes concernant la gestion d'un document dans Compilatio.net
+ * ws_helper.php - Contains Plagiarism plugin helper methods for communicate with the web service.
  *
- * Date: 25/07/2012
- * @version    1.0 (updated by Dan Marsden <dan@danmarsden.com>
- *
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 /**
  * compilatioservice class
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class compilatioservice {
 
