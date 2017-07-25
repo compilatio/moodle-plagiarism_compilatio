@@ -14,6 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * plagiarism_compilatio.php - Contains italian Plagiarism plugin translation.
+ *
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 $string["pluginname"] = 'Plug-in Compilatio per il rilevamento del plagio';
 $string["studentdisclosuredefault"] = 'L\'insieme dei documenti inviati sarà analizzato dal servizio di rilevamento del plagio di Compilatio';
 $string["students_disclosure"] = 'Prevenzione degli studenti';
@@ -244,7 +255,7 @@ $string['trigger_timed_analyses'] = "Avvia le analisi anti plagio programmate";
 
 // Indexing state.
 $string['indexing_state'] = "Aggiungere i documenti alla biblioteca di riferimento";
-$string['indexing_state_help'] ="Il contenuto dei documenti è indicizzato nella biblioteca di riferimento. Verrà utilizzato come materiale di confronto per le future analisi.";
+$string['indexing_state_help'] = "Il contenuto dei documenti è indicizzato nella biblioteca di riferimento. Verrà utilizzato come materiale di confronto per le future analisi.";
 $string['indexed_document'] = "Documento indicizzato nella biblioteca di riferimento";
 $string['not_indexed_document'] = "Documento non indicizzato nella biblioteca di riferimento";
 

@@ -14,6 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * plagiarism_compilatio.php - Contains spanish Plagiarism plugin translation.
+ *
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 $string["Identifiant"] = 'Texte ES';
 $string["pluginname"] = 'Compilatio - Plugin de detección de plagio';
 $string["studentdisclosuredefault"] = 'La totalidad de los ficheros enviados serán objeto del servicio de detección de plagio de Compilatio';

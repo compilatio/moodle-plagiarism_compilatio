@@ -42,11 +42,21 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 /**
  * Compilatio Class
+ * @copyright  2012 Dan Marsden http://danmarsden.com
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plagiarism_plugin_compilatio extends plagiarism_plugin {
 
-    // Used to store cache data about Compilatio module thresholds.
+    /**
+     * Green threshold
+     * @var null
+     */
     private $_green_threshold_cache = null;
+
+    /**
+     * Orange threshold
+     * @var null
+     */
     private $_orange_threshold_cache = null;
 
     /**
@@ -602,8 +612,10 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
     /**
      * Hook to add plagiarism specific settings to a module settings page
      *
-     * @param object $mform  - Moodle form
-     * @param object $context - current context
+     * @param  object $mform      Moodle form
+     * @param  object $context    current context
+     * @param  string $modulename Module name
+     * @return void
      */
     public function get_form_elements_module($mform, $context, $modulename = "") {
         global $DB;
@@ -992,7 +1004,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         $output .= output_helper::get_jquery();
 
         // Include Font.
-        $fontawesomeurl = new moodle_url("/plagiarism/compilatio/fonts/font-awesome.min.css");
+        $fontawesomeurl = new moodle_url("/plagiarism/compilatio/fonts/font-awesome.css");
         $output .= "<link rel='stylesheet' href='$fontawesomeurl'>";
 
         $output .= "<div id='compilatio-container'>";
@@ -1378,8 +1390,8 @@ function compilatio_create_temp_file($cmid, $eventdata) {
 /**
  * Adds the list of plagiarism settings to a form.
  *
- * @param object $mform - Moodle form object
- * @oaram boolean $defaults - if this is being loaded from defaults form or from inside a mod.
+ * @param object  $mform    Moodle form object
+ * @param boolean $defaults if this is being loaded from defaults form or from inside a mod.
  */
 function compilatio_get_form_elements($mform, $defaults = false) {
 
@@ -1520,7 +1532,7 @@ function compilatio_get_form_elements($mform, $defaults = false) {
  * Reset the row in plagiarism_compilatio_files
  * when a user change the content in a workshop
  *
- * @param  object $plagiarsmfile A row of plagiarism_compilatio_files table
+ * @param  object $plagiarismfile A row of plagiarism_compilatio_files table
  * @param  string $filehash      Identifier of the content
  * @return object                The updated plagiarism_compilatio_file
  */
@@ -1544,10 +1556,10 @@ function compilatio_reset_workshop_content($plagiarismfile, $filehash) {
 /**
  * updates a compilatio_files record
  *
- * @param int $cmid - course module id
- * @param int $userid - user id
- * @param varied $identifier - identifier for this plagiarism record - hash of file, id of quiz question etc.
- * @return int - id of compilatio_files record
+ * @param  int   $cmid   course module id
+ * @param  int   $userid user id
+ * @param  mixed $file   identifier for this plagiarism record - hash of file, id of quiz question etc.
+ * @return int           id of compilatio_files record
  */
 function compilatio_get_plagiarism_file($cmid, $userid, $file) {
 
@@ -1749,7 +1761,7 @@ function compilatio_check_attempt_timeout($plagiarismfile) {
 /**
  * Send a file to Compilatio
  *
- * @param  object &$plagiarismfile    File
+ * @param  object $plagiarismfile    File
  * @param  array  $plagiarismsettings Settings
  * @param  object $file               File
  * @return mixed                      Return the document ID if succeed, false otherwise
@@ -2074,7 +2086,8 @@ function compilatio_get_technical_news() {
 /**
  * Get statistics for the assignment $cmid
  *
- * @return string - HTML containing the statistics
+ * @param  string $cmid Course module ID
+ * @return string       HTML containing the statistics
  */
 function compilatio_get_statistics($cmid) {
 
@@ -2169,8 +2182,13 @@ function compilatio_get_statistics($cmid) {
     $analysisstatsthresholds->documentsAboveRedThreshold = $counthigherthanred;
     $analysisstatsthresholds->documentsBetweenThresholds = $countanalyzed - $counthigherthanred - $countlowerthangreen;
 
-    // Display an array as a list, using moodle translations and parameters.
-    // Index 0 for translation index and index 1 for parameter.
+    /**
+     * Display an array as a list, using moodle translations and parameters
+     * Index 0 for translation index and index 1 for parameter
+     *
+     * @param  array $listitems List items
+     * @return string           Return the stat string
+     */
     function compilatio_display_list_stats($listitems) {
         $string = "<ul>";
         foreach ($listitems as $listitem) {
@@ -2234,7 +2252,8 @@ function compilatio_get_statistics($cmid) {
 /**
  * Lists unsupported documents in the assignment
  *
- * @return array of string: containing the student & the file
+ * @param  string $cmid Course module ID
+ * @return array        containing the student & the file
  */
 function compilatio_get_unsupported_files($cmid) {
     return compilatio_get_files_by_status_code($cmid, COMPILATIO_STATUSCODE_UNSUPPORTED);
@@ -2243,7 +2262,8 @@ function compilatio_get_unsupported_files($cmid) {
 /**
  * Lists unextractable documents in the assignment
  *
- * @return array of string: containing the student & the file
+ * @param  string $cmid Course module ID
+ * @return array        containing the student & the file
  */
 function compilatio_get_unextractable_files($cmid) {
     return compilatio_get_files_by_status_code($cmid, COMPILATIO_STATUSCODE_UNEXTRACTABLE);
@@ -2252,7 +2272,9 @@ function compilatio_get_unextractable_files($cmid) {
 /**
  * Lists files of an assignment according to the status code
  *
- * @return array of string: containing the student & the file
+ * @param  string $cmid       Course module ID
+ * @param  int    $statuscode Status Code
+ * @return array              containing the student & the file
  */
 function compilatio_get_files_by_status_code($cmid, $statuscode) {
 
@@ -2390,8 +2412,8 @@ function compilatio_update_news() {
  * Used to solve encoding problems from Compilatio API
  * Some string are UTF8 encoded twice
  *
- * @param $message string : UTF-8 String, encoded once or twice
- * @return string encoded correctly
+ * @param  string $message UTF-8 String, encoded once or twice
+ * @return string          encoded correctly
  */
 function compilatio_decode($message) {
 
@@ -2528,8 +2550,8 @@ function compilatio_display_help() {
 /**
  * Format the date from "2015-05" to may 2015 or mai 2015, according to the moodle language
  *
- * @param $date formatted like "YYYY-MM"
- * @return string : Litteral month in local language and year.
+ * @param  string $date formatted like "YYYY-MM"
+ * @return string       Litteral month in local language and year
  */
 function compilatio_format_date($date) {
 
@@ -2546,7 +2568,7 @@ function compilatio_format_date($date) {
 /**
  * Get tbe submissions unknown from Compilatio table plagiarism_compilatio_files
  *
- * @param $cmid : cmid of the assignment
+ * @param string $cmid cmid of the assignment
  */
 function compilatio_get_non_uploaded_documents($cmid) {
 
@@ -2570,8 +2592,8 @@ function compilatio_get_non_uploaded_documents($cmid) {
 /**
  * Uploads files to compilatio
  *
- * @param $files : Array of file records
- * @param $cmid : cmid of the assignment
+ * @param array  $files Array of file records
+ * @param string $cmid  cmid of the assignment
  */
 function compilatio_upload_files($files, $cmid) {
 
@@ -2638,7 +2660,7 @@ function compilatio_update_cron_frequency() {
 /**
  * Updates the last CRON date in the database
  *
- * @param $lastcron : stdClass from a get_record call.
+ * @param object $lastcron stdClass from a get_record call.
  * @return void
  */
 function compilatio_update_last_cron_date($lastcron) {
@@ -2685,10 +2707,10 @@ function compilatio_update_connection_status() {
 }
 
 /**
- * Get glboal plagiarism statistics
+ * Get global plagiarism statistics
  *
- * @param $html boolean display HTML if true, text otherwise
- * @return array containing associative arrays for the statistics
+ * @param bool   $html display HTML if true, text otherwise
+ * @return array       containing associative arrays for the statistics
  */
 function compilatio_get_global_statistics($html = true) {
 

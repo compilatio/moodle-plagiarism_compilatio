@@ -16,12 +16,24 @@
 // This file keeps track of upgrades to
 // the plagiarism compilatio plugin.
 
+/**
+ * upgrade.php - Contains Plagiarism plugin class to upgrade the database between differents versions.
+ *
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 /**
- * @global moodle_database $DB
- * @param int $oldversion
- * @return bool
+ * Method to upgrade the database between differents versions
+ *
+ * @param  int  $oldversion Old version
+ * @return bool Return true if succeed, false otherwise
  */
 function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     global $CFG, $DB;

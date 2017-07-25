@@ -78,13 +78,9 @@ if (count($rows) === 0) {
         }
     </script>
 
-    <?php
-    $tablecssurl = new moodle_url("/plagiarism/compilatio/table/table.css");
-    $tablejsurl = new moodle_url("/plagiarism/compilatio/table/table.js");
 
-    echo "<link rel='stylesheet' href='$tablecssurl'>";
-    echo "<script src='$tablejsurl'></script>";
-    ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.js"></script>
     
     <?php $url = new moodle_url("/plagiarism/compilatio/stats_json.php"); ?>
 
@@ -98,15 +94,12 @@ if (count($rows) === 0) {
     <p><?php echo get_string("enable_javascript", "plagiarism_compilatio"); ?></p>
     </noscript>
 
+    <h5 colspan='4'><?php echo "Compilatio - " . get_string("similarities", "plagiarism_compilatio"); ?></h5>
 
     <table id="table-js"
            data-toggle="table"
            data-url="<?php echo $url; ?>">
         <thead>
-            <tr>
-                <th colspan='3'></th>
-                <th colspan='4'><?php echo "Compilatio - " . get_string("similarities", "plagiarism_compilatio"); ?></th>
-            </tr>
             <tr>
                 <th data-field="course"
                     data-sortable="true"
@@ -216,8 +209,10 @@ if (count($rows) === 0) {
     <?php
 
     $url = new moodle_url('/plagiarism/compilatio/CSV.php', array("raw" => 0));
-    echo "<a href='$url' style='margin-top:20px;' class='button'>" .
-    get_string("export_global_csv", "plagiarism_compilatio") . "</a>";
+    echo "
+        <a href='$url' style='margin-top:20px;' class='button'>" .
+            get_string("export_global_csv", "plagiarism_compilatio") .
+        "</a>";
 
 }
 echo $OUTPUT->box_end();

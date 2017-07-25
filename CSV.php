@@ -49,35 +49,33 @@ $PAGE->set_url($url);
 $rawcsv = optional_param('raw', 1, PARAM_BOOL);
 
 if ($rawcsv) {
-    $sql = 'SELECT plagiarism_compilatio_files.id "id",
-        course.id "course_id",
-        course.fullname "course_name",
-        teacher.id "teacher_id",
-        teacher.firstname "teacher_firstname",
-        teacher.lastname "teacher_lastname",
-        teacher.email "teacher_email",
-        cm "module_id",
-        assign.name "module_name",
-        student.id "student_id",
-        student.firstname "student_firstname",
-        student.lastname "student_lastname",
-        student.email "student_email",
-        plagiarism_compilatio_files.id "file_id",
-        plagiarism_compilatio_files.filename "file_name",
-        plagiarism_compilatio_files.statuscode "file_status",
-        plagiarism_compilatio_files.similarityscore "file_similarityscore",
-        plagiarism_compilatio_files.timesubmitted "file_submitted_on"
-
-
-
-       FROM {plagiarism_compilatio_files} plagiarism_compilatio_files
-       JOIN {user} student ON plagiarism_compilatio_files.userid=student.id
-       JOIN {course_modules} course_modules ON plagiarism_compilatio_files.cm = course_modules.id
-       JOIN {assign} assign ON course_modules.instance= assign.id
-       JOIN {course} course ON course_modules.course= course.id
-       JOIN {event} event ON assign.id=event.instance
-       JOIN {user} teacher ON event.userid=teacher.id
-       ORDER BY cm';
+    $sql = '
+        SELECT pcf.id "id",
+            course.id "course_id",
+            course.fullname "course_name",
+            teacher.id "teacher_id",
+            teacher.firstname "teacher_firstname",
+            teacher.lastname "teacher_lastname",
+            teacher.email "teacher_email",
+            cm "module_id",
+            assign.name "module_name",
+            student.id "student_id",
+            student.firstname "student_firstname",
+            student.lastname "student_lastname",
+            student.email "student_email",
+            pcf.id "file_id",
+            pcf.filename "file_name",
+            pcf.statuscode "file_status",
+            pcf.similarityscore "file_similarityscore",
+            pcf.timesubmitted "file_submitted_on"
+        FROM {plagiarism_compilatio_files} pcf
+        JOIN {user} student ON pcf.userid=student.id
+        JOIN {course_modules} cm ON pcf.cm = cm.id
+        JOIN {assign} assign ON cm.instance= assign.id
+        JOIN {course} course ON cm.course= course.id
+        JOIN {event} event ON assign.id=event.instance
+        JOIN {user} teacher ON event.userid=teacher.id
+        ORDER BY cm';
 
     $rows = $DB->get_records_sql($sql);
 
@@ -120,7 +118,11 @@ if ($rawcsv) {
     print chr(255) . chr(254) . mb_convert_encoding("sep=,\n" . $return, 'UTF-16LE', 'UTF-8');
 }
 
-// Format the data for CSV export : Replacing statuscode with readable status.
+/**
+ * Format the data for CSV export : Replacing statuscode with readable status
+ * @param  array $row Row
+ * @return array      Cleaned row
+ */
 function clean_row($row) {
     $data = (array) $row;
     unset($data["id"]);
