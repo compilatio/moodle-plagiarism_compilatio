@@ -109,7 +109,6 @@ a.plagiarismreport-link span.link:hover {
     background-position: 0 0;
     -webkit-transition: background-position 0.5s; /* Safari */
     transition: background-position 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0.11s;
-    
 }
 .plagiarismreport:hover .small-logo-compi {
     background-position: -25px 0;
