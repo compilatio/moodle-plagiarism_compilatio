@@ -820,15 +820,20 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             compilatio_send_pending_files($plagiarismsettings);
 
             // Restart analyses.
-            $params['statuscode'] = COMPILATIO_STATUSCODE_ACCEPTED;
-            $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files', $params);
             $countsuccess = 0;
             $docsfailed = array();
-            foreach ($plagiarismfiles as $plagiarismfile) {
-                if (compilatio_startanalyse($plagiarismfile)) {
-                    $countsuccess++;
-                } else {
-                    $docsfailed[] = $plagiarismfile->filename;
+            $plagiarismvalues = $DB->get_records('plagiarism_compilatio_config', array('cm' => $cm->id));
+            if ($plagiarismvalues['compilatio_analysistype'] == COMPILATIO_ANALYSISTYPE_AUTO) {
+                $countsuccess = count($plagiarismfiles);
+            } else {
+                $params['statuscode'] = COMPILATIO_STATUSCODE_ACCEPTED;
+                $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files', $params);
+                foreach ($plagiarismfiles as $plagiarismfile) {
+                    if (compilatio_startanalyse($plagiarismfile)) {
+                        $countsuccess++;
+                    } else {
+                        $docsfailed[] = $plagiarismfile->filename;
+                    }
                 }
             }
 
