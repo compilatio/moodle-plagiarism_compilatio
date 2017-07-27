@@ -44,11 +44,11 @@ Compilatio document area :
 }
 
 a.plagiarismreport-link:hover {
-    text-decoration: none !important;
+    text-decoration: none;
 }
 
 a.plagiarismreport-link span.link:hover {
-    text-decoration: underline !important;
+    text-decoration: underline;
 }
 
 .plagiarismreport .small-logo-compi {
@@ -93,7 +93,7 @@ a.plagiarismreport-link span.link:hover {
     display: inline-block;
     line-height: 18px;
     font-size: 18px;
-    text-decoration: none !important;
+    text-decoration: none;
 }
 
 /* Compilatio small logo*/
@@ -351,7 +351,7 @@ legend.compilatio_legend {
 }
 
 .reinit {
-    font-size: 10px !important;
+    font-size: 10px;
 }
 
 .plagiarismreport-link:empty {
