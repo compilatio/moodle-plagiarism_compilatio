@@ -1501,11 +1501,12 @@ function compilatio_get_form_elements($mform, $defaults = false) {
     // File types allowed.
     $filetypes = ws_helper::get_allowed_file_types();
     $mform->addElement('html', '<div>'.get_string("help_compilatio_format_content", "plagiarism_compilatio").'</div>');
-    $mform->addElement('html', '<ul>');
+    $mform->addElement('html', '<table style="margin-left:10px;"><tbody>');
     foreach ($filetypes as $filetype) {
-        $mform->addElement('html', '<li style="margin-left:25px;">' . $filetype->title . ' : \'.' . $filetype->type . '\'</li>');
+        $mform->addElement('html', '<tr><td style="padding-right:25px;">.' . $filetype->type .
+            '</td><td>' . $filetype->title . '</td></tr>');
     }
-    $mform->addElement('html', '</ul>');
+    $mform->addElement('html', '</tbody></table>');
 
     // Used to append text nicely after the inputs. If Javascript is disabled, it will be displayed on the line below the input.
     $mform->addElement('html', output_helper::get_jquery());
