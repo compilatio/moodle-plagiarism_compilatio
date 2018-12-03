@@ -1,5 +1,28 @@
 <?php
-
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * plagiarism_compilatio.php - Contains italian Plagiarism plugin translation.
+ *
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 $string["pluginname"] = 'Plug-in Compilatio per il rilevamento del plagio';
 $string["studentdisclosuredefault"] = 'L\'insieme dei documenti inviati sarà analizzato dal servizio di rilevamento del plagio di Compilatio';
 $string["students_disclosure"] = 'Prevenzione degli studenti';
@@ -29,7 +52,7 @@ $string["pending"] = 'Il documento è in attesa di essere sottoposto a Compilati
 $string["previouslysubmitted"] = 'Sottoposto in precedenza come';
 $string["unknownwarning"] = 'Si è verificato un errore durante l\'invio del documento a Compilatio';
 $string["unsupportedfiletype"] = 'Questo tipo di documento non è supportato da Compilatio';
-$string["toolarge"] = 'Il documento è troppo esteso per essere analizzato da Compilatio';
+$string["toolarge"] = 'Il documento è troppo esteso per essere analizzato da Compilatio. Grandezza massima : {$a->Mo} MB';
 $string["compilatio_studentemail"] = 'Inviare una mail allo studente';
 $string["compilatio_studentemail_help"] = 'Questo invierà una mail allo studente quando un documento sarà stato analizzato per fargli sapere che il rapporto di analisi è disponibile';
 $string["studentemailsubject"] = 'Il documento è stato analizzato da Compilatio';
@@ -112,6 +135,7 @@ $string["news_incident"] = 'Incidente Compilatio.net';
 $string["news_maintenance"] = 'Manutenzione Compilatio.net';
 $string["news_analysis_perturbated"] = 'Analisi Compilatio.net con piccoli disguidi';
 $string["updatecompilatioresults"] = 'Aggiornare le informazioni';
+$string["update_in_progress"] = "Aggiornamento informazioni";
 $string["display_stats"] = 'Mostrare le statistiche di questo compito';
 $string["analysis_completed"] = 'Analisi terminata: {$a}% di similitudini';
 $string["compilatio_help_assign"] = 'Ottenere aiuto per il plug-in Compilatio';
@@ -168,11 +192,7 @@ $string["allow_teachers_to_show_reports"] = 'Consentire ai docenti di mettere i 
 $string["admin_disabled_reports"] = 'L\'amministratore ha disattivato la funzionalità che permette di mostrare i rapporti di analisi agli studenti.';
 $string["teacher"] = 'Docente';
 $string["loading"] = 'Caricamento in corso, si prega di attendere...';
-
-
-
-/* HELP */
-
+// Help.
 $string['help_compilatio_settings_title'] = 'Quali parametri scegliere nelle impostazioni Compilatio di un compito?';
 $string['help_compilatio_settings_content'] = "Il plug-in Compilatio permette di avviare le analisi secondo 3 opzioni:
 <ul>
@@ -191,60 +211,30 @@ Manuale: <br/>
 I documenti del compito sono analizzati solo se le analisi sono avviate personalmente. Per avviare l'analisi di un documento, cliccare sul tasto \"Analizzare\" di ogni documento. Il tasto \"Analizzare tutti i documenti\" permette di avviare l'analisi di tutti i documenti presenti nel compito.
 </li>
 </ul>";
-
-
-
-$string['help_compilatio_thresholds_title'] = 'Come modificare il codice colore dei risultati di analisi?';
-$string['help_compilatio_thresholds_content'] = "Il codice colore dei risultati può essere personalizzato nelle impostazioni di ogni compito, nella sezione \"Plug-in di rilevamento del plagio Compilatio\"
-È possibile scegliere le soglie che determinano il colore della percentuale di similitudine.";
-
-$string['help_compilatio_format_title'] = 'Quali sono i formati di files supportati?';
 $string['help_compilatio_format_content'] = "Compilatio.net prende in considerazione la maggior parte dei formati utilizzati.
-I seguenti formati sono accettati 
-<ul>
-<li>
-Testo '.txt'
-</li>
-<li>
-Adobe Acrobat '.pdf'
-</li>
-<li>
-Rich Text Format '.rtf'
-</li>
-<li>
-Trattamento del testo '.doc', '.docx', '.odt'
-</li>
-<li>
-Tabelle '.xls ', '.xlsx'
-</li>
-<li>
-Presentazioni '.ppt ', '.pptx'
-</li>
-<li>
-Files '.html'
-</li>
-</ul>";
-
-$string['help_compilatio_languages_title'] = 'Quali lingue sono supportate?';
-$string['help_compilatio_languages_content'] = "Le analisi possono essere effettuate in più di 40 lingue (di cui tutte le lingue scritte in alfabeto latino).
-Il cinese, il giapponese, l'arabo e l'alfabeto cirillico non sono ancora supportati";
-
-$string['admin_help_compilatio_api_title'] = 'Come ottenere una chiave API?';
-$string['admin_help_compilatio_api_content'] = "Questo plug-in necessita un abbonamento ai servizi Compilatio.net per essere attivato.
-Contattare il proprio consulente commerciale, o inviare una richiesta di chiave API all'indirizzo <a href='mailto:ent@compilatio.net'>ent@compilatio.net</a>.";
-
-$string['compilatio_faq'] = "<a target='_blank' href='https://www.compilatio.net/it/faq/'>Domande frequenti - Compilatio.net</a>";
-
-
-/* END HELP */
-
+I seguenti formati sono accettati";
+$string['goto_helpcenter'] = "<p>Clicca sul punto di domanda per aprire una nuova finestra e collegarti al centro di assistenza Compilatio.</p>";
+$string['admin_goto_helpcenter'] = "<a href='helpcenter.php?page=moodle-admin' target='_blank' >Accedi al centro di assistenza Compilatio</a> per accedere agli articoli relativi alla gestione del plugin Moodle.";
+// Buttons.
 $string['compilatio:enable'] = "Autorizzare l'insegnante a attivare/disattivare Compilatio all'interno di un'attività";
 $string['compilatio:resetfile'] = "Autorizzare l'insegnante a caricare nuovamente il documento all'interno di Compilatio dopo un errore";
 $string['compilatio:triggeranalysis'] = "Autorizzare l'insegnante ad avviare manualmente l'analisi";
 $string['compilatio:viewreport'] = "Autorizzare l'insegnante a consultare il rapporto completo dopo l'analisi Compilatio";
-
-
 $string['get_scores'] = "Recupera la percentuale di similitudini da Compilatio.net";
 $string['send_files'] = "Carica i files su Compilatio.net per il rilevamento del plagio";
 $string['update_meta'] = "Esegui le operazioni pianificate da Compilatio.net";
 $string['trigger_timed_analyses'] = "Avvia le analisi anti plagio programmate";
+// Indexing state.
+$string['indexing_state'] = "Aggiungere i documenti alla biblioteca di riferimento";
+$string['indexing_state_help'] = "Il contenuto dei documenti è indicizzato nella biblioteca di riferimento. Verrà utilizzato come materiale di confronto per le future analisi.";
+$string['indexed_document'] = "Documento indicizzato nella biblioteca di riferimento";
+$string['not_indexed_document'] = "Documento non indicizzato nella biblioteca di riferimento";
+// Information settings.
+$string['information_settings'] = "Informazioni";
+// Max file size allowed.
+$string['max_file_size_allowed'] = 'Grandezza massima dei documenti : <strong>{$a->Mo} MB</strong>';
+// Failed documents.
+$string['restart_failed_analysis'] = 'Riavviare le analisi errate';
+$string['restart_failed_analysis_title'] = 'Riavvio delle analisi errate :';
+// Max attempt reached.
+$string['max_attempts_reach_files'] = 'I file seguenti non sono stati analizzati da Compilatio. Il limite di riavvio delle analisi è stato raggiunto :';

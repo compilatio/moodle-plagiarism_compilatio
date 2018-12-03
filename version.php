@@ -14,9 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$plugin->version =  2016072000;
-$plugin->requires = 2013111810.00; 
-$plugin->cron     = 300; // Only run every 5 minutes.
-$plugin->component = 'plagiarism_compilatio';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.3.0';
+/**
+ * version.php - Contains Plagiarism plugin settings.
+ *
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
+ * @author     Dan Marsden <dan@danmarsden.com>
+ * @copyright  2012 Dan Marsden http://danmarsden.com
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+
+$plugin->version    = 2018120300;
+$plugin->requires   = 2013111810.00;
+$plugin->cron       = 300; // Only run every 5 minutes.
+$plugin->component  = 'plagiarism_compilatio';
+$plugin->maturity   = MATURITY_STABLE;
+$plugin->release    = '2.5.0';
