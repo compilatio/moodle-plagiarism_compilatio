@@ -27,7 +27,7 @@
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 
-$cmid = required_param('cmid', PARAM_INT);  // Course Module ID
+$cmid = required_param('cmid', PARAM_INT);  // Course Module ID.
 $pf  = required_param('pf', PARAM_INT);   // plagiarism file id.
 require_sesskey();
 $url = new moodle_url('/plagiarism/compilatio/reset.php');
@@ -39,19 +39,20 @@ require_login($cm->course, true, $cm);
 $modulecontext = context_module::instance($cmid);
 require_capability('plagiarism/compilatio:resetfile', $modulecontext);
 
-$plagiarism_file = $DB->get_record('plagiarism_compilatio_files', array('id'=>$pf), '*', MUST_EXIST);
+$plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('id' => $pf), '*', MUST_EXIST);
 
 // Reset db entry.
-$plagiarism_file->statuscode = 'pending';
-$plagiarism_file->attempt = 0;
-$plagiarism_file->timesubmitted = time();
-$DB->update_record('plagiarism_compilatio_files', $plagiarism_file);
+$plagiarismfile->statuscode = 'pending';
+$plagiarismfile->attempt = 0;
+$plagiarismfile->timesubmitted = time();
+$DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
 
 // Now trigger event to process the file.
 
-// this is hardcoded to assignment mod.
-if ($cm->modname =='assignment') {
-    $submission = $DB->get_record('assignment_submissions', array('assignment'=>$cm->instance, 'userid'=>$plagiarism_file->userid));
+// This is hardcoded to assignment mod.
+if ($cm->modname == 'assignment') {
+    $submission = $DB->get_record('assignment_submissions',
+                                  array('assignment' => $cm->instance, 'userid' => $plagiarismfile->userid));
     $fs = get_file_storage();
     $files = $fs->get_area_files($modulecontext->id, 'mod_assignment', 'submission', $submission->id);
     if (!empty($files)) {
@@ -59,7 +60,7 @@ if ($cm->modname =='assignment') {
         $eventdata->modulename   = $cm->modname;
         $eventdata->cmid         = $cm->id;
         $eventdata->courseid     = $cm->course;
-        $eventdata->userid       = $plagiarism_file->userid;
+        $eventdata->userid       = $plagiarismfile->userid;
         $eventdata->files        = $files;
 
         events_trigger('assessable_file_uploaded', $eventdata);
@@ -68,11 +69,11 @@ if ($cm->modname =='assignment') {
         $eventdata->modulename   = $cm->modname;
         $eventdata->cmid         = $cm->id;
         $eventdata->courseid     = $cm->course;
-        $eventdata->userid       = $plagiarism_file->userid;
-        $eventdata->content      = trim(strip_tags(format_text($submission->data1,$submission->data2)));
+        $eventdata->userid       = $plagiarismfile->userid;
+        $eventdata->content      = trim(strip_tags(format_text($submission->data1, $submission->data2)));
         events_trigger('assessable_content_uploaded', $eventdata);
     }
 }
 
-$redirect = new moodle_url('/mod/assign/view.php', array('id'=>$cmid, 'action'=>"grading"));
+$redirect = new moodle_url('/mod/assign/view.php', array('id' => $cmid, 'action' => "grading"));
 redirect($redirect, get_string('filereset', 'plagiarism_compilatio'));

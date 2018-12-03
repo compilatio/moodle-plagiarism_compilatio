@@ -2,234 +2,203 @@
     clear: both;
 }
 /*
-Compilatio document area : 
+Compilatio document area :
 */
-
 .plagiarismreport {
-    float: left;
     padding: 0 0 0 2px;
     border-radius: 3px;
-    background-color:#F2F2F2;
-    border: solid thin #E3E3E3;
-    margin-left: 16px;
+    background-color: #f2f2f2;
+    border: solid thin #e3e3e3;
 }
-
-.plagiarismreport, .plagiarsimreport a{
+.plagiarismreport,
+.plagiarsimreport a {
     font-size: 12px;
     text-align: center;
     line-height: 19px;
     font-weight: bold;
 }
-
-.plagiarismreport .compilatio-error{
+.plagiarismreport .compilatio-error {
     color: #c0392b;
     line-height: 19px;
 }
-
-.plagiarismreport a{
+.plagiarismreport a {
     color: #444;
 }
-.plagiarismreport a:hover{
+.plagiarismreport a:hover {
     color: #111;
     text-decoration: underline;
 }
-
-.plagiarismreport-link, .plagiarismreport{
+.plagiarismreport-link,
+.plagiarismreport {
     width: 105px;
     height: 20px;
 }
-.plagiarismreport-link{
+.plagiarismreport-link {
     display: block;
     position: relative;
 }
-
-a.plagiarismreport-link:hover{
-    text-decoration: none !important;
+a.plagiarismreport-link:hover {
+    text-decoration: none;
 }
-
-a.plagiarismreport-link span.link:hover{
-    text-decoration: underline !important;
+a.plagiarismreport-link span.link:hover {
+    text-decoration: underline;
 }
-
-.plagiarismreport .small-logo-compi{
-    float:left;
+.plagiarismreport .small-logo-compi {
+    float: left;
 }
-.plagiarismreport .float-right, .plagiarismreport .similarity, .plagiarismreport .similarity-image {
+.plagiarismreport .float-right,
+.plagiarismreport .similarity,
+.plagiarismreport .similarity-image {
     float: right;
 }
-
 .plagiarismreport img {
     vertical-align: bottom;
     padding-right: 2px;
-    height:18px;
+    height: 18px;
 }
 .prevsubmitted {
     font-size: 12px;
     line-height: normal;
 }
 /* Similarities */
-.similarity-green{
-    color: #6ab35a; 
+.similarity-green {
+    color: #6ab35a;
 }
-.similarity-orange{
-    color: #f39c12; 
+.similarity-orange {
+    color: #f39c12;
 }
-.similarity-red{
-    color: #e7685a;; 
+.similarity-red {
+    color: #e7685a;
 }
-.similarity-image{
-    display:inline-block;
-    padding:0;
+.similarity-image {
+    display: inline-block;
+    padding: 0;
 }
-.similarity .percentage{
+.similarity .percentage {
     font-size: 13px;
     font-weight: normal;
     line-height: 22px;
 }
-.similarity{
+.similarity {
     font-weight: bold;
     display: inline-block;
     line-height: 18px;
     font-size: 18px;
-    text-decoration: none !important;
+    text-decoration: none;
 }
-
 /* Compilatio small logo*/
-.small-logo-compi{
-    /*background: url("/plagiarism/compilatio/pix/logo_compilatio_carre.png") no-repeat scroll 0% 0% transparent;*/
+.small-logo-compi {
     display: inline-block;
     overflow: hidden;
     text-indent: -99999px;
     width: 25px;
-    height: 19px; 
+    height: 19px;
+    background: no-repeat scroll 0 0 transparent;
     background-size: 50px 19px;
-    background-position: 0px 0px;
+    background-position: 0 0;
     -webkit-transition: background-position 0.5s; /* Safari */
-    transition: background-position 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0s;
-    background: no-repeat scroll 0% 0% transparent;
-    background-size: 50px 19px;
+    transition: background-position 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0.11s;
 }
-.plagiarismreport:hover .small-logo-compi{
-    background-position: -25px 0px;
+.plagiarismreport:hover .small-logo-compi {
+    background-position: -25px 0;
 }
-
 /*
 Head area in assignment
 */
-#compilatio-hide-area{
+#compilatio-hide-area {
     float: right;
 }
-
-#compilatio-logo{
+#compilatio-logo {
     width: 200px;
-    float:left;
+    float: left;
     margin-bottom: 15px;
-    cursor:pointer;
+    cursor: pointer;
 }
-
-.compilatio-help{
-    float:left;
+.compilatio-help {
+    float: left;
 }
-
-.compilatio-help img{
-    width:24px;
+.compilatio-help img {
+    width: 24px;
 }
-
-.greyBackgroundBorder
-{
+.greyBackgroundBorder {
     border-radius: 3px;
-    background-color:#F2F2F2;
-    border: solid thin #E3E3E3;
+    background-color: #f2f2f2;
+    border: solid thin #e3e3e3;
 }
-
-#sommaire{
+#sommaire {
     display: inline-block;
     padding: 10px;
 }
-
-.help-title{
+.help-title {
     margin: 10px 0;
     font-weight: bold;
     line-height: 20px;
     font-size: 16px;
     text-align: left;
 }
-
-.help-content{
+.help-content {
     color: #555;
     margin-bottom: 10px;
 }
-
-.compilatio-icon{
+.compilatio-icon {
     margin: 2px;
-    color:#616262;
+    color: #616262;
 }
-
-.compilatio-icon.active{
-    color:#202121;
+.compilatio-icon.active {
+    color: #202121;
 }
-
-.compilatio-icon:hover{
-    color:#303030;
+.compilatio-icon:hover {
+    color: #303030;
 }
-
-.compilatio-icon:focus{
-    color:#252525;
+.compilatio-icon:focus {
+    color: #252525;
 }
-
-#compilatio-tabs .compilatio-icon{
+#compilatio-tabs .compilatio-icon {
     margin-left: 35px;
-    display:inline;
-    cursor:pointer;
+    display: inline;
+    cursor: pointer;
 }
-
-#compilatio-tabs{
+#compilatio-tabs {
     padding-bottom: 20px;
-    border-bottom: 2px solid #E3E3E3;
+    border-bottom: 2px solid #e3e3e3;
 }
-
-#show-notifications span{
+#show-notifications span {
     position: relative;
     top: 7px;
     left: -14px;
-    background-color: #F00;
-    color: #FFF;
+    background-color: #f00;
+    color: #fff;
     border-radius: 20px;
     padding: 1px 4px;
     font-size: 11px;
 }
-
 .compilatio-button {
-    width: 37%;
-    margin: 0px 2%;
+    width: 30%;
+    margin: 0 2%;
 }
-
-#button-container{
-    margin: 0px auto;
-    width: 75%;
+#button-container {
+    display: flex;
+    justify-content: center;
 }
-
-#compilatio-container{
-    min-width:565px;
-    border-color: #E3E3E3;
+#compilatio-container {
+    min-width: 565px;
+    border-color: #e3e3e3;
     min-height: 20px;
     padding: 19px;
     margin-bottom: 20px;
-    background-color: #F5F5F5;
-    border: 1px solid #E3E3E3;
+    background-color: #f5f5f5;
+    border: 1px solid #e3e3e3;
     border-radius: 4px;
-    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05) inset;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
     margin-top: 15px;
     color: #444;
 }
-
-#compilatio-container h5{
+#compilatio-container h5 {
     text-align: left;
-    margin: 10px 0px;
+    margin: 10px 0;
 }
-
 /* Triangle */
-.compilatio-icon::before{
+.compilatio-icon::before {
     border-style: solid;
     border-width: 0 6px 10px 6px;
     border-color: transparent transparent #e3e3e3;
@@ -239,62 +208,54 @@ Head area in assignment
     left: 19px;
     height: 0;
     width: 0;
-    visibility:hidden;
+    visibility: hidden;
     cursor: auto;
 }
-
-.compilatio-icon.active::before{
-    visibility:visible;
+.compilatio-icon.active::before {
+    visibility: visible;
 }
-
-ul#compilatio-help-items > li > strong{
+ul#compilatio-help-items > li > strong {
     cursor: pointer;
 }
-ul#compilatio-help-items > li > div{
-    display:none;
-    margin-bottom:15px;
+ul#compilatio-help-items > li > div {
+    display: none;
+    margin-bottom: 15px;
 }
-
-#programmed-analysis{
-    border-top: 2px solid #E3E3E3;
+#programmed-analysis {
+    border-top: 2px solid #e3e3e3;
     text-align: center;
     font-style: italic;
     margin-top: -3px;
     padding-top: 2px;
 }
-
 /*!
  * CSS adapted from Bootstrap (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
-
-.alert{
+.alert {
     padding: 8px 35px 8px 14px;
     margin-bottom: 20px;
-    background-color: #FCF8E3;
-    border: 1px solid #FBEED5;
+    background-color: #fcf8e3;
+    border: 1px solid #fbeed5;
     border-radius: 4px;
-    color: #C09853;
+    color: #c09853;
 }
-
-.alert-danger{
-    color: #B94A48;
-    background-color: #F2DEDE;
-    border-color: #EED3D7;
+.alert-danger {
+    color: #b94a48;
+    background-color: #f2dede;
+    border-color: #eed3d7;
 }
-
-.alert-success{
+.alert-success {
     color: #468847;
-    background-color: #DFF0D8;
-    border-color: #D6E9C6;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
 }
 .alert-info {
-    color: #3A87AD;
-    background-color: #D9EDF7;
-    border-color: #BCE8F1;
+    color: #3a87ad;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
 }
-
 .button {
     display: inline-block;
     padding: 4px 12px;
@@ -303,8 +264,8 @@ ul#compilatio-help-items > li > div{
     color: #333;
     text-align: center;
     cursor: pointer;
-    background-color: #F5F5F5;
-    background-image: linear-gradient(to bottom, #FFF, #E6E6E6);
+    background-color: #f5f5f5;
+    background-image: linear-gradient(to bottom, #fff, #e6e6e6);
     background-repeat: repeat-x;
     border-width: 1px;
     border-style: solid;
@@ -313,25 +274,25 @@ ul#compilatio-help-items > li > div{
     -moz-border-bottom-colors: none;
     -moz-border-left-colors: none;
     border-image: none;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) #B3B3B3;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) #b3b3b3;
     border-radius: 4px;
-    box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.2) inset, 0px 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
 }
-.button:hover, .button:focus {
+.button:hover,
+.button:focus {
     color: #333;
     text-decoration: none;
-    background-position: 0px -15px;
-    transition: background-position 0.1s linear 0s;
-    background-color: #E6E6E6;
+    background-position: 0 -15px;
+    transition: background-position 0.11s linear 0.11s;
+    background-color: #e6e6e6;
 }
-.button:active{
+.button:active {
     background-image: none;
     outline: 0;
     -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
 }
-
-legend.compilatio_legend{
+legend.compilatio_legend {
     display: block;
     width: 100%;
     padding: 0;
@@ -342,20 +303,45 @@ legend.compilatio_legend{
     border: 0;
     border-bottom: 1px solid #e5e5e5;
 }
-
 /* Config activity */
-.after-input{
+.after-input {
     margin-left: 10px;
 }
-
-.reinit{
-    font-size: 10px !important;
+.reinit {
+    font-size: 10px;
 }
-
 .plagiarismreport-link:empty {
     display: none;
 }
-
-#compilatio-container ul{
-    margin: 0px 0px 10px 25px;
+#compilatio-container ul {
+    margin: 0 0 10px 25px;
+}
+.compilatio-area {
+    display: flex;
+    justify-content: flex-end;
+    -ms-align-items: center;
+    align-items: center;
+    position: relative;
+    top: -5px;
+    width: 99%;
+    padding-top: 10px;
+}
+.library,
+.library-in,
+.library-out {
+    width: 20px;
+    height: 16px;
+    background-size: cover;
+}
+#compi-update-progress {
+    vertical-align: middle;
+    margin: auto 10px;
+}
+.compilatio-button.disabled {
+    opacity: 0.2;
+    filter: grayscale(100%);
+    cursor: default;
+}
+#compilatio-home>p {
+    margin-top: 15px;
 }

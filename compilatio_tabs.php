@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,27 +14,37 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.');    // It must be included from a Moodle page.
-}
+/**
+ * compilatio_tabs.php - Contains Plagiarism plugin script who create tab object in the plugin configuration web page.
+ *
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
-$strplagiarism = get_string('compilatio', 'plagiarism_compilatio');
+defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+
+// Get tabs' title.
+$strplagiarism         = get_string('compilatio', 'plagiarism_compilatio');
 $strplagiarismdefaults = get_string('compilatiodefaults', 'plagiarism_compilatio');
-
-$strautodiagnosis = get_string('auto_diagnosis_title', 'plagiarism_compilatio');
-$strstatistics = get_string('statistics_title', 'plagiarism_compilatio');
-
-$strhelp = get_string('tabs_title_help', 'plagiarism_compilatio');
+$strautodiagnosis      = get_string('auto_diagnosis_title', 'plagiarism_compilatio');
+$strstatistics         = get_string('statistics_title', 'plagiarism_compilatio');
+$strhelp               = get_string('tabs_title_help', 'plagiarism_compilatio');
 
 // Display Compilatio logo.
-echo compilatio_get_logo();
+echo output_helper::get_logo();
 echo '<div style="clear:both"></div>';
 
+// Create tabs.
 $tabs = array();
 $tabs[] = new tabobject('compilatiosettings', 'settings.php', $strplagiarism, $strplagiarism, false);
 $tabs[] = new tabobject('compilatiodefaults', 'compilatio_defaults.php', $strplagiarismdefaults, $strplagiarismdefaults, false);
 $tabs[] = new tabobject('compilatioautodiagnosis', 'autodiagnosis.php', $strautodiagnosis, $strautodiagnosis, false);
 $tabs[] = new tabobject('compilatiostatistics', 'statistics.php', $strstatistics, $strstatistics, false);
 $tabs[] = new tabobject('compilatiohelp', 'help.php', $strhelp, $strhelp, false);
-print_tabs(array($tabs), $currenttab);
 
+// Display tabs.
+print_tabs(array($tabs), $currenttab);

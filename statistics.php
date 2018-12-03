@@ -27,6 +27,7 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/helper/output_helper.php');
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -55,13 +56,11 @@ if (count($rows) === 0) {
 
     $url = new moodle_url('/plagiarism/compilatio/CSV.php');
     echo "<a href='$url' style='margin-bottom:20px;' class='button'>" .
-    get_string("export_raw_csv", "plagiarism_compilatio") . "</a>";
+        get_string("export_raw_csv", "plagiarism_compilatio") . "</a>";
 
     echo "<legend class='compilatio_legend'>".get_string("assign_statistics", "plagiarism_compilatio")."</legend>";
 
-    $jquery_url = new moodle_url("/plagiarism/compilatio/jquery.min.js");
-
-    echo "<script src='$jquery_url'></script>";
+    echo output_helper::get_jquery();
     ?>
 
     <script>
@@ -79,13 +78,9 @@ if (count($rows) === 0) {
         }
     </script>
 
-    <?php
-    $tablecssURL = new moodle_url("/plagiarism/compilatio/table/table.css");
-    $tablejsURL = new moodle_url("/plagiarism/compilatio/table/table.js");
 
-    echo "<link rel='stylesheet' href='$tablecssURL'>";
-    echo "<script src='$tablejsURL'></script>";
-    ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.js"></script>
     
     <?php $url = new moodle_url("/plagiarism/compilatio/stats_json.php"); ?>
 
@@ -99,15 +94,12 @@ if (count($rows) === 0) {
     <p><?php echo get_string("enable_javascript", "plagiarism_compilatio"); ?></p>
     </noscript>
 
+    <h5 colspan='4'><?php echo "Compilatio - " . get_string("similarities", "plagiarism_compilatio"); ?></h5>
 
     <table id="table-js"
            data-toggle="table"
            data-url="<?php echo $url; ?>">
         <thead>
-            <tr>
-                <th colspan='3'></th>
-                <th colspan='4'><?php echo "Compilatio - " . get_string("similarities", "plagiarism_compilatio"); ?></th>
-            </tr>
             <tr>
                 <th data-field="course"
                     data-sortable="true"
@@ -215,12 +207,13 @@ if (count($rows) === 0) {
         document.getElementById("table-no-js").style.display = 'none';
     </script>
     <?php
-    
-    
+
     $url = new moodle_url('/plagiarism/compilatio/CSV.php', array("raw" => 0));
-    echo "<a href='$url' style='margin-top:20px;' class='button'>" .
-    get_string("export_global_csv", "plagiarism_compilatio") . "</a>";
-    
+    echo "
+        <a href='$url' style='margin-top:20px;' class='button'>" .
+            get_string("export_global_csv", "plagiarism_compilatio") .
+        "</a>";
+
 }
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();

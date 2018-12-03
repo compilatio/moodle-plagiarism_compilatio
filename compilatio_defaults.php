@@ -40,18 +40,18 @@ $page = optional_param('page', 0, PARAM_INT);
 
 $mform = new compilatio_defaults_form(null);
 // Get the defaults - cmid(0) is the default list.
-$plagiarismdefaults = $DB->get_records_menu('plagiarism_compilatio_config', array('cm'=>0), '', 'name, value');
+$plagiarismdefaults = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => 0), '', 'name, value');
 if (!empty($plagiarismdefaults)) {
     $mform->set_data($plagiarismdefaults);
 }
 echo $OUTPUT->header();
-$currenttab='compilatiodefaults';
+$currenttab = 'compilatiodefaults';
 require_once('compilatio_tabs.php');
 if (($data = $mform->get_data()) && confirm_sesskey()) {
     $plagiarismplugin = new plagiarism_plugin_compilatio();
-    
+
     $data->compilatio_analysistype = COMPILATIO_ANALYSISTYPE_MANUAL;
-    
+
     $plagiarismelements = $plagiarismplugin->config_options();
     foreach ($plagiarismelements as $element) {
         if (isset($data->$element)) {
@@ -60,7 +60,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             $newelement->name = $element;
             $newelement->value = $data->$element;
             if (isset($plagiarismdefaults[$element])) { // Update.
-                $newelement->id = $DB->get_field('plagiarism_compilatio_config', 'id', (array('cm'=>0, 'name'=>$element)));
+                $newelement->id = $DB->get_field('plagiarism_compilatio_config', 'id', (array('cm' => 0, 'name' => $element)));
                 $DB->update_record('plagiarism_compilatio_config', $newelement);
             } else { // Insert.
                 $DB->insert_record('plagiarism_compilatio_config', $newelement);
