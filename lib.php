@@ -160,9 +160,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             $file->timestamp = time();
             if (!empty($linkarray['content'])) {
 
-                $file->identifier = sha1($linkarray['content']);
-                $file->filename   = "content-".$COURSE->id."-".$linkarray['cmid']."-".$linkarray['userid']."-".substr($file->identifier, 0, 6).".htm";
-                
+                $file->filename   = "content-".$COURSE->id."-".$linkarray['cmid']."-".$linkarray['userid'].".htm";
+                $file->identifier = null;
                 $file->filepath   = $CFG->dataroot."/temp/compilatio/".$file->filename;
                 $file->type       = "tempcompilatio";
             } else if (!empty($linkarray['file'])) {
@@ -1341,7 +1340,7 @@ function compilatio_create_temp_file($cmid, $eventdata) {
         mkdir($CFG->dataroot . "/temp/compilatio", 0700);
     }
 
-    $filename = "content-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->userid . "-".substr(sha1($eventdata->content), 0, 6).".htm";
+    $filename = "content-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->userid . ".htm";
     $filepath = $CFG->dataroot . "/temp/compilatio/" . $filename;
 
     $fd = fopen($filepath, 'wb'); // Create if not exist, write binary.
@@ -1548,9 +1547,9 @@ function compilatio_get_plagiarism_file($cmid, $userid, $file) {
         WHERE cm = ? AND userid = ? AND identifier = ?";
 
     // Now update or insert record into compilatio_files.
-    if ($filename == 'content-'.$COURSE->id.'-'.$cmid.'-'.$userid.'-'.substr($file->identifier, 0, 6).'.htm') {
+    if ($filename == 'content-'.$COURSE->id.'-'.$cmid.'-'.$userid.'.htm') {
         // It's a workshop content.
-        $plagiarismfile = $DB->get_record_sql($sqlbyname, array($cmid, $userid, $filehash));
+        $plagiarismfile = $DB->get_record_sql($sqlbyname, array($cmid, $userid, $filename));
 
         if (!empty($plagiarismfile)
         && !is_null($filehash)

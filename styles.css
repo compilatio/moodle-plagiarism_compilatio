@@ -342,6 +342,6 @@ legend.compilatio_legend {
     filter: grayscale(100%);
     cursor: default;
 }
-#compilatio-home>p {
+#compilatio-home > p {
     margin-top: 15px;
 }
