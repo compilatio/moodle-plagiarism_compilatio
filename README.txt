@@ -8,7 +8,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 ==========
-- Help sections in assignments and in plugin administration are linked to Compilatio helpcenter (https://support.compilatio.net). 
+- Help sections in assignments and in plugin administration are linked to Compilatio helpcenter at support.compilatio.net. 
 - Loading time is reduced in assignments.
 - A progress bar is displayed when clicking on the 'Refresh the informations' button in assignments.
 
