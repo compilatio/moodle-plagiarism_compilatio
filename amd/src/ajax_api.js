@@ -22,7 +22,7 @@ define(['jquery'], function($) {
                 var n = fileIds.length;
                 var i = 0;
                 var refreshButton = $("i.fa-refresh").parent("button");
-                if(n == 0) {
+                if (n == 0) {
                     disableCompilatioButtons();
                 } else {
                     refreshButton.click(function() {
@@ -35,7 +35,7 @@ define(['jquery'], function($) {
                             $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_check_analysis.php', {'id': id}, function(data) {
                                 i++;
                                 $("#compi-update-progress").val(i);
-                                if(i == n) {
+                                if (i == n) {
                                     window.location.reload();
                                 }
                             });
