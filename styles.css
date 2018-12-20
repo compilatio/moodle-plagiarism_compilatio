@@ -333,6 +333,18 @@ legend.compilatio_legend {
     height: 16px;
     background-size: cover;
 }
+.library {
+    background-image: url([[pix:plagiarism_compilatio|library]]);
+}
+.library-in {
+    background-image: url([[pix:plagiarism_compilatio|library-in]]);
+}
+.library-out {
+    background-image: url([[pix:plagiarism_compilatio|library-out]]);
+}
+.library-in, .library-out {
+    cursor: pointer;
+}
 #compi-update-progress {
     vertical-align: middle;
     margin: auto 10px;
@@ -342,6 +354,6 @@ legend.compilatio_legend {
     filter: grayscale(100%);
     cursor: default;
 }
-#compilatio-home>p {
+#compilatio-home > p {
     margin-top: 15px;
 }

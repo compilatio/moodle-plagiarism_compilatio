@@ -206,6 +206,7 @@ $string["allow_teachers_to_show_reports"] = "Den Lehrpersonen erlauben, die Anal
 $string["admin_disabled_reports"] = "Der Administrator hat die Anzeige der Ähnlichkeitsberichte für die Studenten deaktiviert.";
 $string["teacher"] = "Lehrperson";
 $string["loading"] = "Wird geladen, bitte warten...";
+$string["no_duplicates"] = 'Vermeidung von Duplikaten für einen Benutzer';
 // HELP.
 $string['help_compilatio_settings_title'] = 'Welche Einstellungen in den Compilatio Parametern einer Aktivität auswählen?';
 $string['help_compilatio_settings_content'] = 'Im Compilatio Plugin stehen drei Analysetypen zur Verfügung:
@@ -230,7 +231,7 @@ $string['help_compilatio_settings_content'] = 'Im Compilatio Plugin stehen drei 
 ';
 $string['help_compilatio_format_content'] = "Compilatio.net unterstützt die meisten in der Büroelektronik und im Internet verwendeten Formate. Folgende Formate werden akzeptiert:";
 $string['goto_helpcenter'] = "Klicken Sie auf das Fragezeichen, um ein neues Fenster zu öffnen und sich im Compilatio Hilfecenter einzuloggen.";
-$string['admin_goto_helpcenter'] = "<a href='helpcenter.php?page=moodle-admin' target='_blank' >Gehen Sie zum Compilatio Hilfecenter</a>, um die Artikel zur Verwaltung des Moodle-Plug-Ins zu lesen.";
+$string['admin_goto_helpcenter'] = "Gehen Sie zum Compilatio Hilfecenter, um die Artikel zur Verwaltung des Moodle-Plug-Ins zu lesen.";
 // Buttons.
 $string['get_scores'] = "Ruft die Ähnlichkeitsquoten auf Compilatio.net ab";
 $string['send_files'] = "Schickt die Dateien an Compilatio.net zur Plagiatserkennung";

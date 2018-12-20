@@ -192,6 +192,7 @@ $string["allow_teachers_to_show_reports"] = 'Consentire ai docenti di mettere i 
 $string["admin_disabled_reports"] = 'L\'amministratore ha disattivato la funzionalità che permette di mostrare i rapporti di analisi agli studenti.';
 $string["teacher"] = 'Docente';
 $string["loading"] = 'Caricamento in corso, si prega di attendere...';
+$string["no_duplicates"] = 'Evitare i duplicati per un utente';
 // Help.
 $string['help_compilatio_settings_title'] = 'Quali parametri scegliere nelle impostazioni Compilatio di un compito?';
 $string['help_compilatio_settings_content'] = "Il plug-in Compilatio permette di avviare le analisi secondo 3 opzioni:
@@ -213,8 +214,8 @@ I documenti del compito sono analizzati solo se le analisi sono avviate personal
 </ul>";
 $string['help_compilatio_format_content'] = "Compilatio.net prende in considerazione la maggior parte dei formati utilizzati.
 I seguenti formati sono accettati";
-$string['goto_helpcenter'] = "<p>Clicca sul punto di domanda per aprire una nuova finestra e collegarti al centro di assistenza Compilatio.</p>";
-$string['admin_goto_helpcenter'] = "<a href='helpcenter.php?page=moodle-admin' target='_blank' >Accedi al centro di assistenza Compilatio</a> per accedere agli articoli relativi alla gestione del plugin Moodle.";
+$string['goto_helpcenter'] = "Clicca sul punto di domanda per aprire una nuova finestra e collegarti al centro di assistenza Compilatio.";
+$string['admin_goto_helpcenter'] = "Accedi al centro di assistenza Compilatio per accedere agli articoli relativi alla gestione del plugin Moodle.";
 // Buttons.
 $string['compilatio:enable'] = "Autorizzare l'insegnante a attivare/disattivare Compilatio all'interno di un'attività";
 $string['compilatio:resetfile'] = "Autorizzare l'insegnante a caricare nuovamente il documento all'interno di Compilatio dopo un errore";

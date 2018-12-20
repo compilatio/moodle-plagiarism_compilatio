@@ -213,6 +213,8 @@ $string["allow_teachers_to_show_reports"] = "Allow teachers to show similarity r
 $string["admin_disabled_reports"] = "The administrator does not allow the teachers to display the similarity reports to the students.";
 $string["teacher"] = "Teacher";
 $string["loading"] = "Loading, please wait...";
+$string["no_duplicates"] = 'Only one document per student';
+$string["no_duplicates_help"] = "Lorsque le paramètre est activé, les anciens documents déposés par un même étudiant, dans ce devoir, sont supprimés de la bibliothèque de références (désindexés) et supprimés. Ce paramètre ne s'applique pas aux enseignants. Ces derniers peuvent modifier des documents pour des étudiants.";
 // HELP.
 $string['help_compilatio_settings_title'] = 'Which mode should I use in the Compilatio settings of an activity?';
 $string['help_compilatio_settings_content'] = '
@@ -237,8 +239,8 @@ You can click on the “Start analysis” button of each document to trigger its
 ';
 $string['help_compilatio_format_content'] = "Compilatio.net handles most formats used in word processors and on the internet.
 The following formats are supported :";
-$string['goto_helpcenter'] = "<p>Click on the question mark to open a new window and connect to the Compilatio Support Centre.</p>";
-$string['admin_goto_helpcenter'] = "<a href='helpcenter.php?page=moodle-admin' target='_blank' >Access the Compilatio Support Centre</a> to see articles related to administration of the Moodle plugin.";
+$string['goto_helpcenter'] = "Click on the question mark to open a new window and connect to the Compilatio Help Center.";
+$string['admin_goto_helpcenter'] = "Access the Compilatio Help Center to see articles related to administration of the Moodle plugin.";
 // Buttons.
 $string['get_scores'] = "Retrieve plagiarism scores from Compilatio.net";
 $string['send_files'] = "Upload files to Compilatio.net for plagiarism detection";

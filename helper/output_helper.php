@@ -83,22 +83,16 @@ class output_helper
             $html = '
                 <div
                     class="library-in"
-                    style="background-image: url(\'' . new moodle_url("/plagiarism/compilatio/pix/library-in.png") . '\');"
                     title="'.get_string("indexed_document", "plagiarism_compilatio").'">
                 </div>';
         } else if ($indexingstate === false) {
             $html = '
                 <div
                     class="library-out"
-                    style="background-image: url(\'' . new moodle_url("/plagiarism/compilatio/pix/library-out.png") . '\');"
                     title="'.get_string("not_indexed_document", "plagiarism_compilatio").'">
                 </div>';
         } else {
-             $html = '
-                <div
-                    class="library"
-                    style="background-image: url(\'' . new moodle_url("/plagiarism/compilatio/pix/library.png") . '\');" >
-                </div>';
+             $html = ''; // Do not show indexing state for a "non-teacher" user.
         }
 
         return $html;
@@ -129,6 +123,10 @@ class output_helper
                                                $error = false,
                                                $indexed = null,
                                                $compid) {
+
+        if ($content == '' && $span == '') {
+            return '';
+        }
 
         global $OUTPUT;
 
@@ -169,7 +167,7 @@ class output_helper
             }
             $html .= "<span class='$class'>$span</span>";
         }
-        if ($content !== "") {
+        if ($content != '') {
             $html .= $content;
         }
         if (!empty($url) && !empty($url["url"])) {
