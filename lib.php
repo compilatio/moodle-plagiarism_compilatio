@@ -1395,7 +1395,7 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename='')
     $mform->addElement('select', 'use_compilatio', get_string("use_compilatio", "plagiarism_compilatio"), $ynoptions);
     $mform->setDefault('use_compilatio', 1);
 
-    if ($modulename == 'mod_assign') {
+    if ($modulename == 'mod_assign' || $modulename == '') { // Blank string '' is for admin settings panel.
         $mform->addElement('select', 'no_duplicates', get_string('no_duplicates', 'plagiarism_compilatio'), $ynoptions);
         $mform->addHelpButton('no_duplicates', 'no_duplicates', 'plagiarism_compilatio');
         $mform->setDefault('no_duplicates', 1);
