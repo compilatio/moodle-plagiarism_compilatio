@@ -207,8 +207,8 @@ $string["allow_teachers_to_show_reports"] = "Permettre aux enseignants de mettre
 $string["admin_disabled_reports"] = "L'administrateur a désactivé l'affichage des rapports de similitudes aux étudiants.";
 $string["teacher"] = "Enseignant";
 $string["loading"] = "Chargement en cours, veuillez patienter...";
-$string["no_duplicates"] = 'Un seul document par étudiant';
-$string["no_duplicates_help"] = "Lorsque le paramètre est activé, les anciens documents déposés par un même étudiant, dans ce devoir, sont supprimés de la bibliothèque de références (désindexés) et supprimés. Ce paramètre ne s'applique pas aux enseignants. Ces derniers peuvent modifier des documents pour des étudiants.";
+$string["no_duplicates"] = 'Un seul document par étudiant (devoirs uniquement)';
+$string["no_duplicates_help"] = "Ce paramètre est utilisé uniquement dans les activités devoirs. Lorsque le paramètre est activé, les anciens documents déposés dans le devoir par un même étudiant sont supprimés de la bibliothèque de références (désindexés) et supprimés. Ce paramètre ne s'applique pas aux enseignants. Ces derniers pouvant modifier des documents pour des étudiants.";
 /* HELP */
 $string['help_compilatio_settings_title'] = 'Quels réglages choisir dans les paramètres Compilatio d’une activité?';
 $string['help_compilatio_settings_content'] = 'Trois types d’analyse sont disponibles avec le plugin Compilatio :
