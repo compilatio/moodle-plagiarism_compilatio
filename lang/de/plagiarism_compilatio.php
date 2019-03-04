@@ -206,7 +206,6 @@ $string["allow_teachers_to_show_reports"] = "Den Lehrpersonen erlauben, die Anal
 $string["admin_disabled_reports"] = "Der Administrator hat die Anzeige der Ähnlichkeitsberichte für die Studenten deaktiviert.";
 $string["teacher"] = "Lehrperson";
 $string["loading"] = "Wird geladen, bitte warten...";
-$string["no_duplicates"] = 'Vermeidung von Duplikaten für einen Benutzer';
 // HELP.
 $string['help_compilatio_settings_title'] = 'Welche Einstellungen in den Compilatio Parametern einer Aktivität auswählen?';
 $string['help_compilatio_settings_content'] = 'Im Compilatio Plugin stehen drei Analysetypen zur Verfügung:

@@ -186,7 +186,6 @@ $string["allow_teachers_to_show_reports"] = 'Autorizar a los profesores para pon
 $string["admin_disabled_reports"] = 'La visualización de los informes de similitudes para los estudiantes fue desactivada por el administrador.';
 $string["teacher"] = 'Profesor';
 $string["loading"] = 'Cargando, un momento por favor...';
-$string["no_duplicates"] = 'Evitar duplicados para un usuario';
 // Help.
 $string["help_compilatio_settings_title"] = '¿Qué ajustes elegir en los parámetros Compilatio de una actividad?';
 $string["help_compilatio_settings_content"] = 'Tres tipos de análisis son disponibles con el plugin Compilatio : <ul><li>Inmediato : Cada documento está enviado a Compilatio y analizado tan pronto como está entregado por el estudiante. Recomendado si desea obtener los resultados lo más rápidamente posible, y si no es necesario que todos los documentos de la actividad sean comparados mutualmente. </li><li>Programado : <br/> Elige una fecha de comienzo de los análisis Compilatio posterior a la fecha límite de entrega de los estudiantes.Recomendado si desea comparar todos los documentos de su actividad entre ellos. </li><li> Manual : <br/> Los documentos de su actividad están analizados sólo si usted mismo activa los análisis. Para empezar el análisis de un documento, haga clic en el botón "analizar" de cada documento. El botón "analizar todos los documentos" le permite activar el análisis de todos los documentos de una tarea. </li></ul>';

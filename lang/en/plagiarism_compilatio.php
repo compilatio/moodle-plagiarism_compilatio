@@ -213,8 +213,6 @@ $string["allow_teachers_to_show_reports"] = "Allow teachers to show similarity r
 $string["admin_disabled_reports"] = "The administrator does not allow the teachers to display the similarity reports to the students.";
 $string["teacher"] = "Teacher";
 $string["loading"] = "Loading, please wait...";
-$string["no_duplicates"] = 'Only one document per student (in assignments only)';
-$string["no_duplicates_help"] = "This parameter is only used in assignments activities. When enabled, student's previous documents posted in assignment are removed from the Compilatio document database (deindexed) and deleted. This parameter does not applies to teachers because teachers can update documents for students.";
 // HELP.
 $string['help_compilatio_settings_title'] = 'Which mode should I use in the Compilatio settings of an activity?';
 $string['help_compilatio_settings_content'] = '

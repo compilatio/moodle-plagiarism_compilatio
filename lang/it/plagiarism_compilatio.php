@@ -192,7 +192,6 @@ $string["allow_teachers_to_show_reports"] = 'Consentire ai docenti di mettere i 
 $string["admin_disabled_reports"] = 'L\'amministratore ha disattivato la funzionalità che permette di mostrare i rapporti di analisi agli studenti.';
 $string["teacher"] = 'Docente';
 $string["loading"] = 'Caricamento in corso, si prega di attendere...';
-$string["no_duplicates"] = 'Evitare i duplicati per un utente';
 // Help.
 $string['help_compilatio_settings_title'] = 'Quali parametri scegliere nelle impostazioni Compilatio di un compito?';
 $string['help_compilatio_settings_content'] = "Il plug-in Compilatio permette di avviare le analisi secondo 3 opzioni:
