@@ -241,7 +241,8 @@ $string['update_meta'] = "Exécute les tâches planifiées par Compilatio.net";
 $string['trigger_timed_analyses'] = "Déclenche les analyses de plagiat programmées";
 // Indexing state.
 $string['indexing_state'] = "Ajouter les documents à la bibliothèque de références";
-$string['indexing_state_help'] = "Le contenu des documents est indexé à la bibliothèque de références. Il sera utilisé comme matériel de comparaison pour les analyses ultérieures.";
+$string['indexing_state_help'] = "Oui: Ajoute les documents dans la bibliothèque de références. Ces documents seront utilisés comme matériel de comparaison pour vos analyses.
+Non: Les documents ne sont pas ajoutés à la bibliothèque de références et ne seront pas utilisés comme matériel de comparaison.";
 $string['indexed_document'] = "Document ajouté à la bibliothèque de références de votre établissement. Son contenu pourra être utilisé pour détecter des similitudes avec d’autres documents.";
 $string['not_indexed_document'] = "Document non ajouté à la bibliothèque de références de votre établissement. Son contenu ne sera pas utilisé pour détecter des similitudes avec d’autres documents.";
 // Information settings.

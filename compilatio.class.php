@@ -200,8 +200,6 @@ class compilatioservice {
 
             $param = array($this->key, $compihash);
             $this->soapcli->__call('deleteDocument', $param);
-            $this->soapcli->__call('dellAuteur', $param);
-            $this->soapcli->__call('deleteAnalyseProgrammee', $param);
 
         } catch (SoapFault $fault) {
             return("Erreur  DelDoc()" . $fault->faultcode ." " .$fault->faultstring);

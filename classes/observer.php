@@ -82,4 +82,28 @@ class plagiarism_compilatio_observer {
         event_handler($event->get_data(), true, false);
     }
 
+    /**
+     * Delete a post
+     * @param  \mod_forum\event\post_deleted $event Event
+     * @return void
+     */
+    public static function forum_post_deleted(
+        \mod_forum\event\post_deleted $event) {
+            global $CFG;
+            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+            event_handler($event->get_data(), false, false);
+    }
+
+    /**
+     * Delete a workshop file and/or content
+     * @param  \mod_workshop\event\submission_deleted $event Event
+     * @return void
+     */
+    public static function workshop_submission_deleted(
+        \mod_workshop\event\submission_deleted $event) {
+            global $CFG;
+            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+            event_handler($event->get_data(), false, false);
+    }
+
 }

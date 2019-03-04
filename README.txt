@@ -8,13 +8,10 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 ==========
-- Add a "No duplicates" feature available in assignments settings (not for forum or workshops).
-  When enabled (by default), student's previous documents are deindexed and deleted in Compilatio
-  before submiting the new document of this student.
-- Teachers can directly index/deindex document by clicking on the documents database icon.
-- Document database icon is no more visible to students
+- Improve documents management to avoid duplicates in Compilatio database.
+- Teachers can directly index/deindex documents by clicking on the document database icon.
+- Document database icon is no more visible for students
 - Behaviour fixed in forums: each post is analysed when Compilatio is enabled in forum activity.
-
 
 QUICK INSTALL
 ================

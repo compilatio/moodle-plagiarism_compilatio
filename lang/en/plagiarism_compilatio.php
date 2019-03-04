@@ -248,7 +248,8 @@ $string['update_meta'] = "Perform Compilatio.net's scheduled operations";
 $string['trigger_timed_analyses'] = "Trigger scheduled plagiarism analysis";
 // Indexing state.
 $string['indexing_state'] = "Add documents into the Document Database";
-$string['indexing_state_help'] = "The content of documents is indexed into the Document Database. It will be used as a comparison content for later analysis.";
+$string['indexing_state_help'] = "Yes: Add documents in the document database. These documents will be used as comparison material for future analysis.
+No: Documents are not added in document database and won't be used for comparisons.";
 $string['indexed_document'] = "Document added to your institution's document database. Its content may be used to detect similarities with other documents.";
 $string['not_indexed_document'] = "Document not added to your institution's document database. Its content will not be used to detect similarities with other documents.";
 // Information settings.

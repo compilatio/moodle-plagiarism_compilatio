@@ -29,7 +29,7 @@ define(['jquery'], function ($) {
                     $(".compi-" + eltId + " > div:first-child").click(function () {
                         toggleIndexingState(basepath, eltId, docId);
                     });
-                }, 250); // Secure wait for all DOM updates be finished before binding events handlers.
+                }, 250); // Wait for all DOM updates be finished before binding events handlers.
             });
         });
     };
