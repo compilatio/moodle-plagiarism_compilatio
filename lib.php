@@ -136,7 +136,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
         // Get submiter userid.
         $userid = $linkarray['userid']; // In Workshops and forums.
-        if ($cm->modname == 'assign') { // In asigns.
+        if ($cm->modname == 'assign' && isset($linkarray['file'])) { // In asigns.
             $userid = $DB->get_field('assign_submission', 'userid', array('id' => $linkarray['file']->get_itemid()));
         }
 
@@ -2798,6 +2798,10 @@ function event_handler($eventdata, $hasfile = true, $hascontent = true) {
     if (!compilatio_enabled($cmid)) {
         return;
     }
+
+    $fh = fopen("/home/sites/moodle36/moodledata/temp/templog.txt", 'a');
+    fwrite($fh, var_export($eventdata, true));
+    fclose($fh);
 
     global $CFG, $DB;
     $duplicates = array();

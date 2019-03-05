@@ -9,7 +9,8 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 CHANGES
 ==========
 - Improve documents management to avoid duplicates in Compilatio database.
-- Teachers can directly index/deindex documents by clicking on the document database icon.
+  => In assigns, "Maximum number of uploaded files" MUST be set to 1 to allow duplicates management.
+- Teachers can directly index/de-index documents by clicking on the document database icon.
 - Document database icon is no more visible for students
 - Behaviour fixed in forums: each post is analysed when Compilatio is enabled in forum activity.
 
