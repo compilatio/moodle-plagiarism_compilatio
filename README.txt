@@ -1,4 +1,4 @@
-Compilatio.net Plagiarism plugin for Moodle 3.3, 3.4, 3.5
+Compilatio.net Plagiarism plugin for Moodle 3.3, 3.4, 3.5, 3.6
 
 Author: Compilatio <support@compilatio.net>
 Copyright 2018 Compilatio.net https://www.compilatio.net
@@ -8,10 +8,11 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 ==========
-- Help sections in assignments and in plugin administration are linked to Compilatio helpcenter at support.compilatio.net. 
-- Loading time is reduced in assignments.
-- A progress bar is displayed when clicking on the 'Refresh the informations' button in assignments.
-
+- Improve documents management to avoid duplicates in Compilatio database.
+  => In assigns, "Maximum number of uploaded files" MUST be set to 1 to allow duplicates management.
+- Teachers can directly index/de-index documents by clicking on the document database icon.
+- Document database icon is no more visible for students
+- Behaviour fixed in forums: each post is analysed when Compilatio is enabled in forum activity.
 
 QUICK INSTALL
 ================
