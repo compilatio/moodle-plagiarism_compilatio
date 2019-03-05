@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Get document indexing state via Compilatio SOAP API
+ * Set document indexing state via Compilatio SOAP API
  *
  * This script is called by amd/build/ajax_api.js
  *
@@ -23,7 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param   string $_POST['idDoc']
- * Echos html block relating to the document's indexing state
+ * @param   string $_POST['indexingState']
+ * @return  boolean
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
@@ -43,7 +44,24 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/helper/ws_helper.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
-if (isset($_POST['idDoc']) && compilatio_valid_md5($_POST['idDoc'])) {
-    $indexingstate = ws_helper::get_indexing_state($_POST['idDoc']);
-    echo(output_helper::get_indexing_state($indexingstate));
+
+// Get global Compilatio settings.
+$plagiarismsettings = (array) get_config('plagiarism');
+
+if (isset($_POST['idDoc']) && compilatio_valid_md5($_POST['idDoc']) && isset($_POST['indexingState'])) {
+
+    $indexingstate = (int) ((boolean) $_POST['indexingState']);
+    $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
+        $plagiarismsettings['compilatio_api'],
+        $CFG->proxyhost,
+        $CFG->proxyport,
+        $CFG->proxyuser,
+        $CFG->proxypassword);
+
+    $call = $compilatio->set_indexing_state($_POST['idDoc'], $indexingstate);
+    if ($call === true) {
+        echo ('true');
+    } else {
+        echo ('false');
+    }
 }

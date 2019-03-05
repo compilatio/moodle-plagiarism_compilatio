@@ -237,8 +237,8 @@ You can click on the “Start analysis” button of each document to trigger its
 ';
 $string['help_compilatio_format_content'] = "Compilatio.net handles most formats used in word processors and on the internet.
 The following formats are supported :";
-$string['goto_helpcenter'] = "<p>Click on the question mark to open a new window and connect to the Compilatio Support Centre.</p>";
-$string['admin_goto_helpcenter'] = "<a href='helpcenter.php?page=moodle-admin' target='_blank' >Access the Compilatio Support Centre</a> to see articles related to administration of the Moodle plugin.";
+$string['goto_helpcenter'] = "Click on the question mark to open a new window and connect to the Compilatio Help Center.";
+$string['admin_goto_helpcenter'] = "Access the Compilatio Help Center to see articles related to administration of the Moodle plugin.";
 // Buttons.
 $string['get_scores'] = "Retrieve plagiarism scores from Compilatio.net";
 $string['send_files'] = "Upload files to Compilatio.net for plagiarism detection";
@@ -246,7 +246,8 @@ $string['update_meta'] = "Perform Compilatio.net's scheduled operations";
 $string['trigger_timed_analyses'] = "Trigger scheduled plagiarism analysis";
 // Indexing state.
 $string['indexing_state'] = "Add documents into the Document Database";
-$string['indexing_state_help'] = "The content of documents is indexed into the Document Database. It will be used as a comparison content for later analysis.";
+$string['indexing_state_help'] = "Yes: Add documents in the document database. These documents will be used as comparison material for future analysis.
+No: Documents are not added in document database and won't be used for comparisons.";
 $string['indexed_document'] = "Document added to your institution's document database. Its content may be used to detect similarities with other documents.";
 $string['not_indexed_document'] = "Document not added to your institution's document database. Its content will not be used to detect similarities with other documents.";
 // Information settings.

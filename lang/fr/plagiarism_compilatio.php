@@ -230,8 +230,8 @@ Le bouton “Analyser tous les documents” vous permet de lancer l’analyse de
 </ul>
 ';
 $string['help_compilatio_format_content'] = "Compilatio.net prend en charge la plupart des formats utilisés en bureautique et sur Internet. Les formats suivants sont acceptés :";
-$string['goto_helpcenter'] = "<p>Cliquez sur le point d'interrogation pour ouvrir une nouvelle fenêtre et vous connecter au centre d'aide Compilatio.</p>";
-$string['admin_goto_helpcenter'] = "<a href='helpcenter.php?page=moodle-admin' target='_blank' >Accédez au centre d'aide Compilatio</a> pour accéder aux articles relatifs à l'administration du plugin Moodle.";
+$string['goto_helpcenter'] = "Cliquez sur le point d'interrogation pour ouvrir une nouvelle fenêtre et vous connecter au centre d'aide Compilatio.";
+$string['admin_goto_helpcenter'] = "Accédez au centre d'aide Compilatio pour accéder aux articles relatifs à l'administration du plugin Moodle.";
 /* END HELP */
 $string['get_scores'] = "Récupère les taux de similitudes depuis Compilatio.net";
 $string['send_files'] = "Envoie les fichiers à Compilatio.net pour détection de plagiat";
@@ -239,7 +239,8 @@ $string['update_meta'] = "Exécute les tâches planifiées par Compilatio.net";
 $string['trigger_timed_analyses'] = "Déclenche les analyses de plagiat programmées";
 // Indexing state.
 $string['indexing_state'] = "Ajouter les documents à la bibliothèque de références";
-$string['indexing_state_help'] = "Le contenu des documents est indexé à la bibliothèque de références. Il sera utilisé comme matériel de comparaison pour les analyses ultérieures.";
+$string['indexing_state_help'] = "Oui: Ajoute les documents dans la bibliothèque de références. Ces documents seront utilisés comme matériel de comparaison pour vos analyses.
+Non: Les documents ne sont pas ajoutés à la bibliothèque de références et ne seront pas utilisés comme matériel de comparaison.";
 $string['indexed_document'] = "Document ajouté à la bibliothèque de références de votre établissement. Son contenu pourra être utilisé pour détecter des similitudes avec d’autres documents.";
 $string['not_indexed_document'] = "Document non ajouté à la bibliothèque de références de votre établissement. Son contenu ne sera pas utilisé pour détecter des similitudes avec d’autres documents.";
 // Information settings.

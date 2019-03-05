@@ -14,12 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * restore_plagiarism_compilatio_plugin.class.php - Contains Plagiarism plugin methods to restore the plugin.
+ *
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
-
+/**
+ * Restore class
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
+
     /**
      * Returns the paths to be handled by the plugin at question level
+     * @return  void
      */
     protected function define_course_plugin_structure() {
         $paths = array();
@@ -32,6 +49,11 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
         return $paths; // And we return the interesting paths.
     }
 
+    /**
+     * Process configuration
+     * @param  object $data Data
+     * @return void
+     */
     public function process_compilatioconfig($data) {
         $data = (object)$data;
 
@@ -43,6 +65,7 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
 
     /**
      * Returns the paths to be handled by the plugin at module level
+     * @return  array Paths
      */
     protected function define_module_plugin_structure() {
         $paths = array();
@@ -60,6 +83,11 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
 
     }
 
+    /**
+     * Process configuration
+     * @param  object $data Data
+     * @return void
+     */
     public function process_compilatioconfigmod($data) {
         global $DB;
 
@@ -72,6 +100,11 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
         }
     }
 
+    /**
+     * Process file configuration
+     * @param  object $data Data
+     * @return void
+     */
     public function process_compilatiofiles($data) {
         global $DB;
 

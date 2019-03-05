@@ -91,8 +91,28 @@ class ws_helper
     public static function get_allowed_file_types() {
 
         $compilatio = self::get_ws();
-        return $compilatio->get_allowed_file_types();
+        $filetypes = $compilatio->get_allowed_file_types();
+        $filtered = array();
 
+        // Check and remove duplicates filetypes.
+        foreach ($filetypes as $ft) {
+
+            $alreadyknown = false;
+            foreach ($filtered as $f) {
+                if ($f->type == $ft->type) {
+                    $alreadyknown = true;
+                    break;
+                }
+            }
+            if ($alreadyknown === false) {
+                $filtered[] = $ft;
+            }
+
+        }
+        usort($filtered, function ($a, $b) {
+            return strcmp($a->type, $b->type);
+        });
+        return $filtered;
     }
 
     /**

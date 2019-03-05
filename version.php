@@ -17,7 +17,7 @@
 /**
  * version.php - Contains Plagiarism plugin settings.
  *
- * @since 2.0
+ * @since      2.0
  * @package    plagiarism_compilatio
  * @subpackage plagiarism
  * @author     Dan Marsden <dan@danmarsden.com>
@@ -27,9 +27,9 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-$plugin->version    = 2018120301;
+$plugin->version    = 2019030400;
 $plugin->requires   = 2013111810.00;
 $plugin->cron       = 300; // Only run every 5 minutes.
 $plugin->component  = 'plagiarism_compilatio';
 $plugin->maturity   = MATURITY_STABLE;
-$plugin->release    = '2.5.0';
+$plugin->release    = '2.5.1';

@@ -213,8 +213,8 @@ I documenti del compito sono analizzati solo se le analisi sono avviate personal
 </ul>";
 $string['help_compilatio_format_content'] = "Compilatio.net prende in considerazione la maggior parte dei formati utilizzati.
 I seguenti formati sono accettati";
-$string['goto_helpcenter'] = "<p>Clicca sul punto di domanda per aprire una nuova finestra e collegarti al centro di assistenza Compilatio.</p>";
-$string['admin_goto_helpcenter'] = "<a href='helpcenter.php?page=moodle-admin' target='_blank' >Accedi al centro di assistenza Compilatio</a> per accedere agli articoli relativi alla gestione del plugin Moodle.";
+$string['goto_helpcenter'] = "Clicca sul punto di domanda per aprire una nuova finestra e collegarti al centro di assistenza Compilatio.";
+$string['admin_goto_helpcenter'] = "Accedi al centro di assistenza Compilatio per accedere agli articoli relativi alla gestione del plugin Moodle.";
 // Buttons.
 $string['compilatio:enable'] = "Autorizzare l'insegnante a attivare/disattivare Compilatio all'interno di un'attività";
 $string['compilatio:resetfile'] = "Autorizzare l'insegnante a caricare nuovamente il documento all'interno di Compilatio dopo un errore";

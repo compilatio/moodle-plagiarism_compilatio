@@ -43,5 +43,13 @@ $observers = array(
     array(
         'eventname' => '\assignsubmission_onlinetext\event\assessable_uploaded',
         'callback' => 'plagiarism_compilatio_observer::assignsubmission_onlinetext_uploaded'
+    ),
+    array(
+        'eventname' => '\mod_forum\event\post_deleted',
+        'callback' => 'plagiarism_compilatio_observer::forum_post_deleted'
+    ),
+    array(
+        'eventname' => '\mod_workshop\event\submission_deleted',
+        'callback' => 'plagiarism_compilatio_observer::workshop_submission_deleted'
     )
 );
