@@ -120,6 +120,16 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             return '';
         }
 
+        // Get Compilatio's module configuration.
+        $plugincm = compilatio_cm_use($linkarray['cmid']);
+
+        // Patch Moodle 3.5 - exit if student is not allowed to view Compilatio div.
+        $usercontext = context_user::instance($linkarray['userid']);
+        $teacher = has_capability('plagiarism/compilatio:viewreport', $usercontext);
+        if ($plugincm['compilatio_show_student_score'] == '0' && !$teacher) {
+            return '';
+        }
+
         global $DB, $CFG, $PAGE;
         $output = '';
 
@@ -128,10 +138,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         $domid++;
 
         $cm = get_coursemodule_from_id(null, $linkarray['cmid']);
-        $modulecontext = context_module::instance($linkarray['cmid']);
-
-        // If the user has permission to see result of all items in this course module.
-        $teacher = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
         $indexingstate = null;
 
         // Get submiter userid.
@@ -208,7 +214,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         $trigger = optional_param('compilatioprocess', 0, PARAM_INT);
 
         if ($results['statuscode'] == COMPILATIO_STATUSCODE_ACCEPTED && $trigger == $results['pid']) {
-            if (has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext)) {
+            if (has_capability('plagiarism/compilatio:triggeranalysis', $usercontext)) {
                 // Trigger manual analysis call.
                 $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('id' => $trigger));
                 $analyse = compilatio_startanalyse($plagiarismfile);
@@ -294,7 +300,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                 $span = get_string('planned', 'plagiarism_compilatio');
                 $title = get_string('waitingforanalysis', 'plagiarism_compilatio',
                     userdate($plagiarismvalues['compilatio_timeanalyse']));
-            } else if (has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext)) {
+            } else if (has_capability('plagiarism/compilatio:triggeranalysis', $usercontext)) {
                 $url = new moodle_url($PAGE->url, array('compilatioprocess' => $results['pid']));
                 $action = optional_param('action', '', PARAM_TEXT); // Hack to add action to params for mod/assign.
                 if (!empty($action)) {
@@ -346,7 +352,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $title = get_string('unknownwarning', 'plagiarism_compilatio');
             $reset = '';
             $url = "";
-            if (has_capability('plagiarism/compilatio:resetfile', $modulecontext) &&
+            if (has_capability('plagiarism/compilatio:resetfile', $usercontext) &&
                 !empty($results['error'])) { // This is a teacher viewing the responses.
                 // Strip out some possible known text to tidy it up.
                 $erroresponse = format_text($results['error'], FORMAT_PLAIN);
