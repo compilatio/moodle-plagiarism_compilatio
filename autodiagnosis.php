@@ -52,18 +52,13 @@ if (isset($plagiarismsettings["compilatio_use"])) {
  * describing the error if any occurs.
  * API key does not matter here.
  */
-if (isset($plagiarismsettings["compilatio_api"])) {
-    $compilatio = new compilatioservice(
-            "KEY", $plagiarismsettings['compilatio_api'], $CFG->proxyhost, $CFG->proxyport, $CFG->proxyuser, $CFG->proxypassword);
-    $connectionsuccess = !is_string($compilatio->soapcli);
-} else {
-    $compilatio = new compilatioservice(
-            "KEY", "https://service.compilatio.net/webservices/CompilatioUserClient2.wsdl",
-            $CFG->proxyhost,
-            $CFG->proxyport,
-            $CFG->proxyuser,
-            $CFG->proxypassword);
-    $connectionsuccess = !is_string($compilatio->soapcli);
+
+$connectionstatus = ws_helper::test_connection();
+if ($connectionstatus) {
+    $connectionsuccess = true;
+}
+else {
+    $connectionsuccess = false;
 }
 
 // Test if Compilatio is enabled for assign.

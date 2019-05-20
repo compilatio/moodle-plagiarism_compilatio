@@ -259,3 +259,39 @@ $string['restart_failed_analysis'] = 'Restart interrupted analysis';
 $string['restart_failed_analysis_title'] = 'Restart interrupted analysis :';
 // Max attempt reached.
 $string['max_attempts_reach_files'] = 'Analysis has been interrupted for the following files. Analyses were sent too many times, you cannot restart them anymore :';
+// Privacy (GDPR)
+$string['privacy:metadata:core_files'] = 'Files attached to submissions or created from online text submissions';
+$string['privacy:metadata:core_plagiarism'] = 'This plugin is called by Moodle plagiarism subsystem';
+
+$string['privacy:metadata:plagiarism_compilatio_files'] = 'Informations about the submissions uploaded';
+$string['privacy:metadata:plagiarism_compilatio_files:id'] = 'The submission\'s ID stored in the Moodle database';
+$string['privacy:metadata:plagiarism_compilatio_files:cm'] = 'The course module\'s ID where the submission is stored';
+$string['privacy:metadata:plagiarism_compilatio_files:userid'] = 'The Moodle user\'s ID who made the submission';
+$string['privacy:metadata:plagiarism_compilatio_files:identifier'] = 'The submission\'s contenthash';
+$string['privacy:metadata:plagiarism_compilatio_files:filename'] = 'The submission\'s name (eventually auto-generated)';
+$string['privacy:metadata:plagiarism_compilatio_files:timesubmitted'] = 'The timestamp when the submission was stored in the Moodle database of the plugin';
+$string['privacy:metadata:plagiarism_compilatio_files:externalid'] = 'The submission\'s ID stored in the Compilatio database';
+$string['privacy:metadata:plagiarism_compilatio_files:statuscode'] = 'The submission\'s status code (Analyzed, In queue, Timeout...)';
+$string['privacy:metadata:plagiarism_compilatio_files:reporturl'] = 'The submission\'s URL report';
+$string['privacy:metadata:plagiarism_compilatio_files:similarityscore'] = 'The submission\'s similarity score';
+$string['privacy:metadata:plagiarism_compilatio_files:attempt'] = 'The number of times the user tried to analyze his submission';
+$string['privacy:metadata:plagiarism_compilatio_files:errorresponse'] = 'The response if an error occurred - actually, this field is not used anymore and is automatically set to \'NULL\'';
+
+$string['privacy:metadata:external_compilatio_document'] = 'Informations about the documents in Compilatio database';
+$string['privacy:metadata:external_compilatio_document:lastname'] = 'The last name of the Compilatio user who submitted the file - beware, this user is the one linked to the Compilatio API key of the Moodle platform (so it\'s usually the administrator of the platform)';
+$string['privacy:metadata:external_compilatio_document:firstname'] = 'The first name of the Compilatio user who submitted the file - beware, this user is the one linked to the Compilatio API key of the Moodle platform (so it\'s usually the administrator of the platform)';
+$string['privacy:metadata:external_compilatio_document:email_adress'] = 'The email adress of the Compilatio user who submitted the file - beware, this user is the one linked to the Compilatio API key of the Moodle platform (so it\'s usually the administrator of the platform)';
+$string['privacy:metadata:external_compilatio_document:user_id'] = 'The Compilatio user\'s ID who submitted the file - beware, this user is the one linked to the Compilatio API key of the Moodle platform (so it\'s usually the administrator of the platform)';
+$string['privacy:metadata:external_compilatio_document:filename'] = 'The submission\'s name';
+$string['privacy:metadata:external_compilatio_document:upload_date'] = 'The timestamp when the submission was stored in the Compilatio database';
+$string['privacy:metadata:external_compilatio_document:id'] = 'The submission\'s ID stored in the Compilatio database';
+$string['privacy:metadata:external_compilatio_document:indexed'] = 'The submission\'s indexing state (if the submission can be used to detect similarities with other documents)';
+
+$string['privacy:metadata:external_compilatio_report'] = 'Informations about the reports in Compilatio database';
+$string['privacy:metadata:external_compilatio_report:id'] = 'The Compilatio report\'s ID';
+$string['privacy:metadata:external_compilatio_report:doc_id'] = 'The Compilatio submission\'s ID which was analyzed';
+$string['privacy:metadata:external_compilatio_report:user_id'] = 'The Compilatio user\'s ID who submitted the file - beware, this user is the one linked to the Compilatio API key of the Moodle platform (so it\'s usually the administrator of the platform)';
+$string['privacy:metadata:external_compilatio_report:start'] = 'The timestamp when the analysis started';
+$string['privacy:metadata:external_compilatio_report:end'] = 'The timestamp when the analysis ended';
+$string['privacy:metadata:external_compilatio_report:state'] = 'The submission\'s state (Analyzed, In queue, Timeout...)';
+$string['privacy:metadata:external_compilatio_report:plagiarism_percent'] = 'The submission\'s similarity score';

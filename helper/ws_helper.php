@@ -47,15 +47,7 @@ class ws_helper
         $ppc = new plagiarism_plugin_compilatio();
         $plagiarismsettings = $ppc->get_settings();
 
-        return new compilatioservice(
-            $plagiarismsettings['compilatio_password'],
-            $plagiarismsettings['compilatio_api'],
-            $CFG->proxyhost,
-            $CFG->proxyport,
-            $CFG->proxyuser,
-            $CFG->proxypassword
-        );
-
+        return new compilatioservice($plagiarismsettings['compilatio_password'], $plagiarismsettings['compilatio_api']);
     }
 
     /**
@@ -67,8 +59,8 @@ class ws_helper
 
         $compilatio = self::get_ws();
         $quotasarray = $compilatio->get_quotas();
-        return $quotasarray['quotas'] != null;
 
+        return $quotasarray['quotas'] != null;
     }
 
     /**
@@ -80,7 +72,6 @@ class ws_helper
 
         $compilatio = self::get_ws();
         return $compilatio->get_allowed_file_max_size();
-
     }
 
     /**
@@ -92,14 +83,15 @@ class ws_helper
 
         $compilatio = self::get_ws();
         $filetypes = $compilatio->get_allowed_file_types();
+        
         $filtered = array();
-
+ 
         // Check and remove duplicates filetypes.
         foreach ($filetypes as $ft) {
 
             $alreadyknown = false;
             foreach ($filtered as $f) {
-                if ($f->type == $ft->type) {
+                if ($f["type"] == $ft["type"]) {
                     $alreadyknown = true;
                     break;
                 }
@@ -110,8 +102,9 @@ class ws_helper
 
         }
         usort($filtered, function ($a, $b) {
-            return strcmp($a->type, $b->type);
+            return strcmp($a["type"], $b["type"]);
         });
+        
         return $filtered;
     }
 
@@ -125,7 +118,6 @@ class ws_helper
 
         $compilatio = self::get_ws();
         return $compilatio->get_indexing_state($compid);
-
     }
 
     /**
@@ -138,7 +130,5 @@ class ws_helper
 
         $compilatio = self::get_ws();
         return $compilatio->set_indexing_state($compid, $indexingstate);
-
     }
-
 }

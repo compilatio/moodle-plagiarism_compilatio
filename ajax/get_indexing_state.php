@@ -32,7 +32,7 @@ require_once($CFG->libdir . '/plagiarismlib.php');
 
 // Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/api.class.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 // Get helper class.

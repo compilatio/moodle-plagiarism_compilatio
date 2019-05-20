@@ -53,7 +53,7 @@ class compilatio_setup_form extends moodleform {
         $mform->addElement('text', 'compilatio_api', get_string('compilatioapi', 'plagiarism_compilatio'));
         $mform->addHelpButton('compilatio_api', 'compilatioapi', 'plagiarism_compilatio');
         $mform->addRule('compilatio_api', null, 'required', null, 'client');
-        $mform->setDefault('compilatio_api', 'https://service.compilatio.net/webservices/CompilatioUserClient2.wsdl');
+        $mform->setDefault('compilatio_api', 'https://beta.compilatio.net');
         $mform->setType('compilatio_api', PARAM_URL);
 
         $mform->addElement('passwordunmask', 'compilatio_password', get_string('compilatiopassword', 'plagiarism_compilatio'));

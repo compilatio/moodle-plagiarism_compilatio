@@ -33,7 +33,7 @@ require_once($CFG->libdir . '/plagiarismlib.php');
 
 // Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/api.class.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 // Get helper class.
@@ -51,12 +51,7 @@ $plagiarismsettings = (array) get_config('plagiarism');
 if (isset($_POST['idDoc']) && compilatio_valid_md5($_POST['idDoc']) && isset($_POST['indexingState'])) {
 
     $indexingstate = (int) ((boolean) $_POST['indexingState']);
-    $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
-        $plagiarismsettings['compilatio_api'],
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
+    $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'], $plagiarismsettings['compilatio_api']);
 
     $call = $compilatio->set_indexing_state($_POST['idDoc'], $indexingstate);
     if ($call === true) {
