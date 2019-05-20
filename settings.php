@@ -108,6 +108,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 $plagiarismsettings = (array) get_config('plagiarism');
 $mform->set_data($plagiarismsettings);
 
+
 if (!empty($plagiarismsettings['compilatio_use']) && !$incorrectconfing) {
     $quotasarray = compilatio_getquotas();
     $quotas = $quotasarray['quotas'];
@@ -122,14 +123,19 @@ if (!empty($plagiarismsettings['compilatio_use']) && !$incorrectconfing) {
         echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
         echo $OUTPUT->notification(get_string('enabledandworking', 'plagiarism_compilatio'), 'notifysuccess');
         $a = new stdClass();
-        $a->used = $quotas['usedCredits'];
+        $a->used = $quotas->usedCredits;
         $a->end_date = strtolower(compilatio_format_date(compilatio_get_account_expiration_date()));
         echo "<p>" . get_string('subscription_state', 'plagiarism_compilatio', $a) . '</p>';
         echo $OUTPUT->box_end();
     }
     $plagiarismsettings = get_config('plagiarism');
 
-    $compilatio = new compilatioservice($plagiarismsettings->compilatio_password, $plagiarismsettings->compilatio_api);
+    $compilatio = new compilatioservice($plagiarismsettings->compilatio_password,
+                                        $plagiarismsettings->compilatio_api,
+                                        $CFG->proxyhost,
+                                        $CFG->proxyport,
+                                        $CFG->proxyuser,
+                                        $CFG->proxypassword);
 }
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 $mform->display();
