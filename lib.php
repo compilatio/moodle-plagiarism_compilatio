@@ -123,7 +123,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         // Get Compilatio's module configuration.
         $plugincm = compilatio_cm_use($linkarray['cmid']);
 
-        // Don't show Compilatio if not allowed
+        // Don't show Compilatio if not allowed.
         $modulecontext = context_module::instance($linkarray['cmid']);
         $teacher = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
         if ($plugincm['compilatio_show_student_score'] == '0' && !$teacher) {
