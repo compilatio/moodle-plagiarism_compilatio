@@ -1,7 +1,7 @@
 Compilatio.net Plagiarism plugin for Moodle 3.3, 3.4, 3.5, 3.6
 
 Author: Compilatio <support@compilatio.net>
-Copyright 2018 Compilatio.net https://www.compilatio.net
+Copyright 2019 Compilatio.net https://www.compilatio.net
 License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
@@ -9,6 +9,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 CHANGES
 ==========
 - Fix plugin visibility depending on user rights in Moodle 3.5
+- Added GDPR compliance (from Moodle 3.5)
 
 QUICK INSTALL
 ================
