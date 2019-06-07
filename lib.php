@@ -2806,10 +2806,6 @@ function event_handler($eventdata, $hasfile = true, $hascontent = true) {
         return;
     }
 
-    $fh = fopen("/home/sites/moodle36/moodledata/temp/templog.txt", 'a');
-    fwrite($fh, var_export($eventdata, true));
-    fclose($fh);
-
     global $CFG, $DB;
     $duplicates = array();
 
