@@ -211,3 +211,9 @@ $string['restart_failed_analysis'] = 'Lanzar de nuevo los análisis que fracasar
 $string['restart_failed_analysis_title'] = 'Lanzar de nuevo los análisis que fracasaron :';
 // Max attempt reached.
 $string['max_attempts_reach_files'] = 'Los ficheros siguientes no pudieron ser analizados por Compilatio. El límite de lanzamiento de análisis ha sido alcanzado :';
+// Privacy (GDPR).
+$string['owner_file'] = 'RGPD y propiedad de la tarea';
+$string['owner_file_school'] = 'El centro es el propietario de las tareas';
+$string['owner_file_school_details'] = 'En caso de solicitud de supresión de los datos personales de un alumno, el contenido de las tareas se conservará y estará disponible para una futura comparación con nuevas tareas. Al vencimiento del contrato con Compilatio, todos los datos personales de su centro, incluidas las tareas, se suprimen en los plazos previstos contractualmente.';
+$string['owner_file_student'] = 'El alumno es el único propietario de su tarea';
+$string['owner_file_student_details'] = 'En caso de solicitud de supresión de los datos personales de un alumno, las tareas se suprimirán de la plataforma Moodle y de la biblioteca de referencias Compilatio. Las tareas dejarán de estar disponibles para una comparación con nuevos documentos.';
