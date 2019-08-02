@@ -250,3 +250,9 @@ $string['restart_failed_analysis'] = 'Gescheiterte Analysen erneut auslösen';
 $string['restart_failed_analysis_title'] = 'Neustart der gescheiterten Analysen:';
 // Max attempt reached.
 $string['max_attempts_reach_files'] = 'Folgende Dateien konnten nicht von Compilatio analysiert werden. Der Grenzwert zum Neustart der Analysen wurde erreicht:';
+// Privacy (DSGVO).
+$string['owner_file'] = 'DSGVO und Eigentum der Arbeit';
+$string['owner_file_school'] = 'EDie Bildungsinstitution ist Eigentümerin der Arbeiten';
+$string['owner_file_school_details'] = 'Im Falle einer Anfrage zur Löschung von personenbezogenen Daten seitens eines Schülers wird der Inhalt der Arbeit aufbewahrt und steht für zukünftige Vergleiche mit neuen Arbeiten zur Verfügung. Nach Vertragsende mit Compilatio werden innerhalb der vertraglich festgelegten Fristen alle personenbezogenen Daten, die aus Ihrer Bildungsinstitution stammen, gelöscht, darunter auch die Arbeiten.';
+$string['owner_file_student'] = 'Der Studierende ist Eigentümer seiner Arbeit';
+$string['owner_file_student_details'] = 'Im Falle einer Anfrage zur Löschung von personenbezogenen Daten seitens eines Schülers werden die Arbeiten aus der Moodle Plattform und der Compilatio Referenzbibliothek gelöscht. Die Arbeiten stehen nicht mehr zum Vergleich mit neuen Dokumenten zur Verfügung.';
