@@ -238,3 +238,9 @@ $string['restart_failed_analysis'] = 'Riavviare le analisi errate';
 $string['restart_failed_analysis_title'] = 'Riavvio delle analisi errate :';
 // Max attempt reached.
 $string['max_attempts_reach_files'] = 'I file seguenti non sono stati analizzati da Compilatio. Il limite di riavvio delle analisi è stato raggiunto :';
+// Privacy (RGDP).
+$string['owner_file'] = 'RGPD e proprietà dei testi';
+$string['owner_file_school'] = 'Lo stabilimento è proprietario degli elaborati';
+$string['owner_file_school_details'] = 'In caso di richiesta di cancellazione dei dati personali di un allievo, il contenuto dei suoi elaborati sarà disponibile per un confronto futuro con eventuali nuovi testi. Al termine del contratto con Compilatio, tutti i dati personali del vostro stabilimento – compresi gli elaborati caricati sul sito – saranno cancellati entro i termini contrattuali.';
+$string['owner_file_student'] = 'L\'allievo è l\'unico proprietario dei suoi elaborati';
+$string['owner_file_student_details'] = 'In caso di richiesta di cancellazione dei dati personali di uno studente, i suoi elaborati saranno cancellati dalla piattaforma Moodle e dalla biblioteca di riferimento di Compilatio. Gli elaborati non saranno più disponibili per un confronto con nuovi documenti.';
