@@ -434,7 +434,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         }
         // End of rights checking.
 
-        // Anyone can see the Compilatio <div> only if they are allowed... We don't need to check anything else.
+        // Anyone can see the Compilatio <div> only if they are allowed... We don't need to check anything else
         if (!$viewscore) {
             // User is not permitted to see any details.
             return false;
@@ -2805,6 +2805,10 @@ function event_handler($eventdata, $hasfile = true, $hascontent = true) {
     if (!compilatio_enabled($cmid)) {
         return;
     }
+
+    $fh = fopen("/home/sites/moodle36/moodledata/temp/templog.txt", 'a');
+    fwrite($fh, var_export($eventdata, true));
+    fclose($fh);
 
     global $CFG, $DB;
     $duplicates = array();
