@@ -23,10 +23,10 @@ define(['jquery'], function ($) {
         $(document).ready(function () {
             $.post(basepath + '/plagiarism/compilatio/ajax/get_indexing_state.php', { 'idDoc': docId }, function (data) {
                 $(".compi-" + eltId + " .library").detach();
-                $(".compi-" + eltId + " > div:nth-child(2)").prepend(data);
+                $(".compi-" + eltId).prepend(data);
 
                 setTimeout(function () {
-                    $(".compi-" + eltId + " > div:nth-child(2) div:first-child").click(function () {
+                    $(".compi-" + eltId + " > div:first-child").click(function () {
                         toggleIndexingState(basepath, eltId, docId);
                     });
                 }, 250); // Wait for all DOM updates be finished before binding events handlers.
@@ -36,15 +36,15 @@ define(['jquery'], function ($) {
 
     var toggleIndexingState = exports.toggleIndexingState = function (basepath, eltId, docId) {
         var indexingState;
-        if ($(".compi-" + eltId + " > div:nth-child(2) div:first-child").is('.library-in')) {
-            $(".compi-" + eltId + " > div:nth-child(2) div:first-child").removeClass('library-in');
+        if ($(".compi-" + eltId + " > div:first-child").is('.library-in')) {
+            $(".compi-" + eltId + " > div:first-child").removeClass('library-in');
             indexingState = 0;
         }
-        if ($(".compi-" + eltId + " > div:nth-child(2) div:first-child").is('.library-out')) {
-            $(".compi-" + eltId + " > div:nth-child(2) div:first-child").removeClass('library-out');
+        if ($(".compi-" + eltId + " > div:first-child").is('.library-out')) {
+            $(".compi-" + eltId + " > div:first-child").removeClass('library-out');
             indexingState = 1;
         }
-        $(".compi-" + eltId + " > div:nth-child(2) div:first-child").addClass('library');
+        $(".compi-" + eltId + " > div:first-child").addClass('library');
         $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php', { 'idDoc': docId, 'indexingState': indexingState }, function (data) {
             if (data == 'true') {
                 getIndexingState(basepath, eltId, docId);
