@@ -365,6 +365,8 @@ class compilatioservice {
      */
     public function get_allowed_file_types() {
 
+        global $SESSION;
+
         try {
             if (!is_object($this->soapcli)) {
                 return false;

@@ -99,19 +99,21 @@ class output_helper
 
     }
 
+
     /**
      * Display plagiarism document area
      *
-     * @param string $span    One word about the status to be displayed in the area
-     * @param object $image   Identifier of an image from Compilatio plugin,
-     *                        rendered using $OUTPUT->pix_url($image, 'plagiarism_compilatio')
-     * @param string $title   Title
-     * @param string $content Content to be appended in the plagiarism area, such as similarity rate.
-     * @param string $url     index ["target-blank"] contains a boolean : True to open in a new window.
-     *                        index ["url"] contains the URL.
-     * @param string $error   Span will be stylized as an error if $error is true.
-     * @param mixed  $indexed Indexing state of the document.
-     * @param string $compid  DOM Compilatio ID
+     * @param string $span          One word about the status to be displayed in the area
+     * @param object $image         Identifier of an image from Compilatio plugin,
+     *                              rendered using $OUTPUT->pix_url($image, 'plagiarism_compilatio')
+     * @param string $title         Title
+     * @param string $content       Content to be appended in the plagiarism area, such as similarity rate.
+     * @param string $url           index ["target-blank"] contains a boolean : True to open in a new window.
+     *                              index ["url"] contains the URL.
+     * @param string $error         Span will be stylized as an error if $error is true.
+     * @param mixed  $indexed       Indexing state of the document.
+     * @param string $compid        DOM Compilatio ID
+     * @param string $warning       warning about document or analysis
      *
      * @return string Return the HTML formatted string.
      */
@@ -122,7 +124,8 @@ class output_helper
                                                $url = array(),
                                                $error = false,
                                                $indexed = null,
-                                               $compid) {
+                                               $compid,
+                                               $warning = '') {
 
         if ($content == '' && $span == '') {
             return '';
@@ -153,9 +156,12 @@ class output_helper
             new moodle_url("/plagiarism/compilatio/pix/logo_compilatio_carre.png") .
             '\');background-size:cover;" title="Compilatio.net"></div>';
 
+        // Image.
         if ($image !== "") {
             $html .= '<img src="' . $OUTPUT->image_url($image, 'plagiarism_compilatio') . '" class="float-right" />';
         }
+
+        // State information.
         if ($span !== "") {
             if ($error) {
                 $class = "compilatio-error";
@@ -174,9 +180,26 @@ class output_helper
             $html .= "</a>";
         }
 
-        $html .= "</div>";
-        $html .= "</div>";
+        $html .= '</div>';
 
+        // Warning information.
+        if ($warning != '') {
+            // Get locale strings for warnings codes.
+            $errorinfos = explode(",", $warning);
+            if (count($errorinfos) > 1) {
+                $titles = array();
+                foreach ($errorinfos as $k => $e) {
+                    $titles[] = $k + 1 . '°) ' .get_string($e, "plagiarism_compilatio");
+                }
+                $title = implode("\n", $titles);
+            } else {
+                $title = get_string($warning, "plagiarism_compilatio");
+            }
+            $html .= '<div class="compi-alert"><img src="' . $OUTPUT->image_url('exclamation-yellow', 'plagiarism_compilatio');
+            $html .= '" title="' . $title . '" /></div>';
+        }
+
+        $html .= "</div>";
         $html .= "<div class='clear'></div>";
 
         return $html;

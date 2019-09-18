@@ -30,7 +30,7 @@ Compilatio document area :
 }
 .plagiarismreport-link,
 .plagiarismreport {
-    width: 105px;
+    width: 120px;
     height: 20px;
 }
 .plagiarismreport-link {
@@ -322,9 +322,8 @@ legend.compilatio_legend {
     -ms-align-items: center;
     align-items: center;
     position: relative;
-    top: -5px;
-    width: 99%;
     padding-top: 10px;
+    margin-right: 11px;
 }
 .library,
 .library-in,
@@ -356,4 +355,13 @@ legend.compilatio_legend {
 }
 #compilatio-home > p {
     margin-top: 15px;
+}
+.compi-alert {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+}
+.compi-alert > img {
+    width: 14px;
+    position: relative;
 }
