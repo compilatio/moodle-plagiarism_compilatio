@@ -90,29 +90,41 @@ class ws_helper
      */
     public static function get_allowed_file_types() {
 
+        global $SESSION;
+
+        if (isset($SESSION->compilatio_allowed_file_types)) {
+            return $SESSION->compilatio_allowed_file_types;
+        }
+
         $compilatio = self::get_ws();
         $filetypes = $compilatio->get_allowed_file_types();
         $filtered = array();
 
-        // Check and remove duplicates filetypes.
-        foreach ($filetypes as $ft) {
+        if (is_array($filetypes)) {
+            // Check and remove duplicates filetypes.
+            foreach ($filetypes as $ft) {
 
-            $alreadyknown = false;
-            foreach ($filtered as $f) {
-                if ($f->type == $ft->type) {
-                    $alreadyknown = true;
-                    break;
+                $alreadyknown = false;
+                foreach ($filtered as $f) {
+                    if ($f->type == $ft->type) {
+                        $alreadyknown = true;
+                        break;
+                    }
                 }
-            }
-            if ($alreadyknown === false) {
-                $filtered[] = $ft;
-            }
+                if ($alreadyknown === false) {
+                    $filtered[] = $ft;
+                }
 
+            }
+            usort($filtered, function ($a, $b) {
+                return strcmp($a->type, $b->type);
+            });
+            $SESSION->compilatio_allowed_file_types = $filtered;
+            return $SESSION->compilatio_allowed_file_types;
+        } else {
+            return array();
         }
-        usort($filtered, function ($a, $b) {
-            return strcmp($a->type, $b->type);
-        });
-        return $filtered;
+
     }
 
     /**

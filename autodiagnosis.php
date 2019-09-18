@@ -58,7 +58,7 @@ if (isset($plagiarismsettings["compilatio_api"])) {
     $connectionsuccess = !is_string($compilatio->soapcli);
 } else {
     $compilatio = new compilatioservice(
-            "KEY", "https://service.compilatio.net/webservices/CompilatioUserClient2.wsdl",
+            "KEY", "https://service.compilatio.net/webservices/CompilatioUserClient.wsdl",
             $CFG->proxyhost,
             $CFG->proxyport,
             $CFG->proxyuser,

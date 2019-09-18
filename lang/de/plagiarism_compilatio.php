@@ -206,6 +206,8 @@ $string["allow_teachers_to_show_reports"] = "Den Lehrpersonen erlauben, die Anal
 $string["admin_disabled_reports"] = "Der Administrator hat die Anzeige der Ähnlichkeitsberichte für die Studenten deaktiviert.";
 $string["teacher"] = "Lehrperson";
 $string["loading"] = "Wird geladen, bitte warten...";
+// ALERTS.
+$string["unknownlang"] = "Achtung, die Sprache einiger Passagen in diesem Dokument wurde nicht erkannt.";
 // HELP.
 $string['help_compilatio_settings_title'] = 'Welche Einstellungen in den Compilatio Parametern einer Aktivität auswählen?';
 $string['help_compilatio_settings_content'] = 'Im Compilatio Plugin stehen drei Analysetypen zur Verfügung:
@@ -250,3 +252,45 @@ $string['restart_failed_analysis'] = 'Gescheiterte Analysen erneut auslösen';
 $string['restart_failed_analysis_title'] = 'Neustart der gescheiterten Analysen:';
 // Max attempt reached.
 $string['max_attempts_reach_files'] = 'Folgende Dateien konnten nicht von Compilatio analysiert werden. Der Grenzwert zum Neustart der Analysen wurde erreicht:';
+// Privacy (DSGVO).
+$string['privacy:metadata:core_files'] = "Eingereichte oder in einem Eingabefeld erstellte Dateien";
+$string['privacy:metadata:core_plagiarism'] = "Dieses Plugin wird vom Plagiatserkennung-Untersystem von Moodle aufgerufen";
+
+$string['privacy:metadata:plagiarism_compilatio_files'] = "Informationen zu den bei Compilatio eingereichten Dateien in der Datenbank des Plugins";
+$string['privacy:metadata:plagiarism_compilatio_files:id'] = "Kennung der Einreichung in der Moodle Datenbank";
+$string['privacy:metadata:plagiarism_compilatio_files:cm'] = "Kennung des Unterrichtsmoduls, in dem sich die Einreichung befindet";
+$string['privacy:metadata:plagiarism_compilatio_files:userid'] = "Kennung des Moodle Nutzers, der die Einreichung vorgenommen hat";
+$string['privacy:metadata:plagiarism_compilatio_files:identifier'] = "Der contenthash der Einreichung";
+$string['privacy:metadata:plagiarism_compilatio_files:filename'] = "Der Name (eventuell auto-generiert) der Einreichung";
+$string['privacy:metadata:plagiarism_compilatio_files:timesubmitted'] = "Uhrzeit der Speicherung in der Moodle Datenbank des Plugins";
+$string['privacy:metadata:plagiarism_compilatio_files:externalid'] = "Kennung der Einreichung in der Compilatio Datenbank";
+$string['privacy:metadata:plagiarism_compilatio_files:statuscode'] = "Stand der Analyse der Einreichung (analysiert, im Wartestatus, Zeit überschritten, …)";
+$string['privacy:metadata:plagiarism_compilatio_files:reporturl'] = "Die URL-Adresse des Analyseberichts";
+$string['privacy:metadata:plagiarism_compilatio_files:similarityscore'] = "Ähnlichkeitsprozentsatz für diese Einreichung";
+$string['privacy:metadata:plagiarism_compilatio_files:attempt'] = "Anzahl Analysestartversuche des Nutzers für eine Einreichung";
+$string['privacy:metadata:plagiarism_compilatio_files:errorresponse'] = "Antwort im Falle eines Fehlers – gegenwärtig wird dieses Feld nicht mehr genutzt und automatisch mit 'NULL' ausgegeben";
+
+$string['privacy:metadata:external_compilatio_document'] = "Informationen zu den Dokumenten in der Compilatio Datenbank";
+$string['privacy:metadata:external_compilatio_document:lastname'] = "Name des Compilatio Nutzers, der die Datei eingereicht hat – Achtung, dieser Nutzer ist derjenige, der mit dem  Compilatio API-Key auf der Moodle Plattform verknüpft ist (dies ist also häufig der Administrator der Plattform)";
+$string['privacy:metadata:external_compilatio_document:firstname'] = "Vorname des Compilatio Nutzers, der die Datei eingereicht hat – Achtung, dieser Nutzer ist derjenige, der mit dem  Compilatio API-Key auf der Moodle Plattform verknüpft ist (dies ist also häufig der Administrator der Plattform)";
+$string['privacy:metadata:external_compilatio_document:email_adress'] = "E-Mail-Adresse des Compilatio Nutzers, der die Datei eingereicht hat – Achtung, dieser Nutzer ist derjenige, der mit dem  Compilatio API-Key auf der Moodle Plattform verknüpft ist (dies ist also häufig der Administrator der Plattform)";
+$string['privacy:metadata:external_compilatio_document:user_id'] = "Kennung des Compilatio Nutzers, der die Datei eingereicht hat – Achtung, dieser Nutzer ist derjenige, der mit dem  Compilatio API-Key auf der Moodle Plattform verknüpft ist (dies ist also häufig der Administrator der Plattform)";
+$string['privacy:metadata:external_compilatio_document:filename'] = "Name der Einreichung";
+$string['privacy:metadata:external_compilatio_document:upload_date'] = "Uhrzeit der Speicherung in der Compilatio Datenbank";
+$string['privacy:metadata:external_compilatio_document:id'] = "Kennung der Einreichung in der Compilatio Datenbank";
+$string['privacy:metadata:external_compilatio_document:indexed'] = "Stand der Indexierung der Einreichung (falls sie als Referenzdokument in den Analysen verwendet wird)";
+
+$string['privacy:metadata:external_compilatio_report'] = "Informationen zum Analysebericht in der Compilatio Datenbank (nur falls das Dokument analysiert worden ist)";
+$string['privacy:metadata:external_compilatio_report:id'] = "Compilatio Kennung des Analyseberichts";
+$string['privacy:metadata:external_compilatio_report:doc_id'] = "Compilatio Kennung des analysierten Dokuments";
+$string['privacy:metadata:external_compilatio_report:user_id'] = "Kennung des Compilatio Nutzers, der die Datei eingereicht hat – Achtung, dieser Nutzer ist derjenige, der mit dem  Compilatio API-Key auf der Moodle Plattform verknüpft ist (dies ist also häufig der Administrator der Plattform)";
+$string['privacy:metadata:external_compilatio_report:start'] = "Datum des Analysebeginns";
+$string['privacy:metadata:external_compilatio_report:end'] = "Datum des Analyseendes";
+$string['privacy:metadata:external_compilatio_report:state'] = "Stand der Analyse der Einreichung (analysiert, im Wartestatus, Zeit überschritten, …)";
+$string['privacy:metadata:external_compilatio_report:plagiarism_percent'] = "Ähnlichkeitsprozentsatz für diese Einreichung";
+
+$string['owner_file'] = 'DSGVO und Eigentum der Arbeit';
+$string['owner_file_school'] = 'EDie Bildungsinstitution ist Eigentümerin der Arbeiten';
+$string['owner_file_school_details'] = 'Im Falle einer Anfrage zur Löschung von personenbezogenen Daten seitens eines Schülers wird der Inhalt der Arbeit aufbewahrt und steht für zukünftige Vergleiche mit neuen Arbeiten zur Verfügung. Nach Vertragsende mit Compilatio werden innerhalb der vertraglich festgelegten Fristen alle personenbezogenen Daten, die aus Ihrer Bildungsinstitution stammen, gelöscht, darunter auch die Arbeiten.';
+$string['owner_file_student'] = 'Der Studierende ist Eigentümer seiner Arbeit';
+$string['owner_file_student_details'] = 'Im Falle einer Anfrage zur Löschung von personenbezogenen Daten seitens eines Schülers werden die Arbeiten aus der Moodle Plattform und der Compilatio Referenzbibliothek gelöscht. Die Arbeiten stehen nicht mehr zum Vergleich mit neuen Dokumenten zur Verfügung.';

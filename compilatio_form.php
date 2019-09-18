@@ -53,7 +53,7 @@ class compilatio_setup_form extends moodleform {
         $mform->addElement('text', 'compilatio_api', get_string('compilatioapi', 'plagiarism_compilatio'));
         $mform->addHelpButton('compilatio_api', 'compilatioapi', 'plagiarism_compilatio');
         $mform->addRule('compilatio_api', null, 'required', null, 'client');
-        $mform->setDefault('compilatio_api', 'https://service.compilatio.net/webservices/CompilatioUserClient2.wsdl');
+        $mform->setDefault('compilatio_api', 'https://service.compilatio.net/webservices/CompilatioUserClient.wsdl');
         $mform->setType('compilatio_api', PARAM_URL);
 
         $mform->addElement('passwordunmask', 'compilatio_password', get_string('compilatiopassword', 'plagiarism_compilatio'));
@@ -84,6 +84,21 @@ class compilatio_setup_form extends moodleform {
                 $mform->addElement('checkbox', $modstring, $string);
             }
         }
+
+        $radioarray = array();
+        $radioarray[] = $mform->createElement('radio',
+            'compilatio_owner_file', '', get_string('owner_file_school', 'plagiarism_compilatio'), 1);
+        $radioarray[] = $mform->createElement('html',
+            '<p style="font-size: 12px;font-style: italic;">'
+            . get_string("owner_file_school_details", "plagiarism_compilatio") . '</p>');
+        $radioarray[] = $mform->createElement('radio',
+            'compilatio_owner_file', '', get_string('owner_file_student', 'plagiarism_compilatio'), 0);
+        $radioarray[] = $mform->createElement('html',
+            '<p style="font-size: 12px;font-style: italic;">'
+            . get_string("owner_file_student_details", "plagiarism_compilatio") . '</p>');
+
+        $mform->addGroup($radioarray, 'compilatio_owner_file', get_string('owner_file', 'plagiarism_compilatio'), array(''), false);
+        $mform->setDefault('compilatio_owner_file', 1);
 
         $this->add_action_buttons(true);
     }
