@@ -1,4 +1,4 @@
-Compilatio.net Plagiarism plugin for Moodle 3.3, 3.4, 3.5, 3.6
+Compilatio.net Plagiarism plugin for Moodle 3.3, 3.4, 3.5, 3.6, 3.7
 
 Author: Compilatio <support@compilatio.net>
 Copyright 2019 Compilatio.net https://www.compilatio.net
