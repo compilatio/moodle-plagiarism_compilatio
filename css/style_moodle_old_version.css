@@ -1,0 +1,6 @@
+ table{
+        width:100%;
+    }
+table, td, th{
+    border:thin solid #ddd;
+}

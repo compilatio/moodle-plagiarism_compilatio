@@ -43,7 +43,7 @@ class plagiarism_compilatio_observer {
     \mod_forum\event\assessable_uploaded $event) {
         global $CFG;
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-        event_handler($event->get_data());
+        compilatio_event_handler($event->get_data());
     }
 
     /**
@@ -55,7 +55,7 @@ class plagiarism_compilatio_observer {
     \mod_workshop\event\assessable_uploaded $event) {
         global $CFG;
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-        event_handler($event->get_data());
+        compilatio_event_handler($event->get_data());
     }
 
     /**
@@ -67,7 +67,7 @@ class plagiarism_compilatio_observer {
     \assignsubmission_onlinetext\event\assessable_uploaded $event) {
         global $CFG;
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-        event_handler($event->get_data(), false, true);
+        compilatio_event_handler($event->get_data(), false, true);
     }
 
     /**
@@ -79,7 +79,7 @@ class plagiarism_compilatio_observer {
     \assignsubmission_file\event\assessable_uploaded $event) {
         global $CFG;
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-        event_handler($event->get_data(), true, false);
+        compilatio_event_handler($event->get_data(), true, false);
     }
 
     /**
@@ -91,7 +91,7 @@ class plagiarism_compilatio_observer {
         \mod_forum\event\post_deleted $event) {
             global $CFG;
             require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            event_handler($event->get_data(), false, false);
+            compilatio_event_handler($event->get_data(), false, false);
     }
 
     /**
@@ -103,7 +103,7 @@ class plagiarism_compilatio_observer {
         \mod_workshop\event\submission_deleted $event) {
             global $CFG;
             require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            event_handler($event->get_data(), false, false);
+            compilatio_event_handler($event->get_data(), false, false);
     }
 
 }

@@ -45,7 +45,7 @@ $incorrectconfing = false;
 
 echo $OUTPUT->header();
 $currenttab = 'compilatiosettings';
-require_once('compilatio_tabs.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 if (($data = $mform->get_data()) && confirm_sesskey()) {
     if (!isset($data->compilatio_use)) {
         $data->compilatio_use = 0;

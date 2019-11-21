@@ -37,7 +37,7 @@ $plagiarismplugin = new plagiarism_plugin_compilatio();
 
 echo $OUTPUT->header();
 $currenttab = 'compilatiohelp';
-require_once('compilatio_tabs.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 echo("<p style='margin-top: 15px;'>
     <a href='helpcenter.php?page=moodle-admin' target='_blank' >

@@ -56,22 +56,32 @@ if ($cm->modname == 'assignment') {
     $fs = get_file_storage();
     $files = $fs->get_area_files($modulecontext->id, 'mod_assignment', 'submission', $submission->id);
     if (!empty($files)) {
-        $eventdata = new stdClass();
-        $eventdata->modulename   = $cm->modname;
-        $eventdata->cmid         = $cm->id;
-        $eventdata->courseid     = $cm->course;
-        $eventdata->userid       = $plagiarismfile->userid;
-        $eventdata->files        = $files;
-
-        events_trigger('assessable_file_uploaded', $eventdata);
+        $params = array(
+            'context' => $modulecontext,
+            'courseid' => $cm->course,
+            'objectid' => $submission->id,
+            'other' => array(
+                'content' => '',
+                'pathnamehashes' => array_keys($files)
+            )
+        );
+        
+        $event = \assignsubmission_file\event\assessable_uploaded::create($params);
+        $event->set_legacy_files($files);
+        $event->trigger();
     } else if (!empty($submission->data1)) {
-        $eventdata = new stdClass();
-        $eventdata->modulename   = $cm->modname;
-        $eventdata->cmid         = $cm->id;
-        $eventdata->courseid     = $cm->course;
-        $eventdata->userid       = $plagiarismfile->userid;
-        $eventdata->content      = trim(strip_tags(format_text($submission->data1, $submission->data2)));
-        events_trigger('assessable_content_uploaded', $eventdata);
+        $params = array(
+            'context' => $modulecontext,
+            'courseid' => $cm->course,
+            'objectid' => $submission->id,
+            'other' => array(
+                'content' => trim(strip_tags(format_text($submission->data1, $submission->data2))),
+                
+            )
+        );
+        
+        $event = \assignsubmission_file\event\assessable_uploaded::create($params);
+        $event->trigger();
     }
 }
 

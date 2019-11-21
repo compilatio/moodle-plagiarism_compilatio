@@ -1,85 +1,85 @@
-.clear {
+.compilatio-clear {
     clear: both;
 }
 /*
 Compilatio document area :
 */
-.plagiarismreport {
+.compilatio-plagiarismreport {
     padding: 0 0 0 2px;
     border-radius: 3px;
     background-color: #f2f2f2;
     border: solid thin #e3e3e3;
 }
-.plagiarismreport,
+.compilatio-plagiarismreport,
 .plagiarsimreport a {
     font-size: 12px;
     text-align: center;
     line-height: 19px;
     font-weight: bold;
 }
-.plagiarismreport .compilatio-error {
+.compilatio-plagiarismreport .compilatio-error {
     color: #c0392b;
     line-height: 19px;
 }
-.plagiarismreport a {
+.compilatio-plagiarismreport a {
     color: #444;
 }
-.plagiarismreport a:hover {
+.compilatio-plagiarismreport a:hover {
     color: #111;
     text-decoration: underline;
 }
-.plagiarismreport-link,
-.plagiarismreport {
+.compilatio-plagiarismreport-link,
+.compilatio-plagiarismreport {
     width: 120px;
     height: 20px;
 }
-.plagiarismreport-link {
+.compilatio-plagiarismreport-link {
     display: block;
     position: relative;
 }
-a.plagiarismreport-link:hover {
+a.compilatio-plagiarismreport-link:hover {
     text-decoration: none;
 }
-a.plagiarismreport-link span.link:hover {
+a.compilatio-plagiarismreport-link span.link:hover {
     text-decoration: underline;
 }
-.plagiarismreport .small-logo-compi {
+.compilatio-plagiarismreport .small-logo-compi {
     float: left;
 }
-.plagiarismreport .float-right,
-.plagiarismreport .similarity,
-.plagiarismreport .similarity-image {
+.compilatio-plagiarismreport .float-right,
+.compilatio-plagiarismreport .compilatio-similarity,
+.compilatio-plagiarismreport .compilatio-similarity-image {
     float: right;
 }
-.plagiarismreport img {
+.compilatio-plagiarismreport img {
     vertical-align: bottom;
     padding-right: 2px;
     height: 18px;
 }
-.prevsubmitted {
+.compilatio-prevsubmitted {
     font-size: 12px;
     line-height: normal;
 }
 /* Similarities */
-.similarity-green {
+.compilatio-similarity-green {
     color: #6ab35a;
 }
-.similarity-orange {
+.compilatio-similarity-orange {
     color: #f39c12;
 }
-.similarity-red {
+.compilatio-similarity-red {
     color: #e7685a;
 }
-.similarity-image {
+.compilatio-similarity-image {
     display: inline-block;
     padding: 0;
 }
-.similarity .percentage {
+.compilatio-similarity .compilatio-percentage {
     font-size: 13px;
     font-weight: normal;
     line-height: 22px;
 }
-.similarity {
+.compilatio-similarity {
     font-weight: bold;
     display: inline-block;
     line-height: 18px;
@@ -99,7 +99,7 @@ a.plagiarismreport-link span.link:hover {
     -webkit-transition: background-position 0.5s; /* Safari */
     transition: background-position 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0.11s;
 }
-.plagiarismreport:hover .small-logo-compi {
+.compilatio-plagiarismreport:hover .small-logo-compi {
     background-position: -25px 0;
 }
 /*
@@ -120,23 +120,23 @@ Head area in assignment
 .compilatio-help img {
     width: 24px;
 }
-.greyBackgroundBorder {
+.compilatio-greyBackgroundBorder {
     border-radius: 3px;
     background-color: #f2f2f2;
     border: solid thin #e3e3e3;
 }
-#sommaire {
+#compilatio-sommaire {
     display: inline-block;
     padding: 10px;
 }
-.help-title {
+.compilatio-help-title {
     margin: 10px 0;
     font-weight: bold;
     line-height: 20px;
     font-size: 16px;
     text-align: left;
 }
-.help-content {
+.compilatio-help-content {
     color: #555;
     margin-bottom: 10px;
 }
@@ -162,7 +162,7 @@ Head area in assignment
     padding-bottom: 20px;
     border-bottom: 2px solid #e3e3e3;
 }
-#show-notifications span {
+#compilatio-show-notifications span {
     position: relative;
     top: 7px;
     left: -14px;
@@ -221,7 +221,7 @@ ul#compilatio-help-items > li > div {
     display: none;
     margin-bottom: 15px;
 }
-#programmed-analysis {
+#compilatio-programmed-analysis {
     border-top: 2px solid #e3e3e3;
     text-align: center;
     font-style: italic;
@@ -233,7 +233,7 @@ ul#compilatio-help-items > li > div {
  * Copyright 2011-2015 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
-.alert {
+.compilatio-alert {
     padding: 8px 35px 8px 14px;
     margin-bottom: 20px;
     background-color: #fcf8e3;
@@ -241,22 +241,22 @@ ul#compilatio-help-items > li > div {
     border-radius: 4px;
     color: #c09853;
 }
-.alert-danger {
+.compilatio-alert-danger {
     color: #b94a48;
     background-color: #f2dede;
     border-color: #eed3d7;
 }
-.alert-success {
+.compilatio-alert-success {
     color: #468847;
     background-color: #dff0d8;
     border-color: #d6e9c6;
 }
-.alert-info {
+.compilatio-alert-info {
     color: #3a87ad;
     background-color: #d9edf7;
     border-color: #bce8f1;
 }
-.button {
+.comp-button {
     display: inline-block;
     padding: 4px 12px;
     font-size: 14px;
@@ -278,15 +278,15 @@ ul#compilatio-help-items > li > div {
     border-radius: 4px;
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
 }
-.button:hover,
-.button:focus {
+.comp-button:hover,
+.comp-button:focus {
     color: #333;
     text-decoration: none;
     background-position: 0 -15px;
     transition: background-position 0.11s linear 0.11s;
     background-color: #e6e6e6;
 }
-.button:active {
+.comp-button:active {
     background-image: none;
     outline: 0;
     -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
@@ -304,13 +304,13 @@ legend.compilatio_legend {
     border-bottom: 1px solid #e5e5e5;
 }
 /* Config activity */
-.after-input {
+.compilatio-after-input {
     margin-left: 10px;
 }
-.reinit {
+.compilatio-reinit {
     font-size: 10px;
 }
-.plagiarismreport-link:empty {
+.compilatio-plagiarismreport-link:empty {
     display: none;
 }
 #compilatio-container ul {
@@ -325,23 +325,23 @@ legend.compilatio_legend {
     padding-top: 10px;
     margin-right: 11px;
 }
-.library,
-.library-in,
-.library-out {
+.compilatio-library,
+.compilatio-library-in,
+.compilatio-library-out {
     width: 20px;
     height: 16px;
     background-size: cover;
 }
-.library {
+.compilatio-library {
     background-image: url([[pix:plagiarism_compilatio|library]]);
 }
-.library-in {
+.compilatio-library-in {
     background-image: url([[pix:plagiarism_compilatio|library-in]]);
 }
-.library-out {
+.compilatio-library-out {
     background-image: url([[pix:plagiarism_compilatio|library-out]]);
 }
-.library-in, .library-out {
+.compilatio-library-in, .compilatio-library-out {
     cursor: pointer;
 }
 #compi-update-progress {

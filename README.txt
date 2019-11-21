@@ -1,4 +1,4 @@
-Compilatio.net Plagiarism plugin for Moodle 3.3, 3.4, 3.5, 3.6
+Compilatio.net Plagiarism plugin for Moodle 3.3, 3.4, 3.5, 3.6, 3.7
 
 Author: Compilatio <support@compilatio.net>
 Copyright 2019 Compilatio.net https://www.compilatio.net
@@ -8,11 +8,11 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 ==========
-- Fixed plugin visibility depending on user rights.
-- Improvement of the plugin visibility according to the activation parameters (platform, module type, course module)
-- Added GDPR compliance (from Moodle 3.5)
-- Reduced API calls to get available file types
-- Added document's warning support like "unrecognized text language"
+- Enhance plugin global compatibility
+    - Replace use of deprecated functions
+    - Use more Moodle API or Moodle internal functions
+    - Rewrite JS and CSS
+    - Fix upgrade plugin file by adding a savepoint
 
 QUICK INSTALL
 ================

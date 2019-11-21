@@ -40,14 +40,6 @@ class output_helper
      *
      * @return string   HTML <script> tag
      */
-    public static function get_jquery() {
-        return '
-            <script
-                src="https://code.jquery.com/jquery-1.12.4.js"
-                integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
-                crossorigin="anonymous">
-            </script>';
-    }
 
     /**
      * Display Compilatio's logo according to the user's language (English by default)
@@ -82,13 +74,13 @@ class output_helper
         if ($indexingstate === true) {
             $html = '
                 <div
-                    class="library-in"
+                    class="compilatio-library-in"
                     title="'.get_string("indexed_document", "plagiarism_compilatio").'">
                 </div>';
         } else if ($indexingstate === false) {
             $html = '
                 <div
-                    class="library-out"
+                    class="compilatio-library-out"
                     title="'.get_string("not_indexed_document", "plagiarism_compilatio").'">
                 </div>';
         } else {
@@ -134,14 +126,14 @@ class output_helper
         global $OUTPUT;
 
         $html = "<br/>";
-        $html .= "<div class='clear'></div>";
+        $html .= "<div class='compilatio-clear'></div>";
         // Var $compid is spread via class because it may be purified inside id attribute.
         $html .= '<div class="compilatio-area compi-'.$compid.'">';
 
         // Indexing state.
         $html .= self::get_indexing_state($indexed);
 
-        $html .= "<div class='plagiarismreport' title='" . htmlspecialchars($title, ENT_QUOTES) . "'>";
+        $html .= "<div class='compilatio-plagiarismreport' title='" . htmlspecialchars($title, ENT_QUOTES) . "'>";
 
         if (!empty($url) && !empty($url["url"])) {
             if ($url["target-blank"] === true) {
@@ -149,7 +141,7 @@ class output_helper
             } else {
                 $target = "";
             }
-            $html .= "<a $target class='plagiarismreport-link' href='" . $url["url"] . "'>";
+            $html .= "<a $target class='compilatio-plagiarismreport-link' href='" . $url["url"] . "'>";
         }
 
         $html .= '<div class="small-logo-compi" style="background-image: url(\'' .
@@ -200,7 +192,7 @@ class output_helper
         }
 
         $html .= "</div>";
-        $html .= "<div class='clear'></div>";
+        $html .= "<div class='compilatio-clear'></div>";
 
         return $html;
     }
@@ -230,10 +222,10 @@ class output_helper
 
         return '
             <span>
-                <img class="similarity-image" src="' . $image . '"/>
-                <span class="similarity similarity-' . $color . '">'
+                <img class="compilatio-similarity-image" src="' . $image . '"/>
+                <span class="compilatio-similarity compilatio-similarity-' . $color . '">'
                     .$score.
-                    '<span class="percentage">%</span>
+                    '<span class="compilatio-percentage">%</span>
                 </span>
             </span>';
 
