@@ -987,7 +987,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
         $output .= "</div>";
 
-        $CFG->cachejs = false;
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs',array($alerts));
 
         $output .= "<div class='compilatio-clear'></div>";
@@ -1035,7 +1034,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         $output .= "</div>";
 
         // Display buttons :.
-        $output .= "<div id='button-container'>";
+        $output .= "<div id='compilatio-button-container'>";
 
         // Update button.
         $url = $PAGE->url;

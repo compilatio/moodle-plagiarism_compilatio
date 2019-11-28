@@ -74,7 +74,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             if ($configfield = $DB->get_record('config_plugins', array('name' => $field, 'plugin' => 'plagiarism'))) {
                 $configfield->value = $value;
                 if (!$DB->update_record('config_plugins', $configfield)) {
-                    error("errorupdating");
+                    print_error("errorupdating");
                 }
             } else {
                 $configfield = new stdClass();
@@ -82,7 +82,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
                 $configfield->plugin = 'plagiarism';
                 $configfield->name = $field;
                 if (!$DB->insert_record('config_plugins', $configfield)) {
-                    error("errorinserting");
+                    print_error("errorinserting");
                 }
             }
         }

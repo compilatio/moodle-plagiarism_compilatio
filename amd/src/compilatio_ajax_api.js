@@ -89,6 +89,7 @@ define(['jquery'], function ($) {
                 selectedElement = '#compilatio-home';
             }
             
+            $('#compilatio-container').css('height', 'auto');
             $('#compilatio-tabs').show();
 
             var tabs = $('#compilatio-show-notifications, #show-stats, #show-help');

@@ -11,7 +11,7 @@ Compilatio document area :
     border: solid thin #e3e3e3;
 }
 .compilatio-plagiarismreport,
-.plagiarsimreport a {
+.compilatio-plagiarismreport a {
     font-size: 12px;
     text-align: center;
     line-height: 19px;
@@ -176,11 +176,13 @@ Head area in assignment
     width: 30%;
     margin: 0 2%;
 }
-#button-container {
+#compilatio-button-container {
     display: flex;
     justify-content: center;
 }
 #compilatio-container {
+    height: 70px;
+    overflow: hidden;
     min-width: 565px;
     border-color: #e3e3e3;
     min-height: 20px;

@@ -80,7 +80,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         }
 
         // Compilatio savepoint reached.
-        upgrade_plugin_savepoint(true, 2015052000, 'plagiarism', 'compilatio');
+        upgrade_plugin_savepoint(true, 2014111000, 'plagiarism', 'compilatio');
     }
 
     if ($oldversion <= 2015081400) {
