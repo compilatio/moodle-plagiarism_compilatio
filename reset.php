@@ -65,7 +65,7 @@ if ($cm->modname == 'assignment') {
                 'pathnamehashes' => array_keys($files)
             )
         );
-        
+
         $event = \assignsubmission_file\event\assessable_uploaded::create($params);
         $event->set_legacy_files($files);
         $event->trigger();
@@ -76,10 +76,10 @@ if ($cm->modname == 'assignment') {
             'objectid' => $submission->id,
             'other' => array(
                 'content' => trim(strip_tags(format_text($submission->data1, $submission->data2))),
-                
+
             )
         );
-        
+
         $event = \assignsubmission_file\event\assessable_uploaded::create($params);
         $event->trigger();
     }

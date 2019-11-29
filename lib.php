@@ -473,8 +473,9 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         // Now check for differing filename and display info related to it.
         $previouslysubmitted = '';
         if ($file->filename !== $plagiarismfile->filename) {
-            $previouslysubmitted = '<span class="compilatio-prevsubmitted">(' . get_string('previouslysubmitted', 'plagiarism_compilatio') .
-            ': ' . $plagiarismfile->filename . ')</span>';
+            $previouslysubmitted = '<span class="compilatio-prevsubmitted">(';
+            $previouslysubmitted .= get_string('previouslysubmitted', 'plagiarism_compilatio');
+            $previouslysubmitted .= ': ' . $plagiarismfile->filename . ')</span>';
         }
 
         $results['statuscode'] = $plagiarismfile->statuscode;
@@ -948,10 +949,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         // Add the Compilatio news to the alerts displayed :.
         $alerts = array_merge($alerts, compilatio_display_news());
 
-        // Include Font.
-        $fontawesomeurl = new moodle_url("/plagiarism/compilatio/fonts/font-awesome.css");
-        $output .= "<link rel='stylesheet' href='$fontawesomeurl'>";
-
         $output .= "<div id='compilatio-container'>";
 
         // Display logo.
@@ -972,10 +969,10 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
         // Alert icon.
         if (count($alerts) !== 0) {
-            $output .= "<div id='compilatio-show-notifications' title='" . get_string("display_notifications", "plagiarism_compilatio") .
-                "' class='compilatio-icon active' ><i class='fa fa-bell fa-2x'></i>";
-            $output .= "<span>" . count($alerts) . "</span>";
-            $output .= "</div>";
+            $output .= "<div id='compilatio-show-notifications' title='";
+            $output .= get_string("display_notifications", "plagiarism_compilatio");
+            $output .= "' class='compilatio-icon active' ><i class='fa fa-bell fa-2x'></i>";
+            $output .= "<span>" . count($alerts) . "</span></div>";
         }
 
         // Hide/Show button.
@@ -987,7 +984,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
         $output .= "</div>";
 
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs',array($alerts));
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', array($alerts));
 
         $output .= "<div class='compilatio-clear'></div>";
 
@@ -1293,6 +1290,8 @@ function compilatio_create_temp_file($cmid, $eventdata) {
  */
 function compilatio_get_form_elements($mform, $defaults = false, $modulename='') {
 
+    global $PAGE;
+
     $ynoptions = array(
         0 => get_string('no'),
         1 => get_string('yes'),
@@ -1401,19 +1400,11 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename='')
     }
     $mform->addElement('html', '</tbody></table>');
 
-    // Used to append text nicely after the inputs. If Javascript is disabled, it will be displayed on the line below the input.
-    $mform->addElement('html', '<script>
-	$(document).ready(function(){
-		var txtGreen = $("<span>", {class:"compilatio-after-input"}).text("' . get_string('similarity_percent', "plagiarism_compilatio") . '");
-		$("#green_threshold").after(txtGreen);
-		var txtOrange = $("<span>", {class:"compilatio-after-input"}).text("' .
-        get_string('similarity_percent', "plagiarism_compilatio") .
-        ', ' .
-        get_string("red_threshold", "plagiarism_compilatio") .
-        '.");
-		$("#orange_threshold").after(txtOrange);
-	});
-	</script>');
+    // Used to append text nicely after the inputs.
+    $strsimilaritypercent = get_string("similarity_percent", "plagiarism_compilatio");
+    $strredtreshold = get_string("red_threshold", "plagiarism_compilatio");
+    $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_form', 'afterPercentValues',
+        array($strsimilaritypercent, $strredtreshold));
 
     // Numeric validation for Thresholds.
     $mform->addRule('green_threshold', get_string("numeric_threshold", "plagiarism_compilatio"), 'numeric', null, 'client');
@@ -1441,8 +1432,9 @@ function compilatio_remove_duplicates($duplicates, $plagiarismsettings) {
     if (is_array($duplicates)) {
 
         global $CFG, $DB;
-        /* 
-        *  $CFG->proxy create the Connection with the webservice are necessary and used variables in the constructor of the connection with the webservice (compilatio.class) 
+        /*
+        *  $CFG->proxy create the Connection with the webservice are necessary
+        *  and used variables in the constructor of the connection with the webservice (compilatio.class)
         *  to call other functions that need this connection.
         *  in this case set_indexing_state() and del_doc() .
         */
@@ -1523,7 +1515,7 @@ function compilatio_get_plagiarism_file($cmid, $userid, $file) {
 
         // Add new entry and get plagiarism_compilatio_file table record `id` for update_record_raw().
         if (($compid = $DB->insert_record('plagiarism_compilatio_files', $plagiarismfile, true)) === false) {
-            error_log("insert into compilatio_files failed");
+            print_error("insert into compilatio_files failed");
         }
         $plagiarismfile->id = $compid;
     }
@@ -1682,7 +1674,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
 
     $mimetype = compilatio_check_file_type($filename);
     if (empty($mimetype)) { // Sanity check on filetype - this should already have been checked.
-        error_log("no mime type for this file found.");
+        print_error("no mime type for this file found.");
         return false;
     }
 
@@ -1690,8 +1682,9 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
     if (!defined("COMPILATIO_MANUAL_SEND")) {
         mtrace("sending file #" . $plagiarismfile->id);
     }
-    /* 
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in the constructor of the connection with the webservice (compilatio.class) 
+    /*
+    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
+    *  the constructor of the connection with the webservice (compilatio.class)
     *  to call other functions that need this connection.
     *  in this case send_doc().
     */
@@ -1713,7 +1706,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
         $module = $DB->get_record_sql($sql, array($moduledetail->instance));
     }
     if (empty($module)) {
-        error_log("could not find this module - it may have been deleted?");
+        print_error("could not find this module - it may have been deleted?");
         return false;
     }
     $name = format_string($module->name) . "_" . $plagiarismfile->cm;
@@ -1733,7 +1726,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
 
     $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_UNEXTRACTABLE;
     $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
-    error_log("invalid compilatio response received - will try again later." . $idcompi);
+    print_error("invalid compilatio response received - will try again later." . $idcompi);
     // Invalid response returned - increment attempt value and return false to allow this to be called again.
     return false;
 }
@@ -1800,8 +1793,9 @@ function compilatio_getquotas() {
     global $CFG;
 
     $plagiarismsettings = (array) get_config('plagiarism');
-    /* 
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in the constructor of the connection with the webservice (compilatio.class) 
+    /*
+    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
+    *  the constructor of the connection with the webservice (compilatio.class)
     *  to call other functions that need this connection.
     *  in this case get_quotas().
     */
@@ -1829,8 +1823,9 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
     if (empty($plagiarismsettings)) {
         $plagiarismsettings = (array) get_config('plagiarism');
     }
-    /* 
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in the constructor of the connection with the webservice (compilatio.class) 
+    /*
+    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
+    *  the constructor of the connection with the webservice (compilatio.class)
     *  to call other functions that need this connection.
     *  in this case start_analyse().
     */
@@ -1882,8 +1877,9 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
     global $CFG, $DB;
 
     $plagiarismsettings = (array) get_config('plagiarism');
-    /* 
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in the constructor of the connection with the webservice (compilatio.class) 
+    /*
+    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
+    *  the constructor of the connection with the webservice (compilatio.class)
     *  to call other functions that need this connection.
     *  in this case get_doc().
     */
@@ -1954,8 +1950,9 @@ function compilatio_get_account_expiration_date() {
 
     global $CFG;
     $plagiarismsettings = (array) get_config('plagiarism');
-    /* 
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in the constructor of the connection with the webservice (compilatio.class) 
+    /*
+    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
+    *  the constructor of the connection with the webservice (compilatio.class)
     *  to call other functions that need this connection.
     *  in this case get_account_expiration_date().
     */
@@ -1991,8 +1988,9 @@ function compilatio_send_statistics() {
     }
 
     $plagiarismsettings = (array) get_config('plagiarism');
-    /* 
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in the constructor of the connection with the webservice (compilatio.class) 
+    /*
+    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
+    *  the constructor of the connection with the webservice (compilatio.class)
     *  to call other functions that need this connection.
     *  in this case post_configuration().
     */
@@ -2014,8 +2012,9 @@ function compilatio_get_technical_news() {
 
     global $CFG;
     $plagiarismsettings = (array) get_config('plagiarism');
-    /* 
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in the constructor of the connection with the webservice (compilatio.class) 
+    /*
+    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
+    *  the constructor of the connection with the webservice (compilatio.class)
     *  to call other functions that need this connection.
     *  in this case get_technical_news().
     */

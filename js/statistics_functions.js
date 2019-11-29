@@ -3,8 +3,8 @@ function compilatioPercentage(v) {
 }
 
 function compilatioUrlSorter(a, b) {
-    
-    //Strip tags to compare their content:
+
+    // Strip tags to compare their content.
     a = a.replace(/(<([^>]+)>)/ig, "");
     b = b.replace(/(<([^>]+)>)/ig, "");
     console.log(a,b);
@@ -12,7 +12,7 @@ function compilatioUrlSorter(a, b) {
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
-    document.getElementById("compilatio-table-no-js").style.display ="none";
+    document.getElementById("compilatio-table-no-js").style.display = "none";
 
     document.querySelectorAll('#compilatio-table-js thead tr th').forEach((el, index) => {
         switch (index) {
@@ -50,13 +50,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 el.setAttribute('data-sortable','true');
                 el.setAttribute('data-formatter','compilatioPercentage');
                 break;
-            
+
             default:
                 break;
         }
     });
 });
-
-
-
-
