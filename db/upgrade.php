@@ -39,6 +39,13 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     global $CFG, $DB;
 
     $dbman = $DB->get_manager();
+
+    if ($oldversion <= 2015081400) {
+        $DB->execute("UPDATE {plagiarism_compilatio_config} SET value='1' WHERE name='compilatio_analysistype' AND cm=0");
+
+        upgrade_plugin_savepoint(true, 2015081400, 'plagiarism', 'compilatio');
+    }
+
     if ($oldversion <= 2014111000) {
 
         // Define table plagiarism_compilatio_data to be created.
@@ -81,12 +88,6 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
         // Compilatio savepoint reached.
         upgrade_plugin_savepoint(true, 2014111000, 'plagiarism', 'compilatio');
-    }
-
-    if ($oldversion <= 2015081400) {
-        $DB->execute("UPDATE {plagiarism_compilatio_config} SET value='1' WHERE name='compilatio_analysistype' AND cm=0");
-
-        upgrade_plugin_savepoint(true, 2015081400, 'plagiarism', 'compilatio');
     }
 
     return true;

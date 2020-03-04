@@ -41,7 +41,7 @@ if ($mform->is_cancelled()) {
     redirect('settings.php');
 }
 // Boolean to test only once the connection if it has failed.
-$incorrectconfing = false;
+$incorrectconfig = false;
 
 echo $OUTPUT->header();
 $currenttab = 'compilatiosettings';
@@ -96,12 +96,9 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     $quotas = compilatio_getquotas();
     if ($quotas["quotas"] == null) {
         // Disable compilatio as this config isn't correct.
-        $rec = $DB->get_record('config_plugins', array('name' => 'compilatio_use', 'plugin' => 'plagiarism'));
-        $rec->value = 0;
-        $DB->update_record('config_plugins', $rec);
-
+        set_config('compilatio_use', 0, 'plagiarism');
         echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $quotas["error"]);
-        $incorrectconfing = true;
+        $incorrectconfig = true;
     }
 }
 
@@ -109,15 +106,12 @@ $plagiarismsettings = (array) get_config('plagiarism');
 $mform->set_data($plagiarismsettings);
 
 
-if (!empty($plagiarismsettings['compilatio_use']) && !$incorrectconfing) {
+if (!empty($plagiarismsettings['compilatio_use']) && !$incorrectconfig) {
     $quotasarray = compilatio_getquotas();
     $quotas = $quotasarray['quotas'];
     if ($quotas == null) {
         // Disable compilatio as this config isn't correct.
-        $rec = $DB->get_record('config_plugins', array('name' => 'compilatio_use', 'plugin' => 'plagiarism'));
-        $rec->value = 0;
-        $DB->update_record('config_plugins', $rec);
-
+        set_config('compilatio_use', 0, 'plagiarism');
         echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $quotasarray['error']);
     } else {
         echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');

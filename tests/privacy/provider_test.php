@@ -369,7 +369,11 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
 
         global $DB;
 
-        $api = (object) array('plugin' => 'plagiarism', 'name' => 'compilatio_api', 'value' => 'https://service.compilatio.net/webservices/CompilatioUserClient.wsdl');
+        $api = (object) array(
+            'plugin' => 'plagiarism',
+            'name' => 'compilatio_api',
+            'value' => 'https://service.compilatio.net/webservices/CompilatioUserClient.wsdl'
+        );
         $password = (object) array('plugin' => 'plagiarism', 'name' => 'compilatio_password', 'value' => 'abcdef');
         $ownerfile = (object) array('plugin' => 'plagiarism', 'name' => 'compilatio_owner_file', 'value' => $owner);
 

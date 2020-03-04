@@ -59,8 +59,8 @@ class output_helper
             $language = $ln;
         }
 
-        return '<img title="Compilatio" id="compilatio-logo" src="' .
-            $OUTPUT->image_url('compilatio-logo-' . $language, 'plagiarism_compilatio') .'">';
+        return html_writer::img($OUTPUT->image_url('compilatio-logo-' . $language, 'plagiarism_compilatio'),
+            'Compilatio', array('title' => 'Compilatio', 'id' => 'compilatio-logo'));
     }
 
     /**
@@ -71,24 +71,17 @@ class output_helper
      */
     public static function get_indexing_state($indexingstate) {
 
+        $html = ''; // Do not show indexing state for a "non-teacher" user.
+
         if ($indexingstate === true) {
-            $html = '
-                <div
-                    class="compilatio-library-in"
-                    title="'.get_string("indexed_document", "plagiarism_compilatio").'">
-                </div>';
+            $html = html_writer::div('', 'compilatio-library-in',
+                array('title' => get_string("indexed_document", "plagiarism_compilatio")));
         } else if ($indexingstate === false) {
-            $html = '
-                <div
-                    class="compilatio-library-out"
-                    title="'.get_string("not_indexed_document", "plagiarism_compilatio").'">
-                </div>';
-        } else {
-             $html = ''; // Do not show indexing state for a "non-teacher" user.
+            $html = html_writer::div('', 'compilatio-library-out',
+                array('title' => get_string("not_indexed_document", "plagiarism_compilatio")));
         }
 
         return $html;
-
     }
 
 
@@ -125,32 +118,35 @@ class output_helper
 
         global $OUTPUT;
 
-        $html = "<br/>";
-        $html .= "<div class='compilatio-clear'></div>";
+        $html = html_writer::empty_tag('br');
+        $html .= html_writer::div("", 'compilatio-clear');
         // Var $compid is spread via class because it may be purified inside id attribute.
-        $html .= '<div class="compilatio-area compi-'.$compid.'">';
+        $html .= html_writer::start_div('compilatio-area compi-'.$compid);
 
         // Indexing state.
         $html .= self::get_indexing_state($indexed);
 
-        $html .= "<div class='compilatio-plagiarismreport' title='" . htmlspecialchars($title, ENT_QUOTES) . "'>";
+        $html .= html_writer::start_div('compilatio-plagiarismreport',
+            array('title' => htmlspecialchars($title, ENT_QUOTES)));
 
         if (!empty($url) && !empty($url["url"])) {
             if ($url["target-blank"] === true) {
-                $target = "target='_blank'";
+                $target = '_blank';
             } else {
-                $target = "";
+                $target = '_self';
             }
-            $html .= "<a $target class='compilatio-plagiarismreport-link' href='" . $url["url"] . "'>";
+            // Var $url contain & that must not be escaped.
+            $html .= "<a target='" . $target . "' class='compilatio-plagiarismreport-link' href='" . $url["url"] . "'>";
         }
 
-        $html .= '<div class="small-logo-compi" style="background-image: url(\'' .
-            new moodle_url("/plagiarism/compilatio/pix/logo_compilatio_carre.png") .
-            '\');background-size:cover;" title="Compilatio.net"></div>';
+        $compisquare = new moodle_url("/plagiarism/compilatio/pix/logo_compilatio_carre.png");
+        $html .= html_writer::div('', 'small-logo-compi',
+            array('style' => 'background-image: url(\'' . $compisquare . '\'); background-size:cover;'));
 
         // Image.
         if ($image !== "") {
-            $html .= '<img src="' . $OUTPUT->image_url($image, 'plagiarism_compilatio') . '" class="float-right" />';
+            $imgsrc = $OUTPUT->image_url($image, 'plagiarism_compilatio');
+            $html .= html_writer::img($imgsrc, '%', array('class' => 'float-right'));
         }
 
         // State information.
@@ -163,16 +159,16 @@ class output_helper
             if (!empty($url) && !empty($url["url"])) {
                 $class .= " link"; // Used to underline span on hover.
             }
-            $html .= "<span class='$class'>$span</span>";
+            $html .= html_writer::span($span, $class);
         }
         if ($content != '') {
             $html .= $content;
         }
         if (!empty($url) && !empty($url["url"])) {
-            $html .= "</a>";
+            $html .= html_writer::end_tag('a');
         }
 
-        $html .= '</div>';
+        $html .= html_writer::end_div();
 
         // Warning information.
         if ($warning != '') {
@@ -187,12 +183,14 @@ class output_helper
             } else {
                 $title = get_string($warning, "plagiarism_compilatio");
             }
-            $html .= '<div class="compi-alert"><img src="' . $OUTPUT->image_url('exclamation-yellow', 'plagiarism_compilatio');
-            $html .= '" title="' . $title . '" /></div>';
+            $html .= html_writer::start_div('compi-alert');
+            $imgsrc = $OUTPUT->image_url('exclamation-yellow', 'plagiarism_compilatio');
+            $html .= html_writer::img($imgsrc, '/!\\', array('title' => $title));
+            $html .= html_writer::end_div();
         }
 
-        $html .= "</div>";
-        $html .= "<div class='compilatio-clear'></div>";
+        $html .= html_writer::end_div();
+        $html .= html_writer::div("", 'compilatio-clear');
 
         return $html;
     }
@@ -218,17 +216,17 @@ class output_helper
         } else {
             $color = 'red';
         }
-        $image = $OUTPUT->image_url($color, 'plagiarism_compilatio');
+        $imgsrc = $OUTPUT->image_url($color, 'plagiarism_compilatio');
 
-        return '
-            <span>
-                <img class="compilatio-similarity-image" src="' . $image . '"/>
-                <span class="compilatio-similarity compilatio-similarity-' . $color . '">'
-                    .$score.
-                    '<span class="compilatio-percentage">%</span>
-                </span>
-            </span>';
+        $html = html_writer::start_span();
+        $html .= html_writer::img($imgsrc, 'dot', array('class' => 'compilatio-similarity-image'));
+        $html .= html_writer::start_span('compilatio-similarity compilatio-similarity-' . $color);
+        $html .= $score;
+        $html .= html_writer::span('%', 'compilatio-percentage');
+        $html .= html_writer::end_span();
+        $html .= html_writer::end_span();
 
+        return $html;
     }
 
 }
