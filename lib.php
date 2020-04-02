@@ -1771,7 +1771,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
         debugging("could not find this module - it may have been deleted?");
         return false;
     }
-    $name = format_string($module->name) . "_" . $plagiarismfile->cm;
+    $name = format_string($module->name) . "(" . $plagiarismfile->cm . ")_" . $filename;
     $filecontents = (!empty($file->filepath)) ? file_get_contents($file->filepath) : $file->get_content();
     $idcompi = $compilatio->send_doc($name, // Title.
         $name, // Description.
