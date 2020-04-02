@@ -13,6 +13,7 @@ CHANGES
     - Use more Moodle API or Moodle internal functions
     - Rewrite JS and CSS
     - Fix upgrade plugin file by adding a savepoint
+    - Add filename in document's title sent to Compilatio
 
 QUICK INSTALL
 ================
