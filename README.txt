@@ -13,6 +13,7 @@ CHANGES
 - Added GDPR compliance (from Moodle 3.5)
 - Reduced API calls to get available file types
 - Added document's warning support like "unrecognized text language"
+- Add filename in document's title sent to Compilatio
 
 QUICK INSTALL
 ================
