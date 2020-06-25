@@ -43,7 +43,8 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/helper/ws_helper.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
-if (isset($_POST['idDoc']) && compilatio_valid_md5($_POST['idDoc'])) {
-    $indexingstate = ws_helper::get_indexing_state($_POST['idDoc']);
+$iddoc = optional_param('idDoc', '', PARAM_TEXT);
+if (isset($iddoc) && compilatio_valid_md5($iddoc)) {
+    $indexingstate = ws_helper::get_indexing_state($iddoc);
     echo(output_helper::get_indexing_state($indexingstate));
 }

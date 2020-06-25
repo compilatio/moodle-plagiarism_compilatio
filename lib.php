@@ -78,7 +78,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         if (isset($plagiarismsettings['compilatio_use']) && $plagiarismsettings['compilatio_use']) {
             // Now check to make sure required settings are set!.
             if (empty($plagiarismsettings['compilatio_api'])) {
-                error("Compilatio API URL not set!");
+                print_error("Compilatio API URL not set!");
             }
             return $plagiarismsettings;
         } else {
@@ -172,7 +172,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         // Add de/indexing feature for teachers.
         if (!empty($results['externalid']) && $teacher) {
             // Ajax API call.
-            $PAGE->requires->js_call_amd('plagiarism_compilatio/ajax_api', 'getIndexingState',
+            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'getIndexingState',
                 array($CFG->httpswwwroot, $domid, $results['externalid']));
         }
 
@@ -230,7 +230,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                     $output .= output_helper::get_plagiarism_area($spancontent, $image, $title, "",
                         array(), false, $indexingstate, $domid, $docwarning);
                 } else {
-                    $output .= '<span class="plagiarismreport">' .
+                    $output .= '<span class="compilatio-plagiarismreport">' .
                         '</span>';
                 }
                 return $output;
@@ -357,7 +357,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             if (has_capability('plagiarism/compilatio:resetfile', $modulecontext)) {
                 $url = new moodle_url('/plagiarism/compilatio/reset.php',
                     array('cmid' => $linkarray['cmid'], 'pf' => $results['pid'], 'sesskey' => sesskey()));
-                $span = "<a class='reinit' href='$url'>" . get_string('reset', 'plagiarism_compilatio') . "</a>";
+                $span = "<a class='compilatio-reinit' href='$url'>" . get_string('reset', 'plagiarism_compilatio') . "</a>";
             }
             $span = get_string('reset', "plagiarism_compilatio");
             $url = array("target-blank" => false, "url" => $url);
@@ -473,8 +473,9 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         // Now check for differing filename and display info related to it.
         $previouslysubmitted = '';
         if ($file->filename !== $plagiarismfile->filename) {
-            $previouslysubmitted = '<span class="prevsubmitted">(' . get_string('previouslysubmitted', 'plagiarism_compilatio') .
-            ': ' . $plagiarismfile->filename . ')</span>';
+            $previouslysubmitted = '<span class="compilatio-prevsubmitted">(';
+            $previouslysubmitted .= get_string('previouslysubmitted', 'plagiarism_compilatio');
+            $previouslysubmitted .= ': ' . $plagiarismfile->filename . ')</span>';
         }
 
         $results['statuscode'] = $plagiarismfile->statuscode;
@@ -849,7 +850,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $url = $PAGE->url;
             $url->param('compilatiostartanalysis', true);
             $startallanalysisbutton = "
-    			<a href='$url' class='compilatio-button button' >
+    			<a href='$url' class='compilatio-button comp-button' >
                     <i class='fa fa-play-circle'></i>
                     " . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "
                 </a>";
@@ -904,7 +905,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $url = $PAGE->url;
             $url->param('restartfailedanalysis', true);
             $restartfailedanalysisbutton = "
-                <a href='$url' class='compilatio-button button' >
+                <a href='$url' class='compilatio-button comp-button' >
                     <i class='fa fa-play-circle'></i>
                     " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
                 </a>";
@@ -931,7 +932,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $url = $PAGE->url;
             $url->param('compilatiostartanalysis', true);
             $startallanalysisbutton = "
-    			<a href='$url' class='compilatio-button button' >
+    			<a href='$url' class='compilatio-button comp-button' >
     				<i class='fa fa-play-circle'></i>
     				" . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "
     			</a>";
@@ -939,7 +940,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $url = $PAGE->url;
             $url->param('restartfailedanalysis', true);
             $restartfailedanalysisbutton = "
-                <a href='$url' class='compilatio-button button' >
+                <a href='$url' class='compilatio-button comp-button' >
                     <i class='fa fa-play-circle'></i>
                     " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
                 </a>";
@@ -947,13 +948,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
         // Add the Compilatio news to the alerts displayed :.
         $alerts = array_merge($alerts, compilatio_display_news());
-
-        // Include JQuery.
-        $output .= output_helper::get_jquery();
-
-        // Include Font.
-        $fontawesomeurl = new moodle_url("/plagiarism/compilatio/fonts/font-awesome.css");
-        $output .= "<link rel='stylesheet' href='$fontawesomeurl'>";
 
         $output .= "<div id='compilatio-container'>";
 
@@ -975,10 +969,10 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
         // Alert icon.
         if (count($alerts) !== 0) {
-            $output .= "<div id='show-notifications' title='" . get_string("display_notifications", "plagiarism_compilatio") .
-                "' class='compilatio-icon active' ><i class='fa fa-bell fa-2x'></i>";
-            $output .= "<span>" . count($alerts) . "</span>";
-            $output .= "</div>";
+            $output .= "<div id='compilatio-show-notifications' title='";
+            $output .= get_string("display_notifications", "plagiarism_compilatio");
+            $output .= "' class='compilatio-icon active' ><i class='fa fa-bell fa-2x'></i>";
+            $output .= "<span>" . count($alerts) . "</span></div>";
         }
 
         // Hide/Show button.
@@ -990,68 +984,9 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
         $output .= "</div>";
 
-        $output .= "<script>";
-        // Focus on notifications if there is any.
-        $output .= "var selectedElement = ";
-        if (count($alerts) !== 0) {
-            $output .= "'#compilatio-notifications';";
-        } else {
-            $output .= "'#compilatio-home';";
-        }
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', array($alerts));
 
-        // JQuery Script to handle click on the tabs.
-        $output .= "
-            $(document).ready(function(){
-                $('#compilatio-tabs').show();
-
-                var tabs = $('#show-notifications, #show-stats, #show-help');
-                var elements = $('#compilatio-notifications, #compilatio-stats, #compilatio-help, #compilatio-home');
-
-                elements.not($(selectedElement)).hide();
-
-                $('#show-notifications').on('click',function(){
-                        tabClick($(this), $('#compilatio-notifications'));
-                });
-                $('#show-stats').on('click',function(){
-                        tabClick($(this), $('#compilatio-stats'));
-                });
-                $('#show-help').on('click',function(){
-                        tabClick($(this), $('#compilatio-help'));
-                });
-
-                function tabClick(tabClicked, contentToShow)
-                {
-                    if(!contentToShow.is(':visible'))
-                    {
-                        contentToShow.show();
-
-                        elements.not(contentToShow).hide();
-
-                        tabs.not(tabClicked).removeClass('active');
-
-                        tabClicked.toggleClass('active');
-                        $('#compilatio-hide-area').fadeIn();
-                    }
-                }
-
-                $('#compilatio-logo').on('click',function(){
-                    elementClicked = $('#compilatio-home');
-                    elementClicked.show();
-                    elements.not(elementClicked).hide();
-                    tabs.removeClass('active');
-                    $('#compilatio-hide-area').fadeIn();
-                });
-                $('#compilatio-hide-area').on('click',function(event){
-                    elements.hide();
-                    $(this).fadeOut();
-                    tabs.removeClass('active');
-                });
-
-            });";
-
-        $output .= "</script>";
-
-        $output .= "<div class='clear'></div>";
+        $output .= "<div class='compilatio-clear'></div>";
 
         // Home tab.
         $output .= "
@@ -1079,7 +1014,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
             foreach ($alerts as $alert) {
                 $output .= "
-                    <div class='alert alert-" . $alert["class"] . "'>" .
+                    <div class='compilatio-alert compilatio-alert-" . $alert["class"] . "'>" .
                     "<strong>" . $alert["title"] . "</strong><br/>" .
                     $alert["content"] .
                     "</div>";
@@ -1090,23 +1025,23 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
         // Display timed analysis date.
         if (isset($programmedanalysisdate)) {
-            $output .= "<p id='programmed-analysis'>$programmedanalysisdate</p>";
+            $output .= "<p id='compilatio-programmed-analysis'>$programmedanalysisdate</p>";
         }
 
         $output .= "</div>";
 
         // Display buttons :.
-        $output .= "<div id='button-container'>";
+        $output .= "<div id='compilatio-button-container'>";
 
         // Update button.
         $url = $PAGE->url;
         $url->param('compilatioupdate', true);
         $output .= "
-    		<button class='compilatio-button button'>
+    		<button class='compilatio-button comp-button'>
     				<i class='fa fa-refresh'></i>
     				" . get_string('updatecompilatioresults', 'plagiarism_compilatio') . "
     		</button>";
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/ajax_api', 'refreshButton',
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'refreshButton',
             array($CFG->httpswwwroot, $plagiarismfilesids, get_string('update_in_progress', 'plagiarism_compilatio')));
 
         // Start all analysis button.
@@ -1355,6 +1290,8 @@ function compilatio_create_temp_file($cmid, $eventdata) {
  */
 function compilatio_get_form_elements($mform, $defaults = false, $modulename='') {
 
+    global $PAGE;
+
     $ynoptions = array(
         0 => get_string('no'),
         1 => get_string('yes'),
@@ -1463,20 +1400,11 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename='')
     }
     $mform->addElement('html', '</tbody></table>');
 
-    // Used to append text nicely after the inputs. If Javascript is disabled, it will be displayed on the line below the input.
-    $mform->addElement('html', output_helper::get_jquery());
-    $mform->addElement('html', '<script>
-	$(document).ready(function(){
-		var txtGreen = $("<span>", {class:"after-input"}).text("' . get_string('similarity_percent', "plagiarism_compilatio") . '");
-		$("#green_threshold").after(txtGreen);
-		var txtOrange = $("<span>", {class:"after-input"}).text("' .
-        get_string('similarity_percent', "plagiarism_compilatio") .
-        ', ' .
-        get_string("red_threshold", "plagiarism_compilatio") .
-        '.");
-		$("#orange_threshold").after(txtOrange);
-	});
-	</script>');
+    // Used to append text nicely after the inputs.
+    $strsimilaritypercent = get_string("similarity_percent", "plagiarism_compilatio");
+    $strredtreshold = get_string("red_threshold", "plagiarism_compilatio");
+    $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_form', 'afterPercentValues',
+        array($strsimilaritypercent, $strredtreshold));
 
     // Numeric validation for Thresholds.
     $mform->addRule('green_threshold', get_string("numeric_threshold", "plagiarism_compilatio"), 'numeric', null, 'client');
@@ -1504,7 +1432,12 @@ function compilatio_remove_duplicates($duplicates, $plagiarismsettings) {
     if (is_array($duplicates)) {
 
         global $CFG, $DB;
-
+        /*
+        *  $CFG->proxy create the Connection with the webservice are necessary
+        *  and used variables in the constructor of the connection with the webservice (compilatio.class)
+        *  to call other functions that need this connection.
+        *  in this case set_indexing_state() and del_doc() .
+        */
         $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
             $plagiarismsettings['compilatio_api'],
             $CFG->proxyhost,
@@ -1582,7 +1515,7 @@ function compilatio_get_plagiarism_file($cmid, $userid, $file) {
 
         // Add new entry and get plagiarism_compilatio_file table record `id` for update_record_raw().
         if (($compid = $DB->insert_record('plagiarism_compilatio_files', $plagiarismfile, true)) === false) {
-            debugging("insert into compilatio_files failed");
+            print_error("insert into compilatio_files failed");
         }
         $plagiarismfile->id = $compid;
     }
@@ -1741,7 +1674,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
 
     $mimetype = compilatio_check_file_type($filename);
     if (empty($mimetype)) { // Sanity check on filetype - this should already have been checked.
-        debugging("no mime type for this file found.");
+        print_error("no mime type for this file found.");
         return false;
     }
 
@@ -1749,7 +1682,12 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
     if (!defined("COMPILATIO_MANUAL_SEND")) {
         mtrace("sending file #" . $plagiarismfile->id);
     }
-
+    /*
+    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
+    *  the constructor of the connection with the webservice (compilatio.class)
+    *  to call other functions that need this connection.
+    *  in this case send_doc().
+    */
     $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
         $plagiarismsettings['compilatio_api'],
         $CFG->proxyhost,
@@ -1768,7 +1706,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
         $module = $DB->get_record_sql($sql, array($moduledetail->instance));
     }
     if (empty($module)) {
-        debugging("could not find this module - it may have been deleted?");
+        print_error("could not find this module - it may have been deleted?");
         return false;
     }
     $name = format_string($module->name) . "(" . $plagiarismfile->cm . ")_" . $filename;
@@ -1788,7 +1726,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
 
     $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_UNEXTRACTABLE;
     $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
-    debugging("invalid compilatio response received - will try again later." . $idcompi);
+    print_error("invalid compilatio response received - will try again later." . $idcompi);
     // Invalid response returned - increment attempt value and return false to allow this to be called again.
     return false;
 }
@@ -1855,7 +1793,12 @@ function compilatio_getquotas() {
     global $CFG;
 
     $plagiarismsettings = (array) get_config('plagiarism');
-
+    /*
+    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
+    *  the constructor of the connection with the webservice (compilatio.class)
+    *  to call other functions that need this connection.
+    *  in this case get_quotas().
+    */
     $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
         $plagiarismsettings['compilatio_api'],
         $CFG->proxyhost,
@@ -1880,7 +1823,12 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
     if (empty($plagiarismsettings)) {
         $plagiarismsettings = (array) get_config('plagiarism');
     }
-
+    /*
+    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
+    *  the constructor of the connection with the webservice (compilatio.class)
+    *  to call other functions that need this connection.
+    *  in this case start_analyse().
+    */
     $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
         $plagiarismsettings['compilatio_api'],
         $CFG->proxyhost,
@@ -1929,7 +1877,12 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
     global $CFG, $DB;
 
     $plagiarismsettings = (array) get_config('plagiarism');
-
+    /*
+    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
+    *  the constructor of the connection with the webservice (compilatio.class)
+    *  to call other functions that need this connection.
+    *  in this case get_doc().
+    */
     $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
         $plagiarismsettings['compilatio_api'],
         $CFG->proxyhost,
@@ -1997,6 +1950,12 @@ function compilatio_get_account_expiration_date() {
 
     global $CFG;
     $plagiarismsettings = (array) get_config('plagiarism');
+    /*
+    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
+    *  the constructor of the connection with the webservice (compilatio.class)
+    *  to call other functions that need this connection.
+    *  in this case get_account_expiration_date().
+    */
     $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
         $plagiarismsettings['compilatio_api'],
         $CFG->proxyhost,
@@ -2029,7 +1988,12 @@ function compilatio_send_statistics() {
     }
 
     $plagiarismsettings = (array) get_config('plagiarism');
-
+    /*
+    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
+    *  the constructor of the connection with the webservice (compilatio.class)
+    *  to call other functions that need this connection.
+    *  in this case post_configuration().
+    */
     $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
         $plagiarismsettings['compilatio_api'],
         $CFG->proxyhost,
@@ -2048,7 +2012,12 @@ function compilatio_get_technical_news() {
 
     global $CFG;
     $plagiarismsettings = (array) get_config('plagiarism');
-
+    /*
+    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
+    *  the constructor of the connection with the webservice (compilatio.class)
+    *  to call other functions that need this connection.
+    *  in this case get_technical_news().
+    */
     $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
         $plagiarismsettings['compilatio_api'],
         $CFG->proxyhost,
@@ -2712,7 +2681,7 @@ function compilatio_get_global_statistics($html = true) {
  * @param  int    $postid Post ID
  * @return mixed            Return null if the content is empty, void otherwise
  */
-function handle_content($content, $userid, $courseid, $cmid, $postid = null) {
+function compilatio_handle_content($content, $userid, $courseid, $cmid, $postid = null) {
 
     if (trim($content) == "") {
         return;
@@ -2739,7 +2708,7 @@ function handle_content($content, $userid, $courseid, $cmid, $postid = null) {
  * @param  int   $postid Post ID
  * @return void
  */
-function handle_hashes($hashes, $cmid, $userid, $postid = null) {
+function compilatio_handle_hashes($hashes, $cmid, $userid, $postid = null) {
 
     $plagiarismsettings = (array) get_config('plagiarism');
 
@@ -2809,7 +2778,7 @@ function compilatio_enabled($cmid) {
  * @param  bool  $hascontent There is a content ?
  * @return mixed             Return null if plugin is not enabled, void otherwise
  */
-function event_handler($eventdata, $hasfile = true, $hascontent = true) {
+function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = true) {
 
     $cmid = $eventdata["contextinstanceid"];
     if (!compilatio_enabled($cmid)) {
@@ -2880,7 +2849,7 @@ function event_handler($eventdata, $hasfile = true, $hascontent = true) {
             $duplicates = $DB->get_records_sql($sql, array($cmid, $userid));
         }
         compilatio_remove_duplicates($duplicates, (array) get_config('plagiarism'));
-        handle_hashes($hashes, $cmid, $userid, $postid);
+        compilatio_handle_hashes($hashes, $cmid, $userid, $postid);
     }
 
     // Adding/updating a text content.
@@ -2899,7 +2868,7 @@ function event_handler($eventdata, $hasfile = true, $hascontent = true) {
                 array('cm' => $cmid, 'userid' => $userid, 'filename' => $filename));
         }
         compilatio_remove_duplicates($duplicates, (array) get_config('plagiarism'));
-        handle_content($content, $userid, $courseid, $cmid, $postid);
+        compilatio_handle_content($content, $userid, $courseid, $cmid, $postid);
     }
 }
 

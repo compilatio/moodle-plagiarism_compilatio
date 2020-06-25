@@ -39,7 +39,8 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
 global $DB, $SESSION;
+$id = optional_param('id', '', PARAM_TEXT);
 
-if (isset($_POST['id']) && isset($SESSION->compilatio_plagiarismfiles[$_POST['id']])) {
-    compilatio_check_analysis($SESSION->compilatio_plagiarismfiles[$_POST['id']], true);
+if (isset($id) && isset($SESSION->compilatio_plagiarismfiles[$id])) {
+    compilatio_check_analysis($SESSION->compilatio_plagiarismfiles[$id], true);
 }

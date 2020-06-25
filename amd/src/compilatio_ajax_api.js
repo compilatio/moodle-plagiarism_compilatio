@@ -22,7 +22,7 @@ define(['jquery'], function ($) {
     var getIndexingState = exports.getIndexingState = function (basepath, eltId, docId) {
         $(document).ready(function () {
             $.post(basepath + '/plagiarism/compilatio/ajax/get_indexing_state.php', { 'idDoc': docId }, function (data) {
-                $(".compi-" + eltId + " .library").detach();
+                $(".compi-" + eltId + " .compilatio-library").detach();
                 $(".compi-" + eltId).prepend(data);
 
                 setTimeout(function () {
@@ -36,15 +36,15 @@ define(['jquery'], function ($) {
 
     var toggleIndexingState = exports.toggleIndexingState = function (basepath, eltId, docId) {
         var indexingState;
-        if ($(".compi-" + eltId + " > div:first-child").is('.library-in')) {
-            $(".compi-" + eltId + " > div:first-child").removeClass('library-in');
+        if ($(".compi-" + eltId + " > div:first-child").is('.compilatio-library-in')) {
+            $(".compi-" + eltId + " > div:first-child").removeClass('compilatio-library-in');
             indexingState = 0;
         }
-        if ($(".compi-" + eltId + " > div:first-child").is('.library-out')) {
-            $(".compi-" + eltId + " > div:first-child").removeClass('library-out');
+        if ($(".compi-" + eltId + " > div:first-child").is('.compilatio-library-out')) {
+            $(".compi-" + eltId + " > div:first-child").removeClass('compilatio-library-out');
             indexingState = 1;
         }
-        $(".compi-" + eltId + " > div:first-child").addClass('library');
+        $(".compi-" + eltId + " > div:first-child").addClass('compilatio-library');
         $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php', { 'idDoc': docId, 'indexingState': indexingState }, function (data) {
             if (data == 'true') {
                 getIndexingState(basepath, eltId, docId);
@@ -80,6 +80,63 @@ define(['jquery'], function ($) {
         });
     };
 
-    return exports;
+    var compilatioTabs = exports.compilatioTabs = function (alerts) {
+        $(document).ready(function(){
+            var selectedElement = '';
+            if (alerts.length > 0) {
+                selectedElement = '#compilatio-notifications';
+            } else {
+                selectedElement = '#compilatio-home';
+            }
 
+            $('#compilatio-container').css('height', 'auto');
+            $('#compilatio-tabs').show();
+
+            var tabs = $('#compilatio-show-notifications, #show-stats, #show-help');
+            var elements = $('#compilatio-notifications, #compilatio-stats, #compilatio-help, #compilatio-home');
+
+            elements.not($(selectedElement)).hide();
+
+            $('#compilatio-show-notifications').on('click',function(){
+                    tabClick($(this), $('#compilatio-notifications'));
+            });
+            $('#show-stats').on('click',function(){
+                    tabClick($(this), $('#compilatio-stats'));
+            });
+            $('#show-help').on('click',function(){
+                    tabClick($(this), $('#compilatio-help'));
+            });
+
+            function tabClick(tabClicked, contentToShow)
+            {
+                if(!contentToShow.is(':visible'))
+                {
+                    contentToShow.show();
+
+                    elements.not(contentToShow).hide();
+
+                    tabs.not(tabClicked).removeClass('active');
+
+                    tabClicked.toggleClass('active');
+                    $('#compilatio-hide-area').fadeIn();
+                }
+            }
+
+            $('#compilatio-logo').on('click',function(){
+                elementClicked = $('#compilatio-home');
+                elementClicked.show();
+                elements.not(elementClicked).hide();
+                tabs.removeClass('active');
+                $('#compilatio-hide-area').fadeIn();
+            });
+            $('#compilatio-hide-area').on('click',function(event){
+                elements.hide();
+                $(this).fadeOut();
+                tabs.removeClass('active');
+            });
+
+        });
+    };
+
+    return exports;
 });

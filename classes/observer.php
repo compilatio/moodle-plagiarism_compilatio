@@ -42,8 +42,12 @@ class plagiarism_compilatio_observer {
     public static function forum_file_uploaded(
     \mod_forum\event\assessable_uploaded $event) {
         global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-        event_handler($event->get_data());
+        try {
+            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+            compilatio_event_handler($event->get_data());
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     /**
@@ -54,8 +58,12 @@ class plagiarism_compilatio_observer {
     public static function workshop_file_uploaded(
     \mod_workshop\event\assessable_uploaded $event) {
         global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-        event_handler($event->get_data());
+        try {
+            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+            compilatio_event_handler($event->get_data());
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     /**
@@ -66,8 +74,12 @@ class plagiarism_compilatio_observer {
     public static function assignsubmission_onlinetext_uploaded(
     \assignsubmission_onlinetext\event\assessable_uploaded $event) {
         global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-        event_handler($event->get_data(), false, true);
+        try {
+            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+            compilatio_event_handler($event->get_data(), false, true);
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     /**
@@ -78,8 +90,12 @@ class plagiarism_compilatio_observer {
     public static function assignsubmission_file_uploaded(
     \assignsubmission_file\event\assessable_uploaded $event) {
         global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-        event_handler($event->get_data(), true, false);
+        try {
+            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+            compilatio_event_handler($event->get_data(), true, false);
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     /**
@@ -90,8 +106,12 @@ class plagiarism_compilatio_observer {
     public static function forum_post_deleted(
         \mod_forum\event\post_deleted $event) {
             global $CFG;
+        try {
             require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            event_handler($event->get_data(), false, false);
+            compilatio_event_handler($event->get_data(), false, false);
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     /**
@@ -101,9 +121,13 @@ class plagiarism_compilatio_observer {
      */
     public static function workshop_submission_deleted(
         \mod_workshop\event\submission_deleted $event) {
-            global $CFG;
+        global $CFG;
+        try {
             require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            event_handler($event->get_data(), false, false);
+            compilatio_event_handler($event->get_data(), false, false);
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
     }
 
 }

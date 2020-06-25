@@ -35,5 +35,3 @@ require_capability('moodle/site:config', $context, $USER->id, true, "nopermissio
 
 
 echo json_encode(compilatio_get_global_statistics());
-
-

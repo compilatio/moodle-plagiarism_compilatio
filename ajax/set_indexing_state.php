@@ -47,10 +47,11 @@ require_login();
 
 // Get global Compilatio settings.
 $plagiarismsettings = (array) get_config('plagiarism');
+$iddoc = optional_param('idDoc', '', PARAM_TEXT);
+$indexingstatepost = optional_param('indexingState', '', PARAM_TEXT);
 
-if (isset($_POST['idDoc']) && compilatio_valid_md5($_POST['idDoc']) && isset($_POST['indexingState'])) {
-
-    $indexingstate = (int) ((boolean) $_POST['indexingState']);
+if (isset($iddoc) && compilatio_valid_md5($iddoc) && isset($indexingstatepost)) {
+    $indexingstate = (int) ((boolean) $indexingstatepost);
     $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
         $plagiarismsettings['compilatio_api'],
         $CFG->proxyhost,
@@ -58,7 +59,7 @@ if (isset($_POST['idDoc']) && compilatio_valid_md5($_POST['idDoc']) && isset($_P
         $CFG->proxyuser,
         $CFG->proxypassword);
 
-    $call = $compilatio->set_indexing_state($_POST['idDoc'], $indexingstate);
+    $call = $compilatio->set_indexing_state($iddoc, $indexingstate);
     if ($call === true) {
         echo ('true');
     } else {

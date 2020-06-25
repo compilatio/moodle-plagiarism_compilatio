@@ -41,11 +41,11 @@ if ($mform->is_cancelled()) {
     redirect('settings.php');
 }
 // Boolean to test only once the connection if it has failed.
-$incorrectconfing = false;
+$incorrectconfig = false;
 
 echo $OUTPUT->header();
 $currenttab = 'compilatiosettings';
-require_once('compilatio_tabs.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 if (($data = $mform->get_data()) && confirm_sesskey()) {
     if (!isset($data->compilatio_use)) {
         $data->compilatio_use = 0;
@@ -74,7 +74,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             if ($configfield = $DB->get_record('config_plugins', array('name' => $field, 'plugin' => 'plagiarism'))) {
                 $configfield->value = $value;
                 if (!$DB->update_record('config_plugins', $configfield)) {
-                    error("errorupdating");
+                    print_error("errorupdating");
                 }
             } else {
                 $configfield = new stdClass();
@@ -82,7 +82,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
                 $configfield->plugin = 'plagiarism';
                 $configfield->name = $field;
                 if (!$DB->insert_record('config_plugins', $configfield)) {
-                    error("errorinserting");
+                    print_error("errorinserting");
                 }
             }
         }
@@ -96,12 +96,9 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     $quotas = compilatio_getquotas();
     if ($quotas["quotas"] == null) {
         // Disable compilatio as this config isn't correct.
-        $rec = $DB->get_record('config_plugins', array('name' => 'compilatio_use', 'plugin' => 'plagiarism'));
-        $rec->value = 0;
-        $DB->update_record('config_plugins', $rec);
-
+        set_config('compilatio_use', 0, 'plagiarism');
         echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $quotas["error"]);
-        $incorrectconfing = true;
+        $incorrectconfig = true;
     }
 }
 
@@ -109,15 +106,12 @@ $plagiarismsettings = (array) get_config('plagiarism');
 $mform->set_data($plagiarismsettings);
 
 
-if (!empty($plagiarismsettings['compilatio_use']) && !$incorrectconfing) {
+if (!empty($plagiarismsettings['compilatio_use']) && !$incorrectconfig) {
     $quotasarray = compilatio_getquotas();
     $quotas = $quotasarray['quotas'];
     if ($quotas == null) {
         // Disable compilatio as this config isn't correct.
-        $rec = $DB->get_record('config_plugins', array('name' => 'compilatio_use', 'plugin' => 'plagiarism'));
-        $rec->value = 0;
-        $DB->update_record('config_plugins', $rec);
-
+        set_config('compilatio_use', 0, 'plagiarism');
         echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $quotasarray['error']);
     } else {
         echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');

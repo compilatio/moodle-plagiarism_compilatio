@@ -27,7 +27,7 @@ require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->libdir.'/plagiarismlib.php');
 require_once($CFG->dirroot.'/plagiarism/compilatio/lib.php');
-require_once('compilatio_form.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -46,7 +46,7 @@ if (!empty($plagiarismdefaults)) {
 }
 echo $OUTPUT->header();
 $currenttab = 'compilatiodefaults';
-require_once('compilatio_tabs.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 if (($data = $mform->get_data()) && confirm_sesskey()) {
     $plagiarismplugin = new plagiarism_plugin_compilatio();
 

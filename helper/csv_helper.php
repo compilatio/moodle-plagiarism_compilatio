@@ -44,6 +44,8 @@ class csv_helper
      */
     protected static function get_header($filename, $content) {
 
+        $filename = preg_replace('/[\r\n]/', '', $filename);
+
         header('HTTP/1.1 200 OK');
         header('Date: ' . date('D M j G:i:s T Y'));
         header('Last-Modified: ' . date('D M j G:i:s T Y'));

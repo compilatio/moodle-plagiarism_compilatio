@@ -28,7 +28,6 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
-
 require_once($CFG->dirroot . '/plagiarism/compilatio/helper/ws_helper.php');
 
 require_login();
@@ -96,7 +95,7 @@ if (isset($plagiarismsettings["compilatio_password"], $plagiarismsettings["compi
 
 echo $OUTPUT->header();
 $currenttab = 'compilatioautodiagnosis';
-require_once('compilatio_tabs.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 
 $alerts = array();
@@ -189,11 +188,8 @@ if ($forumsuccess) {
  * Index 0 for criticality & index 1 for message
  */
 foreach ($alerts as $alert) {
-    echo "<div class='alert alert-" . $alert[0] . "'>" . $alert[1] . "</div>";
+    echo "<div class='compilatio-alert compilatio-alert-" . $alert[0] . "'>" . $alert[1] . "</div>";
 }
 
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();
-
-
-

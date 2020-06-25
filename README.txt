@@ -7,13 +7,13 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-==========
-- Fixed plugin visibility depending on user rights.
-- Improvement of the plugin visibility according to the activation parameters (platform, module type, course module)
-- Added GDPR compliance (from Moodle 3.5)
-- Reduced API calls to get available file types
-- Added document's warning support like "unrecognized text language"
-- Add filename in document's title sent to Compilatio
+- Enhance plugin global compatibility
+    - Replace use of deprecated functions
+    - Use more Moodle API or Moodle internal functions
+    - Rewrite JS and CSS
+    - Fix upgrade plugin file by adding a savepoint
+    - Add filename in document's title sent to Compilatio
+
 
 QUICK INSTALL
 ================

@@ -22,16 +22,17 @@
  * @copyright 2012 Dan Marsden http://danmarsden.com
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/helper/output_helper.php');
-
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
 
+$PAGE->requires->jquery();
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
@@ -41,10 +42,8 @@ $plagiarismsettings = (array) get_config('plagiarism');
 
 echo $OUTPUT->header();
 $currenttab = 'compilatiostatistics';
-require_once('compilatio_tabs.php');
-
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
-
 
 $rows = compilatio_get_global_statistics();
 
@@ -52,170 +51,89 @@ if (count($rows) === 0) {
     echo get_string("no_statistics_yet", "plagiarism_compilatio");
 } else {
 
-    echo "<legend class='compilatio_legend'>".get_string("global_statistics", "plagiarism_compilatio")."</legend>";
-
     $url = new moodle_url('/plagiarism/compilatio/CSV.php');
-    echo "<a href='$url' style='margin-bottom:20px;' class='button'>" .
-        get_string("export_raw_csv", "plagiarism_compilatio") . "</a>";
+    echo html_writer::tag('legend', get_string("global_statistics", "plagiarism_compilatio"), array(
+        'class' => 'compilatio_legend'
+    ));
+    echo html_writer::tag('a', get_string("export_raw_csv", "plagiarism_compilatio"), array(
+        'href' => $url,
+        'style' => 'margin-bottom:20px;',
+        'class' => 'comp-button'
+    ));
+    echo html_writer::tag('legend', get_string("assign_statistics", "plagiarism_compilatio"), array(
+        'class' => 'compilatio_legend'
+    ));
 
-    echo "<legend class='compilatio_legend'>".get_string("assign_statistics", "plagiarism_compilatio")."</legend>";
+    // Bootstrap.
+    echo html_writer::empty_tag('link', array(
+        'rel' => 'stylesheet',
+        'href' => 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.css'
+    ));
+    echo html_writer::script('', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.js');
+    // Scripts function.
+    echo html_writer::script('', $CFG->wwwroot . '/plagiarism/compilatio/js/statistics_functions.js');
 
-    echo output_helper::get_jquery();
-    ?>
+    $url = new moodle_url("/plagiarism/compilatio/stats_json.php");
+    // Noscript.
+    echo html_writer::start_tag('noscript');
+    echo html_writer::empty_tag('link', array(
+        'rel' => 'stylesheet',
+        'href' => $CFG->wwwroot. '/plagiarism/compilatio/css/no_js_styles.css'
+    ));
+    echo get_string("enable_javascript", "plagiarism_compilatio");
+    echo html_writer::end_tag('noscript');
 
-    <script>
-        var wait_message = "<?php echo get_string("loading", "plagiarism_compilatio"); ?>";
+    echo html_writer::tag('h5', "Compilatio - " . get_string("similarities", "plagiarism_compilatio"), array('colspan' => '4'));
 
-        function percentage(v) {
-            return v + "%";
-        }
+    $table = new html_table();
+    $table->id = 'compilatio-table-js';
+    $table->attributes['data-toggle'] = 'table';
+    $table->attributes['data-url'] = $url;
 
-        function urlSorter(a, b) {
-            //Strip tags to compare their content:
-            a = a.replace(/(<([^>]+)>)/ig, "");
-            b = b.replace(/(<([^>]+)>)/ig, "");
-            return a.localeCompare(b)
-        }
-    </script>
+    $tableheadjs = array(
+        get_string("course"),
+        get_string("teacher", "plagiarism_compilatio"),
+        get_string("modulename", "assign"),
+        str_replace(" ", "<br/>", get_string("documents_number", "plagiarism_compilatio")),
+        get_string("minimum", "plagiarism_compilatio"),
+        get_string("maximum", "plagiarism_compilatio"),
+        get_string("average", "plagiarism_compilatio")
+    );
 
+    $table->head  = $tableheadjs;
+    echo html_writer::table($table);
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.js"></script>
-    
-    <?php $url = new moodle_url("/plagiarism/compilatio/stats_json.php"); ?>
-
-    <noscript>
-    <style>
-        #table-js{
-            display:none;
-        }
-    </style>
-
-    <p><?php echo get_string("enable_javascript", "plagiarism_compilatio"); ?></p>
-    </noscript>
-
-    <h5 colspan='4'><?php echo "Compilatio - " . get_string("similarities", "plagiarism_compilatio"); ?></h5>
-
-    <table id="table-js"
-           data-toggle="table"
-           data-url="<?php echo $url; ?>">
-        <thead>
-            <tr>
-                <th data-field="course"
-                    data-sortable="true"
-                    data-sorter="urlSorter">
-                        <?php echo get_string("course"); ?>
-                </th>
-                <th data-field="teacher" 
-                    data-sortable="true"
-                    data-sorter="urlSorter">
-                        <?php echo get_string("teacher", "plagiarism_compilatio"); ?>
-                </th>
-                <th data-field="assign"
-                    data-sortable="true"
-                    data-sorter="urlSorter">
-                        <?php echo get_string("modulename", "assign"); ?>
-                </th>
-                <th data-field="analyzed_documents_count" 
-                    data-sortable="true">
-                        <?php echo str_replace(" ", "<br/>", get_string("documents_number", "plagiarism_compilatio")); ?>
-                </th>
-                <th data-field="minimum_rate" 
-                    data-sortable="true"
-                    data-formatter="percentage">
-                        <?php echo get_string("minimum", "plagiarism_compilatio"); ?>
-                </th>
-                <th data-field="maximum_rate" 
-                    data-sortable="true"
-                    data-formatter="percentage">
-                        <?php echo get_string("maximum", "plagiarism_compilatio"); ?>
-                </th>
-                <th data-field="average_rate" 
-                    data-sortable="true"
-                    data-formatter="percentage">
-                        <?php echo get_string("average", "plagiarism_compilatio"); ?>
-                </th>
-            </tr>
-        </thead>
-    </table>
-
-    <?php
-    if ($CFG->version < 2014051200) {
-        // Moodle < 2.7 does not include boostrap, add basic style.
-        ?>
-        <style>
-            table{
-                width:100%;
-            }
-            table, td, th{
-                border:thin solid #ddd;
-            }
-        </style>
-
-        <?php
+    $tablenojs = new html_table();
+    $tablenojs->id = 'compilatio-table-no-js';
+    $tablenojs->attributes['class'] = 'table table-striped table-bordered table-hover';
+    $tablehead = array(
+        get_string("course"),
+        get_string("teacher", "plagiarism_compilatio"),
+        get_string("modulename", "assign"),
+        str_replace(" ", "<br/>", get_string("documents_number", "plagiarism_compilatio")),
+        get_string("minimum", "plagiarism_compilatio"),
+        get_string("maximum", "plagiarism_compilatio"),
+        get_string("average", "plagiarism_compilatio")
+    );
+    $tablenojs->head = $tablehead;
+    foreach ($rows as $row) {
+        $tablenojs->data[] = array(
+            $row["course"],
+            $row["teacher"],
+            $row["assign"],
+            $row["analyzed_documents_count"],
+            $row["minimum_rate"],
+            $row["maximum_rate"],
+            $row["average_rate"]
+        );
     }
-    ?>
-
-    <table id="table-no-js" class="table table-striped table-bordered table-hover">
-        <thead>
-            <tr>
-                <th colspan='3'></th>
-                <th colspan='4'><?php echo "Compilatio - " . get_string("similarities", "plagiarism_compilatio"); ?></th>
-            </tr>
-            <tr>
-                <th>
-                    <?php echo get_string("course"); ?>
-                </th>
-                <th>
-                    <?php echo get_string("teacher", "plagiarism_compilatio"); ?>
-                </th>
-                <th>
-                    <?php echo get_string("modulename", "assign"); ?>
-                </th>
-                <th>
-                    <?php echo str_replace(" ", "<br/>", get_string("documents_number", "plagiarism_compilatio")); ?>
-                </th>
-                <th>
-                    <?php echo get_string("minimum", "plagiarism_compilatio"); ?>
-                </th>
-                <th>
-                    <?php echo get_string("maximum", "plagiarism_compilatio"); ?>
-                </th>
-                <th>
-                    <?php echo get_string("average", "plagiarism_compilatio"); ?>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($rows as $row): ?>
-
-                <tr>
-                    <td><?php echo $row["course"]; ?></td>
-                    <td><?php echo $row["teacher"]; ?></td>
-                    <td><?php echo $row["assign"]; ?></td>
-                    <td><?php echo $row["analyzed_documents_count"]; ?></td>
-                    <td><?php echo $row["minimum_rate"]; ?>%</td>
-                    <td><?php echo $row["maximum_rate"]; ?>%</td>
-                    <td><?php echo $row["average_rate"]; ?>%</td>
-                </tr>
-
-            <?php endforeach; ?>
-        <tbody>
-    </table>
-
-    <script>
-        document.getElementById("table-no-js").style.display = 'none';
-    </script>
-    <?php
-
+    echo html_writer::table($tablenojs);
     $url = new moodle_url('/plagiarism/compilatio/CSV.php', array("raw" => 0));
-    echo "
-        <a href='$url' style='margin-top:20px;' class='button'>" .
-            get_string("export_global_csv", "plagiarism_compilatio") .
-        "</a>";
-
+    echo html_writer::tag('a', get_string("export_global_csv", "plagiarism_compilatio"), array(
+        'href' => $url,
+        'style' => 'margin-bottom:20px;',
+        'class' => 'comp-button'
+    ));
 }
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();
-
-

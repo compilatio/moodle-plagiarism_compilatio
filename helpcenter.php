@@ -34,8 +34,10 @@ $plagiarismsettings = (array) get_config('plagiarism');
 
 // Gheck GET parameter.
 $availpages = ['moodle-admin', 'moodle-teacher'];
-if (!isset($_GET['page']) || in_array($_GET['page'], $availpages) === false) {
-    $_GET['page'] = 'moodle-teacher';
+
+$page = optional_param('page', 0, PARAM_INT);
+if (!isset($page) || in_array($page, $availpages) === false) {
+    $page = 'moodle-teacher';
 }
 echo("<!doctype html>
 <html>
@@ -56,7 +58,7 @@ echo("<!doctype html>
 				t=x(s,'input');y(t,'type','submit');y(t,'id','compilatio-submit-redirect-hc');y(t,'style',\"display: none;\");
 				z(u,b);z(u,m);z(u,i);z(u,o);z(u,t);z(s.body,u);
 				s.getElementById('compilatio-submit-redirect-hc').click();
-			})('".base64_encode($plagiarismsettings['compilatio_password'])."', '".$USER->email."', '".$USER->lang."', '".$_GET['page']."')
+			})('".base64_encode($plagiarismsettings['compilatio_password'])."', '".$USER->email."', '".$USER->lang."', '".$page."')
 		</script>
 	</body>
 </html>");
