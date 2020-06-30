@@ -658,7 +658,11 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
      */
     public function update_status($course, $cm) {
 
-        global $CFG, $PAGE, $OUTPUT, $DB, $SESSION;
+        global $CFG, $PAGE, $OUTPUT, $DB, $SESSION, $USER;
+
+        ws_helper::mylog('user ' . $USER->username . '(' . $USER->id . ') update_status()');
+
+        ws_helper::get_allowed_file_types();
 
         $alerts = array();
         $plagiarismsettings = (array) get_config('plagiarism');
