@@ -660,6 +660,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
         global $CFG, $PAGE, $OUTPUT, $DB, $SESSION;
 
+        ws_helper::get_allowed_file_types();
+
         $alerts = array();
         $plagiarismsettings = (array) get_config('plagiarism');
         $output = '';

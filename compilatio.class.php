@@ -21,7 +21,7 @@
  * @package    plagiarism_compilatio
  * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2020 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -99,7 +99,6 @@ class compilatioservice {
             $this->soapcli = "Error constructor compilatio with urlsoap" . $urlsoap;
         }
     }
-
 
     /**
      * Load a document on Compilatio account
@@ -365,8 +364,6 @@ class compilatioservice {
      */
     public function get_allowed_file_types() {
 
-        global $SESSION;
-
         try {
             if (!is_object($this->soapcli)) {
                 return false;
@@ -378,7 +375,6 @@ class compilatioservice {
         } catch (SoapFault $fault) {
             return false;
         }
-
     }
 
     /**

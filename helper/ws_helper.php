@@ -103,7 +103,6 @@ class ws_helper
         if (is_array($filetypes)) {
             // Check and remove duplicates filetypes.
             foreach ($filetypes as $ft) {
-
                 $alreadyknown = false;
                 foreach ($filtered as $f) {
                     if ($f->type == $ft->type) {
@@ -114,17 +113,48 @@ class ws_helper
                 if ($alreadyknown === false) {
                     $filtered[] = $ft;
                 }
-
             }
             usort($filtered, function ($a, $b) {
                 return strcmp($a->type, $b->type);
             });
             $SESSION->compilatio_allowed_file_types = $filtered;
             return $SESSION->compilatio_allowed_file_types;
-        } else {
-            return array();
-        }
 
+        } else {
+            // Returns safe allowed file types.
+            return array(
+                (object) array(
+                    'type' => 'doc',
+                    'title' => 'Microsoft Word',
+                    'mimetype' => 'application/msword'
+                ),
+                (object) array(
+                    'type' => 'docx',
+                    'title' => 'Microsoft Word',
+                    'mimetype' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                ),
+                (object) array(
+                    'type' => 'htm',
+                    'title' => 'Web Page',
+                    'mimetype' => 'text/html'
+                ),
+                (object) array(
+                    'type' => 'pdf',
+                    'title' => 'Adobe Portable Document Format',
+                    'mimetype' => 'application/pdf'
+                ),
+                (object) array(
+                    'type' => 'txt',
+                    'title' => 'Text File',
+                    'mimetype' => 'text/plain'
+                ),
+                (object) array(
+                    'type' => 'odt',
+                    'title' => 'OpenDocument Text',
+                    'mimetype' => 'application/vnd.oasis.opendocument.text'
+                )
+            );
+        }
     }
 
     /**
