@@ -45,36 +45,36 @@ class compilatio_setup_form extends moodleform {
 
         $mform = & $this->_form;
         $mform->addElement('html', get_string('compilatioexplain', 'plagiarism_compilatio'));
-        $mform->addElement('checkbox', 'compilatio_use', get_string('activate_compilatio', 'plagiarism_compilatio'));
+        $mform->addElement('checkbox', 'enabled', get_string('activate_compilatio', 'plagiarism_compilatio'));
 
         $mform->addElement('html', '<p style="font-size: 12px;font-style: italic;">' .
                            get_string("disclaimer_data", "plagiarism_compilatio") . '</p>');
 
-        $mform->addElement('text', 'compilatio_api', get_string('compilatioapi', 'plagiarism_compilatio'));
-        $mform->addHelpButton('compilatio_api', 'compilatioapi', 'plagiarism_compilatio');
-        $mform->addRule('compilatio_api', null, 'required', null, 'client');
-        $mform->setDefault('compilatio_api', 'https://service.compilatio.net/webservices/CompilatioUserClient.wsdl');
-        $mform->setType('compilatio_api', PARAM_URL);
+        $mform->addElement('text', 'api', get_string('compilatioapi', 'plagiarism_compilatio'));
+        $mform->addHelpButton('api', 'compilatioapi', 'plagiarism_compilatio');
+        $mform->addRule('api', null, 'required', null, 'client');
+        $mform->setDefault('api', 'https://service.compilatio.net/webservices/CompilatioUserClient.wsdl');
+        $mform->setType('api', PARAM_URL);
 
-        $mform->addElement('passwordunmask', 'compilatio_password', get_string('compilatiopassword', 'plagiarism_compilatio'));
-        $mform->addHelpButton('compilatio_password', 'compilatiopassword', 'plagiarism_compilatio');
-        $mform->addRule('compilatio_password', null, 'required', null, 'client');
+        $mform->addElement('passwordunmask', 'password', get_string('compilatiopassword', 'plagiarism_compilatio'));
+        $mform->addHelpButton('password', 'compilatiopassword', 'plagiarism_compilatio');
+        $mform->addRule('password', null, 'required', null, 'client');
 
-        $mform->addElement('textarea', 'compilatio_student_disclosure',
+        $mform->addElement('textarea', 'student_disclosure',
                            get_string('students_disclosure', 'plagiarism_compilatio'),
                            'wrap="virtual" rows="6" cols="50"');
-        $mform->addHelpButton('compilatio_student_disclosure', 'students_disclosure', 'plagiarism_compilatio');
-        $mform->setDefault('compilatio_student_disclosure', get_string('studentdisclosuredefault', 'plagiarism_compilatio'));
+        $mform->addHelpButton('student_disclosure', 'students_disclosure', 'plagiarism_compilatio');
+        $mform->setDefault('student_disclosure', get_string('studentdisclosuredefault', 'plagiarism_compilatio'));
 
-        $mform->addElement('checkbox', 'compilatio_allow_teachers_to_show_reports',
+        $mform->addElement('checkbox', 'allow_teachers_to_show_reports',
                            get_string("allow_teachers_to_show_reports",
                            "plagiarism_compilatio"));
-        $mform->setDefault('compilatio_allow_teachers_to_show_reports', 0);
+        $mform->setDefault('allow_teachers_to_show_reports', 0);
 
         $mods = get_plugin_list('mod');
         foreach ($mods as $mod => $modname) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
-                $modstring = 'compilatio_enable_mod_' . $mod;
+                $modstring = 'enable_mod_' . $mod;
                 $string = "";
                 if (string_exists($modstring, "plagiarism_compilatio")) {
                     $string = get_string($modstring, 'plagiarism_compilatio');
@@ -87,18 +87,18 @@ class compilatio_setup_form extends moodleform {
 
         $radioarray = array();
         $radioarray[] = $mform->createElement('radio',
-            'compilatio_owner_file', '', get_string('owner_file_school', 'plagiarism_compilatio'), 1);
+            'owner_file', '', get_string('owner_file_school', 'plagiarism_compilatio'), 1);
         $radioarray[] = $mform->createElement('html',
             '<p style="font-size: 12px;font-style: italic;">'
             . get_string("owner_file_school_details", "plagiarism_compilatio") . '</p>');
         $radioarray[] = $mform->createElement('radio',
-            'compilatio_owner_file', '', get_string('owner_file_student', 'plagiarism_compilatio'), 0);
+            'owner_file', '', get_string('owner_file_student', 'plagiarism_compilatio'), 0);
         $radioarray[] = $mform->createElement('html',
             '<p style="font-size: 12px;font-style: italic;">'
             . get_string("owner_file_student_details", "plagiarism_compilatio") . '</p>');
 
-        $mform->addGroup($radioarray, 'compilatio_owner_file', get_string('owner_file', 'plagiarism_compilatio'), array(''), false);
-        $mform->setDefault('compilatio_owner_file', 1);
+        $mform->addGroup($radioarray, 'owner_file', get_string('owner_file', 'plagiarism_compilatio'), array(''), false);
+        $mform->setDefault('owner_file', 1);
 
         $this->add_action_buttons(true);
     }

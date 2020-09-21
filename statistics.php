@@ -38,7 +38,7 @@ require_capability('moodle/site:config', $context, $USER->id, true, "nopermissio
 
 $plagiarismplugin = new plagiarism_plugin_compilatio();
 
-$plagiarismsettings = (array) get_config('plagiarism');
+$plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
 echo $OUTPUT->header();
 $currenttab = 'compilatiostatistics';
@@ -55,6 +55,7 @@ if (count($rows) === 0) {
     echo html_writer::tag('legend', get_string("global_statistics", "plagiarism_compilatio"), array(
         'class' => 'compilatio_legend'
     ));
+    echo html_writer::tag('p', get_string("global_statistics_description", "plagiarism_compilatio"));
     echo html_writer::tag('a', get_string("export_raw_csv", "plagiarism_compilatio"), array(
         'href' => $url,
         'style' => 'margin-bottom:20px;',

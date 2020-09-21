@@ -73,11 +73,11 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             return $plagiarismsettings;
         }
 
-        $plagiarismsettings = (array) get_config('plagiarism');
+        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
         // Check if compilatio enabled.
-        if (isset($plagiarismsettings['compilatio_use']) && $plagiarismsettings['compilatio_use']) {
+        if (isset($plagiarismsettings['enabled']) && $plagiarismsettings['enabled']) {
             // Now check to make sure required settings are set!.
-            if (empty($plagiarismsettings['compilatio_api'])) {
+            if (empty($plagiarismsettings['api'])) {
                 print_error("Compilatio API URL not set!");
             }
             return $plagiarismsettings;
@@ -414,7 +414,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         // even if they don't have view report capability.
         if ($USER->id == $userid) {
             $selfreport = true;
-            if (get_config("plagiarism", "compilatio_allow_teachers_to_show_reports") === '1' &&
+            if (get_config("plagiarism_compilatio", "allow_teachers_to_show_reports") === '1' &&
                 isset($plugincm['compilatio_show_student_report']) &&
                 ($plugincm['compilatio_show_student_report'] == PLAGIARISM_COMPILATIO_SHOW_ALWAYS ||
                     $plugincm['compilatio_show_student_report'] == PLAGIARISM_COMPILATIO_SHOW_CLOSED && $assignclosed)) {
@@ -498,133 +498,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
     }
 
     /**
-     * Hook to save plagiarism specific settings on a module settings page
-     *
-     * @param object $data - data from an mform submission
-     */
-    public function save_form_elements($data) {
-
-        global $DB;
-
-        if (!$this->get_settings()) {
-            return null;
-        }
-
-        if (isset($data->use_compilatio)) {
-            // Array of possible plagiarism config options.
-            $plagiarismelements = $this->config_options();
-
-            // Validation on thresholds :
-            // Set thresholds to default if the green one is greater than the orange.
-            if (!isset($data->green_threshold, $data->orange_threshold) ||
-                $data->green_threshold > $data->orange_threshold ||
-                $data->green_threshold > 100 ||
-                $data->green_threshold < 0 ||
-                $data->orange_threshold > 100 ||
-                $data->orange_threshold < 0
-            ) {
-                $data->green_threshold = 10;
-                $data->orange_threshold = 25;
-            }
-
-            if (get_config("plagiarism", "compilatio_allow_teachers_to_show_reports") !== '1') {
-                $data->compilatio_show_student_report = PLAGIARISM_COMPILATIO_SHOW_NEVER;
-            }
-
-            // First get existing values.
-            $existingelements = $DB->get_records_menu('plagiarism_compilatio_config', // Table.
-                array('cm' => $data->coursemodule), // Where.
-                '', // Order by.
-                'name, id'); // Select.
-
-            foreach ($plagiarismelements as $element) {
-                $newelement = new stdClass();
-                $newelement->cm = $data->coursemodule;
-                $newelement->name = $element;
-                $newelement->value = (isset($data->$element) ? $data->$element : 0);
-                if (isset($existingelements[$element])) { // Update.
-                    $newelement->id = $existingelements[$element];
-                    $DB->update_record('plagiarism_compilatio_config', $newelement);
-                } else { // Insert.
-                    $DB->insert_record('plagiarism_compilatio_config', $newelement);
-                }
-            }
-            // Check if we are changing from timed or manual to instant.
-            // If changing to instant, make all existing files to get a report.
-            if (isset($existingelements['compilatio_analysistype']) &&
-                $existingelements['compilatio_analysistype'] !== $data->compilatio_analysistype
-                && $data->compilatio_analysistype == COMPILATIO_ANALYSISTYPE_AUTO) {
-                // Get all existing files in this assignment set to manual status.
-                $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files',
-                    array('cm' => $data->coursemodule, 'statuscode' => COMPILATIO_STATUSCODE_ACCEPTED));
-                compilatio_analyse_files($plagiarismfiles);
-            }
-        }
-    }
-
-    /**
-     * Hook to add plagiarism specific settings to a module settings page
-     *
-     * @param  object $mform      Moodle form
-     * @param  object $context    current context
-     * @param  string $modulename Module name
-     * @return void
-     */
-    public function get_form_elements_module($mform, $context, $modulename = "") {
-
-        global $DB;
-        $plagiarismsettings = $this->get_settings();
-        if (!$plagiarismsettings) {
-            return;
-        }
-        // Hack to prevent this from showing on custom compilatioassignment type.
-        if ($mform->elementExists('seuil_faible')) {
-            return;
-        }
-        $cmid = optional_param('update', 0, PARAM_INT); // We can't access $this->_cm here.
-        if (!empty($modulename)) {
-            $modname = 'compilatio_enable_' . $modulename;
-            if (empty($plagiarismsettings[$modname])) {
-                return; // Return if compilatio is not enabled for the module.
-            }
-        }
-        if (!empty($cmid)) {
-            $plagiarismvalues = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => $cmid), '', 'name, value');
-        }
-        // The cmid(0) is the default list.
-        $plagiarismdefaults = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => 0), '', 'name, value');
-        $plagiarismelements = $this->config_options();
-        if (has_capability('plagiarism/compilatio:enable', $context)) {
-            compilatio_get_form_elements($mform, false, $modulename);
-            if ($mform->elementExists('compilatio_draft_submit')) {
-                if ($mform->elementExists('var4')) {
-                    $mform->disabledIf('compilatio_draft_submit', 'var4', 'eq', 0);
-                } else if ($mform->elementExists('submissiondrafts')) {
-                    $mform->disabledIf('compilatio_draft_submit', 'submissiondrafts', 'eq', 0);
-                }
-            }
-            // Disable all plagiarism elements if use_plagiarism eg 0.
-            foreach ($plagiarismelements as $element) {
-                if ($element != 'use_compilatio') { // Ignore this var.
-                    $mform->disabledIf($element, 'use_compilatio', 'eq', 0);
-                }
-            }
-        } else { // Add plagiarism settings as hidden vars.
-            foreach ($plagiarismelements as $element) {
-                $mform->addElement('hidden', $element);
-            }
-        }
-        // Now set defaults.
-        foreach ($plagiarismelements as $element) {
-            if (isset($plagiarismvalues[$element])) {
-                $mform->setDefault($element, $plagiarismvalues[$element]);
-            } else if (isset($plagiarismdefaults[$element])) {
-                $mform->setDefault($element, $plagiarismdefaults[$element]);
-            }
-        }
-    }
-
-    /**
      * Hook to allow a disclosure to be printed notifying users what will happen with their submission
      *
      * @param int $cmid - course module id
@@ -638,12 +511,12 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
         $compilatiouse = compilatio_cm_use($cmid);
         $plagiarismsettings = $this->get_settings();
-        if (!empty($plagiarismsettings['compilatio_student_disclosure']) &&
+        if (!empty($plagiarismsettings['student_disclosure']) &&
             !empty($compilatiouse)) {
             $outputhtml .= $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
             $formatoptions = new stdClass;
             $formatoptions->noclean = true;
-            $outputhtml .= format_text($plagiarismsettings['compilatio_student_disclosure'], FORMAT_MOODLE, $formatoptions);
+            $outputhtml .= format_text($plagiarismsettings['student_disclosure'], FORMAT_MOODLE, $formatoptions);
             $outputhtml .= $OUTPUT->box_end();
         }
         return $outputhtml;
@@ -663,7 +536,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         ws_helper::get_allowed_file_types();
 
         $alerts = array();
-        $plagiarismsettings = (array) get_config('plagiarism');
+        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
         $output = '';
 
         $export = optional_param('compilatio_export', '', PARAM_BOOL);
@@ -811,7 +684,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             }
         }
 
-        $compilatioenabled = $plagiarismsettings["compilatio_use"] && $plagiarismsettings["compilatio_enable_mod_assign"];
+        $compilatioenabled = $plagiarismsettings["enabled"] && $plagiarismsettings["enable_mod_assign"];
         $sql = "select value from {plagiarism_compilatio_config} where cm=? and name='use_compilatio'";
         $activecompilatio = $DB->get_record_sql($sql, array($cm->id));
         // Compilatio not enabled, return.
@@ -1089,6 +962,143 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 }
 
 /**
+ * Hook to save plagiarism specific settings on a module settings page
+ *
+ * @param stdClass $data
+ * @param stdClass $course
+ */
+function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
+
+    global $DB;
+    $plugin = new plagiarism_plugin_compilatio();
+    if (!$plugin->get_settings()) {
+        return $data;
+    }
+
+    if (isset($data->use_compilatio)) {
+        // Array of possible plagiarism config options.
+        $plagiarismelements = $plugin->config_options();
+
+        // Validation on thresholds :
+        // Set thresholds to default if the green one is greater than the orange.
+        if (!isset($data->green_threshold, $data->orange_threshold) ||
+            $data->green_threshold > $data->orange_threshold ||
+            $data->green_threshold > 100 ||
+            $data->green_threshold < 0 ||
+            $data->orange_threshold > 100 ||
+            $data->orange_threshold < 0
+        ) {
+            $data->green_threshold = 10;
+            $data->orange_threshold = 25;
+        }
+
+        if (get_config("plagiarism_compilatio", "allow_teachers_to_show_reports") !== '1') {
+            $data->compilatio_show_student_report = PLAGIARISM_COMPILATIO_SHOW_NEVER;
+        }
+
+        // First get existing values.
+        $existingelements = $DB->get_records_menu('plagiarism_compilatio_config', // Table.
+            array('cm' => $data->coursemodule), // Where.
+            '', // Order by.
+            'name, id'); // Select.
+
+        foreach ($plagiarismelements as $element) {
+            $newelement = new stdClass();
+            $newelement->cm = $data->coursemodule;
+            $newelement->name = $element;
+            $newelement->value = (isset($data->$element) ? $data->$element : 0);
+            if (isset($existingelements[$element])) { // Update.
+                $newelement->id = $existingelements[$element];
+                $DB->update_record('plagiarism_compilatio_config', $newelement);
+            } else { // Insert.
+                $DB->insert_record('plagiarism_compilatio_config', $newelement);
+            }
+        }
+        // Check if we are changing from timed or manual to instant.
+        // If changing to instant, make all existing files to get a report.
+        if (isset($existingelements['compilatio_analysistype']) &&
+            $existingelements['compilatio_analysistype'] !== $data->compilatio_analysistype
+            && $data->compilatio_analysistype == COMPILATIO_ANALYSISTYPE_AUTO) {
+            // Get all existing files in this assignment set to manual status.
+            $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files',
+                array('cm' => $data->coursemodule, 'statuscode' => COMPILATIO_STATUSCODE_ACCEPTED));
+            compilatio_analyse_files($plagiarismfiles);
+        }
+    }
+    return $data;
+}
+
+/**
+ * Hook to add plagiarism specific settings to a module settings page
+ *
+ * @param moodleform $formwrapper
+ * @param MoodleQuickForm $mform
+ */
+function plagiarism_compilatio_coursemodule_standard_elements($formwrapper, $mform) {
+
+    global $DB;
+
+    $plugin = new plagiarism_plugin_compilatio();
+    $plagiarismsettings = $plugin->get_settings();
+    if (!$plagiarismsettings) {
+        return;
+    }
+    // Hack to prevent this from showing on custom compilatioassignment type.
+    if ($mform->elementExists('seuil_faible')) {
+        return;
+    }
+
+    $cmid = null;
+    if ($cm = $formwrapper->get_coursemodule()) {
+        $cmid = $cm->id;
+    }
+    $matches = array();
+    if (!preg_match('/^mod_([^_]+)_mod_form$/', get_class($formwrapper), $matches)) {
+        return;
+    }
+    $modulename = "mod_" . $matches[1];
+    $modname = 'enable_' . $modulename;
+    if (empty($plagiarismsettings[$modname])) {
+        return;
+    }
+    $context = context_course::instance($formwrapper->get_course()->id);
+    if (!empty($cmid)) {
+        $plagiarismvalues = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => $cmid), '', 'name, value');
+    }
+    // The cmid(0) is the default list.
+    $plagiarismdefaults = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => 0), '', 'name, value');
+    $plagiarismelements = $plugin->config_options();
+    if (has_capability('plagiarism/compilatio:enable', $context)) {
+        compilatio_get_form_elements($mform, false, $modulename);
+        if ($mform->elementExists('compilatio_draft_submit')) {
+            if ($mform->elementExists('var4')) {
+                $mform->disabledIf('compilatio_draft_submit', 'var4', 'eq', 0);
+            } else if ($mform->elementExists('submissiondrafts')) {
+                $mform->disabledIf('compilatio_draft_submit', 'submissiondrafts', 'eq', 0);
+            }
+        }
+        // Disable all plagiarism elements if use_plagiarism eg 0.
+        foreach ($plagiarismelements as $element) {
+            if ($element != 'use_compilatio') { // Ignore this var.
+                $mform->disabledIf($element, 'use_compilatio', 'eq', 0);
+            }
+        }
+    } else { // Add plagiarism settings as hidden vars.
+        foreach ($plagiarismelements as $element) {
+            $mform->addElement('hidden', $element);
+        }
+    }
+    // Now set defaults.
+    foreach ($plagiarismelements as $element) {
+        if (isset($plagiarismvalues[$element])) {
+            $mform->setDefault($element, $plagiarismvalues[$element]);
+        } else if (isset($plagiarismdefaults[$element])) {
+            $mform->setDefault($element, $plagiarismdefaults[$element]);
+        }
+    }
+}
+
+/**
  * Event trigger timed analyses
  *
  * @return void
@@ -1338,7 +1348,7 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename='')
         get_string("compilatio_display_student_score", "plagiarism_compilatio"),
         $tiioptions);
     $mform->addHelpButton('compilatio_show_student_score', 'compilatio_display_student_score', 'plagiarism_compilatio');
-    if (get_config("plagiarism", "compilatio_allow_teachers_to_show_reports") === '1') {
+    if (get_config("plagiarism_compilatio", "allow_teachers_to_show_reports") === '1') {
         $mform->addElement('select', 'compilatio_show_student_report',
             get_string("compilatio_display_student_report", "plagiarism_compilatio"),
             $tiioptions);
@@ -1440,8 +1450,8 @@ function compilatio_remove_duplicates($duplicates, $plagiarismsettings) {
         *  to call other functions that need this connection.
         *  in this case set_indexing_state() and del_doc() .
         */
-        $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
-            $plagiarismsettings['compilatio_api'],
+        $compilatio = new compilatioservice($plagiarismsettings['password'],
+            $plagiarismsettings['api'],
             $CFG->proxyhost,
             $CFG->proxyport,
             $CFG->proxyuser,
@@ -1690,8 +1700,8 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
     *  to call other functions that need this connection.
     *  in this case send_doc().
     */
-    $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
-        $plagiarismsettings['compilatio_api'],
+    $compilatio = new compilatioservice($plagiarismsettings['password'],
+        $plagiarismsettings['api'],
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,
@@ -1793,16 +1803,16 @@ function compilatio_cm_use($cmid) {
 function compilatio_getquotas() {
 
     global $CFG;
+    $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
-    $plagiarismsettings = (array) get_config('plagiarism');
     /*
     *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
     *  the constructor of the connection with the webservice (compilatio.class)
     *  to call other functions that need this connection.
     *  in this case get_quotas().
     */
-    $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
-        $plagiarismsettings['compilatio_api'],
+    $compilatio = new compilatioservice($plagiarismsettings['password'],
+        $plagiarismsettings['api'],
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,
@@ -1823,7 +1833,7 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
     global $CFG, $DB, $OUTPUT;
 
     if (empty($plagiarismsettings)) {
-        $plagiarismsettings = (array) get_config('plagiarism');
+        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
     }
     /*
     *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
@@ -1831,8 +1841,8 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
     *  to call other functions that need this connection.
     *  in this case start_analyse().
     */
-    $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
-        $plagiarismsettings['compilatio_api'],
+    $compilatio = new compilatioservice($plagiarismsettings['password'],
+        $plagiarismsettings['api'],
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,
@@ -1878,15 +1888,15 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
 
     global $CFG, $DB;
 
-    $plagiarismsettings = (array) get_config('plagiarism');
+    $plagiarismsettings = (array) get_config('plagiarism_compilatio');
     /*
     *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
     *  the constructor of the connection with the webservice (compilatio.class)
     *  to call other functions that need this connection.
     *  in this case get_doc().
     */
-    $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
-        $plagiarismsettings['compilatio_api'],
+    $compilatio = new compilatioservice($plagiarismsettings['password'],
+        $plagiarismsettings['api'],
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,
@@ -1937,7 +1947,7 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
  */
 function compilatio_analyse_files($plagiarismfiles) {
 
-    $plagiarismsettings = (array) get_config('plagiarism');
+    $plagiarismsettings = (array) get_config('plagiarism_compilatio');
     foreach ($plagiarismfiles as $plagiarismfile) {
         compilatio_startanalyse($plagiarismfile, $plagiarismsettings);
     }
@@ -1951,15 +1961,15 @@ function compilatio_analyse_files($plagiarismfiles) {
 function compilatio_get_account_expiration_date() {
 
     global $CFG;
-    $plagiarismsettings = (array) get_config('plagiarism');
+    $plagiarismsettings = (array) get_config('plagiarism_compilatio');
     /*
     *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
     *  the constructor of the connection with the webservice (compilatio.class)
     *  to call other functions that need this connection.
     *  in this case get_account_expiration_date().
     */
-    $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
-        $plagiarismsettings['compilatio_api'],
+    $compilatio = new compilatioservice($plagiarismsettings['password'],
+        $plagiarismsettings['api'],
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,
@@ -1989,15 +1999,15 @@ function compilatio_send_statistics() {
         $cronfrequency = 0;
     }
 
-    $plagiarismsettings = (array) get_config('plagiarism');
+    $plagiarismsettings = (array) get_config('plagiarism_compilatio');
     /*
     *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
     *  the constructor of the connection with the webservice (compilatio.class)
     *  to call other functions that need this connection.
     *  in this case post_configuration().
     */
-    $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
-        $plagiarismsettings['compilatio_api'],
+    $compilatio = new compilatioservice($plagiarismsettings['password'],
+        $plagiarismsettings['api'],
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,
@@ -2013,15 +2023,15 @@ function compilatio_send_statistics() {
 function compilatio_get_technical_news() {
 
     global $CFG;
-    $plagiarismsettings = (array) get_config('plagiarism');
+    $plagiarismsettings = (array) get_config('plagiarism_compilatio');
     /*
     *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
     *  the constructor of the connection with the webservice (compilatio.class)
     *  to call other functions that need this connection.
     *  in this case get_technical_news().
     */
-    $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
-        $plagiarismsettings['compilatio_api'],
+    $compilatio = new compilatioservice($plagiarismsettings['password'],
+        $plagiarismsettings['api'],
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,
@@ -2613,59 +2623,81 @@ function compilatio_get_global_statistics($html = true) {
         SELECT cm,
             course.id,
             course.fullname "course",
-            assign.name "assign",
+            modules.name "module_type",
+            CONCAT(COALESCE(assign.name, ""), COALESCE(forum.name, ""), COALESCE(workshop.name, "")) "module_name",
             AVG(similarityscore) "avg",
             MIN(similarityscore) "min",
             MAX(similarityscore) "max",
-            COUNT(similarityscore) "count",
-            usr.firstname "firstname",
-            usr.lastname "lastname",
-            usr.id "userid"
+            COUNT(DISTINCT plagiarism_compilatio_files.id) "count"
         FROM {plagiarism_compilatio_files} plagiarism_compilatio_files
         JOIN {course_modules} course_modules
             ON plagiarism_compilatio_files.cm = course_modules.id
-        JOIN {assign} assign ON course_modules.instance= assign.id
+        JOIN {modules} modules ON modules.id = course_modules.module
+        LEFT JOIN {assign} assign ON course_modules.instance= assign.id AND course_modules.module= 1
+        LEFT JOIN {forum} forum ON course_modules.instance= forum.id AND course_modules.module= 9
+        LEFT JOIN {workshop} workshop ON course_modules.instance= workshop.id AND course_modules.module= 23
         JOIN {course} course ON course_modules.course= course.id
-        JOIN {event} event ON assign.id=event.instance
-        JOIN {user} usr ON event.userid=usr.id
         WHERE statuscode=\'Analyzed\'
         GROUP BY cm,
             course.id,
             course.fullname,
-            assign.name,
-            usr.firstname,
-            usr.lastname,
-            usr.id
-        ORDER BY course.fullname, usr.lastname, assign.name';
+            assign.name
+        ORDER BY course.fullname, assign.name';
 
     $rows = $DB->get_records_sql($sql);
 
     $results = array();
     foreach ($rows as $row) {
+        $query = '
+            SELECT usr.id "userid",
+                usr.firstname "firstname",
+                usr.lastname "lastname"
+            FROM {course} course
+            JOIN {context} context ON context.instanceid= course.id
+            JOIN {role_assignments} role_assignments ON role_assignments.contextid= context.id
+            JOIN {user} usr ON role_assignments.userid= usr.id
+            WHERE context.contextlevel=50
+                AND role_assignments.roleid=3
+                AND course.id='. $row->id;
 
+        $teachers = $DB->get_records_sql($query);
         $courseurl = new moodle_url('/course/view.php', array('id' => $row->id));
-        $assignurl = new moodle_url('/mod/assign/view.php', array('id' => $row->cm, 'action' => "grading"));
-        $userurl = new moodle_url('/user/view.php', array('id' => $row->userid));
+        $assignurl = new moodle_url('/mod/' . $row->module_type . '/view.php', array('id' => $row->cm, 'action' => "grading"));
 
         $result = array();
         if ($html) {
-            $result["teacher"] = "<a href='$userurl'>$row->lastname $row->firstname</a>";
             $result["course"] = "<a href='$courseurl'>$row->course</a>";
-            $result["assign"] = "<a href='$assignurl'>$row->assign</a>";
+            $result["assign"] = "<a href='$assignurl'>$row->module_name</a>";
 
         } else {
             $result["courseid"] = $row->id;
             $result["course"] = $row->course;
-            $result["teacherid"] = $row->userid;
-            $result["teacher"] = $row->lastname . " " . $row->firstname;
             $result["assignid"] = $row->cm;
-            $result["assign"] = $row->assign;
+            $result["assign"] = $row->module_name;
         }
 
         $result["analyzed_documents_count"] = $row->count;
         $result["minimum_rate"] = $row->min;
         $result["maximum_rate"] = $row->max;
         $result["average_rate"] = round($row->avg, 2);
+
+        $result["teacher"] = "";
+        $teacherid = [];
+        $teachername = [];
+        foreach ($teachers as $teacher) {
+            $userurl = new moodle_url('/user/view.php', array('id' => $teacher->userid));
+            if ($html) {
+                $result["teacher"] .= "- <a href='$userurl'>$teacher->lastname $teacher->firstname</a></br>";
+
+            } else {
+                array_push($teacherid, $teacher->userid);
+                array_push($teachername, $teacher->lastname . " " . $teacher->firstname);
+            }
+        }
+        if (!$html) {
+            $result["teacherid"] = implode(', ', $teacherid);
+            $result["teacher"] = implode(', ', $teachername);
+        }
 
         $results[] = $result;
     }
@@ -2695,7 +2727,7 @@ function compilatio_handle_content($content, $userid, $courseid, $cmid, $postid 
     $data->userid = $userid;
     $data->postid = $postid;
 
-    $plagiarismsettings = (array) get_config('plagiarism');
+    $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
     $file = compilatio_create_temp_file($cmid, $data);
     compilatio_queue_file($cmid, $userid, $file, $plagiarismsettings);
@@ -2712,7 +2744,7 @@ function compilatio_handle_content($content, $userid, $courseid, $cmid, $postid 
  */
 function compilatio_handle_hashes($hashes, $cmid, $userid, $postid = null) {
 
-    $plagiarismsettings = (array) get_config('plagiarism');
+    $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
     foreach ($hashes as $hash) {
 
@@ -2750,13 +2782,12 @@ function compilatio_enabled($cmid) {
 
     global $DB;
     $cm = get_coursemodule_from_id(null, $cmid);
-
     // Get plugin activation info.
-    $conditions = array('plugin' => 'plagiarism', 'name' => 'compilatio_use');
+    $conditions = array('plugin' => 'plagiarism_compilatio', 'name' => 'enabled');
     $pluginenabled = $DB->get_field('config_plugins', 'value', $conditions);
 
     // Get module type activation info.
-    $conditions = array('plugin' => 'plagiarism', 'name' => 'compilatio_enable_mod_' . $cm->modname);
+    $conditions = array('plugin' => 'plagiarism_compilatio', 'name' => 'enable_mod_' . $cm->modname);
     $modtypeenabled = $DB->get_field('config_plugins', 'value', $conditions);
 
     // Get course module activation info.
@@ -2822,7 +2853,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
         if ($eventdata['objecttable'] == 'workshop_submissions') {
             $duplicates = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
         }
-        compilatio_remove_duplicates($duplicates, (array) get_config('plagiarism'));
+        compilatio_remove_duplicates($duplicates, (array) get_config('plagiarism_compilatio'));
     }
 
     // Adding/updating a file.
@@ -2850,7 +2881,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
             $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'content-%'";
             $duplicates = $DB->get_records_sql($sql, array($cmid, $userid));
         }
-        compilatio_remove_duplicates($duplicates, (array) get_config('plagiarism'));
+        compilatio_remove_duplicates($duplicates, (array) get_config('plagiarism_compilatio'));
         compilatio_handle_hashes($hashes, $cmid, $userid, $postid);
     }
 
@@ -2869,7 +2900,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
             $duplicates = $DB->get_records('plagiarism_compilatio_files',
                 array('cm' => $cmid, 'userid' => $userid, 'filename' => $filename));
         }
-        compilatio_remove_duplicates($duplicates, (array) get_config('plagiarism'));
+        compilatio_remove_duplicates($duplicates, (array) get_config('plagiarism_compilatio'));
         compilatio_handle_content($content, $userid, $courseid, $cmid, $postid);
     }
 }

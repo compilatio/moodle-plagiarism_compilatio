@@ -37,11 +37,11 @@ $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
 $plagiarismplugin = new plagiarism_plugin_compilatio();
-$plagiarismsettings = (array) get_config('plagiarism');
+$plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
 // Test if compilatio is enabled.
-if (isset($plagiarismsettings["compilatio_use"])) {
-    $enabledsuccess = $plagiarismsettings["compilatio_use"] === "1";
+if (isset($plagiarismsettings["enabled"])) {
+    $enabledsuccess = $plagiarismsettings["enabled"] === "1";
 } else {
     $enabledsuccess = false;
 }
@@ -51,9 +51,9 @@ if (isset($plagiarismsettings["compilatio_use"])) {
  * describing the error if any occurs.
  * API key does not matter here.
  */
-if (isset($plagiarismsettings["compilatio_api"])) {
+if (isset($plagiarismsettings["api"])) {
     $compilatio = new compilatioservice(
-            "KEY", $plagiarismsettings['compilatio_api'], $CFG->proxyhost, $CFG->proxyport, $CFG->proxyuser, $CFG->proxypassword);
+            "KEY", $plagiarismsettings['api'], $CFG->proxyhost, $CFG->proxyport, $CFG->proxyuser, $CFG->proxypassword);
     $connectionsuccess = !is_string($compilatio->soapcli);
 } else {
     $compilatio = new compilatioservice(
@@ -66,28 +66,28 @@ if (isset($plagiarismsettings["compilatio_api"])) {
 }
 
 // Test if Compilatio is enabled for assign.
-if (isset($plagiarismsettings["compilatio_enable_mod_assign"])) {
-    $assignsuccess = $plagiarismsettings["compilatio_enable_mod_assign"];
+if (isset($plagiarismsettings["enable_mod_assign"])) {
+    $assignsuccess = $plagiarismsettings["enable_mod_assign"];
 } else {
     $assignsuccess = false;
 }
 
 // Test if Compilatio is enabled for workshops.
-if (isset($plagiarismsettings["compilatio_enable_mod_workshop"])) {
-    $workshopsuccess = $plagiarismsettings["compilatio_enable_mod_workshop"];
+if (isset($plagiarismsettings["enable_mod_workshop"])) {
+    $workshopsuccess = $plagiarismsettings["enable_mod_workshop"];
 } else {
     $workshopsuccess = false;
 }
 
 // Test if Compilatio is enabled for forums.
-if (isset($plagiarismsettings["compilatio_enable_mod_forum"])) {
-    $forumsuccess = $plagiarismsettings["compilatio_enable_mod_forum"];
+if (isset($plagiarismsettings["enable_mod_forum"])) {
+    $forumsuccess = $plagiarismsettings["enable_mod_forum"];
 } else {
     $forumsuccess = false;
 }
 
 // API key test. Fails if GetQuota method return NULL.
-if (isset($plagiarismsettings["compilatio_password"], $plagiarismsettings["compilatio_api"])) {
+if (isset($plagiarismsettings["password"], $plagiarismsettings["api"])) {
     $apikeysuccess = ws_helper::test_connection();
 } else {
     $apikeysuccess = false;

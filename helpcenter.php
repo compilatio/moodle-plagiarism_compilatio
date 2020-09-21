@@ -30,7 +30,7 @@ require_once($CFG->libdir . '/plagiarismlib.php');
 require_login();
 
 // Get plugin settings.
-$plagiarismsettings = (array) get_config('plagiarism');
+$plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
 // Gheck GET parameter.
 $availpages = ['moodle-admin', 'moodle-teacher'];
@@ -58,7 +58,7 @@ echo("<!doctype html>
 				t=x(s,'input');y(t,'type','submit');y(t,'id','compilatio-submit-redirect-hc');y(t,'style',\"display: none;\");
 				z(u,b);z(u,m);z(u,i);z(u,o);z(u,t);z(s.body,u);
 				s.getElementById('compilatio-submit-redirect-hc').click();
-			})('".base64_encode($plagiarismsettings['compilatio_password'])."', '".$USER->email."', '".$USER->lang."', '".$page."')
+			})('".base64_encode($plagiarismsettings['password'])."', '".$USER->email."', '".$USER->lang."', '".$page."')
 		</script>
 	</body>
 </html>");
