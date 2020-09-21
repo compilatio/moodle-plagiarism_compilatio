@@ -47,71 +47,53 @@ echo $OUTPUT->header();
 $currenttab = 'compilatiosettings';
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 if (($data = $mform->get_data()) && confirm_sesskey()) {
-    if (!isset($data->compilatio_use)) {
-        $data->compilatio_use = 0;
+    if (!isset($data->enabled)) {
+        $data->enabled = 0;
     }
-    if (!isset($data->compilatio_enable_mod_assign)) {
-        $data->compilatio_enable_mod_assign = 0;
+    if (!isset($data->enable_mod_assign)) {
+        $data->enable_mod_assign = 0;
     }
-    if (!isset($data->compilatio_enable_mod_assignment)) {
-        $data->compilatio_enable_mod_assignment = 0;
+    if (!isset($data->enable_mod_forum)) {
+        $data->enable_mod_forum = 0;
     }
-    if (!isset($data->compilatio_enable_mod_forum)) {
-        $data->compilatio_enable_mod_forum = 0;
+    if (!isset($data->enable_mod_workshop)) {
+        $data->enable_mod_workshop = 0;
     }
-    if (!isset($data->compilatio_enable_mod_workshop)) {
-        $data->compilatio_enable_mod_workshop = 0;
-    }
-    if (!isset($data->compilatio_allow_teachers_to_show_reports)) {
-        $data->compilatio_allow_teachers_to_show_reports = 0;
+    if (!isset($data->allow_teachers_to_show_reports)) {
+        $data->allow_teachers_to_show_reports = 0;
     }
 
     foreach ($data as $field => $value) {
-        if (strpos($field, 'compilatio') === 0) {
-            if ($field == 'compilatio_api') { // Strip trailing slash from api.
+        if ($field != 'submitbutton') { // Ignore the button.
+            if ($field == 'api') { // Strip trailing slash from api.
                 $value = rtrim($value, '/');
             }
-            if ($configfield = $DB->get_record('config_plugins', array('name' => $field, 'plugin' => 'plagiarism'))) {
-                $configfield->value = $value;
-                if (!$DB->update_record('config_plugins', $configfield)) {
-                    print_error("errorupdating");
-                }
-            } else {
-                $configfield = new stdClass();
-                $configfield->value = $value;
-                $configfield->plugin = 'plagiarism';
-                $configfield->name = $field;
-                if (!$DB->insert_record('config_plugins', $configfield)) {
-                    print_error("errorinserting");
-                }
-            }
+            set_config($field, $value, 'plagiarism_compilatio');
         }
     }
 
     cache_helper::invalidate_by_definition('core', 'config', array(), 'plagiarism');
     // TODO - check settings to see if valid.
 
-
-
     $quotas = compilatio_getquotas();
     if ($quotas["quotas"] == null) {
         // Disable compilatio as this config isn't correct.
-        set_config('compilatio_use', 0, 'plagiarism');
+        set_config('enabled', 0, 'plagiarism_compilatio');
         echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $quotas["error"]);
         $incorrectconfig = true;
     }
 }
 
-$plagiarismsettings = (array) get_config('plagiarism');
+$plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $mform->set_data($plagiarismsettings);
 
 
-if (!empty($plagiarismsettings['compilatio_use']) && !$incorrectconfig) {
+if (!empty($plagiarismsettings['enabled']) && !$incorrectconfig) {
     $quotasarray = compilatio_getquotas();
     $quotas = $quotasarray['quotas'];
     if ($quotas == null) {
         // Disable compilatio as this config isn't correct.
-        set_config('compilatio_use', 0, 'plagiarism');
+        set_config('enabled', 0, 'plagiarism_compilatio');
         echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $quotasarray['error']);
     } else {
         echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
@@ -122,10 +104,10 @@ if (!empty($plagiarismsettings['compilatio_use']) && !$incorrectconfig) {
         echo "<p>" . get_string('subscription_state', 'plagiarism_compilatio', $a) . '</p>';
         echo $OUTPUT->box_end();
     }
-    $plagiarismsettings = get_config('plagiarism');
+    $plagiarismsettings = get_config('plagiarism_compilatio');
 
-    $compilatio = new compilatioservice($plagiarismsettings->compilatio_password,
-                                        $plagiarismsettings->compilatio_api,
+    $compilatio = new compilatioservice($plagiarismsettings->password,
+                                        $plagiarismsettings->api,
                                         $CFG->proxyhost,
                                         $CFG->proxyport,
                                         $CFG->proxyuser,

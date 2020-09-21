@@ -370,12 +370,12 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         global $DB;
 
         $api = (object) array(
-            'plugin' => 'plagiarism',
-            'name' => 'compilatio_api',
+            'plugin' => 'plagiarism_compilatio',
+            'name' => 'api',
             'value' => 'https://service.compilatio.net/webservices/CompilatioUserClient.wsdl'
         );
-        $password = (object) array('plugin' => 'plagiarism', 'name' => 'compilatio_password', 'value' => 'abcdef');
-        $ownerfile = (object) array('plugin' => 'plagiarism', 'name' => 'compilatio_owner_file', 'value' => $owner);
+        $password = (object) array('plugin' => 'plagiarism_compilatio', 'name' => 'password', 'value' => 'abcdef');
+        $ownerfile = (object) array('plugin' => 'plagiarism_compilatio', 'name' => 'owner_file', 'value' => $owner);
 
         $DB->insert_records('config_plugins', array($api, $password, $ownerfile));
     }

@@ -204,6 +204,7 @@ $string["average"] = 'Average rate';
 $string["documents_number"] = 'Analyzed documents';
 $string["export_raw_csv"] = 'Click here to export raw data in CSV format';
 $string["export_global_csv"] = 'Click here to export this data in CSV format';
+$string["global_statistics_description"] = 'All the documents data send to Compilatio.';
 $string["global_statistics"] = 'Global statistics';
 $string["assign_statistics"] = 'Statistics about assignments';
 $string["similarities"] = 'Similarities';

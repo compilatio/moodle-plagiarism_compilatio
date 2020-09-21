@@ -179,9 +179,9 @@ class provider implements
         require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-        $plagiarismsettings = (array) get_config('plagiarism');
+        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
         if (!empty($plagiarismsettings)) {
-            $compilatio = new \compilatioservice($plagiarismsettings['compilatio_password'], $plagiarismsettings['compilatio_api'],
+            $compilatio = new \compilatioservice($plagiarismsettings['password'], $plagiarismsettings['api'],
                 $CFG->proxyhost,
                 $CFG->proxyport,
                 $CFG->proxyuser,
@@ -211,12 +211,12 @@ class provider implements
         require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-        $plagiarismsettings = (array) get_config('plagiarism');
+        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
         // If the student owns the document (and not the school), we can delete everything from the databases.
-        if (!empty($plagiarismsettings) && $plagiarismsettings['compilatio_owner_file'] === '0') {
+        if (!empty($plagiarismsettings) && $plagiarismsettings['owner_file'] === '0') {
 
-            $compilatio = new \compilatioservice($plagiarismsettings['compilatio_password'], $plagiarismsettings['compilatio_api'],
+            $compilatio = new \compilatioservice($plagiarismsettings['password'], $plagiarismsettings['api'],
                 $CFG->proxyhost,
                 $CFG->proxyport,
                 $CFG->proxyuser,
@@ -251,9 +251,9 @@ class provider implements
 
         $cmid = $context->instanceid;
 
-        $plagiarismsettings = (array) get_config('plagiarism');
+        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
         if (!empty($plagiarismsettings)) {
-            $compilatio = new \compilatioservice($plagiarismsettings['compilatio_password'], $plagiarismsettings['compilatio_api'],
+            $compilatio = new \compilatioservice($plagiarismsettings['password'], $plagiarismsettings['api'],
                 $CFG->proxyhost,
                 $CFG->proxyport,
                 $CFG->proxyuser,

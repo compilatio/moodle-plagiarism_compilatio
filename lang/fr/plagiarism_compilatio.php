@@ -198,6 +198,7 @@ $string["average"] = 'Moyenne';
 $string["documents_number"] = 'Documents analysés';
 $string["export_raw_csv"] = 'Cliquez-ici pour exporter les données brutes au format CSV';
 $string["export_global_csv"] = 'Cliquez-ici pour exporter ces données au format CSV';
+$string["global_statistics_description"] = 'Toutes les données des documents envoyés à Compilatio.';
 $string["global_statistics"] = 'Statistiques globales';
 $string["assign_statistics"] = 'Statistiques des devoirs';
 $string["similarities"] = 'Similitudes';
