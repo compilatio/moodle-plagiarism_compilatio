@@ -180,7 +180,7 @@ class provider implements
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-        if (!empty($plagiarismsettings)) {
+        if (!empty($plagiarismsettings) && isset($plagiarismsettings['password']) && isset($plagiarismsettings['api'])) {
             $compilatio = new \compilatioservice($plagiarismsettings['password'], $plagiarismsettings['api'],
                 $CFG->proxyhost,
                 $CFG->proxyport,
@@ -214,7 +214,8 @@ class provider implements
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
         // If the student owns the document (and not the school), we can delete everything from the databases.
-        if (!empty($plagiarismsettings) && $plagiarismsettings['owner_file'] === '0') {
+        if (!empty($plagiarismsettings) && isset($plagiarismsettings['password']) && isset($plagiarismsettings['api']) 
+            && isset($plagiarismsettings['owner_file']) && $plagiarismsettings['owner_file'] === '0') {
 
             $compilatio = new \compilatioservice($plagiarismsettings['password'], $plagiarismsettings['api'],
                 $CFG->proxyhost,
@@ -252,7 +253,7 @@ class provider implements
         $cmid = $context->instanceid;
 
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-        if (!empty($plagiarismsettings)) {
+        if (!empty($plagiarismsettings) && isset($plagiarismsettings['password']) && isset($plagiarismsettings['api'])) {
             $compilatio = new \compilatioservice($plagiarismsettings['password'], $plagiarismsettings['api'],
                 $CFG->proxyhost,
                 $CFG->proxyport,
