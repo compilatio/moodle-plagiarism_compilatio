@@ -214,7 +214,7 @@ class provider implements
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
         // If the student owns the document (and not the school), we can delete everything from the databases.
-        if (!empty($plagiarismsettings) && isset($plagiarismsettings['password']) && isset($plagiarismsettings['api']) 
+        if (!empty($plagiarismsettings) && isset($plagiarismsettings['password']) && isset($plagiarismsettings['api'])
             && isset($plagiarismsettings['owner_file']) && $plagiarismsettings['owner_file'] === '0') {
 
             $compilatio = new \compilatioservice($plagiarismsettings['password'], $plagiarismsettings['api'],
