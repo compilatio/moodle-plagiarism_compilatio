@@ -90,5 +90,40 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2014111000, 'plagiarism', 'compilatio');
     }
 
+    // Get plugin configuration.
+    $legacyconfig = (array) get_config('plagiarism');
+    $newconfig = (array) get_config('plagiarism_compilatio');
+
+    // Writes the new plugin configuration with legacy values.
+    foreach ($legacyconfig as $k => $v) {
+        if (strpos($k, 'compilatio_') === 0) {
+            if ($k == 'compilatio_use') {
+                $newname = 'enabled';
+                // Forces old 'compilatio_use' to '1'. Enabling plugin will be deffered to 'enabled' parameter.
+                try {
+                    set_config('compilatio_use', '1', 'plagiarism');
+                } catch (Exception $e) {
+                    print_error("Failed to set plagiarism:compilatio_use to 1");
+                    return false;
+                }           
+            } else {
+                $newname = substr($k, 11);
+            }
+            if (!isset($newconfig[$newname])) {
+                try {
+                    set_config($newname, $v, 'plagiarism_compilatio');
+                } catch (Exception $e) {
+                    print_error("Failed to set plagiarism_compilatio:" . $newname . " to " . $v);
+                    return false;
+                }
+                if ($k != 'compilatio_use' || $CFG->version >= 2020061500) {
+                    if (!unset_config($k, 'plagiarism')) {
+                        print_error("Failed to unset plagiarism:" . $k);
+                        return false;
+                    }
+                }
+            }
+        }
+    }
     return true;
 }
