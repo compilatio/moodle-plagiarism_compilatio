@@ -12,6 +12,7 @@ CHANGES
     - Replace deprecated functions save_form_elements() by plagiarism_compilatio_coursemodule_edit_post_actions() 
         and get_form_elements_module() by plagiarism_compilatio_coursemodule_standard_elements().
 - Fix bugs in plugin statistics.
+- Update plugin's settings handle
 
 QUICK INSTALL
 ================
