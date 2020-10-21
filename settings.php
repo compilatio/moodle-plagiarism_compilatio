@@ -72,6 +72,12 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         }
     }
 
+    // The setting compilatio_use is deprecated in Moodle 3.9+ but it must be kept for versions < 3.9 (versions < 2020061500).
+    if ($CFG->version < 2020061500) {
+        set_config('compilatio_use', $data->enabled, 'plagiarism');
+    }
+   
+
     cache_helper::invalidate_by_definition('core', 'config', array(), 'plagiarism');
     // TODO - check settings to see if valid.
 
@@ -79,6 +85,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     if ($quotas["quotas"] == null) {
         // Disable compilatio as this config isn't correct.
         set_config('enabled', 0, 'plagiarism_compilatio');
+        set_config('compilatio_use', 0, 'plagiarism');
         echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $quotas["error"]);
         $incorrectconfig = true;
     }

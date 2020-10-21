@@ -17,6 +17,7 @@
                 <FIELD NAME="similarityscore" TYPE="int" LENGTH="5" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="attempt" TYPE="int" LENGTH="5" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="errorresponse" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="recyclebinid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="timesubmitted" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
             </FIELDS>
             <KEYS>

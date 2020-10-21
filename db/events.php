@@ -51,5 +51,41 @@ $observers = array(
     array(
         'eventname' => '\mod_workshop\event\submission_deleted',
         'callback' => 'plagiarism_compilatio_observer::workshop_submission_deleted'
+    ),
+    array(
+        'eventname' => '\core\event\course_module_deleted',
+        'callback' => 'plagiarism_compilatio_observer::core_course_module_deleted'
+    ),
+    array(
+        'eventname' => '\core\event\user_deleted',
+        'callback' => 'plagiarism_compilatio_observer::core_user_deleted'
+    ),
+    array(
+        'eventname' => '\mod_assign\event\submission_status_updated',
+        'callback' => 'plagiarism_compilatio_observer::assign_submission_status_updated'
+    ),
+    array(
+        'eventname' => '\tool_recyclebin\event\course_bin_item_restored',
+        'callback' => 'plagiarism_compilatio_observer::recyclebin_course_item_restored'
+    ),
+    array(
+        'eventname' => '\tool_recyclebin\event\course_bin_item_deleted',
+        'callback' => 'plagiarism_compilatio_observer::recyclebin_course_item_deleted'
+    ),
+    array(
+        'eventname' => '\tool_recyclebin\event\course_bin_item_created',
+        'callback' => 'plagiarism_compilatio_observer::recyclebin_course_item_created'
+    ),
+    array(
+        'eventname' => '\tool_recyclebin\event\category_bin_item_restored',
+        'callback' => 'plagiarism_compilatio_observer::recyclebin_category_item_restored'
+    ),
+    array(
+        'eventname' => '\tool_recyclebin\event\category_bin_item_deleted',
+        'callback' => 'plagiarism_compilatio_observer::recyclebin_category_item_deleted'
+    ),
+    array(
+        'eventname' => '\tool_recyclebin\event\category_bin_item_created',
+        'callback' => 'plagiarism_compilatio_observer::recyclebin_category_item_created'
     )
 );

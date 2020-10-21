@@ -14,7 +14,7 @@ function compilatioUrlSorter(a, b) {
 document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById("compilatio-table-no-js").style.display = "none";
 
-    document.querySelectorAll('#compilatio-table-js thead tr th').forEach((el, index) => {
+    document.querySelectorAll('#compilatio-table-js thead tr th').forEach(function(el, index) {
         switch (index) {
             case 0:
                 el.setAttribute('data-field','course');
