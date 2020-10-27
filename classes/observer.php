@@ -211,7 +211,7 @@ class plagiarism_compilatio_observer {
     }
 
     /**
-     * c recycle bin created
+     * Course module recycle bin created
      * @param  \tool_recyclebin\event\course_bin_item_created $event Event
      * @return void
      */

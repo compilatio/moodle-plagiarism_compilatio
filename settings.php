@@ -76,7 +76,6 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     if ($CFG->version < 2020061500) {
         set_config('compilatio_use', $data->enabled, 'plagiarism');
     }
-   
 
     cache_helper::invalidate_by_definition('core', 'config', array(), 'plagiarism');
     // TODO - check settings to see if valid.

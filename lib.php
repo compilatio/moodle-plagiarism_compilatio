@@ -2817,7 +2817,7 @@ function plagiarism_compilatio_pre_course_delete($course) {
 
     global $CFG, $DB, $SESSION;
 
-    if (\tool_recyclebin\category_bin::is_enabled()) {
+    if (class_exists('\tool_recyclebin\course_bin') && \tool_recyclebin\category_bin::is_enabled()) {
         $SESSION->compilatio_course_deleted_id = $course->id;
     } else {
         $duplicates = array();
@@ -2876,14 +2876,14 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
     if ($eventdata['crud'] == 'd') {
         // In forums.
         if ($eventdata['objecttable'] == 'forum_posts') {
+            if (!isset($SESSION->compilatio_bin_created)) {
+                $filename = 'post-' . $eventdata['courseid'] . '-' . $cmid . '-' . $eventdata['objectid'] . '.htm';
+                $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE filename like ? AND recyclebinid IS NULL";
+                $posts = $DB->get_records_sql($sql, array($filename));
 
-            $filename = 'post-' . $eventdata['courseid'] . '-' . $cmid . '-' . $eventdata['objectid'] . '.htm';
-            $posts = $DB->get_records('plagiarism_compilatio_files', array('filename' => $filename));
+                $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND filename like ? AND recyclebinid IS NULL";
+                $attachments = $DB->get_records_sql($sql, array($cmid, 'post-' . $eventdata['objectid'] . '-%'));
 
-            $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND filename like ?";
-            $attachments = $DB->get_records_sql($sql, array($cmid, 'post-' . $eventdata['objectid'] . '-%'));
-
-            if (!isset($SESSION->compilatio_bin_created) && !isset($SESSION->compilatio_course_deleted_id)) {
                 $duplicates = array_merge($posts, $attachments);
             }
         }
@@ -2893,7 +2893,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
         }
         // Course module delete.
         if ($eventdata['objecttable'] == 'course_modules') {
-            if (\tool_recyclebin\course_bin::is_enabled()) {
+            if (class_exists('\tool_recyclebin\course_bin') && \tool_recyclebin\course_bin::is_enabled()) {
                 $DB->set_field('plagiarism_compilatio_files', 'recyclebinid',
                     $SESSION->compilatio_bin_created, array('cm' => $cmid));
                 unset($SESSION->compilatio_bin_created);
@@ -2920,6 +2920,55 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
         // Restored recycle_bin.
         if ($eventdata['objecttable'] == 'tool_recyclebin_course' ||
             $eventdata['objecttable'] == 'tool_recyclebin_category') {
+
+            // Update 'filename' for restored forum posts.
+            $posts = $DB->get_records_sql('SELECT * FROM {plagiarism_compilatio_files} WHERE recyclebinid = ?
+                AND filename LIKE \'post%\'', array($eventdata['objectid']));
+
+            $cmids = array();
+
+            foreach ($posts as $post) {
+                $restoredpost = $DB->get_record('plagiarism_compilatio_files',
+                    array('filename' => $post->filename, 'recyclebinid' => null));
+
+                if (!isset($courseid)) {
+                    $courseid = $DB->get_record('course_modules', array('id' => $restoredpost->cm), 'course')->course;
+                }
+
+                if (preg_match('~^post-\d+-\d+-\d+.htm$~', $restoredpost->filename)) {
+                    if (!in_array($restoredpost->cm, $cmids)) {
+                        array_push($cmids, $restoredpost->cm);
+                    }
+                } else {
+                    $moodlefile = $DB->get_record('files',
+                        array('filename' => $restoredpost->filename, 'filearea' => 'attachment'));
+
+                    $filename = substr($restoredpost->filename, strpos($restoredpost->filename, '-') + 1);
+                    $filename = substr($filename, strpos($filename, '-'));
+                    $filename = 'post-' . $moodlefile->itemid . $filename;
+
+                    $DB->set_field('files', 'filename', $filename, array('filename' => $restoredpost->filename));
+                    $DB->set_field('plagiarism_compilatio_files', 'filename', $filename, array('id' => $restoredpost->id));
+                }
+            }
+
+            foreach ($cmids as $cmid) {
+                $sql = '
+                    SELECT forum_posts.id, forum_posts.message
+                    FROM {course_modules} course_modules
+                    JOIN {forum} forum ON course_modules.instance= forum.id AND course_modules.module= 9
+                    JOIN {forum_discussions} forum_discussions ON forum.id= forum_discussions.forum
+                    JOIN {forum_posts} forum_posts ON forum_discussions.id= forum_posts.discussion
+                    WHERE course_modules.id = ?';
+                $posts = $DB->get_records_sql($sql, array($cmid));
+
+                foreach ($posts as $post) {
+                    $filename = 'post-' . $courseid . '-' . $cmid . '-' . $post->id . '.htm';
+                    $DB->set_field('plagiarism_compilatio_files', 'filename', $filename,
+                        array('identifier' => sha1($post->message), 'cm' => $cmid));
+                }
+            }
+
             $DB->delete_records('plagiarism_compilatio_files', array('recyclebinid' => $eventdata['objectid']));
         }
         // Delete in assign.
