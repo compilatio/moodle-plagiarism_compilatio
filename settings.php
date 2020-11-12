@@ -77,6 +77,28 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         set_config('compilatio_use', $data->enabled, 'plagiarism');
     }
 
+    // Set the default config for course modules.
+    $plagiarismdefaults = $DB->get_records('plagiarism_compilatio_config', array('cm' => 0));
+    if (empty($plagiarismdefaults)) {
+        $plagiarismelements = array(
+                'use_compilatio' => 1,
+                'compilatio_show_student_score' => 0,
+                'compilatio_show_student_report' => 0,
+                'compilatio_studentemail' => 0,
+                'compilatio_analysistype' => 1,
+                'green_threshold' => 10,
+                'orange_threshold' => 25,
+                'indexing_state' => 1,
+            );
+        foreach ($plagiarismelements as $name => $value) {
+            $newelement = new Stdclass();
+            $newelement->cm = 0;
+            $newelement->name = $name;
+            $newelement->value = $value;
+            $DB->insert_record('plagiarism_compilatio_config', $newelement);
+        }
+    }
+
     cache_helper::invalidate_by_definition('core', 'config', array(), 'plagiarism');
     // TODO - check settings to see if valid.
 
@@ -92,7 +114,6 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
 $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $mform->set_data($plagiarismsettings);
-
 
 if (!empty($plagiarismsettings['enabled']) && !$incorrectconfig) {
     $quotasarray = compilatio_getquotas();

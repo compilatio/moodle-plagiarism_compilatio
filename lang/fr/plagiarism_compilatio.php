@@ -180,9 +180,9 @@ $string['analyze'] = 'Analyser';
 $string['queue'] = 'Attente';
 $string['analyzing'] = 'Analyse';
 $string['compilatioenableplugin'] = 'Activer Compilatio pour {$a}';
-$string['compilatio_enable_mod_assign'] = 'Activer Compilatio pour les devoirs (assign)';
-$string['compilatio_enable_mod_workshop'] = 'Activer Compilatio pour les ateliers (workshop)';
-$string['compilatio_enable_mod_forum'] = 'Activer Compilatio pour les forums';
+$string['enable_mod_assign'] = 'Activer Compilatio pour les devoirs (assign)';
+$string['enable_mod_workshop'] = 'Activer Compilatio pour les ateliers (workshop)';
+$string['enable_mod_forum'] = 'Activer Compilatio pour les forums';
 $string['planned'] = "Planifié";
 $string['immediately'] = "Immédiatement";
 $string['enable_javascript'] = "Veuillez activer Javascript pour profiter de toutes les fonctionnalités du plugin Compilatio. <br/> Voici les <a href='http://www.enable-javascript.com/fr/' target='_blank'>

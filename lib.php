@@ -3005,25 +3005,74 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
         $hashes = $eventdata["other"]["pathnamehashes"];
 
         if ($eventdata['objecttable'] == 'assign_submission') {
-            // Get max submission files in this module.
-            $table = 'assign_plugin_config';
-            $return = 'value';
-            $select = "assignment = '" . $cm->instance . "'
-                AND subtype = 'assignsubmission' AND name = 'maxfilesubmissions'";
-            $maxfilesubmissions = $DB->get_field_select($table, $return, $select);
-            if ($maxfilesubmissions == '1') { // Look for duplicates in "1 file" submissions assigns.
-                $duplicates = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
+            $compifilestokeep = array();
+
+            $mdlsubmissionfiles = $DB->get_records('files',
+                array('itemid' => $eventdata["objectid"], 'filearea' => 'submission_files'));
+
+            foreach ($mdlsubmissionfiles as $submissionfile) {
+                $file = $DB->get_record('plagiarism_compilatio_files',
+                    array('cm' => $cmid, 'userid' => $userid, 'identifier' => $submissionfile->contenthash));
+                if ($file) {
+                    array_push($compifilestokeep, $file);
+                }
             }
+
+            $allcompisubmissionfiles = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
+
+            $duplicates = array_udiff($allcompisubmissionfiles, $compifilestokeep,
+                function ($filea, $fileb) {
+                    return $filea->id - $fileb->id;
+                }
+            );
         }
 
         if ($eventdata['objecttable'] == 'forum_posts') {
+            $compifilestokeep = array();
+
+            $mdlsubmissionfiles = $DB->get_records('files',
+                array('itemid' => $eventdata["objectid"], 'filearea' => 'attachment'));
+
+            foreach ($mdlsubmissionfiles as $submissionfile) {
+                $file = $DB->get_record('plagiarism_compilatio_files',
+                    array('cm' => $cmid, 'userid' => $userid, 'identifier' => $submissionfile->contenthash));
+                if ($file) {
+                    array_push($compifilestokeep, $file);
+                }
+            }
+
             $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND filename LIKE ?";
-            $duplicates = $DB->get_records_sql($sql, array($cmid, 'post-' . $eventdata['objectid'] . '-%'));
+            $allcompisubmissionfiles = $DB->get_records_sql($sql, array($cmid, 'post-' . $eventdata['objectid'] . '-%'));
+
+            $duplicates = array_udiff($allcompisubmissionfiles, $compifilestokeep,
+                function ($filea, $fileb) {
+                    return $filea->id - $fileb->id;
+                }
+            );
         }
 
         if ($eventdata['objecttable'] == 'workshop_submissions') {
+            $compifilestokeep = array();
+
+            $mdlsubmissionfiles = $DB->get_records('files',
+                array('itemid' => $eventdata["objectid"], 'filearea' => 'submission_attachment'));
+
+            foreach ($mdlsubmissionfiles as $submissionfile) {
+                $file = $DB->get_record('plagiarism_compilatio_files',
+                    array('cm' => $cmid, 'userid' => $userid, 'identifier' => $submissionfile->contenthash));
+                if ($file) {
+                    array_push($compifilestokeep, $file);
+                }
+            }
+
             $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'content-%'";
-            $duplicates = $DB->get_records_sql($sql, array($cmid, $userid));
+            $allcompisubmissionfiles = $DB->get_records_sql($sql, array($cmid, $userid));
+
+            $duplicates = array_udiff($allcompisubmissionfiles, $compifilestokeep,
+                function ($filea, $fileb) {
+                    return $filea->id - $fileb->id;
+                }
+            );
         }
         compilatio_remove_duplicates($duplicates, (array) get_config('plagiarism_compilatio'));
         compilatio_handle_hashes($hashes, $cmid, $userid, $postid);
@@ -3036,13 +3085,29 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
 
         if ($eventdata['objecttable'] == 'forum_posts') {
             $filename = 'post-' . $eventdata['courseid'] . '-' . $cmid . '-' . $eventdata['objectid'] . '.htm';
-            $duplicates = $DB->get_records('plagiarism_compilatio_files', array('filename' => $filename));
+
+            $mdlposttext = $DB->get_record('forum_posts', array('id' => $eventdata["objectid"]));
+
+            $compifile = $DB->get_record('plagiarism_compilatio_files',
+                array('filename' => $filename, 'identifier' => sha1($mdlposttext->message)));
+
+            if (!$compifile) {
+                $duplicates = $DB->get_records('plagiarism_compilatio_files', array('filename' => $filename));
+            }
         }
 
         if ($eventdata['objecttable'] == 'workshop_submissions') {
             $filename = "content-" . $eventdata['courseid'] . "-" . $cmid . "-" . $userid . ".htm";
-            $duplicates = $DB->get_records('plagiarism_compilatio_files',
-                array('cm' => $cmid, 'userid' => $userid, 'filename' => $filename));
+
+            $mdlsubmissiontext = $DB->get_record('workshop_submissions', array('id' => $eventdata["objectid"]));
+
+            $compifile = $DB->get_record('plagiarism_compilatio_files', array('cm' => $cmid,
+                'userid' => $userid, 'filename' => $filename, 'identifier' => sha1($mdlsubmissiontext->content)));
+
+            if (!$compifile) {
+                $duplicates = $DB->get_records('plagiarism_compilatio_files',
+                    array('cm' => $cmid, 'userid' => $userid, 'filename' => $filename));
+            }
         }
         compilatio_remove_duplicates($duplicates, (array) get_config('plagiarism_compilatio'));
         compilatio_handle_content($content, $userid, $courseid, $cmid, $postid);

@@ -166,9 +166,9 @@ $string["error"] = 'Errore';
 $string["analyze"] = 'Analizzare';
 $string["queue"] = 'Attesa';
 $string["analyzing"] = 'Analisi';
-$string["compilatio_enable_mod_assign"] = 'Attivare Compilatio per i compiti (assign)';
-$string["compilatio_enable_mod_workshop"] = 'Attivare Compilatio per i laboratori (workshop)';
-$string["compilatio_enable_mod_forum"] = 'Attivare Compilatio per i forum';
+$string["enable_mod_assign"] = 'Attivare Compilatio per i compiti (assign)';
+$string["enable_mod_workshop"] = 'Attivare Compilatio per i laboratori (workshop)';
+$string["enable_mod_forum"] = 'Attivare Compilatio per i forum';
 $string["planned"] = 'Pianificato';
 $string["immediately"] = 'Immediatamente';
 $string["enable_javascript"] = 'La preghiamo di attivare JavaScript per usufruire di tutte le funzionalità del plug-in Compilatio.<br/> Qui ci sono tutte le <a href="http://www.enable-javascript.com/it/"

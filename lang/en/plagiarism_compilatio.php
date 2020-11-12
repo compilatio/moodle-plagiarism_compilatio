@@ -186,9 +186,9 @@ $string['error'] = 'Error';
 $string['analyze'] = 'Analyze';
 $string['queue'] = 'Queue';
 $string['analyzing'] = 'Analyzing';
-$string['compilatio_enable_mod_assign'] = 'Enable Compilatio for assignments (assign)';
-$string['compilatio_enable_mod_workshop'] = 'Enable Compilatio for workshops (workshop)';
-$string['compilatio_enable_mod_forum'] = 'Enable Compilatio for forums';
+$string['enable_mod_assign'] = 'Enable Compilatio for assignments (assign)';
+$string['enable_mod_workshop'] = 'Enable Compilatio for workshops (workshop)';
+$string['enable_mod_forum'] = 'Enable Compilatio for forums';
 $string['planned'] = "Planned";
 $string['enable_javascript'] = "Please enable Javacript in order to have a better experience with Compilatio plugin.<br/>
  Here are the <a href='http://www.enable-javascript.com/' target='_blank'>
