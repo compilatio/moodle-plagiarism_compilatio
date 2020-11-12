@@ -343,7 +343,8 @@ legend.compilatio_legend {
 .compilatio-library-out {
     background-image: url([[pix:plagiarism_compilatio|library-out]]);
 }
-.compilatio-library-in, .compilatio-library-out {
+.compilatio-library-in,
+.compilatio-library-out {
     cursor: pointer;
 }
 #compi-update-progress {

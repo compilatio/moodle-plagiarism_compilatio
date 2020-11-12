@@ -24,7 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 $string['pluginname'] = 'Compilatio - Plugin de détection de plagiat';
-$string['studentdisclosuredefault'] = 'L\'ensemble des fichiers envoyés seront soumis au service de détection de plagiat de Compilatio';
+$string['studentdisclosuredefault'] = 'L\'ensemble des fichiers envoyés seront soumis au service de détection de similitudes de Compilatio';
 $string['students_disclosure'] = 'Message de prévention pour les étudiants';
 $string['students_disclosure_help'] = 'Ce texte sera affiché à tous les étudiants sur la page de téléchargement de fichier.';
 $string['compilatioexplain'] = 'Pour obtenir des informations complémentaires sur ce plugin, voir : <a href="http://compilatio.net" target="_blank">compilatio.net</a>';
@@ -180,9 +180,9 @@ $string['analyze'] = 'Analyser';
 $string['queue'] = 'Attente';
 $string['analyzing'] = 'Analyse';
 $string['compilatioenableplugin'] = 'Activer Compilatio pour {$a}';
-$string['compilatio_enable_mod_assign'] = 'Activer Compilatio pour les devoirs (assign)';
-$string['compilatio_enable_mod_workshop'] = 'Activer Compilatio pour les ateliers (workshop)';
-$string['compilatio_enable_mod_forum'] = 'Activer Compilatio pour les forums';
+$string['enable_mod_assign'] = 'Activer Compilatio pour les devoirs (assign)';
+$string['enable_mod_workshop'] = 'Activer Compilatio pour les ateliers (workshop)';
+$string['enable_mod_forum'] = 'Activer Compilatio pour les forums';
 $string['planned'] = "Planifié";
 $string['immediately'] = "Immédiatement";
 $string['enable_javascript'] = "Veuillez activer Javascript pour profiter de toutes les fonctionnalités du plugin Compilatio. <br/> Voici les <a href='http://www.enable-javascript.com/fr/' target='_blank'>

@@ -1,4 +1,4 @@
-define(['jquery'], function ($) {
+define(['jquery'], function($) {
     /**
      * A Module that handles Compilatio ajax/API calls
      */
@@ -10,7 +10,7 @@ define(['jquery'], function ($) {
      * @return void
      */
     function disableCompilatioButtons() {
-        $(".compilatio-button").each(function () {
+        $(".compilatio-button").each(function() {
             $(this).attr("disabled", "disabled");
             $(this).addClass("disabled");
             $(this).attr("href", "#");
@@ -19,14 +19,14 @@ define(['jquery'], function ($) {
 
     var exports = {};
 
-    var getIndexingState = exports.getIndexingState = function (basepath, eltId, docId) {
-        $(document).ready(function () {
-            $.post(basepath + '/plagiarism/compilatio/ajax/get_indexing_state.php', { 'idDoc': docId }, function (data) {
+    var getIndexingState = exports.getIndexingState = function(basepath, eltId, docId) {
+        $(document).ready(function() {
+            $.post(basepath + '/plagiarism/compilatio/ajax/get_indexing_state.php', {'idDoc': docId}, function(data) {
                 $(".compi-" + eltId + " .compilatio-library").detach();
                 $(".compi-" + eltId).prepend(data);
 
-                setTimeout(function () {
-                    $(".compi-" + eltId + " > div:first-child").click(function () {
+                setTimeout(function() {
+                    $(".compi-" + eltId + " > div:first-child").click(function() {
                         toggleIndexingState(basepath, eltId, docId);
                     });
                 }, 250); // Wait for all DOM updates be finished before binding events handlers.
@@ -34,7 +34,7 @@ define(['jquery'], function ($) {
         });
     };
 
-    var toggleIndexingState = exports.toggleIndexingState = function (basepath, eltId, docId) {
+    var toggleIndexingState = exports.toggleIndexingState = function(basepath, eltId, docId) {
         var indexingState;
         if ($(".compi-" + eltId + " > div:first-child").is('.compilatio-library-in')) {
             $(".compi-" + eltId + " > div:first-child").removeClass('compilatio-library-in');
@@ -45,29 +45,32 @@ define(['jquery'], function ($) {
             indexingState = 1;
         }
         $(".compi-" + eltId + " > div:first-child").addClass('compilatio-library');
-        $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php', { 'idDoc': docId, 'indexingState': indexingState }, function (data) {
+        $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php',
+        {'idDoc': docId, 'indexingState': indexingState}, function(data) {
             if (data == 'true') {
                 getIndexingState(basepath, eltId, docId);
             }
         });
     };
 
-    var refreshButton = exports.refreshButton = function (basepath, fileIds, infoStr) {
-        $(document).ready(function () {
+    exports.refreshButton = function(basepath, fileIds, infoStr) {
+        $(document).ready(function() {
             var n = fileIds.length;
             var i = 0;
             var refreshButton = $("i.fa-refresh").parent("button");
             if (n == 0) {
                 disableCompilatioButtons();
             } else {
-                refreshButton.click(function () {
+                refreshButton.click(function() {
                     disableCompilatioButtons();
                     // Display progress bar.
-                    $("#compilatio-home").html("<p>" + infoStr + "<progress id='compi-update-progress' value='" + i + "' max='" + n + "'></progress></p>");
+                    $("#compilatio-home").html("<p>" + infoStr + "<progress id='compi-update-progress' value='"
+                        + i + "' max='" + n + "'></progress></p>");
                     $("#compilatio-logo").click();
                     // Launch ajax requests.
                     fileIds.forEach(function (id) {
-                        $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_check_analysis.php', { 'id': id }, function (data) {
+                        $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_check_analysis.php',
+                        {'id': id}, function() {
                             i++;
                             $("#compi-update-progress").val(i);
                             if (i == n) {
@@ -80,8 +83,8 @@ define(['jquery'], function ($) {
         });
     };
 
-    var compilatioTabs = exports.compilatioTabs = function (alerts) {
-        $(document).ready(function(){
+    exports.compilatioTabs = function(alerts) {
+        $(document).ready(function() {
             var selectedElement = '';
             if (alerts.length > 0) {
                 selectedElement = '#compilatio-notifications';
@@ -97,20 +100,18 @@ define(['jquery'], function ($) {
 
             elements.not($(selectedElement)).hide();
 
-            $('#compilatio-show-notifications').on('click',function(){
+            $('#compilatio-show-notifications').on('click',function() {
                     tabClick($(this), $('#compilatio-notifications'));
             });
-            $('#show-stats').on('click',function(){
+            $('#show-stats').on('click', function() {
                     tabClick($(this), $('#compilatio-stats'));
             });
-            $('#show-help').on('click',function(){
+            $('#show-help').on('click', function() {
                     tabClick($(this), $('#compilatio-help'));
             });
 
-            function tabClick(tabClicked, contentToShow)
-            {
-                if(!contentToShow.is(':visible'))
-                {
+            function tabClick(tabClicked, contentToShow) {
+                if (!contentToShow.is(':visible')) {
                     contentToShow.show();
 
                     elements.not(contentToShow).hide();
@@ -122,19 +123,18 @@ define(['jquery'], function ($) {
                 }
             }
 
-            $('#compilatio-logo').on('click',function(){
-                elementClicked = $('#compilatio-home');
+            $('#compilatio-logo').on('click', function() {
+                var elementClicked = $('#compilatio-home');
                 elementClicked.show();
                 elements.not(elementClicked).hide();
                 tabs.removeClass('active');
                 $('#compilatio-hide-area').fadeIn();
             });
-            $('#compilatio-hide-area').on('click',function(event){
+            $('#compilatio-hide-area').on('click', function() {
                 elements.hide();
                 $(this).fadeOut();
                 tabs.removeClass('active');
             });
-
         });
     };
 

@@ -24,7 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 $string['pluginname'] = 'Compilatio plagiarism plugin';
-$string['studentdisclosuredefault'] = 'All files uploaded here will be submitted to the plagiarism detection service Compilatio';
+$string['studentdisclosuredefault'] = 'All files uploaded here will be submitted to the similarities detection service Compilatio';
 $string['students_disclosure'] = 'Student Disclosure';
 $string['students_disclosure_help'] = 'This text will be displayed to all students on the file upload page.';
 $string['compilatioexplain'] = 'For more information on this plugin see: <a href="http://www.compilatio.net/en/" target="_blank">compilatio.net</a>';
@@ -186,9 +186,9 @@ $string['error'] = 'Error';
 $string['analyze'] = 'Analyze';
 $string['queue'] = 'Queue';
 $string['analyzing'] = 'Analyzing';
-$string['compilatio_enable_mod_assign'] = 'Enable Compilatio for assignments (assign)';
-$string['compilatio_enable_mod_workshop'] = 'Enable Compilatio for workshops (workshop)';
-$string['compilatio_enable_mod_forum'] = 'Enable Compilatio for forums';
+$string['enable_mod_assign'] = 'Enable Compilatio for assignments (assign)';
+$string['enable_mod_workshop'] = 'Enable Compilatio for workshops (workshop)';
+$string['enable_mod_forum'] = 'Enable Compilatio for forums';
 $string['planned'] = "Planned";
 $string['enable_javascript'] = "Please enable Javacript in order to have a better experience with Compilatio plugin.<br/>
  Here are the <a href='http://www.enable-javascript.com/' target='_blank'>
