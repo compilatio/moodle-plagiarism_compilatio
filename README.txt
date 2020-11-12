@@ -7,12 +7,11 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Improve plugin compatibility :
-    - Replace the setting plagiarism:compilatio_use by plagiarism_compilatio:enabled.
-    - Replace deprecated functions save_form_elements() by plagiarism_compilatio_coursemodule_edit_post_actions() 
-        and get_form_elements_module() by plagiarism_compilatio_coursemodule_standard_elements().
-- Fix bugs in plugin statistics.
-- Update plugin's settings handle
+- Improvement of multiple submissions (online text and files), regardless to activity settings.
+- Update message for students.
+- Add compilatio_use setting when installing plugin.
+- Add default activity configuration when saving the plugin settings for the first time.
+- Improvement of document deletion management, document management with Moodle recycle bin.
 
 QUICK INSTALL
 ================
