@@ -77,7 +77,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         set_config('compilatio_use', $data->enabled, 'plagiarism');
     }
 
-    // Set the default config for course modules.
+    // Set the default config for course modules if not set.
     $plagiarismdefaults = $DB->get_records('plagiarism_compilatio_config', array('cm' => 0));
     if (empty($plagiarismdefaults)) {
         $plagiarismelements = array(
@@ -110,6 +110,8 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $quotas["error"]);
         $incorrectconfig = true;
     }
+
+    compilatio_update_meta();
 }
 
 $plagiarismsettings = (array) get_config('plagiarism_compilatio');
@@ -140,6 +142,7 @@ if (!empty($plagiarismsettings['enabled']) && !$incorrectconfig) {
                                         $CFG->proxyuser,
                                         $CFG->proxypassword);
 }
+
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 $mform->display();
 echo $OUTPUT->box_end();

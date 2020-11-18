@@ -833,9 +833,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         $output .= "<div id='compilatio-tabs' style='display:none'>";
 
         // Help icon.
-        $output .= "<a title=\"" . get_string("compilatio_help_assign", "plagiarism_compilatio") .
-            "\" id='show-help' class='compilatio-icon' href='../../plagiarism/compilatio/helpcenter.php'" .
-            "target='_blank' ><i class='fa fa-question-circle fa-2x'></i></a>";
+        $output .= "<div title='" . get_string("compilatio_help_assign", "plagiarism_compilatio") .
+            "' id='show-help' class='compilatio-icon'><i class='fa fa-question-circle fa-2x'></i></div>";
 
         // Stat icon.
         $output .= "<div id='show-stats' class='compilatio-icon'  title='" .
@@ -872,7 +871,16 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         // Help tab.
         $output .= "
             <div id='compilatio-help'>
-                <p>" . get_string('goto_helpcenter', 'plagiarism_compilatio') . "</p>
+                <p><a href='../../plagiarism/compilatio/helpcenter.php'" .
+                    "target='_blank' >" . get_string('helpcenter', 'plagiarism_compilatio') . "
+                    <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
+                    <path fill='none' stroke='#555' stroke-linecap='round' stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
+                    </svg></a></p>
+                <p><a href='http://etat-services.compilatio.net/?lang=FR'" .
+                    "target='_blank' >" . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') . "
+                    <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
+                    <path fill='none' stroke='#555' stroke-linecap='round' stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
+                    </svg></a></p>
             </div>";
 
         // Stats tab.
@@ -1856,6 +1864,7 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_IN_QUEUE;
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
     } else {
+        debugging(var_export($analyse, true));
         echo $OUTPUT->notification(get_string('failedanalysis', 'plagiarism_compilatio') . $analyse->string);
         return $analyse;
     }

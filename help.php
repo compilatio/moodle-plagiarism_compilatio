@@ -45,5 +45,11 @@ echo("<p style='margin-top: 15px;'>
     <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
     <path fill='none' stroke='#555' stroke-linecap='round' stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
     </svg></a></p>");
+echo("<p style='margin-top: 15px;'>
+    <a href='http://etat-services.compilatio.net/?lang=FR' target='_blank' >
+    " . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') . "
+    <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
+    <path fill='none' stroke='#555' stroke-linecap='round' stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
+    </svg></a></p>");
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();

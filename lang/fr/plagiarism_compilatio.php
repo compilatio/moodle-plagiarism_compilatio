@@ -150,7 +150,7 @@ $string["updatecompilatioresults"] = "Rafraîchir les informations";
 $string["update_in_progress"] = "Mise à jour des informations en cours";
 $string["display_stats"] = "Afficher les statistiques de ce devoir";
 $string["analysis_completed"] = 'Analyse terminée: {$a}% de similitudes.';
-$string["compilatio_help_assign"] = "Obtenir de l'aide sur le plugin Compilatio";
+$string["compilatio_help_assign"] = 'Obtenir de l\'aide sur le plugin Compilatio';
 $string["display_notifications"] = "Afficher les notifications";
 // CSV.
 $string["firstname"] = "Prénom";
@@ -233,6 +233,8 @@ Le bouton “Analyser tous les documents” vous permet de lancer l’analyse de
 </ul>
 ';
 $string['help_compilatio_format_content'] = "Compilatio.net prend en charge la plupart des formats utilisés en bureautique et sur Internet. Les formats suivants sont acceptés :";
+$string['goto_compilatio_service_status'] = "Voir l'état des services Compilatio.";
+$string['helpcenter'] = "Accédez au centre d'aide Compilatio pour l'utilisation du plugin Compilatio dans Moodle.";
 $string['goto_helpcenter'] = "Cliquez sur le point d'interrogation pour ouvrir une nouvelle fenêtre et vous connecter au centre d'aide Compilatio.";
 $string['admin_goto_helpcenter'] = "Accédez au centre d'aide Compilatio pour accéder aux articles relatifs à l'administration du plugin Moodle.";
 /* END HELP */

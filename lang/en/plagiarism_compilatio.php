@@ -240,6 +240,8 @@ You can click on the “Start analysis” button of each document to trigger its
 ';
 $string['help_compilatio_format_content'] = "Compilatio.net handles most formats used in word processors and on the internet.
 The following formats are supported :";
+$string['goto_compilatio_service_status'] = "See Compilatio services status.";
+$string['helpcenter'] = "Access the Compilatio Help Center for the using of Compilatio plugin in Moodle.";
 $string['goto_helpcenter'] = "Click on the question mark to open a new window and connect to the Compilatio Help Center.";
 $string['admin_goto_helpcenter'] = "Access the Compilatio Help Center to see articles related to administration of the Moodle plugin.";
 // Buttons.
