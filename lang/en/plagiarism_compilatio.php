@@ -58,6 +58,7 @@ $string['report'] = 'report';
 $string['unknownwarning'] = 'An error occurred trying to send this file to Compilatio';
 $string['unsupportedfiletype'] = 'This file type is not supported by Compilatio';
 $string['toolarge'] = 'This file is too large for Compilatio to process. Maximum size : {$a->Mo} MB';
+$string['notfound'] = 'This document was not found for this API key';
 $string['compilatio_studentemail'] = 'Send Student email';
 $string['compilatio_studentemail_help'] = 'This will send an e-mail to the student when a file has been processed to let them know that a report is available.';
 $string['studentemailsubject'] = 'File processed by Compilatio';

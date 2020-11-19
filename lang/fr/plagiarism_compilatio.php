@@ -53,6 +53,7 @@ $string['previouslysubmitted'] = 'Auparavant soumis comme';
 $string['unknownwarning'] = 'Une erreur s\'est produite lors de l\'envoi du fichier à Compilatio';
 $string['unsupportedfiletype'] = 'Ce type de fichier n\'est pas supporté par Compilatio';
 $string['toolarge'] = 'Le fichier est trop volumineux pour être traité par Compilatio. Taille maximale : {$a->Mo} Mo';
+$string['notfound'] = "Ce document n'a pas été trouvé pour cette clé API";
 $string['compilatio_studentemail'] = 'Envoyer un mail à l\'étudiant';
 $string['compilatio_studentemail_help'] = 'Ceci enverra un e-mail à l\'élève quand un fichier a été traité pour leur faire savoir que le rapport est disponible.';
 $string['studentemailsubject'] = 'Le fichier a été traité par Compilatio';

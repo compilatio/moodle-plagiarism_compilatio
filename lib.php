@@ -229,6 +229,12 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                     $title = get_string('queued', 'plagiarism_compilatio');
                     $output .= output_helper::get_plagiarism_area($spancontent, $image, $title, "",
                         array(), false, $indexingstate, $domid, $docwarning);
+                } else if ($analyse->code == 'INVALID_ID_DOCUMENT') {
+                    $span = get_string("error", "plagiarism_compilatio");
+                    $image = "exclamation";
+                    $title = get_string('notfound', 'plagiarism_compilatio');
+                    $output .= output_helper::get_plagiarism_area($span, $image, $title, "",
+                        "", true, $indexingstate, $domid, $docwarning);
                 } else {
                     $output .= '<span class="compilatio-plagiarismreport">' .
                         '</span>';
@@ -347,6 +353,13 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $span = get_string("error", "plagiarism_compilatio");
             $image = "exclamation";
             $title = get_string('unextractablefile', 'plagiarism_compilatio');
+            $output .= output_helper::get_plagiarism_area($span, $image, $title, "",
+                "", true, $indexingstate, $domid, $docwarning);
+
+        } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_NOT_FOUND) {
+            $span = get_string("error", "plagiarism_compilatio");
+            $image = "exclamation";
+            $title = get_string('notfound', 'plagiarism_compilatio');
             $output .= output_helper::get_plagiarism_area($span, $image, $title, "",
                 "", true, $indexingstate, $domid, $docwarning);
 
@@ -1864,9 +1877,15 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_IN_QUEUE;
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
     } else {
-        debugging(var_export($analyse, true));
-        echo $OUTPUT->notification(get_string('failedanalysis', 'plagiarism_compilatio') . $analyse->string);
-        return $analyse;
+        if ($analyse->code == 'INVALID_ID_DOCUMENT'){
+            $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_NOT_FOUND;
+            $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+            return $analyse;
+        } else {
+            echo $OUTPUT->notification(get_string('failedanalysis', 'plagiarism_compilatio') . $analyse->string);
+            return $analyse;
+        }
+        
     }
 
     return true;
@@ -1945,8 +1964,10 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
     }
 
     // Optional yellow warning in submissions.
-    $plagiarismfile->errorresponse = $docstatus->documentProperties->warning;
-    $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+    if (is_object($docstatus)) {
+        $plagiarismfile->errorresponse = $docstatus->documentProperties->warning;
+        $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+    }
 }
 
 /**
