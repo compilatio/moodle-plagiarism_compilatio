@@ -198,8 +198,11 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                         return $output;
                     }
                 }
-                $moodleurl = new moodle_url("/mod/assign/view.php",
-                    array("id" => $linkarray['cmid'], "sendfile" => $fileid, "action" => "grading"));
+                $urlparams = array("id" => $linkarray['cmid'],
+                                "sendfile" => $fileid,
+                                "action" => "grading",
+                                'page' => optional_param('page', null, PARAM_INT));
+                $moodleurl = new moodle_url("/mod/assign/view.php", $urlparams);
                 $url = array("url" => "$moodleurl", "target-blank" => false);
                 $spancontent = get_string("analyze", "plagiarism_compilatio");
                 $image = "play";
@@ -309,7 +312,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                 $title = get_string('waitingforanalysis', 'plagiarism_compilatio',
                     userdate($plagiarismvalues['compilatio_timeanalyse']));
             } else if (has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext)) {
-                $url = new moodle_url($PAGE->url, array('compilatioprocess' => $results['pid']));
+                $urlparams = array('compilatioprocess' => $results['pid'], 'page' => optional_param('page', null, PARAM_INT));
+                $url = new moodle_url($PAGE->url, $urlparams);
                 $action = optional_param('action', '', PARAM_TEXT); // Hack to add action to params for mod/assign.
                 if (!empty($action)) {
                     $url->param('action', $action);
@@ -368,8 +372,11 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $reset = '';
             $url = '';
             if (has_capability('plagiarism/compilatio:resetfile', $modulecontext)) {
-                $url = new moodle_url('/plagiarism/compilatio/reset.php',
-                    array('cmid' => $linkarray['cmid'], 'pf' => $results['pid'], 'sesskey' => sesskey()));
+                $urlparams = array('cmid' => $linkarray['cmid'], 
+                                'pf' => $results['pid'], 
+                                'sesskey' => sesskey(),
+                                'page' => optional_param('page', null, PARAM_INT));
+                $url = new moodle_url('/plagiarism/compilatio/reset.php', $urlparams);
                 $span = "<a class='compilatio-reinit' href='$url'>" . get_string('reset', 'plagiarism_compilatio') . "</a>";
             }
             $span = get_string('reset', "plagiarism_compilatio");
@@ -887,12 +894,14 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                 <p><a href='../../plagiarism/compilatio/helpcenter.php'" .
                     "target='_blank' >" . get_string('helpcenter', 'plagiarism_compilatio') . "
                     <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
-                    <path fill='none' stroke='#555' stroke-linecap='round' stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
+                        <path fill='none' stroke='#555' stroke-linecap='round'
+                        stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
                     </svg></a></p>
                 <p><a href='http://etat-services.compilatio.net/?lang=FR'" .
                     "target='_blank' >" . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') . "
                     <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
-                    <path fill='none' stroke='#555' stroke-linecap='round' stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
+                        <path fill='none' stroke='#555' stroke-linecap='round'
+                        stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
                     </svg></a></p>
             </div>";
 
@@ -1877,7 +1886,7 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_IN_QUEUE;
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
     } else {
-        if ($analyse->code == 'INVALID_ID_DOCUMENT'){
+        if ($analyse->code == 'INVALID_ID_DOCUMENT') {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_NOT_FOUND;
             $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
             return $analyse;
@@ -1885,7 +1894,6 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
             echo $OUTPUT->notification(get_string('failedanalysis', 'plagiarism_compilatio') . $analyse->string);
             return $analyse;
         }
-        
     }
 
     return true;
@@ -2545,14 +2553,16 @@ function compilatio_upload_files($files, $cmid) {
         array('cm' => $cmid, "name" => "compilatio_timeanalyse"));
 
     foreach ($files as $file) {
+        $userid = $DB->get_field('assign_submission', 'userid', array('id' => $file->itemid));
+
         $f = $fs->get_file_by_id($file->id);
-        compilatio_queue_file($cmid, $file->userid, $f, $plagiarismsettings, true); // send the file to Compilatio.
+        compilatio_queue_file($cmid, $userid, $f, $plagiarismsettings, true); // send the file to Compilatio.
         /* Start analysis if the settings are on "manual" or "timed" and the planned time is greater than the current time
         Starting "auto" analysis is handled in "compilatio_send_file" */
         if ($analysistype == COMPILATIO_ANALYSISTYPE_MANUAL ||
             ($analysistype == COMPILATIO_ANALYSISTYPE_PROG &&
                 time() >= $timeanalysis)) {
-            $plagiarismfile = compilatio_get_plagiarism_file($cmid, $file->userid, $f);
+            $plagiarismfile = compilatio_get_plagiarism_file($cmid, $userid, $f);
             compilatio_startanalyse($plagiarismfile, $plagiarismsettings);
         }
     }

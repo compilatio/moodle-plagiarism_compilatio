@@ -85,5 +85,6 @@ if ($cm->modname == 'assignment') {
     }
 }
 
-$redirect = new moodle_url('/mod/assign/view.php', array('id' => $cmid, 'action' => "grading"));
+$urlparams = array('id' => $cmid, 'action' => "grading", 'page' => optional_param('page', null, PARAM_INT));
+$redirect = new moodle_url('/mod/assign/view.php', $urlparams);
 redirect($redirect, get_string('filereset', 'plagiarism_compilatio'));
