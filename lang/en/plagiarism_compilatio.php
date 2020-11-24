@@ -217,6 +217,7 @@ $string["teacher"] = "Teacher";
 $string["loading"] = "Loading, please wait...";
 // ALERTS.
 $string["unknownlang"] = "Caution, the language of some passages in this document was not recognized.";
+$string["badqualityanalysis"] = "Issues were encountered while analysing the document. It is possible that certain sources may not have been identified, or the result may be incomplete.";
 // HELP.
 $string['help_compilatio_settings_title'] = 'Which mode should I use in the Compilatio settings of an activity?';
 $string['help_compilatio_settings_content'] = '

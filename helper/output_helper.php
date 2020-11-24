@@ -177,11 +177,15 @@ class output_helper
             if (count($errorinfos) > 1) {
                 $titles = array();
                 foreach ($errorinfos as $k => $e) {
-                    $titles[] = $k + 1 . '°) ' .get_string($e, "plagiarism_compilatio");
+                    if (get_string_manager()->string_exists($e, 'plagiarism_compilatio')) {
+                        $titles[] = $k + 1 . '°) ' .get_string($e, "plagiarism_compilatio");
+                    }
                 }
                 $title = implode("\n", $titles);
             } else {
-                $title = get_string($warning, "plagiarism_compilatio");
+                if (get_string_manager()->string_exists($warning, 'plagiarism_compilatio')) {
+                    $title = get_string($warning, "plagiarism_compilatio");
+                }
             }
             $html .= html_writer::start_div('compi-alert');
             $imgsrc = $OUTPUT->image_url('exclamation-yellow', 'plagiarism_compilatio');

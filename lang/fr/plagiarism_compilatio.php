@@ -211,6 +211,7 @@ $string["teacher"] = "Enseignant";
 $string["loading"] = "Chargement en cours, veuillez patienter...";
 // ALERTS.
 $string["unknownlang"] = "Attention, la langue de certains passages de ce document n'a pas été reconnue.";
+$string["badqualityanalysis"] = "Des incidents ont été détectés lors l'analyse du document. Il est possible que certaines sources n'aient pas été identifiées ou que le résultat soit incomplet.";
 /* HELP */
 $string['help_compilatio_settings_title'] = 'Quels réglages choisir dans les paramètres Compilatio d’une activité?';
 $string['help_compilatio_settings_content'] = 'Trois types d’analyse sont disponibles avec le plugin Compilatio :
