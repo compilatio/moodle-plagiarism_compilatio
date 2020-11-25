@@ -117,6 +117,9 @@ Head area in assignment
 .compilatio-help {
     float: left;
 }
+#compilatio-help > p {
+    margin-top: 15px;
+}
 .compilatio-help img {
     width: 24px;
 }
@@ -320,7 +323,6 @@ legend.compilatio_legend {
 }
 .compilatio-area {
     display: flex;
-    justify-content: flex-end;
     -ms-align-items: center;
     align-items: center;
     position: relative;
@@ -360,9 +362,8 @@ legend.compilatio_legend {
     margin-top: 15px;
 }
 .compi-alert {
-    position: absolute;
-    top: -5px;
-    right: -10px;
+    position: relative;
+    top: -15px;
 }
 .compi-alert > img {
     width: 14px;

@@ -58,6 +58,7 @@ $string['report'] = 'report';
 $string['unknownwarning'] = 'An error occurred trying to send this file to Compilatio';
 $string['unsupportedfiletype'] = 'This file type is not supported by Compilatio';
 $string['toolarge'] = 'This file is too large for Compilatio to process. Maximum size : {$a->Mo} MB';
+$string['notfound'] = 'This document was not found for this API key';
 $string['compilatio_studentemail'] = 'Send Student email';
 $string['compilatio_studentemail_help'] = 'This will send an e-mail to the student when a file has been processed to let them know that a report is available.';
 $string['studentemailsubject'] = 'File processed by Compilatio';
@@ -216,6 +217,7 @@ $string["teacher"] = "Teacher";
 $string["loading"] = "Loading, please wait...";
 // ALERTS.
 $string["unknownlang"] = "Caution, the language of some passages in this document was not recognized.";
+$string["badqualityanalysis"] = "Issues were encountered while analysing the document. It is possible that certain sources may not have been identified, or the result may be incomplete.";
 // HELP.
 $string['help_compilatio_settings_title'] = 'Which mode should I use in the Compilatio settings of an activity?';
 $string['help_compilatio_settings_content'] = '
@@ -240,6 +242,8 @@ You can click on the “Start analysis” button of each document to trigger its
 ';
 $string['help_compilatio_format_content'] = "Compilatio.net handles most formats used in word processors and on the internet.
 The following formats are supported :";
+$string['goto_compilatio_service_status'] = "See Compilatio services status.";
+$string['helpcenter'] = "Access the Compilatio Help Center for the using of Compilatio plugin in Moodle.";
 $string['goto_helpcenter'] = "Click on the question mark to open a new window and connect to the Compilatio Help Center.";
 $string['admin_goto_helpcenter'] = "Access the Compilatio Help Center to see articles related to administration of the Moodle plugin.";
 // Buttons.

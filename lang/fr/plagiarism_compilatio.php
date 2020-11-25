@@ -53,6 +53,7 @@ $string['previouslysubmitted'] = 'Auparavant soumis comme';
 $string['unknownwarning'] = 'Une erreur s\'est produite lors de l\'envoi du fichier à Compilatio';
 $string['unsupportedfiletype'] = 'Ce type de fichier n\'est pas supporté par Compilatio';
 $string['toolarge'] = 'Le fichier est trop volumineux pour être traité par Compilatio. Taille maximale : {$a->Mo} Mo';
+$string['notfound'] = "Ce document n'a pas été trouvé pour cette clé API";
 $string['compilatio_studentemail'] = 'Envoyer un mail à l\'étudiant';
 $string['compilatio_studentemail_help'] = 'Ceci enverra un e-mail à l\'élève quand un fichier a été traité pour leur faire savoir que le rapport est disponible.';
 $string['studentemailsubject'] = 'Le fichier a été traité par Compilatio';
@@ -150,7 +151,7 @@ $string["updatecompilatioresults"] = "Rafraîchir les informations";
 $string["update_in_progress"] = "Mise à jour des informations en cours";
 $string["display_stats"] = "Afficher les statistiques de ce devoir";
 $string["analysis_completed"] = 'Analyse terminée: {$a}% de similitudes.';
-$string["compilatio_help_assign"] = "Obtenir de l'aide sur le plugin Compilatio";
+$string["compilatio_help_assign"] = 'Obtenir de l\'aide sur le plugin Compilatio';
 $string["display_notifications"] = "Afficher les notifications";
 // CSV.
 $string["firstname"] = "Prénom";
@@ -210,6 +211,7 @@ $string["teacher"] = "Enseignant";
 $string["loading"] = "Chargement en cours, veuillez patienter...";
 // ALERTS.
 $string["unknownlang"] = "Attention, la langue de certains passages de ce document n'a pas été reconnue.";
+$string["badqualityanalysis"] = "Des incidents ont été détectés lors l'analyse du document. Il est possible que certaines sources n'aient pas été identifiées ou que le résultat soit incomplet.";
 /* HELP */
 $string['help_compilatio_settings_title'] = 'Quels réglages choisir dans les paramètres Compilatio d’une activité?';
 $string['help_compilatio_settings_content'] = 'Trois types d’analyse sont disponibles avec le plugin Compilatio :
@@ -233,6 +235,8 @@ Le bouton “Analyser tous les documents” vous permet de lancer l’analyse de
 </ul>
 ';
 $string['help_compilatio_format_content'] = "Compilatio.net prend en charge la plupart des formats utilisés en bureautique et sur Internet. Les formats suivants sont acceptés :";
+$string['goto_compilatio_service_status'] = "Voir l'état des services Compilatio.";
+$string['helpcenter'] = "Accédez au centre d'aide Compilatio pour l'utilisation du plugin Compilatio dans Moodle.";
 $string['goto_helpcenter'] = "Cliquez sur le point d'interrogation pour ouvrir une nouvelle fenêtre et vous connecter au centre d'aide Compilatio.";
 $string['admin_goto_helpcenter'] = "Accédez au centre d'aide Compilatio pour accéder aux articles relatifs à l'administration du plugin Moodle.";
 /* END HELP */
