@@ -1,4 +1,4 @@
-Compilatio.net Plagiarism plugin for Moodle 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9
+Compilatio.net Plagiarism plugin for Moodle 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10
 
 Author: Compilatio <support@compilatio.net>
 Copyright 2020 Compilatio.net https://www.compilatio.net
@@ -7,11 +7,12 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Improvement of multiple submissions (online text and files), regardless to activity settings.
-- Update message for students.
-- Add compilatio_use setting when installing plugin.
-- Add default activity configuration when saving the plugin settings for the first time.
-- Improvement of document deletion management, document management with Moodle recycle bin.
+- Changing the behaviour of the Help (?) button in assigns.
+- Correct the display of the error message indicating that the Compilatio service is currently unavailable.
+- Align the Compilatio frame to the left.
+- Adding a warning for failed analysis.
+- Correction of the "Analyse" button which only worked on the first page of an assign.
+- Display an error message in the Compilatio frame when changing the API key and documents are not found for the new API key.
 
 QUICK INSTALL
 ================

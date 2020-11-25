@@ -166,7 +166,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
         // Get result in DB if exists.
         $results = $this->get_file_results($linkarray['cmid'], $userid, $file);
-         // Warning info.
+        // Warning info.
         $docwarning = $results['warning'];
 
         // Add de/indexing feature for teachers.
@@ -372,8 +372,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $reset = '';
             $url = '';
             if (has_capability('plagiarism/compilatio:resetfile', $modulecontext)) {
-                $urlparams = array('cmid' => $linkarray['cmid'], 
-                                'pf' => $results['pid'], 
+                $urlparams = array('cmid' => $linkarray['cmid'],
+                                'pf' => $results['pid'],
                                 'sesskey' => sesskey(),
                                 'page' => optional_param('page', null, PARAM_INT));
                 $url = new moodle_url('/plagiarism/compilatio/reset.php', $urlparams);

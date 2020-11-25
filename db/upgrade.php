@@ -90,7 +90,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2014111000, 'plagiarism', 'compilatio');
     }
 
-    if ($oldversion <= 2020111200) {
+    if ($oldversion < 2020111200) {
         $table = new xmldb_table('plagiarism_compilatio_files');
         $field = new xmldb_field('recyclebinid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $dbman->add_field($table, $field);
