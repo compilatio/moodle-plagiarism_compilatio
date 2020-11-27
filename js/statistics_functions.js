@@ -49,6 +49,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 el.setAttribute('data-sortable', 'true');
                 el.setAttribute('data-formatter', 'compilatioPercentage');
                 break;
+            case 7:
+                el.setAttribute('data-field', 'errors');
+                el.setAttribute('data-sortable', 'false');
+                break;
 
             default:
                 break;

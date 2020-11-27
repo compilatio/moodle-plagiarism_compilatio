@@ -655,7 +655,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                 COMPILATIO_STATUSCODE_FAILED,
                 COMPILATIO_STATUSCODE_UNEXTRACTABLE
             ));
-            compilatio_remove_duplicates($plagiarismfiles ,$plagiarismsettings, false);
+            compilatio_remove_duplicates($plagiarismfiles, $plagiarismsettings, false);
             foreach ($plagiarismfiles as $plagiarismfile) {
                 if ($plagiarismfile->attempt < COMPILATIO_MAX_SUBMISSION_ATTEMPTS) {
                     $plagiarismfile->statuscode = 'pending';
@@ -670,11 +670,11 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             // Restart analyses.
             $countsuccess = 0;
             $docsfailed = array();
-            $compilatio_analysistype = $DB->get_field('plagiarism_compilatio_config', 'value', array(
+            $compilatioanalysistype = $DB->get_field('plagiarism_compilatio_config', 'value', array(
                 'cm' => $cm->id,
                 'name' => 'compilatio_analysistype'
             ));
-            if ($compilatio_analysistype == COMPILATIO_ANALYSISTYPE_AUTO) {
+            if ($compilatioanalysistype == COMPILATIO_ANALYSISTYPE_AUTO) {
                 $countsuccess = count($plagiarismfiles);
             } else {
                 $params = array(
@@ -1505,7 +1505,7 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename='')
  * @param array    $plagiarismsettings
  * @return boolean true if all documents have been processed, false otherwise
  */
-function compilatio_remove_duplicates($duplicates, $plagiarismsettings, $deletefilesmoodleDB = true) {
+function compilatio_remove_duplicates($duplicates, $plagiarismsettings, $deletefilesmoodledb = true) {
 
     if (is_array($duplicates)) {
 
@@ -1531,7 +1531,7 @@ function compilatio_remove_duplicates($duplicates, $plagiarismsettings, $deletef
                 // Delete document.
                 $compilatio->del_doc($doc->externalid);
                 // Delete DB record.
-                if ($deletefilesmoodleDB) {
+                if ($deletefilesmoodledb) {
                     $DB->delete_records('plagiarism_compilatio_files', array('id' => $doc->id));
                 }
                 $i++;
@@ -2013,7 +2013,7 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
         // Failed analysis error when similarity score = -9%.
         if ($docstatus->documentStatus->indice == -9) {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_FAILED;
-        } 
+        }
         // Optional yellow warning in submissions.
         $plagiarismfile->errorresponse = $docstatus->documentProperties->warning;
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
@@ -2802,6 +2802,40 @@ function compilatio_get_global_statistics($html = true) {
         if (!$html) {
             $result["teacherid"] = implode(', ', $teacherid);
             $result["teacher"] = implode(', ', $teachername);
+        }
+
+        if ($html) {
+            $result["errors"] = "";
+            $sql = "SELECT COUNT(DISTINCT id) FROM {plagiarism_compilatio_files} WHERE cm=? AND statuscode=?";
+
+            $countunsupported = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_UNSUPPORTED));
+            if ($countunsupported > 0) {
+                $result["errors"] .= '- ' . get_string("stats_unsupported", "plagiarism_compilatio")
+                . ' : ' . $countunsupported . '</br>';
+            };
+
+            $countunextractable = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_UNEXTRACTABLE));
+            if ($countunextractable > 0) {
+                $result["errors"] .= '- ' . get_string("stats_unextractable", "plagiarism_compilatio")
+                . ' : ' . $countunextractable . '</br>';
+            };
+
+            $countnotfound = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_NOT_FOUND));
+            if ($countnotfound > 0) {
+                $result["errors"] .= '- ' . get_string("stats_notfound", "plagiarism_compilatio")
+                . ' : ' . $countnotfound . '</br>';
+            };
+
+            $countfailed = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_FAILED));
+            if ($countfailed > 0) {
+                $result["errors"] .= '- ' . get_string("stats_failed", "plagiarism_compilatio") . ' : ' . $countfailed . '</br>';
+            };
+        } else {
+            $sql = "SELECT COUNT(DISTINCT id) FROM {plagiarism_compilatio_files} WHERE cm=? AND statuscode=?";
+            $result["errors_unsupported"] = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_UNSUPPORTED));
+            $result["errors_unextractable"] = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_UNEXTRACTABLE));
+            $result["errors_notfound"] = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_NOT_FOUND));
+            $result["errors_failed"] = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_FAILED));
         }
 
         $results[] = $result;
