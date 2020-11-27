@@ -6,8 +6,6 @@ define(['jquery'], function($) {
     /**
      * disableCompilatioButtons
      * Disable Compilatio buttons (during multiple ajax/API calls)
-     *
-     * @return void
      */
     function disableCompilatioButtons() {
         $(".compilatio-button").each(function() {
@@ -68,7 +66,7 @@ define(['jquery'], function($) {
                         + i + "' max='" + n + "'></progress></p>");
                     $("#compilatio-logo").click();
                     // Launch ajax requests.
-                    fileIds.forEach(function (id) {
+                    fileIds.forEach(function(id) {
                         $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_check_analysis.php',
                         {'id': id}, function() {
                             i++;
@@ -100,7 +98,7 @@ define(['jquery'], function($) {
 
             elements.not($(selectedElement)).hide();
 
-            $('#compilatio-show-notifications').on('click',function() {
+            $('#compilatio-show-notifications').on('click', function() {
                     tabClick($(this), $('#compilatio-notifications'));
             });
             $('#show-stats').on('click', function() {
@@ -110,6 +108,10 @@ define(['jquery'], function($) {
                     tabClick($(this), $('#compilatio-help'));
             });
 
+            /**
+             * tabClick
+             * Show clicked tab.
+             */
             function tabClick(tabClicked, contentToShow) {
                 if (!contentToShow.is(':visible')) {
                     contentToShow.show();

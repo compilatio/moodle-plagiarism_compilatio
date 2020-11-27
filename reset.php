@@ -28,7 +28,7 @@
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 
 $cmid = required_param('cmid', PARAM_INT);  // Course Module ID.
-$pf  = required_param('pf', PARAM_INT);   // plagiarism file id.
+$pf  = required_param('pf', PARAM_INT);   // Plagiarism file id.
 require_sesskey();
 $url = new moodle_url('/plagiarism/compilatio/reset.php');
 $cm = get_coursemodule_from_id('', $cmid, 0, false, MUST_EXIST);
