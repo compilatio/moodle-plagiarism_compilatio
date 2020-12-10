@@ -255,6 +255,7 @@ $string['goto_compilatio_service_status'] = "See Compilatio services status.";
 $string['helpcenter'] = "Access the Compilatio Help Center for the using of Compilatio plugin in Moodle.";
 $string['goto_helpcenter'] = "Click on the question mark to open a new window and connect to the Compilatio Help Center.";
 $string['admin_goto_helpcenter'] = "Access the Compilatio Help Center to see articles related to administration of the Moodle plugin.";
+$string['helpcenter_error'] = "We can't automatically connect you to the help centre. Please try again later or go there directly using the following link : ";
 // Buttons.
 $string['get_scores'] = "Retrieve plagiarism scores from Compilatio.net";
 $string['send_files'] = "Upload files to Compilatio.net for plagiarism detection";

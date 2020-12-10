@@ -423,4 +423,25 @@ class compilatioservice {
 
     }
 
+    /**
+     * Get the id_groupe for helpcenter login
+     *
+     * @return string return the id_groupe if succeed, false otherwise.
+     */
+    public function get_id_groupe() {
+
+        try {
+            if (!is_object($this->soapcli)) {
+                return false;
+            }
+
+            $params = array($this->key);
+            return $this->soapcli->__call('getIdGroupe', $params);
+
+        } catch (SoapFault $fault) {
+            return false;
+        }
+
+    }
+
 }

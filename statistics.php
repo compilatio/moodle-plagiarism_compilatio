@@ -98,7 +98,8 @@ if (count($rows) === 0) {
         str_replace(" ", "<br/>", get_string("documents_number", "plagiarism_compilatio")),
         get_string("minimum", "plagiarism_compilatio"),
         get_string("maximum", "plagiarism_compilatio"),
-        get_string("average", "plagiarism_compilatio")
+        get_string("average", "plagiarism_compilatio"),
+        get_string("stats_errors", "plagiarism_compilatio")
     );
 
     $table->head  = $tableheadjs;
@@ -114,8 +115,10 @@ if (count($rows) === 0) {
         str_replace(" ", "<br/>", get_string("documents_number", "plagiarism_compilatio")),
         get_string("minimum", "plagiarism_compilatio"),
         get_string("maximum", "plagiarism_compilatio"),
-        get_string("average", "plagiarism_compilatio")
+        get_string("average", "plagiarism_compilatio"),
+        get_string("stats_errors", "plagiarism_compilatio")
     );
+
     $tablenojs->head = $tablehead;
     foreach ($rows as $row) {
         $tablenojs->data[] = array(
@@ -125,9 +128,11 @@ if (count($rows) === 0) {
             $row["analyzed_documents_count"],
             $row["minimum_rate"],
             $row["maximum_rate"],
-            $row["average_rate"]
+            $row["average_rate"],
+            $row["errors"]
         );
     }
+
     echo html_writer::table($tablenojs);
     $url = new moodle_url('/plagiarism/compilatio/CSV.php', array("raw" => 0));
     echo html_writer::tag('a', get_string("export_global_csv", "plagiarism_compilatio"), array(

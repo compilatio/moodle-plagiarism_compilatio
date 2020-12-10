@@ -925,14 +925,30 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 			</div>";
 
         // Help tab.
+
+        $compilatio = new compilatioservice($plagiarismsettings['password'],
+            $plagiarismsettings['api'],
+            $CFG->proxyhost,
+            $CFG->proxyport,
+            $CFG->proxyuser,
+            $CFG->proxypassword);
+        $idgroupe = $compilatio->get_id_groupe();
+
+        $output .= "<div id='compilatio-help'>";
+
+        if (!$idgroupe) {
+            $output .= "<p>" . get_string('helpcenter_error', 'plagiarism_compilatio')
+                . "<a href='https://support.compilatio.net/'>https://support.compilatio.net</a></p>";
+        } else {
+            $output .= "<p><a href='../../plagiarism/compilatio/helpcenter.php?idgroupe=" . $idgroupe . "'" .
+            "target='_blank' >" . get_string('helpcenter', 'plagiarism_compilatio') . "
+            <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
+                <path fill='none' stroke='#555' stroke-linecap='round'
+                stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
+            </svg></a></p>";
+        }
+
         $output .= "
-            <div id='compilatio-help'>
-                <p><a href='../../plagiarism/compilatio/helpcenter.php'" .
-                    "target='_blank' >" . get_string('helpcenter', 'plagiarism_compilatio') . "
-                    <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
-                        <path fill='none' stroke='#555' stroke-linecap='round'
-                        stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
-                    </svg></a></p>
                 <p><a href='http://etat-services.compilatio.net/?lang=FR'" .
                     "target='_blank' >" . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') . "
                     <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
@@ -2276,10 +2292,10 @@ function compilatio_get_statistics($cmid) {
         $errors[] = array("not_analyzed_unextractable", $countunextractable);
     }
     if ($countnotfound !== 0) {
-        $errors[] = array("documents_failed", $countnotfound);
+        $errors[] = array("documents_notfound", $countnotfound);
     }
     if ($countfailed !== 0) {
-        $errors[] = array("documents_notfound", $countfailed);
+        $errors[] = array("documents_failed", $countfailed);
     }
 
     if (count($items) !== 0) {

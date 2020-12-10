@@ -247,7 +247,8 @@ $string['help_compilatio_format_content'] = "Compilatio.net prend en charge la p
 $string['goto_compilatio_service_status'] = "Voir l'état des services Compilatio.";
 $string['helpcenter'] = "Accédez au centre d'aide Compilatio pour l'utilisation du plugin Compilatio dans Moodle.";
 $string['goto_helpcenter'] = "Cliquez sur le point d'interrogation pour ouvrir une nouvelle fenêtre et vous connecter au centre d'aide Compilatio.";
-$string['admin_goto_helpcenter'] = "Accédez au centre d'aide Compilatio pour accéder aux articles relatifs à l'administration du plugin Moodle.";
+$string['admin_goto_helpcenter'] = "Accédez au centre d'aide Compilatio pour voir des articles relatifs à l'administration du plugin Moodle.";
+$string['helpcenter_error'] = "Nous ne pouvons pas vous connecter automatiquement au centre d'aide. Veuillez ré-essayer ultérieurement ou vous y rendre directement grâce au lien suivant : ";
 /* END HELP */
 $string['get_scores'] = "Récupère les taux de similitudes depuis Compilatio.net";
 $string['send_files'] = "Envoie les fichiers à Compilatio.net pour détection de plagiat";

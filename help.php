@@ -28,6 +28,7 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -35,16 +36,32 @@ $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 $plagiarismplugin = new plagiarism_plugin_compilatio();
 
+// Get plugin settings.
+$plagiarismsettings = (array) get_config('plagiarism_compilatio');
+
+$compilatio = new compilatioservice($plagiarismsettings['password'],
+    $plagiarismsettings['api'],
+    $CFG->proxyhost,
+    $CFG->proxyport,
+    $CFG->proxyuser,
+    $CFG->proxypassword);
+$idgroupe = $compilatio->get_id_groupe();
+
 echo $OUTPUT->header();
 $currenttab = 'compilatiohelp';
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
-echo("<p style='margin-top: 15px;'>
-    <a href='helpcenter.php?page=moodle-admin' target='_blank' >
+if (!$idgroupe) {
+    echo(get_string('helpcenter_error', 'plagiarism_compilatio')
+        . "<a href='https://support.compilatio.net/'>https://support.compilatio.net</a>");
+} else {
+    echo("<p style='margin-top: 15px;'>
+    <a href='helpcenter.php?page=moodle-admin&idgroupe=" . $idgroupe . "' target='_blank' >
     " . get_string('admin_goto_helpcenter', 'plagiarism_compilatio') . "
     <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
     <path fill='none' stroke='#555' stroke-linecap='round' stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
     </svg></a></p>");
+}
 echo("<p style='margin-top: 15px;'>
     <a href='http://etat-services.compilatio.net/?lang=FR' target='_blank' >
     " . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') . "
