@@ -51,9 +51,9 @@ if (isset($plagiarismsettings["enabled"])) {
  * describing the error if any occurs.
  * API key does not matter here.
  */
-if (isset($plagiarismsettings["api"])) {
+if (isset($plagiarismsettings["apiconfigid"])) {
     $compilatio = new compilatioservice(
-            "KEY", $plagiarismsettings['api'], $CFG->proxyhost, $CFG->proxyport, $CFG->proxyuser, $CFG->proxypassword);
+        $plagiarismsettings['apiconfigid'], $CFG->proxyhost, $CFG->proxyport, $CFG->proxyuser, $CFG->proxypassword);
     $connectionsuccess = !is_string($compilatio->soapcli);
 } else {
     $compilatio = new compilatioservice(
@@ -87,7 +87,7 @@ if (isset($plagiarismsettings["enable_mod_forum"])) {
 }
 
 // API key test. Fails if GetQuota method return NULL.
-if (isset($plagiarismsettings["password"], $plagiarismsettings["api"])) {
+if (isset($plagiarismsettings["apiconfigid"])) {
     $apikeysuccess = ws_helper::test_connection();
 } else {
     $apikeysuccess = false;

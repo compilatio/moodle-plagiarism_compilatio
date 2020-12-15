@@ -52,8 +52,7 @@ $indexingstatepost = optional_param('indexingState', '', PARAM_TEXT);
 
 if (isset($iddoc) && compilatio_valid_md5($iddoc) && isset($indexingstatepost)) {
     $indexingstate = (int) ((boolean) $indexingstatepost);
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
+    $compilatio = new compilatioservice($plagiarismsettings['apiconfigid'],
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,

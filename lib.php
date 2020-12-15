@@ -77,8 +77,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         // Check if compilatio enabled.
         if (isset($plagiarismsettings['enabled']) && $plagiarismsettings['enabled']) {
             // Now check to make sure required settings are set!.
-            if (empty($plagiarismsettings['api'])) {
-                print_error("Compilatio API URL not set!");
+            if (empty($plagiarismsettings['apiconfigid'])) {
+                print_error("Compilatio API Configuration is not set!");
             }
             return $plagiarismsettings;
         } else {
@@ -926,8 +926,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
         // Help tab.
 
-        $compilatio = new compilatioservice($plagiarismsettings['password'],
-            $plagiarismsettings['api'],
+        $compilatio = new compilatioservice($plagiarismsettings['apiconfigid'],
             $CFG->proxyhost,
             $CFG->proxyport,
             $CFG->proxyuser,
@@ -1532,15 +1531,14 @@ function compilatio_remove_duplicates($duplicates, $plagiarismsettings, $deletef
         *  to call other functions that need this connection.
         *  in this case set_indexing_state() and del_doc() .
         */
-        $compilatio = new compilatioservice($plagiarismsettings['password'],
-            $plagiarismsettings['api'],
-            $CFG->proxyhost,
-            $CFG->proxyport,
-            $CFG->proxyuser,
-            $CFG->proxypassword);
 
         $i = 0;
         foreach ($duplicates as $doc) {
+            $compilatio = new compilatioservice($doc->apiconfigid,
+                $CFG->proxyhost,
+                $CFG->proxyport,
+                $CFG->proxyuser,
+                $CFG->proxypassword);
 
             // Deindex document.
             if ($compilatio->set_indexing_state($doc->externalid, 0)) {
@@ -1784,8 +1782,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
     *  to call other functions that need this connection.
     *  in this case send_doc().
     */
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
+    $compilatio = new compilatioservice($plagiarismfile->apiconfigid,
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,
@@ -1817,6 +1814,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
     if (compilatio_valid_md5($idcompi)) {
         $plagiarismfile->externalid = $idcompi;
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_ACCEPTED;
+        $plagiarismfile->apiconfigid = $plagiarismsettings['apiconfigid'];
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
         return $idcompi;
     }
@@ -1896,8 +1894,7 @@ function compilatio_getquotas() {
     *  to call other functions that need this connection.
     *  in this case get_quotas().
     */
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
+    $compilatio = new compilatioservice($plagiarismsettings['apiconfigid'],
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,
@@ -1926,8 +1923,7 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
     *  to call other functions that need this connection.
     *  in this case start_analyse().
     */
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
+    $compilatio = new compilatioservice($plagiarismfile->apiconfigid,
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,
@@ -1986,8 +1982,7 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
     *  to call other functions that need this connection.
     *  in this case get_doc().
     */
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
+    $compilatio = new compilatioservice($plagiarismfile->apiconfigid,
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,
@@ -2065,8 +2060,7 @@ function compilatio_get_account_expiration_date() {
     *  to call other functions that need this connection.
     *  in this case get_account_expiration_date().
     */
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
+    $compilatio = new compilatioservice($plagiarismsettings['apiconfigid'],
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,
@@ -2103,8 +2097,7 @@ function compilatio_send_statistics() {
     *  to call other functions that need this connection.
     *  in this case post_configuration().
     */
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
+    $compilatio = new compilatioservice($plagiarismsettings['apiconfigid'],
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,
@@ -2127,8 +2120,7 @@ function compilatio_get_technical_news() {
     *  to call other functions that need this connection.
     *  in this case get_technical_news().
     */
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
+    $compilatio = new compilatioservice($plagiarismsettings['apiconfigid'],
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,

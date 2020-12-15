@@ -62,6 +62,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     if (!isset($data->allow_teachers_to_show_reports)) {
         $data->allow_teachers_to_show_reports = 0;
     }
+    debugging(var_export($data, true));
 
     foreach ($data as $field => $value) {
         if ($field != 'submitbutton') { // Ignore the button.
@@ -104,9 +105,12 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
     $quotas = compilatio_getquotas();
     if ($quotas["quotas"] == null) {
+        debugging('test');
         // Disable compilatio as this config isn't correct.
         set_config('enabled', 0, 'plagiarism_compilatio');
-        set_config('compilatio_use', 0, 'plagiarism');
+        if ($CFG->version < 2020061500) {
+            set_config('compilatio_use', 0, 'plagiarism');
+        }
         echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $quotas["error"]);
         $incorrectconfig = true;
     }
@@ -123,6 +127,9 @@ if (!empty($plagiarismsettings['enabled']) && !$incorrectconfig) {
     if ($quotas == null) {
         // Disable compilatio as this config isn't correct.
         set_config('enabled', 0, 'plagiarism_compilatio');
+        if ($CFG->version < 2020061500) {
+            set_config('compilatio_use', 0, 'plagiarism');
+        }
         echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $quotasarray['error']);
     } else {
         echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
@@ -135,8 +142,7 @@ if (!empty($plagiarismsettings['enabled']) && !$incorrectconfig) {
     }
     $plagiarismsettings = get_config('plagiarism_compilatio');
 
-    $compilatio = new compilatioservice($plagiarismsettings->password,
-                                        $plagiarismsettings->api,
+    $compilatio = new compilatioservice($plagiarismsettings->apiconfigid,
                                         $CFG->proxyhost,
                                         $CFG->proxyport,
                                         $CFG->proxyuser,

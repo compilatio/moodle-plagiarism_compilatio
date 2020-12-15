@@ -58,14 +58,19 @@ class compilatioservice {
      * @param string $proxyusername Proxy username
      * @param string $proxypassword Proxy password
      */
-    public function __construct($key,
-                                $urlsoap,
+    public function __construct($apiconfigid,
                                 $proxyhost='',
                                 $proxyport='',
                                 $proxyusername='',
                                 $proxypassword='') {
 
+        global $DB;
+
         $this->key = null;
+
+        $apiconfig = $DB->get_record('plagiarism_compilatio_apicon', array('id' => $apiconfigid));
+        $key = $apiconfig->api_key;
+        $urlsoap = $apiconfig->url;
 
         try {
             if (!empty($key)) {

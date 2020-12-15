@@ -48,8 +48,7 @@ class ws_helper
         $plagiarismsettings = $ppc->get_settings();
 
         return new compilatioservice(
-            $plagiarismsettings['password'],
-            $plagiarismsettings['api'],
+            $plagiarismsettings['apiconfigid'],
             $CFG->proxyhost,
             $CFG->proxyport,
             $CFG->proxyuser,

@@ -41,7 +41,7 @@ class compilatio_setup_form extends moodleform {
      * @return void
      */
     protected function definition() {
-        global $CFG;
+        global $CFG, $DB;
 
         $mform = & $this->_form;
         $mform->addElement('html', get_string('compilatioexplain', 'plagiarism_compilatio'));
@@ -50,7 +50,7 @@ class compilatio_setup_form extends moodleform {
         $mform->addElement('html', '<p style="font-size: 12px;font-style: italic;">' .
                            get_string("disclaimer_data", "plagiarism_compilatio") . '</p>');
 
-        $mform->addElement('text', 'api', get_string('compilatioapi', 'plagiarism_compilatio'));
+        /*$mform->addElement('text', 'api', get_string('compilatioapi', 'plagiarism_compilatio'));
         $mform->addHelpButton('api', 'compilatioapi', 'plagiarism_compilatio');
         $mform->addRule('api', null, 'required', null, 'client');
         $mform->setDefault('api', 'https://service.compilatio.net/webservices/CompilatioUserClient.wsdl');
@@ -58,7 +58,7 @@ class compilatio_setup_form extends moodleform {
 
         $mform->addElement('passwordunmask', 'password', get_string('compilatiopassword', 'plagiarism_compilatio'));
         $mform->addHelpButton('password', 'compilatiopassword', 'plagiarism_compilatio');
-        $mform->addRule('password', null, 'required', null, 'client');
+        $mform->addRule('password', null, 'required', null, 'client');*/
 
         $mform->addElement('textarea', 'student_disclosure',
                            get_string('students_disclosure', 'plagiarism_compilatio'),

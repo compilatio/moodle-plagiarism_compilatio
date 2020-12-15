@@ -39,8 +39,7 @@ $plagiarismplugin = new plagiarism_plugin_compilatio();
 // Get plugin settings.
 $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
-$compilatio = new compilatioservice($plagiarismsettings['password'],
-    $plagiarismsettings['api'],
+$compilatio = new compilatioservice($plagiarismsettings['apiconfigid'],
     $CFG->proxyhost,
     $CFG->proxyport,
     $CFG->proxyuser,

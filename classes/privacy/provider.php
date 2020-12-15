@@ -95,7 +95,9 @@ class provider implements
             'reporturl'         => 'privacy:metadata:plagiarism_compilatio_files:reporturl',
             'similarityscore'   => 'privacy:metadata:plagiarism_compilatio_files:similarityscore',
             'attempt'           => 'privacy:metadata:plagiarism_compilatio_files:attempt',
-            'errorresponse'     => 'privacy:metadata:plagiarism_compilatio_files:errorresponse'
+            'errorresponse'     => 'privacy:metadata:plagiarism_compilatio_files:errorresponse',
+            'recyclebinid'      => 'privacy:metadata:plagiarism_compilatio_files:recyclebinid',
+            'apiconfigid'       => 'privacy:metadata:plagiarism_compilatio_files:apiconfigid'
         ], 'privacy:metadata:plagiarism_compilatio_files');
 
         $collection->add_external_location_link('External Compilatio Document', [
@@ -180,8 +182,8 @@ class provider implements
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-        if (!empty($plagiarismsettings) && isset($plagiarismsettings['password']) && isset($plagiarismsettings['api'])) {
-            $compilatio = new \compilatioservice($plagiarismsettings['password'], $plagiarismsettings['api'],
+        if (!empty($plagiarismsettings) && isset($plagiarismsettings['apiconfigid'])) {
+            $compilatio = new \compilatioservice($plagiarismsettings['apiconfigid'],
                 $CFG->proxyhost,
                 $CFG->proxyport,
                 $CFG->proxyuser,
@@ -214,10 +216,12 @@ class provider implements
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
         // If the student owns the document (and not the school), we can delete everything from the databases.
-        if (!empty($plagiarismsettings) && isset($plagiarismsettings['password']) && isset($plagiarismsettings['api'])
-            && isset($plagiarismsettings['owner_file']) && $plagiarismsettings['owner_file'] === '0') {
+        if (!empty($plagiarismsettings)
+            && isset($plagiarismsettings['apiconfigid'])
+            && isset($plagiarismsettings['owner_file'])
+            && $plagiarismsettings['owner_file'] === '0') {
 
-            $compilatio = new \compilatioservice($plagiarismsettings['password'], $plagiarismsettings['api'],
+            $compilatio = new \compilatioservice($plagiarismsettings['apiconfigid'],
                 $CFG->proxyhost,
                 $CFG->proxyport,
                 $CFG->proxyuser,
@@ -253,8 +257,8 @@ class provider implements
         $cmid = $context->instanceid;
 
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-        if (!empty($plagiarismsettings) && isset($plagiarismsettings['password']) && isset($plagiarismsettings['api'])) {
-            $compilatio = new \compilatioservice($plagiarismsettings['password'], $plagiarismsettings['api'],
+        if (!empty($plagiarismsettings) && isset($plagiarismsettings['apiconfigid'])) {
+            $compilatio = new \compilatioservice($plagiarismsettings['apiconfigid'],
                 $CFG->proxyhost,
                 $CFG->proxyport,
                 $CFG->proxyuser,
