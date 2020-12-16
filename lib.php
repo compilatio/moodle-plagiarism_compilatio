@@ -1191,7 +1191,7 @@ function compilatio_send_pending_files($plagiarismsettings) {
     if (!empty($plagiarismsettings)) {
 
         // Get all files in a pending state.
-        $plagiarismfiles = $DB->get_records("plagiarism_compilatio_files", array("statuscode" => "pending"));
+        $plagiarismfiles = $DB->get_records("plagiarism_compilatio_files", array("statuscode" => "pending", "recyclebinid" => null));
 
         foreach ($plagiarismfiles as $plagiarismfile) {
 
