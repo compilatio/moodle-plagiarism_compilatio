@@ -40,20 +40,24 @@ class ws_helper
      *
      * @return object   Web service instance
      */
-    public static function get_ws() {
+    public static function get_ws($compid = false) {
 
-        global $CFG;
+        global $CFG, $DB;
 
         $ppc = new plagiarism_plugin_compilatio();
         $plagiarismsettings = $ppc->get_settings();
 
-        return new compilatioservice(
-            $plagiarismsettings['apiconfigid'],
+        if (!$compid) {
+            $config = $plagiarismsettings['apiconfigid'];
+        } else {
+            $config = $DB->get_field('plagiarism_compilatio_files', 'apiconfigid', array('externalid' => $compid));
+        }
+
+        return compilatioservice::getInstance($config,
             $CFG->proxyhost,
             $CFG->proxyport,
             $CFG->proxyuser,
-            $CFG->proxypassword
-        );
+            $CFG->proxypassword);
 
     }
 
@@ -164,7 +168,7 @@ class ws_helper
      */
     public static function get_indexing_state($compid) {
 
-        $compilatio = self::get_ws();
+        $compilatio = self::get_ws($compid);
         return $compilatio->get_indexing_state($compid);
 
     }
@@ -177,7 +181,7 @@ class ws_helper
      */
     public static function set_indexing_state($compid, $indexingstate) {
 
-        $compilatio = self::get_ws();
+        $compilatio = self::get_ws($compid);
         return $compilatio->set_indexing_state($compid, $indexingstate);
 
     }

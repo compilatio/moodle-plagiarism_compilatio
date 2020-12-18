@@ -47,18 +47,46 @@ class compilatioservice {
     public $soapcli;
 
     /**
+     * Identifier of the configuration containing the API key and URL of the SOAP webservice
+     * @var int
+     */
+    public $apiconfigid;
+
+    /**
+     * Retourne l'instance unique.
+     *
+     * @return compilatioservice
+     */
+    public static function getInstance($apiconfigid,
+                                        $proxyhost='',
+                                        $proxyport='',
+                                        $proxyusername='',
+                                        $proxypassword='')
+    {
+        if (self::$instance === null || self::$instance->apiconfigid != $apiconfigid) {
+            self::$instance = new compilatioservice($apiconfigid,
+                                                    $proxyhost,
+                                                    $proxyport,
+                                                    $proxyusername,
+                                                    $proxypassword);
+        }
+        return self::$instance;
+    }
+
+    private static $instance;
+
+    /**
      * Constructor : Create the connexion with the webservice
      * MODIF 2009-03-19: passage des paramètres
      * MODIF 2017-06-23: MAJ PHP 7
      *
-     * @param string $key           API key
-     * @param string $urlsoap       URL of the SOAP webservice
+     * @param string $apiconfigid   API configuration Id 
      * @param string $proxyhost     Proxy host
      * @param string $proxyport     Proxy port
      * @param string $proxyusername Proxy username
      * @param string $proxypassword Proxy password
      */
-    public function __construct($apiconfigid,
+    private function __construct($apiconfigid,
                                 $proxyhost='',
                                 $proxyport='',
                                 $proxyusername='',
@@ -67,36 +95,43 @@ class compilatioservice {
         global $DB;
 
         $this->key = null;
-
-        $apiconfig = $DB->get_record('plagiarism_compilatio_apicon', array('id' => $apiconfigid));
-        $key = $apiconfig->api_key;
-        $urlsoap = $apiconfig->url;
+        $this->apiconfigid = null;
 
         try {
-            if (!empty($key)) {
-                $this->key = $key;
-                if (!empty($urlsoap)) {
-                    $param = array(
-                        'trace' => false,
-                        'soap_version' => SOAP_1_2,
-                        'exceptions' => true
-                    );
-                    if (!empty($proxyhost)) {
-                        $param['proxy_host'] = $proxyhost;
-                        if (!empty($proxyport)) {
-                            $param['proxy_port'] = $proxyport;
+            $apiconfig = $DB->get_record('plagiarism_compilatio_apicon', array('id' => $apiconfigid));
+
+            if ($apiconfig) {
+                $this->apiconfigid = $apiconfigid;
+                $key = $apiconfig->api_key;
+                $urlsoap = $apiconfig->url;
+                
+                if (!empty($key)) {
+                    $this->key = $key;
+                    if (!empty($urlsoap)) {
+                        $param = array(
+                            'trace' => false,
+                            'soap_version' => SOAP_1_2,
+                            'exceptions' => true
+                        );
+                        if (!empty($proxyhost)) {
+                            $param['proxy_host'] = $proxyhost;
+                            if (!empty($proxyport)) {
+                                $param['proxy_port'] = $proxyport;
+                            }
+                            if (!empty($proxyusername) && !empty($proxypassword)) {
+                                $param['proxy_login'] = $proxyusername;
+                                $param['proxy_password'] = $proxypassword;
+                            }
                         }
-                        if (!empty($proxyusername) && !empty($proxypassword)) {
-                            $param['proxy_login'] = $proxyusername;
-                            $param['proxy_password'] = $proxypassword;
-                        }
+                        $this->soapcli = new SoapClient($urlsoap, $param);
+                    } else {
+                        $this->soapcli = 'WS urlsoap not available';
                     }
-                    $this->soapcli = new SoapClient($urlsoap, $param);
                 } else {
-                    $this->soapcli = 'WS urlsoap not available';
+                    $this->soapcli = 'API key not available';
                 }
             } else {
-                $this->soapcli = 'API key not available';
+                $this->soapcli = 'API config not available';
             }
         } catch (SoapFault $fault) {
             $this->soapcli = "Error constructor compilatio " . $fault->faultcode . " " .$fault->faultstring;

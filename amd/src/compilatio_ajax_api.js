@@ -45,6 +45,7 @@ define(['jquery'], function($) {
         $(".compi-" + eltId + " > div:first-child").addClass('compilatio-library');
         $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php',
         {'idDoc': docId, 'indexingState': indexingState}, function(data) {
+            console.log(data);
             if (data == 'true') {
                 getIndexingState(basepath, eltId, docId);
             }

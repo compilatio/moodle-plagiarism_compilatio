@@ -52,18 +52,22 @@ if (isset($plagiarismsettings["enabled"])) {
  * API key does not matter here.
  */
 if (isset($plagiarismsettings["apiconfigid"])) {
-    $compilatio = new compilatioservice(
-        $plagiarismsettings['apiconfigid'], $CFG->proxyhost, $CFG->proxyport, $CFG->proxyuser, $CFG->proxypassword);
-    $connectionsuccess = !is_string($compilatio->soapcli);
+    $url = $DB->get_field('plagiarism_compilatio_apicon', 'url',
+        array('id' => $plagiarismsettings["apiconfigid"]));
 } else {
-    $compilatio = new compilatioservice(
-            "KEY", "https://service.compilatio.net/webservices/CompilatioUserClient.wsdl",
-            $CFG->proxyhost,
-            $CFG->proxyport,
-            $CFG->proxyuser,
-            $CFG->proxypassword);
-    $connectionsuccess = !is_string($compilatio->soapcli);
+    $url = "https://service.compilatio.net/webservices/CompilatioUserClient.wsdl";
 }
+$apiconfig = new stdclass();
+$apiconfig->startdate = time();
+$apiconfig->url = $url;
+$apiconfig->api_key = "KEY";
+
+$apiconfigid = $DB->insert_record('plagiarism_compilatio_apicon', $apiconfig);
+
+$compilatio = compilatio_get_compilatio_service($apiconfigid);
+$connectionsuccess = !is_string($compilatio->soapcli);
+
+$DB->delete_records('plagiarism_compilatio_apicon', array('id' => $apiconfigid));
 
 // Test if Compilatio is enabled for assign.
 if (isset($plagiarismsettings["enable_mod_assign"])) {

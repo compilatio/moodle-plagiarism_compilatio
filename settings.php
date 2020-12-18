@@ -62,7 +62,8 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     if (!isset($data->allow_teachers_to_show_reports)) {
         $data->allow_teachers_to_show_reports = 0;
     }
-    debugging(var_export($data, true));
+    //debugging(var_export($data, true));
+    set_config('apiconfigid', 1, 'plagiarism_compilatio');
 
     foreach ($data as $field => $value) {
         if ($field != 'submitbutton') { // Ignore the button.
@@ -105,7 +106,6 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
     $quotas = compilatio_getquotas();
     if ($quotas["quotas"] == null) {
-        debugging('test');
         // Disable compilatio as this config isn't correct.
         set_config('enabled', 0, 'plagiarism_compilatio');
         if ($CFG->version < 2020061500) {
@@ -141,12 +141,7 @@ if (!empty($plagiarismsettings['enabled']) && !$incorrectconfig) {
         echo $OUTPUT->box_end();
     }
     $plagiarismsettings = get_config('plagiarism_compilatio');
-
-    $compilatio = new compilatioservice($plagiarismsettings->apiconfigid,
-                                        $CFG->proxyhost,
-                                        $CFG->proxyport,
-                                        $CFG->proxyuser,
-                                        $CFG->proxypassword);
+    $compilatio = compilatio_get_compilatio_service($plagiarismsettings->apiconfigid);
 }
 
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');

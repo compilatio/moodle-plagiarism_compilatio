@@ -925,12 +925,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 			</div>";
 
         // Help tab.
-
-        $compilatio = new compilatioservice($plagiarismsettings['apiconfigid'],
-            $CFG->proxyhost,
-            $CFG->proxyport,
-            $CFG->proxyuser,
-            $CFG->proxypassword);
+        $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
         $idgroupe = $compilatio->get_id_groupe();
 
         $output .= "<div id='compilatio-help'>";
@@ -1242,7 +1237,7 @@ function compilatio_send_pending_files($plagiarismsettings) {
     if (!empty($plagiarismsettings)) {
 
         // Get all files in a pending state.
-        $plagiarismfiles = $DB->get_records("plagiarism_compilatio_files", array("statuscode" => "pending"));
+        $plagiarismfiles = $DB->get_records("plagiarism_compilatio_files", array("statuscode" => "pending", "recyclebinid" => null));
 
         foreach ($plagiarismfiles as $plagiarismfile) {
 
@@ -1524,33 +1519,28 @@ function compilatio_remove_duplicates($duplicates, $plagiarismsettings, $deletef
 
     if (is_array($duplicates)) {
 
-        global $CFG, $DB;
-        /*
-        *  $CFG->proxy create the Connection with the webservice are necessary
-        *  and used variables in the constructor of the connection with the webservice (compilatio.class)
-        *  to call other functions that need this connection.
-        *  in this case set_indexing_state() and del_doc() .
-        */
+        global $DB;
 
         $i = 0;
         foreach ($duplicates as $doc) {
-            $compilatio = new compilatioservice($doc->apiconfigid,
-                $CFG->proxyhost,
-                $CFG->proxyport,
-                $CFG->proxyuser,
-                $CFG->proxypassword);
-
-            // Deindex document.
-            if ($compilatio->set_indexing_state($doc->externalid, 0)) {
-                // Delete document.
-                $compilatio->del_doc($doc->externalid);
-                // Delete DB record.
+            if (is_null($doc->externalid)) {
                 if ($deletefilesmoodledb) {
                     $DB->delete_records('plagiarism_compilatio_files', array('id' => $doc->id));
                 }
-                $i++;
             } else {
-                mtrace('Error deindexing document ' . $doc->externalid);
+                $compilatio = compilatio_get_compilatio_service($doc->apiconfigid);
+                // Deindex document.
+                if ($compilatio->set_indexing_state($doc->externalid, 0)) {
+                    // Delete document.
+                    $compilatio->del_doc($doc->externalid);
+                    // Delete DB record.
+                    if ($deletefilesmoodledb) {
+                        $DB->delete_records('plagiarism_compilatio_files', array('id' => $doc->id));
+                    }
+                    $i++;
+                } else {
+                    mtrace('Error deindexing document ' . $doc->externalid);
+                }
             }
         }
 
@@ -1606,6 +1596,7 @@ function compilatio_get_plagiarism_file($cmid, $userid, $file) {
         $plagiarismfile->statuscode = 'pending';
         $plagiarismfile->attempt = 0;
         $plagiarismfile->timesubmitted = time();
+        $plagiarismfile->apiconfigid = 0;
 
         // Add new entry and get plagiarism_compilatio_file table record `id` for update_record_raw().
         if (($compid = $DB->insert_record('plagiarism_compilatio_files', $plagiarismfile, true)) === false) {
@@ -1776,17 +1767,9 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
     if (!defined("COMPILATIO_MANUAL_SEND")) {
         mtrace("sending file #" . $plagiarismfile->id);
     }
-    /*
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
-    *  the constructor of the connection with the webservice (compilatio.class)
-    *  to call other functions that need this connection.
-    *  in this case send_doc().
-    */
-    $compilatio = new compilatioservice($plagiarismfile->apiconfigid,
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
+
+    $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
+
     // Get name from module.
     $modulesql = "
         SELECT m.id, m.name, cm.instance FROM {course_modules} cm
@@ -1885,20 +1868,9 @@ function compilatio_cm_use($cmid) {
  */
 function compilatio_getquotas() {
 
-    global $CFG;
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
-    /*
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
-    *  the constructor of the connection with the webservice (compilatio.class)
-    *  to call other functions that need this connection.
-    *  in this case get_quotas().
-    */
-    $compilatio = new compilatioservice($plagiarismsettings['apiconfigid'],
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
+    $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
 
     return $compilatio->get_quotas();
 }
@@ -1912,22 +1884,13 @@ function compilatio_getquotas() {
  */
 function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
 
-    global $CFG, $DB, $OUTPUT;
+    global $DB, $OUTPUT;
 
     if (empty($plagiarismsettings)) {
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
     }
-    /*
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
-    *  the constructor of the connection with the webservice (compilatio.class)
-    *  to call other functions that need this connection.
-    *  in this case start_analyse().
-    */
-    $compilatio = new compilatioservice($plagiarismfile->apiconfigid,
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
+
+    $compilatio = compilatio_get_compilatio_service($plagiarismfile->apiconfigid);
 
     $analyse = $compilatio->start_analyse($plagiarismfile->externalid);
 
@@ -1973,20 +1936,10 @@ function compilatio_valid_md5($hash) {
  */
 function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) {
 
-    global $CFG, $DB;
+    global $DB;
 
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-    /*
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
-    *  the constructor of the connection with the webservice (compilatio.class)
-    *  to call other functions that need this connection.
-    *  in this case get_doc().
-    */
-    $compilatio = new compilatioservice($plagiarismfile->apiconfigid,
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
+    $compilatio = compilatio_get_compilatio_service($plagiarismfile->apiconfigid);
 
     $docstatus = $compilatio->get_doc($plagiarismfile->externalid);
 
@@ -2051,20 +2004,9 @@ function compilatio_analyse_files($plagiarismfiles) {
  * @return string, formatted as "YYYY-MM"
  */
 function compilatio_get_account_expiration_date() {
-
-    global $CFG;
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-    /*
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
-    *  the constructor of the connection with the webservice (compilatio.class)
-    *  to call other functions that need this connection.
-    *  in this case get_account_expiration_date().
-    */
-    $compilatio = new compilatioservice($plagiarismsettings['apiconfigid'],
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
+    $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
+
     return $compilatio->get_account_expiration_date();
 }
 
@@ -2075,9 +2017,7 @@ function compilatio_get_account_expiration_date() {
  */
 function compilatio_send_statistics() {
 
-    // Get data about installation.
-    global $CFG;
-    global $DB;
+    global $CFG, $DB;
 
     $language = $CFG->lang;
     $releasephp = phpversion();
@@ -2091,17 +2031,8 @@ function compilatio_send_statistics() {
     }
 
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-    /*
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
-    *  the constructor of the connection with the webservice (compilatio.class)
-    *  to call other functions that need this connection.
-    *  in this case post_configuration().
-    */
-    $compilatio = new compilatioservice($plagiarismsettings['apiconfigid'],
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
+    $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
+
     return $compilatio->post_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency);
 }
 
@@ -2112,19 +2043,8 @@ function compilatio_send_statistics() {
  */
 function compilatio_get_technical_news() {
 
-    global $CFG;
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-    /*
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
-    *  the constructor of the connection with the webservice (compilatio.class)
-    *  to call other functions that need this connection.
-    *  in this case get_technical_news().
-    */
-    $compilatio = new compilatioservice($plagiarismsettings['apiconfigid'],
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
+    $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
 
     return $compilatio->get_technical_news();
 }
@@ -3263,4 +3183,23 @@ function compilatio_check_file_type($filename) {
         }
     }
     return '';
+}
+
+/**
+ * 
+ * Get or create a compilatio service 
+ *
+ * @param  int  $apiconfigid Identifier of the API configuration
+ * @return compilatioservice  Return compilatioservice
+ */
+function compilatio_get_compilatio_service($apiconfigid) {
+
+    global $CFG;
+
+    $ws = compilatioservice::getInstance($apiconfigid,
+        $CFG->proxyhost,
+        $CFG->proxyport,
+        $CFG->proxyuser,
+        $CFG->proxypassword);
+    return $ws;
 }

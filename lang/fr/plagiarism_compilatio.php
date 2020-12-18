@@ -287,6 +287,8 @@ $string['privacy:metadata:plagiarism_compilatio_files:reporturl'] = 'L\'adresse 
 $string['privacy:metadata:plagiarism_compilatio_files:similarityscore'] = 'Le pourcentage de similitudes trouvées pour cette soumission';
 $string['privacy:metadata:plagiarism_compilatio_files:attempt'] = 'Le nombre de fois qu\'un utilisateur a essayé de lancer l\'analyse d\'une soumission';
 $string['privacy:metadata:plagiarism_compilatio_files:errorresponse'] = 'La réponse au cas où il y aurait une erreur - actuellement, ce champ n\'est plus utilisé et est automatiquement mis à \'NULL\'';
+$string['privacy:metadata:plagiarism_compilatio_files:recyclebinid'] = "L'identifiant de la corbeille dans le cas où le module de cours ou le cours à été mis à la corbeille";
+$string['privacy:metadata:plagiarism_compilatio_files:apiconfigid'] = "L'identifiant de la configuration de l'API avec laquelle la soumission est liée";
 
 $string['privacy:metadata:external_compilatio_document'] = 'Informations à propos des documents dans la base de données de Compilatio';
 $string['privacy:metadata:external_compilatio_document:lastname'] = 'Nom de l\'utilisateur Compilatio qui a soumis le fichier - attention, cet utilisateur est celui qui est lié à la clé d\'API Compilatio sur la plateforme Moodle (c\'est donc souvent l\'administrateur de la plateforme)';

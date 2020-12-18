@@ -39,12 +39,12 @@ $plagiarismplugin = new plagiarism_plugin_compilatio();
 // Get plugin settings.
 $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
-$compilatio = new compilatioservice($plagiarismsettings['apiconfigid'],
-    $CFG->proxyhost,
-    $CFG->proxyport,
-    $CFG->proxyuser,
-    $CFG->proxypassword);
-$idgroupe = $compilatio->get_id_groupe();
+if (isset($plagiarismsettings['apiconfigid'])) {
+    $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
+    $idgroupe = $compilatio->get_id_groupe();
+} else {
+    $idgroupe = false;
+}
 
 echo $OUTPUT->header();
 $currenttab = 'compilatiohelp';
