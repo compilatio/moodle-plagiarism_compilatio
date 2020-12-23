@@ -29,10 +29,21 @@ $string['students_disclosure'] = 'Message de prévention pour les étudiants';
 $string['students_disclosure_help'] = 'Ce texte sera affiché à tous les étudiants sur la page de téléchargement de fichier.';
 $string['compilatioexplain'] = 'Pour obtenir des informations complémentaires sur ce plugin, voir : <a href="http://compilatio.net" target="_blank">compilatio.net</a>';
 $string['compilatio'] = 'Plugin de détection de plagiat Compilatio';
+// API configuration.
 $string['compilatioapi'] = 'Adresse de l\'API';
 $string['compilatioapi_help'] = 'Il s\'agit de l\'adresse de l\'API Compilatio';
 $string['compilatiopassword'] = 'Clé API';
 $string['compilatiopassword_help'] = 'Code personnel fourni par Compilatio pour accéder à l\'API';
+$string['compilatiodate'] = "Date d'activation";
+$string['compilatiodate_help'] = "Cliquez sur \"Activer\" si vous voulez que cette configuration de l'API s'active automatiquement à une date voulue. Laisser la date vide si vous souhaitez l'activer tout de suite.";
+$string['apiconfiguration'] = "Configuration de l'API";
+$string['formenabled'] = "Activée";
+$string['formurl'] = "Adresse de l'API";
+$string['formapikey'] = "Clé API";
+$string['formstartdate'] = "Date d'activation";
+$string['formcheck'] = "Valide";
+$string['formdelete'] = "Supprimer";
+
 $string['use_compilatio'] = 'Détecter des similitudes avec Compilatio';
 $string['activate_compilatio'] = 'Activer le plug-in Compilatio';
 $string['savedconfigsuccess'] = 'Les paramètres ont bien été sauvegardés';

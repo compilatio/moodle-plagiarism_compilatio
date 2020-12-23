@@ -34,6 +34,11 @@ admin_externalpage_setup('plagiarismcompilatio');
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
+$deleteconfig = optional_param('delete', 0, PARAM_INT);
+if ($deleteconfig) {
+    $DB->delete_records('plagiarism_compilatio_apicon', array('id' => $deleteconfig));
+}
+
 $mform = new compilatio_setup_form();
 $plagiarismplugin = new plagiarism_plugin_compilatio();
 
@@ -43,9 +48,6 @@ if ($mform->is_cancelled()) {
 // Boolean to test only once the connection if it has failed.
 $incorrectconfig = false;
 
-echo $OUTPUT->header();
-$currenttab = 'compilatiosettings';
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 if (($data = $mform->get_data()) && confirm_sesskey()) {
     if (!isset($data->enabled)) {
         $data->enabled = 0;
@@ -62,15 +64,23 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     if (!isset($data->allow_teachers_to_show_reports)) {
         $data->allow_teachers_to_show_reports = 0;
     }
-    //debugging(var_export($data, true));
-    set_config('apiconfigid', 1, 'plagiarism_compilatio');
 
     foreach ($data as $field => $value) {
-        if ($field != 'submitbutton') { // Ignore the button.
-            if ($field == 'api') { // Strip trailing slash from api.
-                $value = rtrim($value, '/');
-            }
+        // Ignore the button and API Config.
+        if ($field != 'submitbutton' && $field != 'url' && $field != 'startdate' && $field != 'api_key') {
             set_config($field, $value, 'plagiarism_compilatio');
+        }
+    }
+
+    if (!empty($data->url) && !empty($data->api_key)) {
+        $apiconfig = new stdclass();
+        $apiconfig->startdate = $data->startdate;
+        $apiconfig->url = rtrim($data->url, '/'); // Strip trailing slash from api.
+        $apiconfig->api_key = $data->api_key;
+
+        $apiconfigid = $DB->insert_record('plagiarism_compilatio_apicon', $apiconfig);
+        if ($data->startdate == 0) {
+            set_config('apiconfigid', $apiconfigid, 'plagiarism_compilatio');
         }
     }
 
@@ -103,7 +113,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
     cache_helper::invalidate_by_definition('core', 'config', array(), 'plagiarism');
     // TODO - check settings to see if valid.
-
+    $error = '';
     $quotas = compilatio_getquotas();
     if ($quotas["quotas"] == null) {
         // Disable compilatio as this config isn't correct.
@@ -111,11 +121,22 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         if ($CFG->version < 2020061500) {
             set_config('compilatio_use', 0, 'plagiarism');
         }
-        echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $quotas["error"]);
         $incorrectconfig = true;
+        $error = $quotas["error"];
     }
 
     compilatio_update_meta();
+
+    redirect('settings.php?error=' . $error);
+}
+
+echo $OUTPUT->header();
+$currenttab = 'compilatiosettings';
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
+
+$error = optional_param('error', '', PARAM_TEXT);
+if (!empty($error)) {
+    echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $error);
 }
 
 $plagiarismsettings = (array) get_config('plagiarism_compilatio');

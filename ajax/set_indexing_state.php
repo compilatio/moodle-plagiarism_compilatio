@@ -53,7 +53,7 @@ $indexingstatepost = optional_param('indexingState', '', PARAM_TEXT);
 if (isset($iddoc) && compilatio_valid_md5($iddoc) && isset($indexingstatepost)) {
     $indexingstate = (int) ((boolean) $indexingstatepost);
 
-    $indexingstate = ws_helper::set_indexing_state($iddoc, $indexingstatepost);
+    $indexingstate = ws_helper::set_indexing_state($iddoc, $indexingstate);
     if ($indexingstate === true) {
         echo ('true');
     } else {

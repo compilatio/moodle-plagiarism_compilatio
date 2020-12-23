@@ -53,7 +53,7 @@ class ws_helper
             $config = $DB->get_field('plagiarism_compilatio_files', 'apiconfigid', array('externalid' => $compid));
         }
 
-        return compilatioservice::getInstance($config,
+        return compilatioservice::getinstance($config,
             $CFG->proxyhost,
             $CFG->proxyport,
             $CFG->proxyuser,

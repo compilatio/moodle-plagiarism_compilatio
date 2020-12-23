@@ -29,10 +29,21 @@ $string['students_disclosure'] = 'Student Disclosure';
 $string['students_disclosure_help'] = 'This text will be displayed to all students on the file upload page.';
 $string['compilatioexplain'] = 'For more information on this plugin see: <a href="http://www.compilatio.net/en/" target="_blank">compilatio.net</a>';
 $string['compilatio'] = 'Compilatio plagiarism plugin';
+// API configuration.
 $string['compilatioapi'] = 'Compilatio API Address';
 $string['compilatioapi_help'] = 'This is the address of the Compilatio API';
 $string['compilatiopassword'] = 'API key';
 $string['compilatiopassword_help'] = 'Personal code provided by Compilatio to access the API';
+$string['compilatiodate'] = 'Activation date';
+$string['compilatiodate_help'] = 'Date of automatic activation of the API configuration';
+$string['apiconfiguration'] = "API configuration";
+$string['formenabled'] = "Enabled";
+$string['formurl'] = "API url";
+$string['formapikey'] = "API key";
+$string['formstartdate'] = "Activation date";
+$string['formcheck'] = "Check";
+$string['formdelete'] = "Delete";
+
 $string['use_compilatio'] = 'Allow similarity detection with Compilatio';
 $string['activate_compilatio'] = 'Enable Compilatio';
 $string['savedconfigsuccess'] = 'Plagiarism Settings Saved';

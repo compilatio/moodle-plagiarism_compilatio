@@ -57,12 +57,11 @@ class compilatioservice {
      *
      * @return compilatioservice
      */
-    public static function getInstance($apiconfigid,
+    public static function getinstance($apiconfigid,
                                         $proxyhost='',
                                         $proxyport='',
                                         $proxyusername='',
-                                        $proxypassword='')
-    {
+                                        $proxypassword='') {
         if (self::$instance === null || self::$instance->apiconfigid != $apiconfigid) {
             self::$instance = new compilatioservice($apiconfigid,
                                                     $proxyhost,
@@ -80,7 +79,7 @@ class compilatioservice {
      * MODIF 2009-03-19: passage des paramètres
      * MODIF 2017-06-23: MAJ PHP 7
      *
-     * @param string $apiconfigid   API configuration Id 
+     * @param string $apiconfigid   API configuration Id
      * @param string $proxyhost     Proxy host
      * @param string $proxyport     Proxy port
      * @param string $proxyusername Proxy username
@@ -104,7 +103,7 @@ class compilatioservice {
                 $this->apiconfigid = $apiconfigid;
                 $key = $apiconfig->api_key;
                 $urlsoap = $apiconfig->url;
-                
+
                 if (!empty($key)) {
                     $this->key = $key;
                     if (!empty($urlsoap)) {

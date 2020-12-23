@@ -58,7 +58,6 @@ if (isset($plagiarismsettings["apiconfigid"])) {
     $url = "https://service.compilatio.net/webservices/CompilatioUserClient.wsdl";
 }
 $apiconfig = new stdclass();
-$apiconfig->startdate = time();
 $apiconfig->url = $url;
 $apiconfig->api_key = "KEY";
 

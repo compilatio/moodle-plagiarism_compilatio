@@ -1206,6 +1206,15 @@ function compilatio_update_meta() {
 
     global $DB;
 
+    $configs = $DB->get_records('plagiarism_compilatio_apicon');
+    foreach ($configs as $config) {
+        if ($config->startdate != 0 && $config->startdate <= time()) {
+            set_config('apiconfigid', $config->id, 'plagiarism_compilatio');
+            $config->startdate = 0;
+            $DB->update_record('plagiarism_compilatio_apicon', $config);
+        }
+    }
+
     // Send data about plugin version to Compilatio.
     compilatio_send_statistics();
 
@@ -1237,7 +1246,8 @@ function compilatio_send_pending_files($plagiarismsettings) {
     if (!empty($plagiarismsettings)) {
 
         // Get all files in a pending state.
-        $plagiarismfiles = $DB->get_records("plagiarism_compilatio_files", array("statuscode" => "pending", "recyclebinid" => null));
+        $plagiarismfiles = $DB->get_records("plagiarism_compilatio_files",
+            array("statuscode" => "pending", "recyclebinid" => null));
 
         foreach ($plagiarismfiles as $plagiarismfile) {
 
@@ -1866,11 +1876,15 @@ function compilatio_cm_use($cmid) {
  *
  * @return $quotas
  */
-function compilatio_getquotas() {
+function compilatio_getquotas($apiconfigid = null) {
 
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
-    $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
+    if (isset($apiconfigid)) {
+        $compilatio = compilatio_get_compilatio_service($apiconfigid);
+    } else {
+        $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
+    }
 
     return $compilatio->get_quotas();
 }
@@ -3186,8 +3200,8 @@ function compilatio_check_file_type($filename) {
 }
 
 /**
- * 
- * Get or create a compilatio service 
+ *
+ * Get or create a compilatio service.
  *
  * @param  int  $apiconfigid Identifier of the API configuration
  * @return compilatioservice  Return compilatioservice
@@ -3196,10 +3210,9 @@ function compilatio_get_compilatio_service($apiconfigid) {
 
     global $CFG;
 
-    $ws = compilatioservice::getInstance($apiconfigid,
+    return compilatioservice::getinstance($apiconfigid,
         $CFG->proxyhost,
         $CFG->proxyport,
         $CFG->proxyuser,
         $CFG->proxypassword);
-    return $ws;
 }

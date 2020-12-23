@@ -183,7 +183,7 @@ class provider implements
 
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
         if (!empty($plagiarismsettings) && isset($plagiarismsettings['apiconfigid'])) {
-            $compilatio = new \compilatioservice($plagiarismsettings['apiconfigid'],
+            $compilatio = \compilatioservice::getinstance($plagiarismsettings['apiconfigid'],
                 $CFG->proxyhost,
                 $CFG->proxyport,
                 $CFG->proxyuser,
@@ -221,7 +221,7 @@ class provider implements
             && isset($plagiarismsettings['owner_file'])
             && $plagiarismsettings['owner_file'] === '0') {
 
-            $compilatio = new \compilatioservice($plagiarismsettings['apiconfigid'],
+            $compilatio = \compilatioservice::getinstance($plagiarismsettings['apiconfigid'],
                 $CFG->proxyhost,
                 $CFG->proxyport,
                 $CFG->proxyuser,
@@ -258,7 +258,7 @@ class provider implements
 
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
         if (!empty($plagiarismsettings) && isset($plagiarismsettings['apiconfigid'])) {
-            $compilatio = new \compilatioservice($plagiarismsettings['apiconfigid'],
+            $compilatio = \compilatioservice::getinstance($plagiarismsettings['apiconfigid'],
                 $CFG->proxyhost,
                 $CFG->proxyport,
                 $CFG->proxyuser,
