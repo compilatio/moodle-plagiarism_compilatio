@@ -371,13 +371,11 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
 
         global $DB;
 
-        $apiconfig = (object) array(
-            'url' => 'https://service.compilatio.net/webservices/CompilatioUserClient.wsdl',
-            'key' => 'abcdef',
-            'startdate' => time()
-        );
+        $apiconfig = new stdClass();
+        $apiconfig->url = 'https://service.compilatio.net/webservices/CompilatioUserClient.wsdl';
+        $apiconfig->api_key = 'abcdef';
 
-        $apiconfigid = $DB->insert_record('plagiarism_compilatio_apicon', array($apiconfig));
+        $apiconfigid = $DB->insert_record('plagiarism_compilatio_apicon', $apiconfig);
 
         $ownerfile = (object) array('plugin' => 'plagiarism_compilatio', 'name' => 'owner_file', 'value' => $owner);
         $apiconfig = (object) array('plugin' => 'plagiarism_compilatio', 'name' => 'apiconfigid', 'value' => $apiconfigid);

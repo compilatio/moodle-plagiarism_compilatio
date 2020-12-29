@@ -649,7 +649,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
             // Resend failed files.
             $docsmaxattempsreached = array();
-            $sql = 'SELECT * FROM {plagiarism_compilatio_files} WHERE cm=? AND (statuscode=? OR statuscode=?)';
+            $sql = "SELECT * FROM {plagiarism_compilatio_files}
+                WHERE cm=? AND (statuscode=? OR statuscode=? OR statuscode='timeout')";
             $plagiarismfiles = $DB->get_records_sql($sql, array(
                 $cm->id,
                 COMPILATIO_STATUSCODE_FAILED,
@@ -657,7 +658,12 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             ));
             compilatio_remove_duplicates($plagiarismfiles, $plagiarismsettings, false);
             foreach ($plagiarismfiles as $plagiarismfile) {
-                if ($plagiarismfile->attempt < COMPILATIO_MAX_SUBMISSION_ATTEMPTS) {
+                if ($plagiarismfile->statuscode == 'timeout') {
+                    $plagiarismfile->statuscode = 'pending';
+                    $plagiarismfile->attempt = 0;
+                    $plagiarismfile->timesubmitted = time();
+                    $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+                } else if ($plagiarismfile->attempt < COMPILATIO_MAX_SUBMISSION_ATTEMPTS) {
                     $plagiarismfile->statuscode = 'pending';
                     $plagiarismfile->attempt++;
                     $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
@@ -821,7 +827,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                 </a>";
         }
 
-        // Display a notification for failed analysis.
+        // Display a notification for failed analyses.
         $files = compilatio_get_failed_analysis_files($cm->id);
         if (count($files) !== 0) {
 
@@ -833,6 +839,18 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                 "content" => $list,
             );
 
+            $url = $PAGE->url;
+            $url->param('restartfailedanalysis', true);
+            $restartfailedanalysisbutton = "
+                <a href='$url' class='compilatio-button comp-button' >
+                    <i class='fa fa-play-circle'></i>
+                    " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
+                </a>";
+        }
+
+        // Display restart analyses button for timeout.
+        $files = compilatio_get_files_by_status_code($cm->id, 'timeout');
+        if (count($files) !== 0) {
             $url = $PAGE->url;
             $url->param('restartfailedanalysis', true);
             $restartfailedanalysisbutton = "
@@ -1212,6 +1230,7 @@ function compilatio_update_meta() {
             set_config('apiconfigid', $config->id, 'plagiarism_compilatio');
             $config->startdate = 0;
             $DB->update_record('plagiarism_compilatio_apicon', $config);
+            $plagiarismsettings = (array) get_config('plagiarism_compilatio');
         }
     }
 
@@ -1666,13 +1685,11 @@ function compilatio_queue_file($cmid,
 
     // Optionally send the file to Compilatio.
     if ($sendfile !== false) {
-
         // Check if we need to delay this submission.
-        $attemptallowed = compilatio_check_attempt_timeout($plagiarismfile);
+        $attemptallowed = compilatio_check_attempt_timeout($plagiarismfile, true);
         if (!$attemptallowed) {
             return false;
         }
-
         // Increment attempt number.
         $plagiarismfile->attempt = $plagiarismfile->attempt + 1;
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
@@ -1691,7 +1708,7 @@ function compilatio_queue_file($cmid,
  * @param  array $plagiarismfile    A row of plagiarism_compilatio_files in database
  * @return bool                     Return true if succeed, fasle otherwise
  */
-function compilatio_check_attempt_timeout($plagiarismfile) {
+function compilatio_check_attempt_timeout($plagiarismfile, $hasmaxattempt = false) {
 
     global $DB;
 
@@ -1722,25 +1739,26 @@ function compilatio_check_attempt_timeout($plagiarismfile) {
         $submissiondelay = COMPILATIO_STATUS_DELAY;
         // Maximum time to wait between checks.
         $maxsubmissiondelay = COMPILATIO_MAX_STATUS_DELAY;
-        // Maximum number of times to try and send a submission.
-        $maxattempts = COMPILATIO_MAX_STATUS_ATTEMPTS;
     }
 
-    // Check if we have exceeded the max attempts.
-    if ($plagiarismfile->attempt > $maxattempts) {
-        $plagiarismfile->statuscode = 'timeout';
-        $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
-        return true; // Return true to cancel the event.
+    if ($hasmaxattempt) {
+        // Check if we have exceeded the max attempts.
+        if ($plagiarismfile->attempt > $maxattempts) {
+            $plagiarismfile->statuscode = 'timeout';
+            $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+            return true; // Return true to cancel the event.
+        }
     }
 
     // Now calculate wait time.
-    $wait = $submissiondelay;
     $i = 0;
+    $wait = 0;
     while ($i < $plagiarismfile->attempt) {
-        if ($wait > $maxsubmissiondelay) {
-            $wait = $maxsubmissiondelay;
+        $time = $submissiondelay * ($plagiarismfile->attempt - $i);
+        if ($time > $maxsubmissiondelay) {
+            $time = $maxsubmissiondelay;
         }
-        $wait = $wait * $plagiarismfile->attempt;
+        $wait += $time;
         $i++;
     }
     $wait = (int) $wait * 60;
@@ -1830,12 +1848,10 @@ function compilatio_get_scores($plagiarismsettings) {
     global $DB;
 
     mtrace("getting Compilatio similarity scores");
-
     // Get all files set that have been submitted.
     $sql = "statuscode = ? OR statuscode = ? OR statuscode = ?";
     $params = array(COMPILATIO_STATUSCODE_ANALYSING, COMPILATIO_STATUSCODE_IN_QUEUE, "pending");
     $files = $DB->get_records_select('plagiarism_compilatio_files', $sql, $params);
-
     if (!empty($files)) {
         foreach ($files as $plagiarismfile) {
             // Check if we need to delay this submission.
@@ -1911,6 +1927,7 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
     if ($analyse === true) {
         // Update plagiarism record.
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_IN_QUEUE;
+        $plagiarismfile->timesubmitted = time();
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
     } else {
         if ($analyse->code == 'INVALID_ID_DOCUMENT') {
@@ -1951,6 +1968,8 @@ function compilatio_valid_md5($hash) {
 function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) {
 
     global $DB;
+    debugging('check analysis');
+    debugging(var_export($plagiarismfile, true));
 
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
     $compilatio = compilatio_get_compilatio_service($plagiarismfile->apiconfigid);
