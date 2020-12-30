@@ -1230,7 +1230,6 @@ function compilatio_update_meta() {
             set_config('apiconfigid', $config->id, 'plagiarism_compilatio');
             $config->startdate = 0;
             $DB->update_record('plagiarism_compilatio_apicon', $config);
-            $plagiarismsettings = (array) get_config('plagiarism_compilatio');
         }
     }
 
@@ -1269,6 +1268,12 @@ function compilatio_send_pending_files($plagiarismsettings) {
             array("statuscode" => "pending", "recyclebinid" => null));
 
         foreach ($plagiarismfiles as $plagiarismfile) {
+            $module = get_coursemodule_from_id(null, $plagiarismfile->cm);
+            if (empty($module)) {
+                mtrace("Course module id:" .$plagiarismfile->cm . " does not exist, deleting record #" . $plagiarismfile->id);
+                $DB->delete_records('plagiarism_compilatio_files', array('id' => $plagiarismfile->id));
+                continue;
+            }
 
             $indexingstate = $DB->get_record("plagiarism_compilatio_config",
                 array("cm" => $plagiarismfile->cm, "name" => "indexing_state"),
@@ -1787,7 +1792,9 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
 
     $mimetype = compilatio_check_file_type($filename);
     if (empty($mimetype)) { // Sanity check on filetype - this should already have been checked.
-        print_error("no mime type for this file found.");
+        $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_UNSUPPORTED;
+        $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+        mtrace("no mime type for this file found #" . $plagiarismfile->id);
         return false;
     }
 
@@ -1798,19 +1805,9 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
 
     $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
 
-    // Get name from module.
-    $modulesql = "
-        SELECT m.id, m.name, cm.instance FROM {course_modules} cm
-        INNER JOIN {modules} m on cm.module = m.id
-        WHERE cm.id = ?";
-
-    $moduledetail = $DB->get_record_sql($modulesql, array($plagiarismfile->cm));
-    if (!empty($moduledetail)) {
-        $sql = "SELECT * FROM " . $CFG->prefix . $moduledetail->name . " WHERE id= ?";
-        $module = $DB->get_record_sql($sql, array($moduledetail->instance));
-    }
+    $module = get_coursemodule_from_id(null, $plagiarismfile->cm);
     if (empty($module)) {
-        print_error("could not find this module - it may have been deleted?");
+        mtrace("could not find this module - it may have been deleted?");
         return false;
     }
 
@@ -1832,7 +1829,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
 
     $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_UNEXTRACTABLE;
     $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
-    print_error("invalid compilatio response received - will try again later." . $idcompi);
+    mtrace("invalid compilatio response received - will try again later." . $idcompi);
     // Invalid response returned - increment attempt value and return false to allow this to be called again.
     return false;
 }
@@ -1968,8 +1965,6 @@ function compilatio_valid_md5($hash) {
 function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) {
 
     global $DB;
-    debugging('check analysis');
-    debugging(var_export($plagiarismfile, true));
 
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
     $compilatio = compilatio_get_compilatio_service($plagiarismfile->apiconfigid);
