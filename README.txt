@@ -10,6 +10,9 @@ CHANGES
 - Update failed analyses management.
 - Update global statistics (admin) table. 
 - Update Help Center connection.
+- Optimisation of the sending of files to Compilatio by the scheduled task.
+- Optimisation of the waiting time between calls to the API.
+- Added the possibility to use multiple API keys.
 
 QUICK INSTALL
 ================
