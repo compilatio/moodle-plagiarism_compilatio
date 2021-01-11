@@ -52,15 +52,9 @@ $indexingstatepost = optional_param('indexingState', '', PARAM_TEXT);
 
 if (isset($iddoc) && compilatio_valid_md5($iddoc) && isset($indexingstatepost)) {
     $indexingstate = (int) ((boolean) $indexingstatepost);
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
 
-    $call = $compilatio->set_indexing_state($iddoc, $indexingstate);
-    if ($call === true) {
+    $indexingstate = ws_helper::set_indexing_state($iddoc, $indexingstate);
+    if ($indexingstate === true) {
         echo ('true');
     } else {
         echo ('false');

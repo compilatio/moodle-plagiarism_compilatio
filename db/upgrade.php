@@ -133,5 +133,37 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
             }
         }
     }
+
+    if ($oldversion < 2020120000) {
+        $table = new xmldb_table('plagiarism_compilatio_files');
+        $field = new xmldb_field('apiconfigid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 1);
+        $dbman->add_field($table, $field);
+
+        $table = new xmldb_table('plagiarism_compilatio_apicon');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('url', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('api_key', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('startdate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        $url = get_config('plagiarism_compilatio', 'api');
+        $key = get_config('plagiarism_compilatio', 'password');
+
+        $apikey = new stdclass();
+        $apikey->url = $url;
+        $apikey->api_key = $key;
+        $apikeyid = $DB->insert_record('plagiarism_compilatio_apicon', $apikey);
+
+        unset_config('api', 'plagiarism_compilatio');
+        unset_config('password', 'plagiarism_compilatio');
+
+        set_config('apiconfigid', $apikeyid, 'plagiarism_compilatio');
+
+        upgrade_plugin_savepoint(true, 2020120000, 'plagiarism', 'compilatio');
+    }
+
     return true;
 }

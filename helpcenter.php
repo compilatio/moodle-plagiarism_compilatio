@@ -29,8 +29,7 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_login();
 
-// Get plugin settings.
-$plagiarismsettings = (array) get_config('plagiarism_compilatio');
+$idgroupe = required_param('idgroupe', PARAM_TEXT);
 
 // Gheck GET parameter.
 $availpages = ['moodle-admin', 'moodle-teacher'];
@@ -47,18 +46,18 @@ echo("<!doctype html>
 	</head>
 	<body>
 		<script type='text/javascript'>
-			(function redirectHC(k, e, l, p){
+			(function redirectHC(g, e, l, p){
 				var s,u,b,m,i,t,o;s=document;
 				function x(a,b){return a.createElement(b);};function y(a,b,c){a.setAttribute(b,c);};function z(a,b){a.appendChild(b);};
 				u=x(s,\"form\");y(u,'action','https://www.compilatio.net/support/?zeRedirect=zeLogin');y(u,'method','post');
-				b=x(s,'input');y(b,'type','hidden');y(b,'name','k');y(b,'value',k);
+				b=x(s,'input');y(b,'type','hidden');y(b,'name','moodle_id_groupe');y(b,'value',g);
 				m=x(s,'input');y(m,'type','hidden');y(m,'name','lms-user-email');y(m,'value',e);
 				i=x(s,'input');y(i,'type','hidden');y(i,'name','lms-user-locale');y(i,'value',l);
 				o=x(s,'input');y(o,'type','hidden');y(o,'name','helpcenter-page');y(o,'value',p);
 				t=x(s,'input');y(t,'type','submit');y(t,'id','compilatio-submit-redirect-hc');y(t,'style',\"display: none;\");
 				z(u,b);z(u,m);z(u,i);z(u,o);z(u,t);z(s.body,u);
 				s.getElementById('compilatio-submit-redirect-hc').click();
-			})('".base64_encode($plagiarismsettings['password'])."', '".$USER->email."', '".$USER->lang."', '".$page."')
+			})('".$idgroupe."', '".$USER->email."', '".$USER->lang."', '".$page."')
 		</script>
 	</body>
 </html>");

@@ -7,12 +7,12 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Changing the behaviour of the Help (?) button in assigns.
-- Correct the display of the error message indicating that the Compilatio service is currently unavailable.
-- Align the Compilatio frame to the left.
-- Adding a warning for failed analysis.
-- Correction of the "Analyse" button which only worked on the first page of an assign.
-- Display an error message in the Compilatio frame when changing the API key and documents are not found for the new API key.
+- Update failed analyses management.
+- Update global statistics (admin) table. 
+- Update Help Center connection.
+- Optimisation of the sending of files to Compilatio by the scheduled task.
+- Optimisation of the waiting time between calls to the API.
+- Added the possibility to use multiple API keys.
 
 QUICK INSTALL
 ================

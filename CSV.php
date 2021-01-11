@@ -176,6 +176,12 @@ function clean_row($row) {
             case "413":
                 $data["file_status"] = "Too large";
                 break;
+            case "404":
+                $data["file_status"] = "Not found";
+                break;
+            case "418":
+                $data["file_status"] = "Failed analysis";
+                break;
         }
     }
     return $data;

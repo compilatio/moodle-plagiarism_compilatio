@@ -79,6 +79,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->assertArrayHasKey('attempt', $privacyfields);
         $this->assertArrayHasKey('errorresponse', $privacyfields);
         $this->assertArrayHasKey('timesubmitted', $privacyfields);
+        $this->assertArrayHasKey('recyclebinid', $privacyfields);
+        $this->assertArrayHasKey('apiconfigid', $privacyfields);
 
         // On vérifie que External Compilatio Document est retourné.
         $this->assertEquals('External Compilatio Document', $itemcollection[3]->get_name());
@@ -369,15 +371,15 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
 
         global $DB;
 
-        $api = (object) array(
-            'plugin' => 'plagiarism_compilatio',
-            'name' => 'api',
-            'value' => 'https://service.compilatio.net/webservices/CompilatioUserClient.wsdl'
-        );
-        $password = (object) array('plugin' => 'plagiarism_compilatio', 'name' => 'password', 'value' => 'abcdef');
-        $ownerfile = (object) array('plugin' => 'plagiarism_compilatio', 'name' => 'owner_file', 'value' => $owner);
+        $apiconfig = new stdClass();
+        $apiconfig->url = 'https://service.compilatio.net/webservices/CompilatioUserClient.wsdl';
+        $apiconfig->api_key = 'abcdef';
 
-        $DB->insert_records('config_plugins', array($api, $password, $ownerfile));
+        $apiconfigid = $DB->insert_record('plagiarism_compilatio_apicon', $apiconfig);
+
+        $ownerfile = (object) array('plugin' => 'plagiarism_compilatio', 'name' => 'owner_file', 'value' => $owner);
+        $apiconfig = (object) array('plugin' => 'plagiarism_compilatio', 'name' => 'apiconfigid', 'value' => $apiconfigid);
+        $DB->insert_records('config_plugins', array($ownerfile, $apiconfig));
     }
 }
 

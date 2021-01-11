@@ -28,7 +28,7 @@
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 
 $cmid = required_param('cmid', PARAM_INT);  // Course Module ID.
-$pf  = required_param('pf', PARAM_INT);   // plagiarism file id.
+$pf  = required_param('pf', PARAM_INT);   // Plagiarism file id.
 require_sesskey();
 $url = new moodle_url('/plagiarism/compilatio/reset.php');
 $cm = get_coursemodule_from_id('', $cmid, 0, false, MUST_EXIST);
@@ -48,42 +48,6 @@ $plagiarismfile->timesubmitted = time();
 $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
 
 // Now trigger event to process the file.
-
-// This is hardcoded to assignment mod.
-if ($cm->modname == 'assignment') {
-    $submission = $DB->get_record('assignment_submissions',
-                                  array('assignment' => $cm->instance, 'userid' => $plagiarismfile->userid));
-    $fs = get_file_storage();
-    $files = $fs->get_area_files($modulecontext->id, 'mod_assignment', 'submission', $submission->id);
-    if (!empty($files)) {
-        $params = array(
-            'context' => $modulecontext,
-            'courseid' => $cm->course,
-            'objectid' => $submission->id,
-            'other' => array(
-                'content' => '',
-                'pathnamehashes' => array_keys($files)
-            )
-        );
-
-        $event = \assignsubmission_file\event\assessable_uploaded::create($params);
-        $event->set_legacy_files($files);
-        $event->trigger();
-    } else if (!empty($submission->data1)) {
-        $params = array(
-            'context' => $modulecontext,
-            'courseid' => $cm->course,
-            'objectid' => $submission->id,
-            'other' => array(
-                'content' => trim(strip_tags(format_text($submission->data1, $submission->data2))),
-
-            )
-        );
-
-        $event = \assignsubmission_file\event\assessable_uploaded::create($params);
-        $event->trigger();
-    }
-}
 
 $urlparams = array('id' => $cmid, 'action' => "grading", 'page' => optional_param('page', null, PARAM_INT));
 $redirect = new moodle_url('/mod/assign/view.php', $urlparams);

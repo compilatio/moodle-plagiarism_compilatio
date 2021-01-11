@@ -30,8 +30,7 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 define('COMPILATIO_MAX_SUBMISSION_ATTEMPTS', 6); // Max num to try and send a submission to Compilatio.
 define('COMPILATIO_MAX_SUBMISSION_DELAY', 60);   // Max time to wait between submissions (defined in minutes).
 define('COMPILATIO_SUBMISSION_DELAY', 15);       // Initial wait time, doubled each time until max_submission_delay is met.
-define('COMPILATIO_MAX_STATUS_ATTEMPTS', 10);    // Maximum number of times to try and obtain the status of a submission.
-define('COMPILATIO_MAX_STATUS_DELAY', 1440);     // Maximum time to wait between checks (defined in minutes).
+define('COMPILATIO_MAX_STATUS_DELAY', 120);      // Maximum time to wait between checks (defined in minutes).
 define('COMPILATIO_STATUS_DELAY', 10);           // Initial wait time, doubled each time a until the max_status_delay is met.
 
 define('COMPILATIO_STATUSCODE_ACCEPTED', '202');
@@ -41,6 +40,7 @@ define('COMPILATIO_STATUSCODE_NOT_FOUND', '404');
 define('COMPILATIO_STATUSCODE_UNSUPPORTED', '415');
 define('COMPILATIO_STATUSCODE_UNEXTRACTABLE', '416');
 define('COMPILATIO_STATUSCODE_TOO_LARGE', '413');
+define('COMPILATIO_STATUSCODE_FAILED', '418');
 define('COMPILATIO_STATUSCODE_COMPLETE', 'Analyzed');
 define('COMPILATIO_STATUSCODE_IN_QUEUE', 'In queue');
 

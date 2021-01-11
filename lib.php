@@ -77,8 +77,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         // Check if compilatio enabled.
         if (isset($plagiarismsettings['enabled']) && $plagiarismsettings['enabled']) {
             // Now check to make sure required settings are set!.
-            if (empty($plagiarismsettings['api'])) {
-                print_error("Compilatio API URL not set!");
+            if (empty($plagiarismsettings['apiconfigid'])) {
+                print_error("Compilatio API Configuration is not set!");
             }
             return $plagiarismsettings;
         } else {
@@ -367,6 +367,13 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $output .= output_helper::get_plagiarism_area($span, $image, $title, "",
                 "", true, $indexingstate, $domid, $docwarning);
 
+        } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_FAILED) {
+            $span = get_string("error", "plagiarism_compilatio");
+            $image = "exclamation";
+            $title = get_string('failed', 'plagiarism_compilatio');
+            $output .= output_helper::get_plagiarism_area($span, $image, $title, "",
+                "", true, $indexingstate, $domid, $docwarning);
+
         } else {
             $title = get_string('unknownwarning', 'plagiarism_compilatio');
             $reset = '';
@@ -641,14 +648,22 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         if ($restartfailedanalysis) {
 
             // Resend failed files.
-            $params = array(
-                'cm' => $cm->id,
-                'statuscode' => COMPILATIO_STATUSCODE_UNEXTRACTABLE,
-            );
             $docsmaxattempsreached = array();
-            $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files', $params);
+            $sql = "SELECT * FROM {plagiarism_compilatio_files}
+                WHERE cm=? AND (statuscode=? OR statuscode=? OR statuscode='timeout')";
+            $plagiarismfiles = $DB->get_records_sql($sql, array(
+                $cm->id,
+                COMPILATIO_STATUSCODE_FAILED,
+                COMPILATIO_STATUSCODE_UNEXTRACTABLE
+            ));
+            compilatio_remove_duplicates($plagiarismfiles, $plagiarismsettings, false);
             foreach ($plagiarismfiles as $plagiarismfile) {
-                if ($plagiarismfile->attempt < COMPILATIO_MAX_SUBMISSION_ATTEMPTS) {
+                if ($plagiarismfile->statuscode == 'timeout') {
+                    $plagiarismfile->statuscode = 'pending';
+                    $plagiarismfile->attempt = 0;
+                    $plagiarismfile->timesubmitted = time();
+                    $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+                } else if ($plagiarismfile->attempt < COMPILATIO_MAX_SUBMISSION_ATTEMPTS) {
                     $plagiarismfile->statuscode = 'pending';
                     $plagiarismfile->attempt++;
                     $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
@@ -661,11 +676,17 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             // Restart analyses.
             $countsuccess = 0;
             $docsfailed = array();
-            $plagiarismvalues = $DB->get_records('plagiarism_compilatio_config', array('cm' => $cm->id));
-            if ($plagiarismvalues['compilatio_analysistype'] == COMPILATIO_ANALYSISTYPE_AUTO) {
+            $compilatioanalysistype = $DB->get_field('plagiarism_compilatio_config', 'value', array(
+                'cm' => $cm->id,
+                'name' => 'compilatio_analysistype'
+            ));
+            if ($compilatioanalysistype == COMPILATIO_ANALYSISTYPE_AUTO) {
                 $countsuccess = count($plagiarismfiles);
             } else {
-                $params['statuscode'] = COMPILATIO_STATUSCODE_ACCEPTED;
+                $params = array(
+                    'cm' => $cm->id,
+                    'statuscode' => COMPILATIO_STATUSCODE_ACCEPTED
+                );
                 $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files', $params);
                 foreach ($plagiarismfiles as $plagiarismfile) {
                     if (compilatio_startanalyse($plagiarismfile)) {
@@ -806,6 +827,39 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                 </a>";
         }
 
+        // Display a notification for failed analyses.
+        $files = compilatio_get_failed_analysis_files($cm->id);
+        if (count($files) !== 0) {
+
+            $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
+
+            $alerts[] = array(
+                "class" => "danger",
+                "title" => get_string("failedanalysis_files", "plagiarism_compilatio"),
+                "content" => $list,
+            );
+
+            $url = $PAGE->url;
+            $url->param('restartfailedanalysis', true);
+            $restartfailedanalysisbutton = "
+                <a href='$url' class='compilatio-button comp-button' >
+                    <i class='fa fa-play-circle'></i>
+                    " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
+                </a>";
+        }
+
+        // Display restart analyses button for timeout.
+        $files = compilatio_get_files_by_status_code($cm->id, 'timeout');
+        if (count($files) !== 0) {
+            $url = $PAGE->url;
+            $url->param('restartfailedanalysis', true);
+            $restartfailedanalysisbutton = "
+                <a href='$url' class='compilatio-button comp-button' >
+                    <i class='fa fa-play-circle'></i>
+                    " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
+                </a>";
+        }
+
         // If the account expires within the month, display an alert :.
         if (compilatio_check_account_expiration_date()) {
             $alerts[] = array(
@@ -889,14 +943,24 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 			</div>";
 
         // Help tab.
+        $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
+        $idgroupe = $compilatio->get_id_groupe();
+
+        $output .= "<div id='compilatio-help'>";
+
+        if (!$idgroupe) {
+            $output .= "<p>" . get_string('helpcenter_error', 'plagiarism_compilatio')
+                . "<a href='https://support.compilatio.net/'>https://support.compilatio.net</a></p>";
+        } else {
+            $output .= "<p><a href='../../plagiarism/compilatio/helpcenter.php?idgroupe=" . $idgroupe . "'" .
+            "target='_blank' >" . get_string('helpcenter', 'plagiarism_compilatio') . "
+            <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
+                <path fill='none' stroke='#555' stroke-linecap='round'
+                stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
+            </svg></a></p>";
+        }
+
         $output .= "
-            <div id='compilatio-help'>
-                <p><a href='../../plagiarism/compilatio/helpcenter.php'" .
-                    "target='_blank' >" . get_string('helpcenter', 'plagiarism_compilatio') . "
-                    <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
-                        <path fill='none' stroke='#555' stroke-linecap='round'
-                        stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
-                    </svg></a></p>
                 <p><a href='http://etat-services.compilatio.net/?lang=FR'" .
                     "target='_blank' >" . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') . "
                     <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
@@ -1160,6 +1224,15 @@ function compilatio_update_meta() {
 
     global $DB;
 
+    $configs = $DB->get_records('plagiarism_compilatio_apicon');
+    foreach ($configs as $config) {
+        if ($config->startdate != 0 && $config->startdate <= time()) {
+            set_config('apiconfigid', $config->id, 'plagiarism_compilatio');
+            $config->startdate = 0;
+            $DB->update_record('plagiarism_compilatio_apicon', $config);
+        }
+    }
+
     // Send data about plugin version to Compilatio.
     compilatio_send_statistics();
 
@@ -1191,9 +1264,16 @@ function compilatio_send_pending_files($plagiarismsettings) {
     if (!empty($plagiarismsettings)) {
 
         // Get all files in a pending state.
-        $plagiarismfiles = $DB->get_records("plagiarism_compilatio_files", array("statuscode" => "pending", "recyclebinid" => null));
+        $plagiarismfiles = $DB->get_records("plagiarism_compilatio_files",
+            array("statuscode" => "pending", "recyclebinid" => null));
 
         foreach ($plagiarismfiles as $plagiarismfile) {
+            $module = get_coursemodule_from_id(null, $plagiarismfile->cm);
+            if (empty($module)) {
+                mtrace("Course module id:" .$plagiarismfile->cm . " does not exist, deleting record #" . $plagiarismfile->id);
+                $DB->delete_records('plagiarism_compilatio_files', array('id' => $plagiarismfile->id));
+                continue;
+            }
 
             $indexingstate = $DB->get_record("plagiarism_compilatio_config",
                 array("cm" => $plagiarismfile->cm, "name" => "indexing_state"),
@@ -1469,36 +1549,32 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename='')
  * @param array    $plagiarismsettings
  * @return boolean true if all documents have been processed, false otherwise
  */
-function compilatio_remove_duplicates($duplicates, $plagiarismsettings) {
+function compilatio_remove_duplicates($duplicates, $plagiarismsettings, $deletefilesmoodledb = true) {
 
     if (is_array($duplicates)) {
 
-        global $CFG, $DB;
-        /*
-        *  $CFG->proxy create the Connection with the webservice are necessary
-        *  and used variables in the constructor of the connection with the webservice (compilatio.class)
-        *  to call other functions that need this connection.
-        *  in this case set_indexing_state() and del_doc() .
-        */
-        $compilatio = new compilatioservice($plagiarismsettings['password'],
-            $plagiarismsettings['api'],
-            $CFG->proxyhost,
-            $CFG->proxyport,
-            $CFG->proxyuser,
-            $CFG->proxypassword);
+        global $DB;
 
         $i = 0;
         foreach ($duplicates as $doc) {
-
-            // Deindex document.
-            if ($compilatio->set_indexing_state($doc->externalid, 0)) {
-                // Delete document.
-                $compilatio->del_doc($doc->externalid);
-                // Delete DB record.
-                $DB->delete_records('plagiarism_compilatio_files', array('id' => $doc->id));
-                $i++;
+            if (is_null($doc->externalid)) {
+                if ($deletefilesmoodledb) {
+                    $DB->delete_records('plagiarism_compilatio_files', array('id' => $doc->id));
+                }
             } else {
-                mtrace('Error deindexing document ' . $doc->externalid);
+                $compilatio = compilatio_get_compilatio_service($doc->apiconfigid);
+                // Deindex document.
+                if ($compilatio->set_indexing_state($doc->externalid, 0)) {
+                    // Delete document.
+                    $compilatio->del_doc($doc->externalid);
+                    // Delete DB record.
+                    if ($deletefilesmoodledb) {
+                        $DB->delete_records('plagiarism_compilatio_files', array('id' => $doc->id));
+                    }
+                    $i++;
+                } else {
+                    mtrace('Error deindexing document ' . $doc->externalid);
+                }
             }
         }
 
@@ -1554,6 +1630,7 @@ function compilatio_get_plagiarism_file($cmid, $userid, $file) {
         $plagiarismfile->statuscode = 'pending';
         $plagiarismfile->attempt = 0;
         $plagiarismfile->timesubmitted = time();
+        $plagiarismfile->apiconfigid = 0;
 
         // Add new entry and get plagiarism_compilatio_file table record `id` for update_record_raw().
         if (($compid = $DB->insert_record('plagiarism_compilatio_files', $plagiarismfile, true)) === false) {
@@ -1613,13 +1690,11 @@ function compilatio_queue_file($cmid,
 
     // Optionally send the file to Compilatio.
     if ($sendfile !== false) {
-
         // Check if we need to delay this submission.
-        $attemptallowed = compilatio_check_attempt_timeout($plagiarismfile);
+        $attemptallowed = compilatio_check_attempt_timeout($plagiarismfile, true);
         if (!$attemptallowed) {
             return false;
         }
-
         // Increment attempt number.
         $plagiarismfile->attempt = $plagiarismfile->attempt + 1;
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
@@ -1638,7 +1713,7 @@ function compilatio_queue_file($cmid,
  * @param  array $plagiarismfile    A row of plagiarism_compilatio_files in database
  * @return bool                     Return true if succeed, fasle otherwise
  */
-function compilatio_check_attempt_timeout($plagiarismfile) {
+function compilatio_check_attempt_timeout($plagiarismfile, $hasmaxattempt = false) {
 
     global $DB;
 
@@ -1669,25 +1744,26 @@ function compilatio_check_attempt_timeout($plagiarismfile) {
         $submissiondelay = COMPILATIO_STATUS_DELAY;
         // Maximum time to wait between checks.
         $maxsubmissiondelay = COMPILATIO_MAX_STATUS_DELAY;
-        // Maximum number of times to try and send a submission.
-        $maxattempts = COMPILATIO_MAX_STATUS_ATTEMPTS;
     }
 
-    // Check if we have exceeded the max attempts.
-    if ($plagiarismfile->attempt > $maxattempts) {
-        $plagiarismfile->statuscode = 'timeout';
-        $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
-        return true; // Return true to cancel the event.
+    if ($hasmaxattempt) {
+        // Check if we have exceeded the max attempts.
+        if ($plagiarismfile->attempt > $maxattempts) {
+            $plagiarismfile->statuscode = 'timeout';
+            $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+            return true; // Return true to cancel the event.
+        }
     }
 
     // Now calculate wait time.
-    $wait = $submissiondelay;
     $i = 0;
+    $wait = 0;
     while ($i < $plagiarismfile->attempt) {
-        if ($wait > $maxsubmissiondelay) {
-            $wait = $maxsubmissiondelay;
+        $time = $submissiondelay * ($plagiarismfile->attempt - $i);
+        if ($time > $maxsubmissiondelay) {
+            $time = $maxsubmissiondelay;
         }
-        $wait = $wait * $plagiarismfile->attempt;
+        $wait += $time;
         $i++;
     }
     $wait = (int) $wait * 60;
@@ -1716,7 +1792,9 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
 
     $mimetype = compilatio_check_file_type($filename);
     if (empty($mimetype)) { // Sanity check on filetype - this should already have been checked.
-        print_error("no mime type for this file found.");
+        $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_UNSUPPORTED;
+        $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+        mtrace("no mime type for this file found #" . $plagiarismfile->id);
         return false;
     }
 
@@ -1724,31 +1802,12 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
     if (!defined("COMPILATIO_MANUAL_SEND")) {
         mtrace("sending file #" . $plagiarismfile->id);
     }
-    /*
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
-    *  the constructor of the connection with the webservice (compilatio.class)
-    *  to call other functions that need this connection.
-    *  in this case send_doc().
-    */
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
-    // Get name from module.
-    $modulesql = "
-        SELECT m.id, m.name, cm.instance FROM {course_modules} cm
-        INNER JOIN {modules} m on cm.module = m.id
-        WHERE cm.id = ?";
 
-    $moduledetail = $DB->get_record_sql($modulesql, array($plagiarismfile->cm));
-    if (!empty($moduledetail)) {
-        $sql = "SELECT * FROM " . $CFG->prefix . $moduledetail->name . " WHERE id= ?";
-        $module = $DB->get_record_sql($sql, array($moduledetail->instance));
-    }
+    $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
+
+    $module = get_coursemodule_from_id(null, $plagiarismfile->cm);
     if (empty($module)) {
-        print_error("could not find this module - it may have been deleted?");
+        mtrace("could not find this module - it may have been deleted?");
         return false;
     }
 
@@ -1763,13 +1822,14 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
     if (compilatio_valid_md5($idcompi)) {
         $plagiarismfile->externalid = $idcompi;
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_ACCEPTED;
+        $plagiarismfile->apiconfigid = $plagiarismsettings['apiconfigid'];
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
         return $idcompi;
     }
 
     $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_UNEXTRACTABLE;
     $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
-    print_error("invalid compilatio response received - will try again later." . $idcompi);
+    mtrace("invalid compilatio response received - will try again later." . $idcompi);
     // Invalid response returned - increment attempt value and return false to allow this to be called again.
     return false;
 }
@@ -1785,12 +1845,10 @@ function compilatio_get_scores($plagiarismsettings) {
     global $DB;
 
     mtrace("getting Compilatio similarity scores");
-
     // Get all files set that have been submitted.
     $sql = "statuscode = ? OR statuscode = ? OR statuscode = ?";
     $params = array(COMPILATIO_STATUSCODE_ANALYSING, COMPILATIO_STATUSCODE_IN_QUEUE, "pending");
     $files = $DB->get_records_select('plagiarism_compilatio_files', $sql, $params);
-
     if (!empty($files)) {
         foreach ($files as $plagiarismfile) {
             // Check if we need to delay this submission.
@@ -1831,23 +1889,15 @@ function compilatio_cm_use($cmid) {
  *
  * @return $quotas
  */
-function compilatio_getquotas() {
+function compilatio_getquotas($apiconfigid = null) {
 
-    global $CFG;
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
-    /*
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
-    *  the constructor of the connection with the webservice (compilatio.class)
-    *  to call other functions that need this connection.
-    *  in this case get_quotas().
-    */
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
+    if (isset($apiconfigid)) {
+        $compilatio = compilatio_get_compilatio_service($apiconfigid);
+    } else {
+        $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
+    }
 
     return $compilatio->get_quotas();
 }
@@ -1861,29 +1911,20 @@ function compilatio_getquotas() {
  */
 function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
 
-    global $CFG, $DB, $OUTPUT;
+    global $DB, $OUTPUT;
 
     if (empty($plagiarismsettings)) {
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
     }
-    /*
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
-    *  the constructor of the connection with the webservice (compilatio.class)
-    *  to call other functions that need this connection.
-    *  in this case start_analyse().
-    */
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
+
+    $compilatio = compilatio_get_compilatio_service($plagiarismfile->apiconfigid);
 
     $analyse = $compilatio->start_analyse($plagiarismfile->externalid);
 
     if ($analyse === true) {
         // Update plagiarism record.
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_IN_QUEUE;
+        $plagiarismfile->timesubmitted = time();
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
     } else {
         if ($analyse->code == 'INVALID_ID_DOCUMENT') {
@@ -1923,21 +1964,10 @@ function compilatio_valid_md5($hash) {
  */
 function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) {
 
-    global $CFG, $DB;
+    global $DB;
 
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-    /*
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
-    *  the constructor of the connection with the webservice (compilatio.class)
-    *  to call other functions that need this connection.
-    *  in this case get_doc().
-    */
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
+    $compilatio = compilatio_get_compilatio_service($plagiarismfile->apiconfigid);
 
     $docstatus = $compilatio->get_doc($plagiarismfile->externalid);
 
@@ -1971,8 +2001,12 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
         $plagiarismfile->attempt = $plagiarismfile->attempt + 1;
     }
 
-    // Optional yellow warning in submissions.
     if (is_object($docstatus)) {
+        // Failed analysis error when similarity score = -9%.
+        if ($docstatus->documentStatus->indice == -9) {
+            $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_FAILED;
+        }
+        // Optional yellow warning in submissions.
         $plagiarismfile->errorresponse = $docstatus->documentProperties->warning;
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
     }
@@ -1998,21 +2032,9 @@ function compilatio_analyse_files($plagiarismfiles) {
  * @return string, formatted as "YYYY-MM"
  */
 function compilatio_get_account_expiration_date() {
-
-    global $CFG;
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-    /*
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
-    *  the constructor of the connection with the webservice (compilatio.class)
-    *  to call other functions that need this connection.
-    *  in this case get_account_expiration_date().
-    */
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
+    $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
+
     return $compilatio->get_account_expiration_date();
 }
 
@@ -2023,9 +2045,7 @@ function compilatio_get_account_expiration_date() {
  */
 function compilatio_send_statistics() {
 
-    // Get data about installation.
-    global $CFG;
-    global $DB;
+    global $CFG, $DB;
 
     $language = $CFG->lang;
     $releasephp = phpversion();
@@ -2039,18 +2059,8 @@ function compilatio_send_statistics() {
     }
 
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-    /*
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
-    *  the constructor of the connection with the webservice (compilatio.class)
-    *  to call other functions that need this connection.
-    *  in this case post_configuration().
-    */
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
+    $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
+
     return $compilatio->post_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency);
 }
 
@@ -2061,20 +2071,8 @@ function compilatio_send_statistics() {
  */
 function compilatio_get_technical_news() {
 
-    global $CFG;
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-    /*
-    *  $CFG->proxy create the Connection with the webservice are necessary and used variables in
-    *  the constructor of the connection with the webservice (compilatio.class)
-    *  to call other functions that need this connection.
-    *  in this case get_technical_news().
-    */
-    $compilatio = new compilatioservice($plagiarismsettings['password'],
-        $plagiarismsettings['api'],
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
+    $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
 
     return $compilatio->get_technical_news();
 }
@@ -2138,6 +2136,12 @@ function compilatio_get_statistics($cmid) {
 
     $countunextractablesql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_UNEXTRACTABLE . "'";
     $countunextractable = $DB->count_records_sql($countunextractablesql, array($cmid, $cmid));
+
+    $countnotfoundsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_NOT_FOUND . "'";
+    $countnotfound = $DB->count_records_sql($countnotfoundsql, array($cmid, $cmid));
+
+    $countfailedsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_FAILED . "'";
+    $countfailed = $DB->count_records_sql($countfailedsql, array($cmid, $cmid));
 
     $countinqueuesql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_IN_QUEUE . "'";
     $countinqueue = $DB->count_records_sql($countinqueuesql, array($cmid, $cmid));
@@ -2227,6 +2231,12 @@ function compilatio_get_statistics($cmid) {
     if ($countunextractable !== 0) {
         $errors[] = array("not_analyzed_unextractable", $countunextractable);
     }
+    if ($countnotfound !== 0) {
+        $errors[] = array("documents_notfound", $countnotfound);
+    }
+    if ($countfailed !== 0) {
+        $errors[] = array("documents_failed", $countfailed);
+    }
 
     if (count($items) !== 0) {
         $result .= "<span>" . get_string("results", "plagiarism_compilatio") . "</span>";
@@ -2264,6 +2274,16 @@ function compilatio_get_unsupported_files($cmid) {
  */
 function compilatio_get_unextractable_files($cmid) {
     return compilatio_get_files_by_status_code($cmid, COMPILATIO_STATUSCODE_UNEXTRACTABLE);
+}
+
+/**
+ * Lists failed analysis documents in the assignment
+ *
+ * @param  string $cmid Course module ID
+ * @return array        containing the student & the file
+ */
+function compilatio_get_failed_analysis_files($cmid) {
+    return compilatio_get_files_by_status_code($cmid, COMPILATIO_STATUSCODE_FAILED);
 }
 
 /**
@@ -2556,7 +2576,7 @@ function compilatio_upload_files($files, $cmid) {
         $userid = $DB->get_field('assign_submission', 'userid', array('id' => $file->itemid));
 
         $f = $fs->get_file_by_id($file->id);
-        compilatio_queue_file($cmid, $userid, $f, $plagiarismsettings, true); // send the file to Compilatio.
+        compilatio_queue_file($cmid, $userid, $f, $plagiarismsettings, true); // Send the file to Compilatio.
         /* Start analysis if the settings are on "manual" or "timed" and the planned time is greater than the current time
         Starting "auto" analysis is handled in "compilatio_send_file" */
         if ($analysistype == COMPILATIO_ANALYSISTYPE_MANUAL ||
@@ -2738,6 +2758,40 @@ function compilatio_get_global_statistics($html = true) {
         if (!$html) {
             $result["teacherid"] = implode(', ', $teacherid);
             $result["teacher"] = implode(', ', $teachername);
+        }
+
+        if ($html) {
+            $result["errors"] = "";
+            $sql = "SELECT COUNT(DISTINCT id) FROM {plagiarism_compilatio_files} WHERE cm=? AND statuscode=?";
+
+            $countunsupported = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_UNSUPPORTED));
+            if ($countunsupported > 0) {
+                $result["errors"] .= '- ' . get_string("stats_unsupported", "plagiarism_compilatio")
+                . ' : ' . $countunsupported . '</br>';
+            };
+
+            $countunextractable = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_UNEXTRACTABLE));
+            if ($countunextractable > 0) {
+                $result["errors"] .= '- ' . get_string("stats_unextractable", "plagiarism_compilatio")
+                . ' : ' . $countunextractable . '</br>';
+            };
+
+            $countnotfound = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_NOT_FOUND));
+            if ($countnotfound > 0) {
+                $result["errors"] .= '- ' . get_string("stats_notfound", "plagiarism_compilatio")
+                . ' : ' . $countnotfound . '</br>';
+            };
+
+            $countfailed = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_FAILED));
+            if ($countfailed > 0) {
+                $result["errors"] .= '- ' . get_string("stats_failed", "plagiarism_compilatio") . ' : ' . $countfailed . '</br>';
+            };
+        } else {
+            $sql = "SELECT COUNT(DISTINCT id) FROM {plagiarism_compilatio_files} WHERE cm=? AND statuscode=?";
+            $result["errors_unsupported"] = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_UNSUPPORTED));
+            $result["errors_unextractable"] = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_UNEXTRACTABLE));
+            $result["errors_notfound"] = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_NOT_FOUND));
+            $result["errors_failed"] = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_FAILED));
         }
 
         $results[] = $result;
@@ -3157,4 +3211,22 @@ function compilatio_check_file_type($filename) {
         }
     }
     return '';
+}
+
+/**
+ *
+ * Get or create a compilatio service.
+ *
+ * @param  int  $apiconfigid Identifier of the API configuration
+ * @return compilatioservice  Return compilatioservice
+ */
+function compilatio_get_compilatio_service($apiconfigid) {
+
+    global $CFG;
+
+    return compilatioservice::getinstance($apiconfigid,
+        $CFG->proxyhost,
+        $CFG->proxyport,
+        $CFG->proxyuser,
+        $CFG->proxypassword);
 }
