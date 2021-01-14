@@ -40,6 +40,9 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/helper/csv_helper.php');
 // Get constants.
 require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
+// Get forms.
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
+
 /**
  * Compilatio Class
  * @copyright  2012 Dan Marsden http://danmarsden.com
@@ -923,6 +926,10 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $output .= "<span>" . count($alerts) . "</span></div>";
         }
 
+        // Search icon.
+        $output .= "<div title='" . get_string("compilatio_search_tab", "plagiarism_compilatio") .
+            "' id='show-search' class='compilatio-icon'><i class='fa fa-search fa-2x'></i></div>";
+
         // Hide/Show button.
         $output .= "
             <div id='compilatio-hide-area' class='compilatio-icon'  title='" .
@@ -932,7 +939,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
         $output .= "</div>";
 
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', array($alerts));
+        $idcourt = optional_param('idcourt', null, PARAM_RAW);
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', array($alerts, $idcourt));
 
         $output .= "<div class='compilatio-clear'></div>";
 
@@ -991,6 +999,33 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
             $output .= "</div>";
         }
+
+        // Search tab.
+        $output .= "<div id='compilatio-search'>
+            <h5>" . get_string("compilatio_search_tab", "plagiarism_compilatio") . "</h5>
+            <p>" . get_string("compilatio_search_help", "plagiarism_compilatio") . "</p>
+            <form class='form-inline' action=" . $PAGE->url . " method='post'>
+                <input class='form-control m-2' type='text' id='idcourt' name='idcourt' value='" . $idcourt
+                    . "' placeholder='" . get_string("compilatio_iddocument", "plagiarism_compilatio") . "'>
+                <input class='btn btn-primary' type='submit' value='" .get_string("compilatio_search", "plagiarism_compilatio"). "'>
+            </form>";
+
+        if (!empty($idcourt)) {
+            $sql = "SELECT user.lastname, user.firstname, cf.idcourt, cf.cm FROM {plagiarism_compilatio_files} cf
+                JOIN {user} user on cf.userid = user.id
+                WHERE cf.idcourt = ?";
+            $doc = $DB->get_record_sql($sql, array($idcourt));
+
+            if ($doc) {
+                $module = get_coursemodule_from_id(null, $doc->cm);
+                $doc->modulename = $module->name;
+                $output .= get_string('compilatio_author', 'plagiarism_compilatio', $doc);
+            } else {
+                $output .= get_string("compilatio_search_notfound", "plagiarism_compilatio");
+            }
+        }
+
+        $output .= "</div>";
 
         // Display timed analysis date.
         if (isset($programmedanalysisdate)) {
@@ -1547,6 +1582,7 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename='')
  *
  * @param array    $duplicates
  * @param array    $plagiarismsettings
+ * @param bool     $deletefilesmoodledb
  * @return boolean true if all documents have been processed, false otherwise
  */
 function compilatio_remove_duplicates($duplicates, $plagiarismsettings, $deletefilesmoodledb = true) {
@@ -1711,7 +1747,8 @@ function compilatio_queue_file($cmid,
  * Also checks max attempts to see if it has exceeded.
  *
  * @param  array $plagiarismfile    A row of plagiarism_compilatio_files in database
- * @return bool                     Return true if succeed, fasle otherwise
+ * @param  bool $hasmaxattempt      True for queue_file, false for get_scores
+ * @return bool                     Return true if succeed, false otherwise
  */
 function compilatio_check_attempt_timeout($plagiarismfile, $hasmaxattempt = false) {
 
@@ -1887,6 +1924,7 @@ function compilatio_cm_use($cmid) {
 /**
  * Fonction to return current compilatio quota
  *
+ * @param bool $apiconfigid
  * @return $quotas
  */
 function compilatio_getquotas($apiconfigid = null) {
@@ -1980,6 +2018,7 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
                 $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_COMPLETE;
             }
             $plagiarismfile->similarityscore = round($docstatus->documentStatus->indice);
+            $plagiarismfile->idcourt = $docstatus->documentProperties->Shortcut;
             // Now get report url.
             $plagiarismfile->reporturl = $compilatio->get_report_url($plagiarismfile->externalid);
             $emailstudents = $DB->get_field('plagiarism_compilatio_config',

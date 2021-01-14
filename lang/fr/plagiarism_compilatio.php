@@ -166,8 +166,15 @@ $string["updatecompilatioresults"] = "Rafraîchir les informations";
 $string["update_in_progress"] = "Mise à jour des informations en cours";
 $string["display_stats"] = "Afficher les statistiques de ce devoir";
 $string["analysis_completed"] = 'Analyse terminée: {$a}% de similitudes.';
-$string["compilatio_help_assign"] = 'Obtenir de l\'aide sur le plugin Compilatio';
+$string["compilatio_help_assign"] = "Obtenir de l&#39aide sur le plugin Compilatio";
 $string["display_notifications"] = "Afficher les notifications";
+$string["compilatio_search_tab"] = "Rechercher l&#39auteur d&#39un document.";
+$string["compilatio_search"] = "Rechercher";
+$string["compilatio_iddocument"] = "Identifiant du document";
+$string["compilatio_search_notfound"] = "Aucun document n'a été trouvé pour cet identifiant.";
+$string["compilatio_author"] = 'Le document {$a->idcourt} présent dans l\'activité <b>{$a->modulename}</b> appartient à <b>{$a->lastname} {$a->firstname}</b>.';
+$string["compilatio_search_help"] = "Vous pouvez retrouver l'auteur d'un document en récupérant l'identifiant du document dans les sources du rapport d'analyse. Ex : 1. Votre document: <b>1st5xfj2</b> - Nom_Activité(30)Nom_Document_Copié.odt.";
+
 // CSV.
 $string["firstname"] = "Prénom";
 $string["lastname"] = "Nom";

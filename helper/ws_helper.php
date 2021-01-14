@@ -38,7 +38,8 @@ class ws_helper
     /**
      * Get a new instance of web service class
      *
-     * @return object   Web service instance
+     * @param string $compid Document ID
+     * @return object Web service instance
      */
     public static function get_ws($compid = false) {
 

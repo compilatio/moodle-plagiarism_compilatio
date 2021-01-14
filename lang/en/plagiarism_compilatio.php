@@ -177,6 +177,13 @@ $string["display_stats"] = "Display statistics about this assignment";
 $string["analysis_completed"] = 'Analysis completed: {$a}% of similarities.';
 $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
 $string["display_notifications"] = "Display notifications";
+$string["compilatio_search_tab"] = "Find the author of a document.";
+$string["compilatio_search"] = "Search";
+$string["compilatio_iddocument"] = "Document identifier";
+$string["compilatio_search_notfound"] = "No document was found for this identifier.";
+$string["compilatio_author"] = 'Le document {$a->idcourt} in activity <b>{$a->modulename}</b> belongs to <b>{$a->lastname} {$a->firstname}</b>.';
+$string["compilatio_search_help"] = "You can find the author of a document by retrieving the document identifier from the sources of the analysis report. Example: 1. Your document: <b>1st5xfj2</b> - Assign_Name(30)Name_Copied_Document.odt.";
+
 // CSV.
 $string["firstname"] = "First name";
 $string["lastname"] = "Last name";

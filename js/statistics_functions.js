@@ -1,7 +1,18 @@
+/**
+ * CompilatioPercentage
+ * 
+ * @param v
+ */
 function compilatioPercentage(v) {
     return v + "%";
 }
 
+/**
+ * CompilatioUrlSorter
+ * 
+ * @param a
+ * @param b
+ */
 function compilatioUrlSorter(a, b) {
 
     // Strip tags to compare their content.
