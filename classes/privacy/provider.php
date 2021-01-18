@@ -97,7 +97,8 @@ class provider implements
             'attempt'           => 'privacy:metadata:plagiarism_compilatio_files:attempt',
             'errorresponse'     => 'privacy:metadata:plagiarism_compilatio_files:errorresponse',
             'recyclebinid'      => 'privacy:metadata:plagiarism_compilatio_files:recyclebinid',
-            'apiconfigid'       => 'privacy:metadata:plagiarism_compilatio_files:apiconfigid'
+            'apiconfigid'       => 'privacy:metadata:plagiarism_compilatio_files:apiconfigid',
+            'idcourt'           => 'privacy:metadata:plagiarism_compilatio_files:idcourt'
         ], 'privacy:metadata:plagiarism_compilatio_files');
 
         $collection->add_external_location_link('External Compilatio Document', [

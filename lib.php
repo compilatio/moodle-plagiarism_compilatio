@@ -40,9 +40,6 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/helper/csv_helper.php');
 // Get constants.
 require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
-// Get forms.
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
-
 /**
  * Compilatio Class
  * @copyright  2012 Dan Marsden http://danmarsden.com
@@ -679,24 +676,16 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             // Restart analyses.
             $countsuccess = 0;
             $docsfailed = array();
-            $compilatioanalysistype = $DB->get_field('plagiarism_compilatio_config', 'value', array(
+            $params = array(
                 'cm' => $cm->id,
-                'name' => 'compilatio_analysistype'
-            ));
-            if ($compilatioanalysistype == COMPILATIO_ANALYSISTYPE_AUTO) {
-                $countsuccess = count($plagiarismfiles);
-            } else {
-                $params = array(
-                    'cm' => $cm->id,
-                    'statuscode' => COMPILATIO_STATUSCODE_ACCEPTED
-                );
-                $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files', $params);
-                foreach ($plagiarismfiles as $plagiarismfile) {
-                    if (compilatio_startanalyse($plagiarismfile)) {
-                        $countsuccess++;
-                    } else {
-                        $docsfailed[] = $plagiarismfile->filename;
-                    }
+                'statuscode' => COMPILATIO_STATUSCODE_ACCEPTED
+            );
+            $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files', $params);
+            foreach ($plagiarismfiles as $plagiarismfile) {
+                if (compilatio_startanalyse($plagiarismfile)) {
+                    $countsuccess++;
+                } else {
+                    $docsfailed[] = $plagiarismfile->filename;
                 }
             }
 
@@ -1143,16 +1132,6 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
                 $DB->insert_record('plagiarism_compilatio_config', $newelement);
             }
         }
-        // Check if we are changing from timed or manual to instant.
-        // If changing to instant, make all existing files to get a report.
-        if (isset($existingelements['compilatio_analysistype']) &&
-            $existingelements['compilatio_analysistype'] !== $data->compilatio_analysistype
-            && $data->compilatio_analysistype == COMPILATIO_ANALYSISTYPE_AUTO) {
-            // Get all existing files in this assignment set to manual status.
-            $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files',
-                array('cm' => $data->coursemodule, 'statuscode' => COMPILATIO_STATUSCODE_ACCEPTED));
-            compilatio_analyse_files($plagiarismfiles);
-        }
     }
     return $data;
 }
@@ -1331,10 +1310,6 @@ function compilatio_send_pending_files($plagiarismsettings) {
 
                 ws_helper::set_indexing_state($compid, $indexingstate->value);
 
-                compilatio_start_if_direct_analysis($plagiarismfile,
-                    $plagiarismfile->cm,
-                    $plagiarismsettings);
-
                 unlink($tmpfile->filepath);
             } else {
 
@@ -1353,30 +1328,8 @@ function compilatio_send_pending_files($plagiarismsettings) {
                     $file);
 
                 ws_helper::set_indexing_state($compid, $indexingstate->value);
-
-                compilatio_start_if_direct_analysis($plagiarismfile,
-                    $plagiarismfile->cm,
-                    $plagiarismsettings);
             }
         }
-    }
-}
-
-/**
- * Start an analyse if analysis set up on direct
- *
- * @param  object $plagiarismfile     File
- * @param  int    $cmid               Course module ID
- * @param  array  $plagiarismsettings Settings
- * @return void
- */
-function compilatio_start_if_direct_analysis($plagiarismfile, $cmid, $plagiarismsettings) {
-
-    global $DB;
-    $plagiarismvalues = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => $cmid), '', 'name, value');
-    // Check settings to see if we need to tell compilatio to process this file now.
-    if ($plagiarismvalues['compilatio_analysistype'] == COMPILATIO_ANALYSISTYPE_AUTO) {
-        compilatio_startanalyse($plagiarismfile, $plagiarismsettings);
     }
 }
 
@@ -1469,14 +1422,13 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename='')
     $mform->addElement('select', 'use_compilatio', get_string("use_compilatio", "plagiarism_compilatio"), $ynoptions);
     $mform->setDefault('use_compilatio', 1);
 
-    $analysistypes = array(COMPILATIO_ANALYSISTYPE_AUTO => get_string('analysistype_direct', 'plagiarism_compilatio'),
-        COMPILATIO_ANALYSISTYPE_MANUAL => get_string('analysistype_manual', 'plagiarism_compilatio'),
+    $analysistypes = array(COMPILATIO_ANALYSISTYPE_MANUAL => get_string('analysistype_manual', 'plagiarism_compilatio'),
         COMPILATIO_ANALYSISTYPE_PROG => get_string('analysistype_prog', 'plagiarism_compilatio'));
     if (!$defaults) { // Only show this inside a module page - not on default settings pages.
         $mform->addElement('select', 'compilatio_analysistype',
             get_string('analysis_type', 'plagiarism_compilatio'),
             $analysistypes);
-        $mform->addHelpButton('compilatio_analysistype', 'analysis_type', 'plagiarism_compilatio');
+        $mform->addHelpButton('compilatio_analysistype', 'analysis', 'plagiarism_compilatio');
         $mform->setDefault('compilatio_analysistype', COMPILATIO_ANALYSISTYPE_MANUAL);
     }
 
@@ -1735,7 +1687,6 @@ function compilatio_queue_file($cmid,
         $plagiarismfile->attempt = $plagiarismfile->attempt + 1;
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
         $compid = compilatio_send_file_to_compilatio($plagiarismfile, $plagiarismsettings, $file);
-        compilatio_start_if_direct_analysis($plagiarismfile, $cmid, $plagiarismsettings);
         return false;
     }
 
@@ -3224,7 +3175,6 @@ function compilatio_check_allowed_file_max_size($file) {
     }
 
     return $size <= $allowedsize;
-
 }
 
 /**

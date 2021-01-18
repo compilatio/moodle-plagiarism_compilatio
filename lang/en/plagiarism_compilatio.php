@@ -84,9 +84,13 @@ $string['analysis_type_help'] = '<p>There are 3 possible options:</p>
 	<li><strong>Manual:</strong> The document is sent to Compilatio but the teacher must manually trigger the anaylyis of documents.</li>
 	<li><strong>Timed: </strong>The document is sent to Compilatio and analysed at the time/date set.</li>
 </ul>
-<p>To enable all documents to be compared with each other, wait until all work is submitted by students then trigger the analyis.</p>
-';
-$string['analysistype_direct'] = 'Direct';
+<p>To enable all documents to be compared with each other, wait until all work is submitted by students then trigger the analyis.</p>';
+$string['analysis_help'] = '<p>There are 2 possible options:</p>
+<ul>
+	<li><strong>Manual:</strong> The document is sent to Compilatio but the teacher must manually trigger the anaylyis of documents.</li>
+	<li><strong>Timed: </strong>The document is sent to Compilatio and analysed at the time/date set.</li>
+</ul>
+<p>To enable all documents to be compared with each other, wait until all work is submitted by students then trigger the analyis.</p>';
 $string['analysistype_manual'] = 'Manual';
 $string['analysistype_prog'] = 'Timed';
 $string['analysis_date'] = 'Analysis Date (Timed analysis only)';
@@ -246,27 +250,6 @@ $string["loading"] = "Loading, please wait...";
 $string["unknownlang"] = "Caution, the language of some passages in this document was not recognized.";
 $string["badqualityanalysis"] = "Issues were encountered while analysing the document. It is possible that certain sources may not have been identified, or the result may be incomplete.";
 // HELP.
-$string['help_compilatio_settings_title'] = 'Which mode should I use in the Compilatio settings of an activity?';
-$string['help_compilatio_settings_content'] = '
-Three analysis types are available with Compilatio plugin :
-<ul>
-<li>
-Direct : <br/>
-Each document is sent to Compilatio and analyzed as soon as it is uploaded by the student.<br/>
-Recommended if you wish to get the results quickly and if it is not necessary that all documents are compared with each others.
-</li>
-<li>
-Timed : <br/>
-Choose date to start Compilatio analysis, later than the deadline for the students.<br/>
-Recommended if you wish to compare all the documents of the activity mutually.
-</li>
-<li>
-Manual : <br/>
-The documents of the activity will not be analyzed until you trigger the analysis.<br/>
-You can click on the “Start analysis” button of each document to trigger its analysis.
-</li>
-</ul>
-';
 $string['help_compilatio_format_content'] = "Compilatio.net handles most formats used in word processors and on the internet.
 The following formats are supported :";
 $string['goto_compilatio_service_status'] = "See Compilatio services status.";
@@ -314,6 +297,7 @@ $string['privacy:metadata:plagiarism_compilatio_files:attempt'] = 'The number of
 $string['privacy:metadata:plagiarism_compilatio_files:errorresponse'] = 'The response if an error occurred - actually, this field is not used anymore and is automatically set to \'NULL\'';
 $string['privacy:metadata:plagiarism_compilatio_files:recyclebinid'] = 'The recycle bin identifier in case the course module or course has been put in the recycle bin';
 $string['privacy:metadata:plagiarism_compilatio_files:apiconfigid'] = 'The identifier of the API configuration with which the submission is linked';
+$string['privacy:metadata:plagiarism_compilatio_files:idcourt'] = 'The submission\'s short ID stored in the Compilatio database';
 
 $string['privacy:metadata:external_compilatio_document'] = 'Informations about the documents in Compilatio database';
 $string['privacy:metadata:external_compilatio_document:lastname'] = 'The last name of the Compilatio user who submitted the file - beware, this user is the one linked to the Compilatio API key of the Moodle platform (so it\'s usually the administrator of the platform)';

@@ -80,7 +80,12 @@ $string['analysis_type_help'] = '<p>Vous disposez de trois options :</p>
 	<li><strong> Programmé:</strong> Le document est envoyé à Compilatio puis analysé à l\'heure/date choisie(s) </li>
 </ul>
 <p>Pour que tous les documents soient comparés entre eux lors des analyses, déclenchez les analyses seulement lorsque tous les documents sont présents dans le devoir.</p>';
-$string['analysistype_direct'] = 'Immédiat';
+$string['analysis_help'] = '<p>Vous disposez de deux options :</p>
+<ul>
+	<li><strong> Manuel:</strong> Le document est envoyé à Compilatio, mais l\'enseignant doit déclencher manuellement les analyses des documents</li>
+	<li><strong> Programmé:</strong> Le document est envoyé à Compilatio puis analysé à l\'heure/date choisie(s) </li>
+</ul>
+<p>Pour que tous les documents soient comparés entre eux lors des analyses, déclenchez les analyses seulement lorsque tous les documents sont présents dans le devoir.</p>';
 $string['analysistype_manual'] = 'Manuel';
 $string['analysistype_prog'] = 'Programmé';
 $string['enabledandworking'] = 'Le plugin Compilatio est actif et fonctionnel.';
@@ -240,27 +245,6 @@ $string["loading"] = "Chargement en cours, veuillez patienter...";
 $string["unknownlang"] = "Attention, la langue de certains passages de ce document n'a pas été reconnue.";
 $string["badqualityanalysis"] = "Des incidents ont été détectés lors l'analyse du document. Il est possible que certaines sources n'aient pas été identifiées ou que le résultat soit incomplet.";
 /* HELP */
-$string['help_compilatio_settings_title'] = 'Quels réglages choisir dans les paramètres Compilatio d’une activité?';
-$string['help_compilatio_settings_content'] = 'Trois types d’analyse sont disponibles avec le plugin Compilatio :
-<ul>
-<li>
-Immédiat : <br/>
-Chaque document est envoyé à Compilatio et analysé dès le dépôt par l’étudiant.
-Recommandé si vous souhaitez avoir vos résultats au plus vite et qu’il n’est pas nécessaire que tous les documents de l’activité soient comparés mutuellement.
-</li>
-<li>
-Programmé : <br/>
-Choisissez une date de démarrage des analyses Compilatio postérieure à la date limite de rendu par les étudiants.
-Recommandé si vous souhaitez comparer tous les documents de votre activité entre eux.
-</li>
-<li>
-Manuel : <br/>
-Les documents de votre activité ne sont analysés que si vous démarrez vous-même les analyses.
-Pour lancer l’analyse d’un document, cliquez sur le bouton “analyser” de chaque document.
-Le bouton “Analyser tous les documents” vous permet de lancer l’analyse de tous les documents présents dans un devoir.
-</li>
-</ul>
-';
 $string['help_compilatio_format_content'] = "Compilatio.net prend en charge la plupart des formats utilisés en bureautique et sur Internet. Les formats suivants sont acceptés :";
 $string['goto_compilatio_service_status'] = "Voir l'état des services Compilatio.";
 $string['helpcenter'] = "Accédez au centre d'aide Compilatio pour l'utilisation du plugin Compilatio dans Moodle.";
@@ -307,6 +291,7 @@ $string['privacy:metadata:plagiarism_compilatio_files:attempt'] = 'Le nombre de 
 $string['privacy:metadata:plagiarism_compilatio_files:errorresponse'] = 'La réponse au cas où il y aurait une erreur - actuellement, ce champ n\'est plus utilisé et est automatiquement mis à \'NULL\'';
 $string['privacy:metadata:plagiarism_compilatio_files:recyclebinid'] = "L'identifiant de la corbeille dans le cas où le module de cours ou le cours à été mis à la corbeille";
 $string['privacy:metadata:plagiarism_compilatio_files:apiconfigid'] = "L'identifiant de la configuration de l'API avec laquelle la soumission est liée";
+$string['privacy:metadata:plagiarism_compilatio_files:idcourt'] = "L'identifiant court de la soumission dans la base de données de Compilatio";
 
 $string['privacy:metadata:external_compilatio_document'] = 'Informations à propos des documents dans la base de données de Compilatio';
 $string['privacy:metadata:external_compilatio_document:lastname'] = 'Nom de l\'utilisateur Compilatio qui a soumis le fichier - attention, cet utilisateur est celui qui est lié à la clé d\'API Compilatio sur la plateforme Moodle (c\'est donc souvent l\'administrateur de la plateforme)';

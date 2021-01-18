@@ -44,7 +44,6 @@ define('COMPILATIO_STATUSCODE_FAILED', '418');
 define('COMPILATIO_STATUSCODE_COMPLETE', 'Analyzed');
 define('COMPILATIO_STATUSCODE_IN_QUEUE', 'In queue');
 
-define('COMPILATIO_ANALYSISTYPE_AUTO', 0);   // File shoud be processed as soon as the file is sent.
 define('COMPILATIO_ANALYSISTYPE_MANUAL', 1); // File processed when teacher manually decides to.
 define('COMPILATIO_ANALYSISTYPE_PROG', 2);   // File processed on set time/date.
 

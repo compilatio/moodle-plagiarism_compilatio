@@ -66,7 +66,6 @@ $string['analysis_type_help'] = '<p>Es stehen Ihnen drei Möglichkeiten zur Verf
     <li><strong> Geplant:</strong> Das Dokument wird an Compilatio gesendet und danach zu einer bestimmten Zeit/einem bestimmten Datum analysiert </li>
 </ul>
 <p>Damit die Dokumente bei der Analyse miteinander verglichen werden, lösen Sie die Analyse bitte erst dann aus, wenn alle Dokumente der Arbeit vorhanden sind.</p>';
-$string['analysistype_direct'] = 'Unmittelbar';
 $string['analysistype_manual'] = 'Manuell';
 $string['analysistype_prog'] = 'Geplant';
 $string['enabledandworking'] = 'Das Compilatio Plugin ist aktiv und funktionsfähig.';
@@ -209,27 +208,6 @@ $string["loading"] = "Wird geladen, bitte warten...";
 // ALERTS.
 $string["unknownlang"] = "Achtung, die Sprache einiger Passagen in diesem Dokument wurde nicht erkannt.";
 // HELP.
-$string['help_compilatio_settings_title'] = 'Welche Einstellungen in den Compilatio Parametern einer Aktivität auswählen?';
-$string['help_compilatio_settings_content'] = 'Im Compilatio Plugin stehen drei Analysetypen zur Verfügung:
-<ul>
-    <li>
-        Unmittelbar  : <br/>
-        Alle Dokumente werden nach ihrer Einreichung durch den Studenten an Compilatio geschickt und analysiert.
-        Empfohlen, wenn Sie die Resultate möglichst schnell erhalten möchten und es nicht notwendig ist, dass die Dokumente Ihrer Aktivität miteinander verglichen werden.
-    </li>
-    <li>
-        Geplant  : <br/>
-        Wählen Sie für die Compilatio Analysen ein Startdatum nach der Abgabefrist für die Studenten aus.
-        Empfohlen, wenn Sie alle Dokumente Ihrer Aktivität miteinander vergleichen möchten.
-    </li>
-    <li>
-        Manuell : <br/>
-        Die Dokumente Ihrer Aktivität werden erst analysiert, wenn Sie die Analysen manuell auslösen.
-        Um die Analyse eines Dokuments auszulösen, klicken Sie bitte in jedem Dokument auf die Schaltfläche „analysieren“.
-        Die Schaltfläche „alle Dokumente analysieren“ löst die Analyse aller in einer Arbeit vorhandenen Dokumente aus.
-    </li>
-</ul>
-';
 $string['help_compilatio_format_content'] = "Compilatio.net unterstützt die meisten in der Büroelektronik und im Internet verwendeten Formate. Folgende Formate werden akzeptiert:";
 $string['goto_helpcenter'] = "Klicken Sie auf das Fragezeichen, um ein neues Fenster zu öffnen und sich im Compilatio Hilfecenter einzuloggen.";
 $string['admin_goto_helpcenter'] = "Gehen Sie zum Compilatio Hilfecenter, um die Artikel zur Verwaltung des Moodle-Plug-Ins zu lesen.";

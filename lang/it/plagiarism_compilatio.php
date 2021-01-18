@@ -66,7 +66,6 @@ $string["analysis_type_help"] = '<p>Esistono 3 opzioni :</p>
 <li><strong> Programmato:</strong> Il documento è inviato a Compilatio e successivamente analizzato all\'ora/data scelta.</li>
 </ul>
 <p>Affinché tutti i documenti siano confrontati tra di loro durante le analisi, consigliamo di avviare le analisi solamente quando tutti i documenti sono consegnati nel compito.</p>';
-$string["analysistype_direct"] = 'Immediato';
 $string["analysistype_manual"] = 'Manuale';
 $string["analysistype_prog"] = 'Programmato';
 $string["enabledandworking"] = 'Il plug-in Compilatio è attivo e funzionale';
@@ -195,24 +194,6 @@ $string["loading"] = 'Caricamento in corso, si prega di attendere...';
 // ALERTS.
 $string["unknownlang"] = "Attenzione, la lingua di alcuni passaggi di questo documento non è stata riconosciuta.";
 // Help.
-$string['help_compilatio_settings_title'] = 'Quali parametri scegliere nelle impostazioni Compilatio di un compito?';
-$string['help_compilatio_settings_content'] = "Il plug-in Compilatio permette di avviare le analisi secondo 3 opzioni:
-<ul>
-<li>
-Immediato:<br/>
-Ogni documento è inviato a Compilatio ed analizzato dal momento in cui lo studente lo deposita.
-Consigliato se si desidera avere i risultati il più presto possibile e se non è necessario che tutti i documenti siano confrontati tra di loro
-</li>
-<li>
-Programmato: <br/>
-Tutti i documenti vengono analizzati alla data indicata. Scegliere una data di avvio delle analisi Compilatio successiva alla data limite di consegna da parte degli studenti.
-Consigliato se si desidera confrontare tutti i documenti del compito tra di loro.
-</li>
-<li>
-Manuale: <br/>
-I documenti del compito sono analizzati solo se le analisi sono avviate personalmente. Per avviare l'analisi di un documento, cliccare sul tasto \"Analizzare\" di ogni documento. Il tasto \"Analizzare tutti i documenti\" permette di avviare l'analisi di tutti i documenti presenti nel compito.
-</li>
-</ul>";
 $string['help_compilatio_format_content'] = "Compilatio.net prende in considerazione la maggior parte dei formati utilizzati.
 I seguenti formati sono accettati";
 $string['goto_helpcenter'] = "Clicca sul punto di domanda per aprire una nuova finestra e collegarti al centro di assistenza Compilatio.";
