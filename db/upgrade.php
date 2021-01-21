@@ -165,14 +165,16 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021011100, 'plagiarism', 'compilatio');
     }
 
-    if ($oldversion < 2021011300) {
+    if ($oldversion < 2021012100) {
+        set_config('allow_search_tab', 0, 'plagiarism_compilatio');
+
         $DB->execute("UPDATE {plagiarism_compilatio_config} SET value='1' WHERE name='compilatio_analysistype' AND value=0");
 
         $table = new xmldb_table('plagiarism_compilatio_files');
         $field = new xmldb_field('idcourt', XMLDB_TYPE_CHAR, '10', null, null, null, null);
         $dbman->add_field($table, $field);
 
-        upgrade_plugin_savepoint(true, 2021011300, 'plagiarism', 'compilatio');
+        upgrade_plugin_savepoint(true, 2021012100, 'plagiarism', 'compilatio');
     }
 
     return true;

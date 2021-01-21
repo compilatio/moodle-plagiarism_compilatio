@@ -184,9 +184,11 @@ $string["display_notifications"] = "Display notifications";
 $string["compilatio_search_tab"] = "Find the author of a document.";
 $string["compilatio_search"] = "Search";
 $string["compilatio_iddocument"] = "Document identifier";
-$string["compilatio_search_notfound"] = "No document was found for this identifier.";
+$string["compilatio_search_notfound"] = "No document was found for this identifier among the documents loaded on your Moodle platform.";
 $string["compilatio_author"] = 'Le document {$a->idcourt} in activity <b>{$a->modulename}</b> belongs to <b>{$a->lastname} {$a->firstname}</b>.';
 $string["compilatio_search_help"] = "You can find the author of a document by retrieving the document identifier from the sources of the analysis report. Example: 1. Your document: <b>1st5xfj2</b> - Assign_Name(30)Name_Copied_Document.odt.";
+$string["allow_search_tab"] = "Activate the search tool to identify the author of a document.";
+$string["allow_search_tab_help"] = "The search tool allows you to search for a student's first and last name based on a document identifier visible in the analysis reports.  This tool is available in the assign activities only, but allows you to search all the documents present on your platform.";
 
 // CSV.
 $string["firstname"] = "First name";

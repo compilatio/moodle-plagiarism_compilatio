@@ -176,9 +176,11 @@ $string["display_notifications"] = "Afficher les notifications";
 $string["compilatio_search_tab"] = "Rechercher l&#39auteur d&#39un document.";
 $string["compilatio_search"] = "Rechercher";
 $string["compilatio_iddocument"] = "Identifiant du document";
-$string["compilatio_search_notfound"] = "Aucun document n'a été trouvé pour cet identifiant.";
+$string["compilatio_search_notfound"] = "Aucun document n'a été trouvé pour cet identifiant parmi les documents chargés sur votre plateforme Moodle.";
 $string["compilatio_author"] = 'Le document {$a->idcourt} présent dans l\'activité <b>{$a->modulename}</b> appartient à <b>{$a->lastname} {$a->firstname}</b>.';
-$string["compilatio_search_help"] = "Vous pouvez retrouver l'auteur d'un document en récupérant l'identifiant du document dans les sources du rapport d'analyse. Ex : 1. Votre document: <b>1st5xfj2</b> - Nom_Activité(30)Nom_Document_Copié.odt.";
+$string["compilatio_search_help"] = "Vous pouvez retrouver l'auteur d'un document en récupérant l'identifiant du document dans les sources du rapport d'analyse. Exemple : 1. Votre document: <b>1st5xfj2</b> - Nom_Activité(30)Nom_Document_Copié.odt.";
+$string["allow_search_tab"] = "Activer l'outil de recherche permettant d'identifier l'auteur d'un document.";
+$string["allow_search_tab_help"] = "L'outil de recherche permet de rechercher le nom et prénom d'un étudiant d'après un identifiant de document visible dans les rapports d'analyses. Cet outil est disponible dans les activités devoir uniquement, mais permet de faire une recherche sur tous les documents présent sur votre plateforme.";
 
 // CSV.
 $string["firstname"] = "Prénom";

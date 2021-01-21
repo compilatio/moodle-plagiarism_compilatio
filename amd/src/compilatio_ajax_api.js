@@ -84,10 +84,10 @@ define(['jquery'], function($) {
     exports.compilatioTabs = function(alerts, idcourt) {
         $(document).ready(function() {
             var selectedElement = '';
-            if (alerts.length > 0) {
-                selectedElement = '#compilatio-notifications';
-            } else if (idcourt) {
+            if (idcourt) {
                 selectedElement = '#compilatio-search';
+            } else if (alerts.length > 0) {
+                selectedElement = '#compilatio-notifications';
             } else {
                 selectedElement = '#compilatio-home';
             }

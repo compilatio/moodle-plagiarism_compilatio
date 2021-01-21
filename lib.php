@@ -915,9 +915,11 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $output .= "<span>" . count($alerts) . "</span></div>";
         }
 
-        // Search icon.
-        $output .= "<div title='" . get_string("compilatio_search_tab", "plagiarism_compilatio") .
-            "' id='show-search' class='compilatio-icon'><i class='fa fa-search fa-2x'></i></div>";
+        if ($plagiarismsettings["allow_search_tab"]) {
+            // Search icon.
+            $output .= "<div title='" . get_string("compilatio_search_tab", "plagiarism_compilatio") .
+                "' id='show-search' class='compilatio-icon'><i class='fa fa-search fa-2x'></i></div>";
+        }
 
         // Hide/Show button.
         $output .= "
@@ -1962,8 +1964,8 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
 
     if (isset($docstatus->documentStatus->status)) {
         if ($docstatus->documentStatus->status == "ANALYSE_COMPLETE") {
-            if (isset($docstatus->documentProperties) && $docstatus->documentProperties->wordCount < 10) {
-                // Set the code to UNEXTRACTABLE if the documents contains less than 10 words:.
+            if (isset($docstatus->documentProperties) && $docstatus->documentProperties->wordCount < 100) {
+                // Set the code to UNEXTRACTABLE if the documents contains less than 100 words.
                 $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_UNEXTRACTABLE;
             } else {
                 $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_COMPLETE;
