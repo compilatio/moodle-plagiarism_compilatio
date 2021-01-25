@@ -80,6 +80,7 @@ $string['analysis_type_help'] = '<p>Vous disposez de trois options :</p>
 	<li><strong> Programmé:</strong> Le document est envoyé à Compilatio puis analysé à l\'heure/date choisie(s) </li>
 </ul>
 <p>Pour que tous les documents soient comparés entre eux lors des analyses, déclenchez les analyses seulement lorsque tous les documents sont présents dans le devoir.</p>';
+$string['analysis'] = 'Lancement des analyses';
 $string['analysis_help'] = '<p>Vous disposez de deux options :</p>
 <ul>
 	<li><strong> Manuel:</strong> Le document est envoyé à Compilatio, mais l\'enseignant doit déclencher manuellement les analyses des documents</li>

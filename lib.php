@@ -1428,7 +1428,7 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename='')
         COMPILATIO_ANALYSISTYPE_PROG => get_string('analysistype_prog', 'plagiarism_compilatio'));
     if (!$defaults) { // Only show this inside a module page - not on default settings pages.
         $mform->addElement('select', 'compilatio_analysistype',
-            get_string('analysis_type', 'plagiarism_compilatio'),
+            get_string('analysis', 'plagiarism_compilatio'),
             $analysistypes);
         $mform->addHelpButton('compilatio_analysistype', 'analysis', 'plagiarism_compilatio');
         $mform->setDefault('compilatio_analysistype', COMPILATIO_ANALYSISTYPE_MANUAL);

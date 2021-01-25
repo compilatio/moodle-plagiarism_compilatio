@@ -7,12 +7,8 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Update failed analyses management.
-- Update global statistics (admin) table. 
-- Update Help Center connection.
-- Optimisation of the sending of files to Compilatio by the scheduled task.
-- Optimisation of the waiting time between calls to the API.
-- Added the possibility to use multiple API keys.
+- Removed the option to automatically launch analyses.
+- Added the possibility to search the author of a document.
 
 QUICK INSTALL
 ================

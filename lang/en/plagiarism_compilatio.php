@@ -85,6 +85,7 @@ $string['analysis_type_help'] = '<p>There are 3 possible options:</p>
 	<li><strong>Timed: </strong>The document is sent to Compilatio and analysed at the time/date set.</li>
 </ul>
 <p>To enable all documents to be compared with each other, wait until all work is submitted by students then trigger the analyis.</p>';
+$string['analysis'] = 'Analysis Start';
 $string['analysis_help'] = '<p>There are 2 possible options:</p>
 <ul>
 	<li><strong>Manual:</strong> The document is sent to Compilatio but the teacher must manually trigger the anaylyis of documents.</li>
