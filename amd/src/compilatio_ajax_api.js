@@ -116,7 +116,7 @@ define(['jquery'], function($) {
             /**
              * TabClick
              * Show clicked tab.
-             * 
+             *
              * @param tabClicked
              * @param contentToShow
              */

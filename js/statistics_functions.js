@@ -1,6 +1,6 @@
 /**
  * CompilatioPercentage
- * 
+ *
  * @param v
  */
 function compilatioPercentage(v) {
@@ -9,7 +9,7 @@ function compilatioPercentage(v) {
 
 /**
  * CompilatioUrlSorter
- * 
+ *
  * @param a
  * @param b
  */

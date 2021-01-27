@@ -1441,6 +1441,15 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename='')
             array('optional' => false));
         $mform->setDefault('compilatio_timeanalyse', time() + 7 * 24 * 3600);
         $mform->disabledif('compilatio_timeanalyse', 'compilatio_analysistype', 'noteq', COMPILATIO_ANALYSISTYPE_PROG);
+
+        $lang = current_language();
+        if ($lang == 'fr') {
+            $group = [];
+            $group[] = $mform->createElement('static', 'calendar', '',
+                "<img style='width: 45em;' src='https://content.compilatio.net/images/calendrier_affluence_magister.png'>");
+            $mform->addGroup($group, 'calendargroup', '', ' ', false);
+            $mform->hideIf('calendargroup', 'compilatio_analysistype', 'noteq', COMPILATIO_ANALYSISTYPE_PROG);
+        }
     }
 
     $mform->addElement('select', 'compilatio_show_student_score',
@@ -1836,8 +1845,8 @@ function compilatio_get_scores($plagiarismsettings) {
 
     mtrace("getting Compilatio similarity scores");
     // Get all files set that have been submitted.
-    $sql = "statuscode = ? OR statuscode = ? OR statuscode = ?";
-    $params = array(COMPILATIO_STATUSCODE_ANALYSING, COMPILATIO_STATUSCODE_IN_QUEUE, "pending");
+    $sql = "statuscode = ? OR statuscode = ?";
+    $params = array(COMPILATIO_STATUSCODE_ANALYSING, COMPILATIO_STATUSCODE_IN_QUEUE);
     $files = $DB->get_records_select('plagiarism_compilatio_files', $sql, $params);
     if (!empty($files)) {
         foreach ($files as $plagiarismfile) {
