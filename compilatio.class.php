@@ -55,6 +55,11 @@ class compilatioservice {
     /**
      * Retourne l'instance unique.
      *
+     * @param string $apiconfigid   API configuration Id
+     * @param string $proxyhost     Proxy host
+     * @param string $proxyport     Proxy port
+     * @param string $proxyusername Proxy username
+     * @param string $proxypassword Proxy password
      * @return compilatioservice
      */
     public static function getinstance($apiconfigid,
@@ -72,6 +77,10 @@ class compilatioservice {
         return self::$instance;
     }
 
+    /**
+     * Instance unique compilatioservice
+     * @var compilatioservice
+     */
     private static $instance;
 
     /**

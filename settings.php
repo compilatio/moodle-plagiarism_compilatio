@@ -64,6 +64,9 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     if (!isset($data->allow_teachers_to_show_reports)) {
         $data->allow_teachers_to_show_reports = 0;
     }
+    if (!isset($data->allow_search_tab)) {
+        $data->allow_search_tab = 0;
+    }
 
     foreach ($data as $field => $value) {
         // Ignore the button and API Config.

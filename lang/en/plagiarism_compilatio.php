@@ -84,9 +84,14 @@ $string['analysis_type_help'] = '<p>There are 3 possible options:</p>
 	<li><strong>Manual:</strong> The document is sent to Compilatio but the teacher must manually trigger the anaylyis of documents.</li>
 	<li><strong>Timed: </strong>The document is sent to Compilatio and analysed at the time/date set.</li>
 </ul>
-<p>To enable all documents to be compared with each other, wait until all work is submitted by students then trigger the analyis.</p>
-';
-$string['analysistype_direct'] = 'Direct';
+<p>To enable all documents to be compared with each other, wait until all work is submitted by students then trigger the analyis.</p>';
+$string['analysis'] = 'Analysis Start';
+$string['analysis_help'] = '<p>There are 2 possible options:</p>
+<ul>
+	<li><strong>Manual:</strong> The document is sent to Compilatio but the teacher must manually trigger the anaylyis of documents.</li>
+	<li><strong>Timed: </strong>The document is sent to Compilatio and analysed at the time/date set.</li>
+</ul>
+<p>To enable all documents to be compared with each other, wait until all work is submitted by students then trigger the analyis.</p>';
 $string['analysistype_manual'] = 'Manual';
 $string['analysistype_prog'] = 'Timed';
 $string['analysis_date'] = 'Analysis Date (Timed analysis only)';
@@ -177,6 +182,15 @@ $string["display_stats"] = "Display statistics about this assignment";
 $string["analysis_completed"] = 'Analysis completed: {$a}% of similarities.';
 $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
 $string["display_notifications"] = "Display notifications";
+$string["compilatio_search_tab"] = "Find the author of a document.";
+$string["compilatio_search"] = "Search";
+$string["compilatio_iddocument"] = "Document identifier";
+$string["compilatio_search_notfound"] = "No document was found for this identifier among the documents loaded on your Moodle platform.";
+$string["compilatio_author"] = 'Le document {$a->idcourt} in activity <b>{$a->modulename}</b> belongs to <b>{$a->lastname} {$a->firstname}</b>.';
+$string["compilatio_search_help"] = "You can find the author of a document by retrieving the document identifier from the sources of the analysis report. Example: 1. Your document: <b>1st5xfj2</b> - Assign_Name(30)Name_Copied_Document.odt.";
+$string["allow_search_tab"] = "Activate the search tool to identify the author of a document.";
+$string["allow_search_tab_help"] = "The search tool allows you to search for a student's first and last name based on a document identifier visible in the analysis reports.  This tool is available in the assign activities only, but allows you to search all the documents present on your platform.";
+
 // CSV.
 $string["firstname"] = "First name";
 $string["lastname"] = "Last name";
@@ -239,27 +253,6 @@ $string["loading"] = "Loading, please wait...";
 $string["unknownlang"] = "Caution, the language of some passages in this document was not recognized.";
 $string["badqualityanalysis"] = "Issues were encountered while analysing the document. It is possible that certain sources may not have been identified, or the result may be incomplete.";
 // HELP.
-$string['help_compilatio_settings_title'] = 'Which mode should I use in the Compilatio settings of an activity?';
-$string['help_compilatio_settings_content'] = '
-Three analysis types are available with Compilatio plugin :
-<ul>
-<li>
-Direct : <br/>
-Each document is sent to Compilatio and analyzed as soon as it is uploaded by the student.<br/>
-Recommended if you wish to get the results quickly and if it is not necessary that all documents are compared with each others.
-</li>
-<li>
-Timed : <br/>
-Choose date to start Compilatio analysis, later than the deadline for the students.<br/>
-Recommended if you wish to compare all the documents of the activity mutually.
-</li>
-<li>
-Manual : <br/>
-The documents of the activity will not be analyzed until you trigger the analysis.<br/>
-You can click on the “Start analysis” button of each document to trigger its analysis.
-</li>
-</ul>
-';
 $string['help_compilatio_format_content'] = "Compilatio.net handles most formats used in word processors and on the internet.
 The following formats are supported :";
 $string['goto_compilatio_service_status'] = "See Compilatio services status.";
@@ -307,6 +300,7 @@ $string['privacy:metadata:plagiarism_compilatio_files:attempt'] = 'The number of
 $string['privacy:metadata:plagiarism_compilatio_files:errorresponse'] = 'The response if an error occurred - actually, this field is not used anymore and is automatically set to \'NULL\'';
 $string['privacy:metadata:plagiarism_compilatio_files:recyclebinid'] = 'The recycle bin identifier in case the course module or course has been put in the recycle bin';
 $string['privacy:metadata:plagiarism_compilatio_files:apiconfigid'] = 'The identifier of the API configuration with which the submission is linked';
+$string['privacy:metadata:plagiarism_compilatio_files:idcourt'] = 'The submission\'s short ID stored in the Compilatio database';
 
 $string['privacy:metadata:external_compilatio_document'] = 'Informations about the documents in Compilatio database';
 $string['privacy:metadata:external_compilatio_document:lastname'] = 'The last name of the Compilatio user who submitted the file - beware, this user is the one linked to the Compilatio API key of the Moodle platform (so it\'s usually the administrator of the platform)';

@@ -61,7 +61,6 @@ $string["studentemailcontent"] = 'El fichero entregado a {$a->modulename} en {$a
 $string["filereset"] = 'Un fichero ha sido reiniciado para re-entrega a Compilatio';
 $string["analysis_type"] = 'Lanzamiento de los análisis';
 $string["analysis_type_help"] = '<p> Tiene tres opciones :</p> <ul> <li><strong>Inmediato :</strong> El documento está enviado a Compilatio y está analizado inmediatamente.</li><li><strong>Manual :</strong> El documento está enviado a Compilatio, pero el profesor tiene que activar los análisis de los documentos manualmente.</li><li><strong>Programado :</strong> El documento está enviado a Compilatio, luego está analizado a la hora/fecha elegida(s).</li></ul><p>Para que todos los documentos sean comparados entre ellos durante los análisis, activa los análisis sólo cuando todos los documentos están presentes en la tarea.</p>';
-$string["analysistype_direct"] = 'Inmediato';
 $string["analysistype_manual"] = 'Manual';
 $string["analysistype_prog"] = 'Programado';
 $string["enabledandworking"] = 'El plugin Compilatio está activo y funcional.';
@@ -189,8 +188,6 @@ $string["loading"] = 'Cargando, un momento por favor...';
 // ALERTS.
 $string["unknownlang"] = "Atención, el idioma de algunos pasajes de este documento no fue reconocido.";
 // Help.
-$string["help_compilatio_settings_title"] = '¿Qué ajustes elegir en los parámetros Compilatio de una actividad?';
-$string["help_compilatio_settings_content"] = 'Tres tipos de análisis son disponibles con el plugin Compilatio : <ul><li>Inmediato : Cada documento está enviado a Compilatio y analizado tan pronto como está entregado por el estudiante. Recomendado si desea obtener los resultados lo más rápidamente posible, y si no es necesario que todos los documentos de la actividad sean comparados mutualmente. </li><li>Programado : <br/> Elige una fecha de comienzo de los análisis Compilatio posterior a la fecha límite de entrega de los estudiantes.Recomendado si desea comparar todos los documentos de su actividad entre ellos. </li><li> Manual : <br/> Los documentos de su actividad están analizados sólo si usted mismo activa los análisis. Para empezar el análisis de un documento, haga clic en el botón "analizar" de cada documento. El botón "analizar todos los documentos" le permite activar el análisis de todos los documentos de una tarea. </li></ul>';
 $string["help_compilatio_format_content"] = 'Compilatio.net es compatible con la mayoría de los formatos utilizados en la ofimática y en Internet. Se aceptan los formatos siguientes :';
 $string['goto_helpcenter'] = "Haga clic en el signo de interrogación para abrir una nueva ventana y conectarse al centro de ayuda Compilatio.";
 $string['admin_goto_helpcenter'] = "Visite el centro de ayuda Compilatio para acceder a los artículos relativos a la administración del plugin Moodle.";

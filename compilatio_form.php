@@ -57,12 +57,12 @@ class compilatio_setup_form extends moodleform {
         $mform->addElement('html', "<table class='table table-striped table-bordered table-hover' style='table-layout: fixed;'>
             <thead>
                 <tr>
-                    <th style='width: 5%;'>" . get_string('formenabled', 'plagiarism_compilatio') . "</th>
-                    <th style='width: 21%;'>" . get_string('formurl', 'plagiarism_compilatio') . "</th>
-                    <th style='width: 21%;'>" . get_string('formapikey', 'plagiarism_compilatio') . "</th>
-                    <th style='width: 37%;'>" . get_string('formstartdate', 'plagiarism_compilatio') . "</th>
-                    <th style='width: 8%;'>" . get_string('formcheck', 'plagiarism_compilatio') . "</th>
-                    <th style='width: 8%;'>" . get_string('formdelete', 'plagiarism_compilatio') . "</th>
+                    <th style='width: 8%;'>" . get_string('formenabled', 'plagiarism_compilatio') . "</th>
+                    <th style='width: 23%;'>" . get_string('formurl', 'plagiarism_compilatio') . "</th>
+                    <th style='width: 23%;'>" . get_string('formapikey', 'plagiarism_compilatio') . "</th>
+                    <th style='width: 26%;'>" . get_string('formstartdate', 'plagiarism_compilatio') . "</th>
+                    <th style='width: 10%;'>" . get_string('formcheck', 'plagiarism_compilatio') . "</th>
+                    <th style='width: 10%;'>" . get_string('formdelete', 'plagiarism_compilatio') . "</th>
                 </tr>
             </thead>");
         foreach ($apiconfigs as $apiconfig) {
@@ -100,7 +100,7 @@ class compilatio_setup_form extends moodleform {
         $mform->addElement('html', "</td><td>");
         $mform->addElement('date_selector', 'startdate', '', array('optional' => true));
         $mform->addHelpButton('startdate', 'compilatiodate', 'plagiarism_compilatio');
-        $mform->addElement('html', "</td></tr></table>");
+        $mform->addElement('html', "<td></td><td></td></td></tr></table>");
         // API configuration.
 
         $mform->addElement('textarea', 'student_disclosure',
@@ -113,6 +113,10 @@ class compilatio_setup_form extends moodleform {
                            get_string("allow_teachers_to_show_reports",
                            "plagiarism_compilatio"));
         $mform->setDefault('allow_teachers_to_show_reports', 0);
+
+        $mform->addElement('checkbox', 'allow_search_tab', get_string("allow_search_tab", "plagiarism_compilatio"));
+        $mform->setDefault('allow_search_tab', 0);
+        $mform->addHelpButton('allow_search_tab', 'allow_search_tab', 'plagiarism_compilatio');
 
         $mods = get_plugin_list('mod');
         foreach ($mods as $mod => $modname) {

@@ -81,10 +81,12 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.compilatioTabs = function(alerts) {
+    exports.compilatioTabs = function(alerts, idcourt) {
         $(document).ready(function() {
             var selectedElement = '';
-            if (alerts.length > 0) {
+            if (idcourt) {
+                selectedElement = '#compilatio-search';
+            } else if (alerts.length > 0) {
                 selectedElement = '#compilatio-notifications';
             } else {
                 selectedElement = '#compilatio-home';
@@ -93,8 +95,8 @@ define(['jquery'], function($) {
             $('#compilatio-container').css('height', 'auto');
             $('#compilatio-tabs').show();
 
-            var tabs = $('#compilatio-show-notifications, #show-stats, #show-help');
-            var elements = $('#compilatio-notifications, #compilatio-stats, #compilatio-help, #compilatio-home');
+            var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
+            var elements = $('#compilatio-notifications, #compilatio-stats, #compilatio-help, #compilatio-home, #compilatio-search');
 
             elements.not($(selectedElement)).hide();
 
@@ -107,10 +109,16 @@ define(['jquery'], function($) {
             $('#show-help').on('click', function() {
                     tabClick($(this), $('#compilatio-help'));
             });
+            $('#show-search').on('click', function() {
+                    tabClick($(this), $('#compilatio-search'));
+            });
 
             /**
-             * tabClick
+             * TabClick
              * Show clicked tab.
+             *
+             * @param tabClicked
+             * @param contentToShow
              */
             function tabClick(tabClicked, contentToShow) {
                 if (!contentToShow.is(':visible')) {
