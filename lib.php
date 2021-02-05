@@ -1402,7 +1402,7 @@ function compilatio_create_temp_file($cmid, $eventdata) {
  */
 function compilatio_get_form_elements($mform, $defaults = false, $modulename='') {
 
-    global $PAGE;
+    global $PAGE, $CFG;
 
     $ynoptions = array(
         0 => get_string('no'),
