@@ -1443,7 +1443,7 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename='')
         $mform->disabledif('compilatio_timeanalyse', 'compilatio_analysistype', 'noteq', COMPILATIO_ANALYSISTYPE_PROG);
 
         $lang = current_language();
-        if ($lang == 'fr') {
+        if ($lang == 'fr' && $CFG->version >= 2017111300) { // Method hideIf is available since moodle 3.4.
             $group = [];
             $group[] = $mform->createElement('static', 'calendar', '',
                 "<img style='width: 45em;' src='https://content.compilatio.net/images/calendrier_affluence_magister.png'>");
