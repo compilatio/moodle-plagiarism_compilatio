@@ -9,6 +9,8 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 CHANGES
 - Removed the option to automatically launch analyses.
 - Added the possibility to search the author of a document.
+- Bug fix in upgrade script.
+- Fix for moodle 3.3.
 
 QUICK INSTALL
 ================
