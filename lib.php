@@ -184,31 +184,16 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                     || $linkarray['file']->get_filearea() == 'introattachment') {
                     return $output;
                 }
-                // Catch GET 'sendfile' param.
-                $trigger = optional_param('sendfile', 0, PARAM_INT);
-                $fileid = $linkarray["file"]->get_id();
-                if ($trigger == $fileid) {
-                    $res = $DB->get_record("files", array("id" => $fileid));
 
-                    if (!defined("COMPILATIO_MANUAL_SEND")) {
-                        define("COMPILATIO_MANUAL_SEND", true); // Hack to hide mtrace in function execution.
-                        compilatio_upload_files(array($res), $linkarray['cmid']);
-                        return $output . $this->get_links($linkarray);
-                    } else {
-                        return $output;
-                    }
-                }
-                $urlparams = array("id" => $linkarray['cmid'],
-                                "sendfile" => $fileid,
-                                "action" => "grading",
-                                'page' => optional_param('page', null, PARAM_INT));
-                $moodleurl = new moodle_url("/mod/assign/view.php", $urlparams);
-                $url = array("url" => "$moodleurl", "target-blank" => false);
+                $fileid = $linkarray["file"]->get_id();
+                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysis',
+                    array($CFG->httpswwwroot, $domid, $fileid, $linkarray['cmid']));
+
                 $spancontent = get_string("analyze", "plagiarism_compilatio");
                 $image = "play";
                 $title = get_string('startanalysis', 'plagiarism_compilatio');
                 $output .= output_helper::get_plagiarism_area($spancontent, $image, $title, "",
-                    $url, false, $indexingstate, $domid, $docwarning);
+                    "", false, $indexingstate, $domid, $docwarning);
                 return $output;
             } else {
                 return '';

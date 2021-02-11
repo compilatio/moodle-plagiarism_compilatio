@@ -94,12 +94,12 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.startAnalysis = function(basepath, eltId, docId) {
+    exports.startAnalysis = function(basepath, eltId, docId, cmid = false) {
         $(document).ready(function() {
             setTimeout(function() {
                 $(".compi-" + eltId + " > div:last-child").click(function() {
                     $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_analysis.php',
-                    {'docId': docId}, function() {
+                    {'docId': docId, 'cmid': cmid}, function() {
                         window.location.reload();
                     });
                 });
