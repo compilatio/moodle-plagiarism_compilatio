@@ -215,36 +215,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             }
         }
 
-        // Catch GET 'compilatioprocess' param.
-        $trigger = optional_param('compilatioprocess', 0, PARAM_INT);
-
-        if ($results['statuscode'] == COMPILATIO_STATUSCODE_ACCEPTED && $trigger == $results['pid']) {
-            if (has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext)) {
-                // Trigger manual analysis call.
-                $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('id' => $trigger));
-                $analyse = compilatio_startanalyse($plagiarismfile);
-                if ($analyse === true) {
-                    // Update plagiarism record.
-                    $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_IN_QUEUE;
-                    $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
-                    $spancontent = get_string("queue", "plagiarism_compilatio");
-                    $image = "queue";
-                    $title = get_string('queued', 'plagiarism_compilatio');
-                    $output .= output_helper::get_plagiarism_area($spancontent, $image, $title, "",
-                        array(), false, $indexingstate, $domid, $docwarning);
-                } else if ($analyse->code == 'INVALID_ID_DOCUMENT') {
-                    $span = get_string("error", "plagiarism_compilatio");
-                    $image = "exclamation";
-                    $title = get_string('notfound', 'plagiarism_compilatio');
-                    $output .= output_helper::get_plagiarism_area($span, $image, $title, "",
-                        "", true, $indexingstate, $domid, $docwarning);
-                } else {
-                    $output .= '<span class="compilatio-plagiarismreport">' .
-                        '</span>';
-                }
-                return $output;
-            }
-        }
         if ($results['statuscode'] == 'pending') {
             $spancontent = get_string("pending_status", "plagiarism_compilatio");
             $image = "hourglass";
@@ -301,7 +271,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                 array('cm' => $linkarray['cmid']), '', 'name, value');
             $title = "";
             $span = "";
-            $url = "";
             $image = "";
 
             // Check settings to see if we need to tell compilatio to process this file now.
@@ -312,13 +281,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                 $title = get_string('waitingforanalysis', 'plagiarism_compilatio',
                     userdate($plagiarismvalues['compilatio_timeanalyse']));
             } else if (has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext)) {
-                $urlparams = array('compilatioprocess' => $results['pid'], 'page' => optional_param('page', null, PARAM_INT));
-                $url = new moodle_url($PAGE->url, $urlparams);
-                $action = optional_param('action', '', PARAM_TEXT); // Hack to add action to params for mod/assign.
-                if (!empty($action)) {
-                    $url->param('action', $action);
-                }
-                $url = "$url";
+                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysis',
+                    array($CFG->httpswwwroot, $domid, $results['pid']));
                 $span = get_string("analyze", "plagiarism_compilatio");
                 $image = "play";
                 $title = get_string('startanalysis', 'plagiarism_compilatio');
@@ -327,9 +291,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                 $title = get_string('processing_doc', 'plagiarism_compilatio');
             }
             if ($title !== "") {
-                $url = array("target-blank" => false, "url" => $url);
                 $output .= output_helper::get_plagiarism_area($span, $image, $title, "",
-                    $url, false, $indexingstate, $domid, $docwarning);
+                    "", false, $indexingstate, $domid, $docwarning);
             }
         } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_ANALYSING) {
             $span = get_string("analyzing", "plagiarism_compilatio");

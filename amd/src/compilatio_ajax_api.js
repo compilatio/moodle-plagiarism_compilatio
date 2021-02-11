@@ -86,11 +86,24 @@ define(['jquery'], function($) {
             var startAllAnalysis = $("button.comp-start-btn");
             startAllAnalysis.click(function() {
                 disableCompilatioButtons();
-                $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_analysis.php',
+                $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_all_analysis.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
                 });
             });
+        });
+    };
+
+    exports.startAnalysis = function(basepath, eltId, docId) {
+        $(document).ready(function() {
+            setTimeout(function() {
+                $(".compi-" + eltId + " > div:last-child").click(function() {
+                    $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_analysis.php',
+                    {'docId': docId}, function() {
+                        window.location.reload();
+                    });
+                });
+            }, 250);
         });
     };
 

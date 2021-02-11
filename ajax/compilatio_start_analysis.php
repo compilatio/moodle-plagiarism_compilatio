@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Checks a document analysis via Compilatio SOAP API
+ * Start a document analysis via Compilatio SOAP API
  *
  * This script is called by amd/build/ajax_api.js
  *
@@ -39,62 +39,8 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
 
-global $DB, $SESSION;
+global $DB;
 
-$cmid = required_param('cmid', PARAM_TEXT);
-
-$sql = "cm = ? AND name='compilatio_analysistype'";
-$record = $DB->get_record_select('plagiarism_compilatio_config', $sql, array($cmid));
-
-// Counter incremented on success.
-$countsuccess = 0;
-$plagiarismfiles = array();
-$docsfailed = array();
-if ($record != null && $record->value == COMPILATIO_ANALYSISTYPE_MANUAL) {
-    $sql = "cm = ? AND statuscode = ?";
-    $params = array($cmid, COMPILATIO_STATUSCODE_ACCEPTED);
-    $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, $params);
-
-    foreach ($plagiarismfiles as $file) {
-        if (compilatio_startanalyse($file)) {
-            $countsuccess++;
-        } else {
-            $docsfailed[] = $file["filename"];
-        }
-    }
-}
-
-// Handle not sent documents :.
-$files = compilatio_get_non_uploaded_documents($cmid);
-$countbegin = count($files);
-
-if ($countbegin != 0) {
-
-    define("COMPILATIO_MANUAL_SEND", true);
-    compilatio_upload_files($files, $cmid);
-    $countsuccess += $countbegin - count(compilatio_get_non_uploaded_documents($cmid));
-
-}
-
-$counttotal = count($plagiarismfiles) + $countbegin;
-$counterrors = count($docsfailed);
-
-if ($counttotal === 0) {
-    $SESSION->compilatio_alert = array(
-        "class" => "info",
-        "title" => get_string("start_analysis_title", "plagiarism_compilatio"),
-        "content" => get_string("no_document_available_for_analysis", "plagiarism_compilatio"),
-    );
-} else if ($counterrors === 0) {
-    $SESSION->compilatio_alert = array(
-        "class" => "info",
-        "title" => get_string("start_analysis_title", "plagiarism_compilatio"),
-        "content" => get_string("analysis_started", "plagiarism_compilatio", $countsuccess),
-    );
-} else {
-    $SESSION->compilatio_alert = array(
-        "class" => "danger",
-        "title" => get_string("not_analyzed", "plagiarism_compilatio"),
-        "content" => "<ul><li>" . implode("</li><li>", $docsfailed) . "</li></ul>",
-    );
-}
+$docId = required_param('docId', PARAM_TEXT);
+$plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('id' => $docId));
+$analyse = compilatio_startanalyse($plagiarismfile);

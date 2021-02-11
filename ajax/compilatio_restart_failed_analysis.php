@@ -15,14 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Checks a document analysis via Compilatio SOAP API
+ * Restart all the failed analyses for documents of the course module
  *
  * This script is called by amd/build/ajax_api.js
  *
  * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @param string $_POST['id']
+ * @param string $_POST['cmid']
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
