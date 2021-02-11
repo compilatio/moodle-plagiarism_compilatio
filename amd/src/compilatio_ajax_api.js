@@ -81,6 +81,32 @@ define(['jquery'], function($) {
         });
     };
 
+    exports.startAllAnalysis = function(basepath, cmid) {
+        $(document).ready(function() {
+            var startAllAnalysis = $("button.comp-start-btn");
+            startAllAnalysis.click(function() {
+                disableCompilatioButtons();
+                $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_analysis.php',
+                {'cmid': cmid}, function() {
+                    window.location.reload();
+                });
+            });
+        });
+    };
+
+    exports.restartFailedAnalysis = function(basepath, cmid) {
+        $(document).ready(function() {
+            var restartFailedAnalysis = $("button.comp-restart-btn");
+            restartFailedAnalysis.click(function() {
+                disableCompilatioButtons();
+                $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_restart_failed_analysis.php',
+                {'cmid': cmid}, function() {
+                    window.location.reload();
+                });
+            });
+        });
+    };
+
     exports.compilatioTabs = function(alerts, idcourt) {
         $(document).ready(function() {
             var selectedElement = '';
