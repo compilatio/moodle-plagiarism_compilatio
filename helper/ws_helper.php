@@ -41,20 +41,18 @@ class ws_helper
      * @param string $compid Document ID
      * @return object Web service instance
      */
-    public static function get_ws($compid = false) {
+    public static function get_ws($apiconfigid = false) {
 
-        global $CFG, $DB;
+        global $CFG;
 
         $ppc = new plagiarism_plugin_compilatio();
         $plagiarismsettings = $ppc->get_settings();
 
-        if (!$compid) {
-            $config = $plagiarismsettings['apiconfigid'];
-        } else {
-            $config = $DB->get_field('plagiarism_compilatio_files', 'apiconfigid', array('externalid' => $compid));
+        if (!$apiconfigid) {
+            $apiconfigid = $plagiarismsettings['apiconfigid'];
         }
 
-        return compilatioservice::getinstance($config,
+        return compilatioservice::getinstance($apiconfigid,
             $CFG->proxyhost,
             $CFG->proxyport,
             $CFG->proxyuser,
@@ -167,9 +165,9 @@ class ws_helper
      * @param  string $compid   Document ID
      * @return bool             Indexing state
      */
-    public static function get_indexing_state($compid) {
+    public static function get_indexing_state($compid, $apiconfigid) {
 
-        $compilatio = self::get_ws($compid);
+        $compilatio = self::get_ws($apiconfigid);
         return $compilatio->get_indexing_state($compid);
 
     }
@@ -180,9 +178,9 @@ class ws_helper
      * @param  bool   $indexingstate    Indexing state
      * @return bool                     Return true if the indexing succeed, false otherwise
      */
-    public static function set_indexing_state($compid, $indexingstate) {
+    public static function set_indexing_state($compid, $indexingstate, $apiconfigid) {
 
-        $compilatio = self::get_ws($compid);
+        $compilatio = self::get_ws($apiconfigid);
         return $compilatio->set_indexing_state($compid, $indexingstate);
 
     }

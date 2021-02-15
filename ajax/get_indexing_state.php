@@ -44,7 +44,9 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
 $iddoc = optional_param('idDoc', '', PARAM_TEXT);
+$apiconfigid = required_param('apiconfigid', PARAM_INT);
+
 if (isset($iddoc) && compilatio_valid_md5($iddoc)) {
-    $indexingstate = ws_helper::get_indexing_state($iddoc);
+    $indexingstate = ws_helper::get_indexing_state($iddoc, $apiconfigid);
     echo(output_helper::get_indexing_state($indexingstate));
 }

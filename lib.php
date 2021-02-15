@@ -173,7 +173,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         if (!empty($results['externalid']) && $teacher) {
             // Ajax API call.
             $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'getIndexingState',
-                array($CFG->httpswwwroot, $domid, $results['externalid']));
+                array($CFG->httpswwwroot, $domid, $results['externalid'], $results['apiconfigid']));
         }
 
         // No results in DB yet.
@@ -298,6 +298,13 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $span = get_string("error", "plagiarism_compilatio");
             $image = "exclamation";
             $title = get_string('toolarge', 'plagiarism_compilatio', $size);
+            $output .= output_helper::get_plagiarism_area($span, $image, $title, "",
+                "", true, $indexingstate, $domid, $docwarning);
+
+        } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_TOO_SHORT) {
+            $span = get_string("error", "plagiarism_compilatio");
+            $image = "exclamation";
+            $title = get_string('tooshort', 'plagiarism_compilatio');
             $output .= output_helper::get_plagiarism_area($span, $image, $title, "",
                 "", true, $indexingstate, $domid, $docwarning);
 
@@ -437,7 +444,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             'renamed' => '',
             'analyzed' => 0,
             'externalid' => $plagiarismfile->externalid,
-            'warning' => $plagiarismfile->errorresponse
+            'warning' => $plagiarismfile->errorresponse,
+            'apiconfigid' => $plagiarismfile->apiconfigid
         );
 
         if ($plagiarismfile->statuscode == 'pending') {
@@ -1743,6 +1751,7 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
 
     $analyse = $compilatio->start_analyse($plagiarismfile->externalid);
 
+    debugging(var_export($analyse,true));
     if ($analyse === true) {
         // Update plagiarism record.
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_IN_QUEUE;
@@ -1751,6 +1760,10 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
     } else {
         if ($analyse->code == 'INVALID_ID_DOCUMENT') {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_NOT_FOUND;
+            $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+            return $analyse;
+        } else if ($analyse->code == 'NOT_ENOUGH_WORDS') {
+            $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_SHORT;
             $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
             return $analyse;
         } else {
@@ -1795,12 +1808,7 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
 
     if (isset($docstatus->documentStatus->status)) {
         if ($docstatus->documentStatus->status == "ANALYSE_COMPLETE") {
-            if (isset($docstatus->documentProperties) && $docstatus->documentProperties->wordCount < 100) {
-                // Set the code to UNEXTRACTABLE if the documents contains less than 100 words.
-                $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_UNEXTRACTABLE;
-            } else {
-                $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_COMPLETE;
-            }
+            $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_COMPLETE;
             $plagiarismfile->similarityscore = round($docstatus->documentStatus->indice);
             $plagiarismfile->idcourt = $docstatus->documentProperties->Shortcut;
             // Now get report url.

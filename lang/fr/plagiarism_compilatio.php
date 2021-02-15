@@ -64,6 +64,7 @@ $string['previouslysubmitted'] = 'Auparavant soumis comme';
 $string['unknownwarning'] = 'Une erreur s\'est produite lors de l\'envoi du fichier à Compilatio';
 $string['unsupportedfiletype'] = 'Ce type de fichier n\'est pas supporté par Compilatio';
 $string['toolarge'] = 'Le fichier est trop volumineux pour être traité par Compilatio. Taille maximale : {$a->Mo} Mo';
+$string['tooshort'] = 'Votre document ne contient pas assez de mots.';
 $string['failed'] = "L'analyse de ce document n'a pas fonctionné correctement.";
 $string['notfound'] = "Ce document n'a pas été trouvé. Veuillez contacter votre administrateur de moodle. Erreur : document non trouvé pour cette clé API.";
 $string['compilatio_studentemail'] = 'Envoyer un mail à l\'étudiant';
@@ -93,7 +94,7 @@ $string['enabledandworking'] = 'Le plugin Compilatio est actif et fonctionnel.';
 $string['subscription_state'] = '<strong>Votre abonnement Compilatio.net est valable jusqu\'à la fin du mois de {$a->end_date}. Ce mois-ci, vous avez analysé l\'équivalent de {$a->used} document(s) de moins de 5.000 mots.</strong>';
 $string['startanalysis'] = 'Démarrer l\'analyse';
 $string['failedanalysis'] = 'Compilatio n\'a pas réussi à analyser votre document : ';
-$string['unextractablefile'] = 'Votre document ne contient pas assez de mots, ou le texte n’a pas pu être extrait correctement.';
+$string['unextractablefile'] = 'Le texte de votre document n’a pas pu être extrait correctement.';
 // Auto diagnostic.
 $string["auto_diagnosis_title"] = "Auto-diagnostic";
 // API key.

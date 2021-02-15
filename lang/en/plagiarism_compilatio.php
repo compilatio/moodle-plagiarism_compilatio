@@ -69,6 +69,7 @@ $string['report'] = 'report';
 $string['unknownwarning'] = 'An error occurred trying to send this file to Compilatio';
 $string['unsupportedfiletype'] = 'This file type is not supported by Compilatio';
 $string['toolarge'] = 'This file is too large for Compilatio to process. Maximum size : {$a->Mo} MB';
+$string['tooshort'] = 'Your document doesn’t contain enough words.';
 $string['failed'] = 'The analysis of this document did not work correctly.';
 $string['notfound'] = 'This document was not found. Please contact your moodle administrator. Error : document not found for this API key.';
 $string['compilatio_studentemail'] = 'Send Student email';
@@ -108,7 +109,7 @@ $string['compilatio:enable'] = 'Allow the teacher to enable/disable Compilatio i
 $string['compilatio:resetfile'] = 'Allow the teacher to resubmit the file to Compilatio after an error';
 $string['compilatio:triggeranalysis'] = 'Allow the teacher to manually trigger analysis';
 $string['compilatio:viewreport'] = 'Allow the teacher to view the full report from Compilatio';
-$string['unextractablefile'] = 'Your document doesn’t contain enough words, or text cannot be extracted.';
+$string['unextractablefile'] = 'The text in your document cannot be extracted.';
 $string['immediately'] = "Immediately";
 // Auto diagnostic.
 $string["auto_diagnosis_title"] = "Auto-diagnosis";
