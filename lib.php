@@ -294,7 +294,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                 "", true, $indexingstate, $domid, $docwarning);
 
         } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_TOO_LARGE) {
-            $size = ws_helper::get_allowed_file_max_size();
+            $size = json_decode(get_config('plagiarism_compilatio', 'file_max_size'));
             $span = get_string("error", "plagiarism_compilatio");
             $image = "exclamation";
             $title = get_string('toolarge', 'plagiarism_compilatio', $size);
@@ -507,8 +507,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
     public function update_status($course, $cm) {
 
         global $CFG, $PAGE, $OUTPUT, $DB, $SESSION;
-
-        ws_helper::get_allowed_file_types();
 
         $alerts = array();
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
@@ -755,16 +753,13 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 			</div>";
 
         // Help tab.
-        $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
-        $idgroupe = $compilatio->get_id_groupe();
-
         $output .= "<div id='compilatio-help'>";
 
-        if (!$idgroupe) {
+        if (empty($plagiarismsettings['idgroupe'])) {
             $output .= "<p>" . get_string('helpcenter_error', 'plagiarism_compilatio')
                 . "<a href='https://support.compilatio.net/'>https://support.compilatio.net</a></p>";
         } else {
-            $output .= "<p><a href='../../plagiarism/compilatio/helpcenter.php?idgroupe=" . $idgroupe . "'" .
+            $output .= "<p><a href='../../plagiarism/compilatio/helpcenter.php?idgroupe=" . $plagiarismsettings['idgroupe'] . "'" .
             "target='_blank' >" . get_string('helpcenter', 'plagiarism_compilatio') . "
             <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
                 <path fill='none' stroke='#555' stroke-linecap='round'
@@ -1077,6 +1072,16 @@ function compilatio_update_meta() {
 
     // Update the "Compilatio unavailable" marker in the database.
     compilatio_update_connection_status();
+
+    $file_max_size = ws_helper::get_allowed_file_max_size();
+    $file_types = ws_helper::get_allowed_file_types();
+
+    $compilatio = compilatio_get_compilatio_service(get_config('plagiarism_compilatio', 'apiconfigid'));
+    $idgroupe = $compilatio->get_id_groupe();
+
+    set_config('file_max_size', json_encode($file_max_size), 'plagiarism_compilatio');
+    set_config('file_types', json_encode($file_types), 'plagiarism_compilatio');
+    set_config('idgroupe', $idgroupe, 'plagiarism_compilatio');
 }
 
 /**
@@ -1324,11 +1329,12 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename='')
     $mform->addElement('html', '</div>');
 
     // Max file size allowed.
-    $size = ws_helper::get_allowed_file_max_size();
+    $size = json_decode(get_config('plagiarism_compilatio', 'file_max_size'));
+
     $mform->addElement('html', '<p>' . get_string("max_file_size_allowed", "plagiarism_compilatio", $size) . '</p>');
 
     // File types allowed.
-    $filetypes = ws_helper::get_allowed_file_types();
+    $filetypes = json_decode(get_config('plagiarism_compilatio', 'file_types'));
     $mform->addElement('html', '<div>' . get_string("help_compilatio_format_content", "plagiarism_compilatio") . '</div>');
     $mform->addElement('html', '<table style="margin-left:10px;"><tbody>');
     foreach ($filetypes as $filetype) {
@@ -1601,7 +1607,7 @@ function compilatio_check_attempt_timeout($plagiarismfile, $hasmaxattempt = fals
  */
 function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsettings, $file) {
 
-    global $DB, $CFG;
+    global $DB, $CFG, $COURSE;
 
     $filename = (!empty($file->filename)) ? $file->filename : $file->get_filename();
 
@@ -1626,7 +1632,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
         return false;
     }
 
-    $name = format_string($module->name) . "(" . $plagiarismfile->cm . ")_" . $filename;
+    $name = format_string($module->name, true, $COURSE->id) . "(" . $plagiarismfile->cm . ")_" . $filename;
     $filecontents = (!empty($file->filepath)) ? file_get_contents($file->filepath) : $file->get_content();
     $idcompi = $compilatio->send_doc($name, // Title.
         $name, // Description.
@@ -2993,7 +2999,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
  */
 function compilatio_check_allowed_file_max_size($file) {
 
-    $allowedsize = ws_helper::get_allowed_file_max_size()->octets;
+    $allowedsize = json_decode(get_config('plagiarism_compilatio', 'file_max_size'))->octets;
 
     if (isset($file->filepath)) { // Content (workshops).
         $size = filesize($file->filepath);
@@ -3019,7 +3025,7 @@ function compilatio_check_file_type($filename) {
     }
     $ext = strtolower($pathinfo['extension']);
 
-    $allowedfiletypes = ws_helper::get_allowed_file_types();
+    $allowedfiletypes = json_decode(get_config('plagiarism_compilatio', 'file_types'));
 
     foreach ($allowedfiletypes as $allowedfiletype) {
         if ($allowedfiletype->type == $ext) {

@@ -43,8 +43,7 @@ require_login();
 global $DB;
 
 $docId = required_param('docId', PARAM_TEXT);
-$cmid = required_param('cmid', PARAM_TEXT);
-
+$cmid = required_param('cmid', PARAM_INT);
 if (!$cmid) {
     $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('id' => $docId));
     $analyse = compilatio_startanalyse($plagiarismfile);
