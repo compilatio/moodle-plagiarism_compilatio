@@ -304,7 +304,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_TOO_SHORT) {
             $span = get_string("error", "plagiarism_compilatio");
             $image = "exclamation";
-            $title = get_string('tooshort', 'plagiarism_compilatio');
+            $title = get_string('tooshort', 'plagiarism_compilatio', get_config('plagiarism_compilatio', 'nb_mots_min'));
             $output .= output_helper::get_plagiarism_area($span, $image, $title, "",
                 "", true, $indexingstate, $domid, $docwarning);
 
@@ -617,6 +617,18 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $alerts[] = array(
                 "class" => "danger",
                 "title" => get_string("unsupported_files", "plagiarism_compilatio"),
+                "content" => $list,
+            );
+        }
+
+        // Display a notification for the too short files.
+        $files = compilatio_get_too_short_files($cm->id);
+        if (count($files) !== 0) {
+            $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
+            $alerts[] = array(
+                "class" => "danger",
+                "title" => get_string("tooshort_files", "plagiarism_compilatio",
+                    get_config('plagiarism_compilatio', 'nb_mots_min')),
                 "content" => $list,
             );
         }
@@ -1081,14 +1093,14 @@ function compilatio_update_meta() {
     // Update the "Compilatio unavailable" marker in the database.
     compilatio_update_connection_status();
 
-    $file_max_size = ws_helper::get_allowed_file_max_size();
-    $file_types = ws_helper::get_allowed_file_types();
+    $filemaxsize = ws_helper::get_allowed_file_max_size();
+    $filetypes = ws_helper::get_allowed_file_types();
 
     $compilatio = compilatio_get_compilatio_service(get_config('plagiarism_compilatio', 'apiconfigid'));
     $idgroupe = $compilatio->get_id_groupe();
 
-    set_config('file_max_size', json_encode($file_max_size), 'plagiarism_compilatio');
-    set_config('file_types', json_encode($file_types), 'plagiarism_compilatio');
+    set_config('file_max_size', json_encode($filemaxsize), 'plagiarism_compilatio');
+    set_config('file_types', json_encode($filetypes), 'plagiarism_compilatio');
     set_config('idgroupe', $idgroupe, 'plagiarism_compilatio');
 }
 
@@ -1751,7 +1763,6 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
 
     $analyse = $compilatio->start_analyse($plagiarismfile->externalid);
 
-    debugging(var_export($analyse,true));
     if ($analyse === true) {
         // Update plagiarism record.
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_IN_QUEUE;
@@ -1765,6 +1776,8 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
         } else if ($analyse->code == 'NOT_ENOUGH_WORDS') {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_SHORT;
             $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+            preg_match('~least (\d+)~', $analyse->string, $nbmotsmin);
+            set_config('nb_mots_min', $nbmotsmin[1], 'plagiarism_compilatio');
             return $analyse;
         } else {
             echo $OUTPUT->notification(get_string('failedanalysis', 'plagiarism_compilatio') . $analyse->string);
@@ -1968,6 +1981,9 @@ function compilatio_get_statistics($cmid) {
     $countunextractablesql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_UNEXTRACTABLE . "'";
     $countunextractable = $DB->count_records_sql($countunextractablesql, array($cmid, $cmid));
 
+    $counttooshortsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_TOO_SHORT . "'";
+    $counttooshort = $DB->count_records_sql($counttooshortsql, array($cmid, $cmid));
+
     $countnotfoundsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_NOT_FOUND . "'";
     $countnotfound = $DB->count_records_sql($countnotfoundsql, array($cmid, $cmid));
 
@@ -2062,6 +2078,9 @@ function compilatio_get_statistics($cmid) {
     if ($countunextractable !== 0) {
         $errors[] = array("not_analyzed_unextractable", $countunextractable);
     }
+    if ($counttooshort !== 0) {
+        $errors[] = array("not_analyzed_tooshort", $counttooshort);
+    }
     if ($countnotfound !== 0) {
         $errors[] = array("documents_notfound", $countnotfound);
     }
@@ -2095,6 +2114,16 @@ function compilatio_get_statistics($cmid) {
  */
 function compilatio_get_unsupported_files($cmid) {
     return compilatio_get_files_by_status_code($cmid, COMPILATIO_STATUSCODE_UNSUPPORTED);
+}
+
+/**
+ * Lists too short documents in the assignment
+ *
+ * @param  string $cmid Course module ID
+ * @return array        containing the student & the file
+ */
+function compilatio_get_too_short_files($cmid) {
+    return compilatio_get_files_by_status_code($cmid, COMPILATIO_STATUSCODE_TOO_SHORT);
 }
 
 /**
@@ -2607,6 +2636,12 @@ function compilatio_get_global_statistics($html = true) {
                 . ' : ' . $countunextractable . '</br>';
             };
 
+            $counttooshort = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_TOO_SHORT));
+            if ($counttooshort > 0) {
+                $result["errors"] .= '- ' . get_string("stats_tooshort", "plagiarism_compilatio")
+                . ' : ' . $counttooshort . '</br>';
+            };
+
             $countnotfound = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_NOT_FOUND));
             if ($countnotfound > 0) {
                 $result["errors"] .= '- ' . get_string("stats_notfound", "plagiarism_compilatio")
@@ -2621,6 +2656,7 @@ function compilatio_get_global_statistics($html = true) {
             $sql = "SELECT COUNT(DISTINCT id) FROM {plagiarism_compilatio_files} WHERE cm=? AND statuscode=?";
             $result["errors_unsupported"] = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_UNSUPPORTED));
             $result["errors_unextractable"] = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_UNEXTRACTABLE));
+            $result["errors_tooshort"] = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_TOO_SHORT));
             $result["errors_notfound"] = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_NOT_FOUND));
             $result["errors_failed"] = $DB->count_records_sql($sql, array($row->cm, COMPILATIO_STATUSCODE_FAILED));
         }

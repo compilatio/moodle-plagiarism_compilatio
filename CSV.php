@@ -173,6 +173,9 @@ function clean_row($row) {
             case "416":
                 $data["file_status"] = "Unextractable";
                 break;
+            case "412":
+                $data["file_status"] = "Too short";
+                break;
             case "413":
                 $data["file_status"] = "Too large";
                 break;

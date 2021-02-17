@@ -42,13 +42,14 @@ require_login();
 
 global $DB;
 
-$docId = required_param('docId', PARAM_TEXT);
+$docid = required_param('docId', PARAM_TEXT);
 $cmid = required_param('cmid', PARAM_INT);
+
 if (!$cmid) {
-    $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('id' => $docId));
+    $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('id' => $docid));
     $analyse = compilatio_startanalyse($plagiarismfile);
 } else {
-    $file = $DB->get_record("files", array("id" => $docId));
+    $file = $DB->get_record("files", array("id" => $docid));
     if (!defined("COMPILATIO_MANUAL_SEND")) {
         define("COMPILATIO_MANUAL_SEND", true); // Hack to hide mtrace in function execution.
         compilatio_upload_files(array($file), $cmid);
