@@ -158,9 +158,19 @@ if (!empty($plagiarismsettings['enabled']) && !$incorrectconfig) {
     } else {
         echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
         echo $OUTPUT->notification(get_string('enabledandworking', 'plagiarism_compilatio'), 'notifysuccess');
+
+        $expirationdate = $DB->get_field('plagiarism_compilatio_data', 'value', array('name' => 'account_expire_on'));
+
         $a = new stdClass();
         $a->used = $quotas->usedCredits;
-        $a->end_date = strtolower(compilatio_format_date(compilatio_get_account_expiration_date()));
+        $a->end_date = strtolower(compilatio_format_date($expirationdate));
+
+        if (date("Y-m") == $expirationdate) {
+            echo "<div class='compilatio-alert compilatio-alert-danger'>
+                <strong>" . get_string("account_expire_soon_title", "plagiarism_compilatio") . "</strong><br/>" .
+                get_string("admin_account_expire_content", "plagiarism_compilatio") . "</div>";
+        }
+
         echo "<p>" . get_string('subscription_state', 'plagiarism_compilatio', $a) . '</p>';
         echo $OUTPUT->box_end();
     }

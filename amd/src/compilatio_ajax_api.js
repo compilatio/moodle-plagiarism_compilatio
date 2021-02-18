@@ -104,7 +104,7 @@ define(['jquery'], function($) {
                         window.location.reload();
                     });
                 });
-            }, 250);
+            }, 300);
         });
     };
 

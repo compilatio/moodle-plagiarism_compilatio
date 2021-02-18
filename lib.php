@@ -687,15 +687,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                 </button>";
         }
 
-        // If the account expires within the month, display an alert :.
-        if (compilatio_check_account_expiration_date()) {
-            $alerts[] = array(
-                "class" => "danger",
-                "title" => get_string("account_expire_soon_title", "plagiarism_compilatio"),
-                "content" => get_string("account_expire_soon_content", "plagiarism_compilatio"),
-            );
-        }
-
         $documentsnotuploaded = compilatio_get_non_uploaded_documents($cm->id);
         if (count($documentsnotuploaded) !== 0) {
 
@@ -1152,7 +1143,7 @@ function compilatio_send_pending_files($plagiarismsettings) {
                     $plagiarismsettings,
                     $tmpfile);
 
-                ws_helper::set_indexing_state($compid, $indexingstate->value);
+                ws_helper::set_indexing_state($compid, $indexingstate->value, $plagiarismfile->apiconfigid);
 
                 unlink($tmpfile->filepath);
             } else {
@@ -1171,7 +1162,7 @@ function compilatio_send_pending_files($plagiarismsettings) {
                     $plagiarismsettings,
                     $file);
 
-                ws_helper::set_indexing_state($compid, $indexingstate->value);
+                ws_helper::set_indexing_state($compid, $indexingstate->value, $plagiarismfile->apiconfigid);
             }
         }
     }
@@ -1850,6 +1841,11 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
         if ($docstatus->documentStatus->indice == -9) {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_FAILED;
         }
+
+        $nbmotsmin = get_config('plagiarism_compilatio', 'nb_mots_min');
+        if (!empty($nbmotsmin) && $docstatus->documentProperties->wordCount < $nbmotsmin) {
+            $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_SHORT;
+        }
         // Optional yellow warning in submissions.
         $plagiarismfile->errorresponse = $docstatus->documentProperties->warning;
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
@@ -2243,23 +2239,6 @@ function compilatio_update_account_expiration_date() {
         $date->value = $expirationdate;
         $DB->update_record('plagiarism_compilatio_data', $date);
     }
-}
-
-/**
- * Check expiration date of the account in the DB
- *
- * @return boolean : false if it's not expiring and true if it's expiring at the end of the month.
- */
-function compilatio_check_account_expiration_date() {
-
-    global $DB;
-
-    $expirationdate = $DB->get_record('plagiarism_compilatio_data', array('name' => 'account_expire_on'));
-
-    if ($expirationdate != null && date("Y-m") == $expirationdate->value) {
-        return true;
-    }
-    return false;
 }
 
 /**
