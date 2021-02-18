@@ -39,9 +39,8 @@ $plagiarismplugin = new plagiarism_plugin_compilatio();
 // Get plugin settings.
 $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
-if (isset($plagiarismsettings['apiconfigid'])) {
-    $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
-    $idgroupe = $compilatio->get_id_groupe();
+if (isset($plagiarismsettings['idgroupe'])) {
+    $idgroupe = $plagiarismsettings['idgroupe'];
 } else {
     $idgroupe = false;
 }

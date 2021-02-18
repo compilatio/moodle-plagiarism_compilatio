@@ -49,11 +49,12 @@ require_login();
 $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $iddoc = optional_param('idDoc', '', PARAM_TEXT);
 $indexingstatepost = optional_param('indexingState', '', PARAM_TEXT);
+$apiconfigid = required_param('apiconfigid', PARAM_INT);
 
 if (isset($iddoc) && compilatio_valid_md5($iddoc) && isset($indexingstatepost)) {
     $indexingstate = (int) ((boolean) $indexingstatepost);
 
-    $indexingstate = ws_helper::set_indexing_state($iddoc, $indexingstate);
+    $indexingstate = ws_helper::set_indexing_state($iddoc, $indexingstate, $apiconfigid);
     if ($indexingstate === true) {
         echo ('true');
     } else {
