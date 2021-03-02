@@ -10,6 +10,7 @@ CHANGES
 - Updating the minimum size for a document to be analyzed.
 - Make API calls in course modules asynchronous.
 - The alert message "Your Compilatio.net account expires soon" is now only visible to the administrator.
+- Bug fixes to handle compilatio_update_meta during plugin upgrade
 
 QUICK INSTALL
 ================
