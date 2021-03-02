@@ -178,6 +178,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     }
 
     if ($oldversion < 2021021800) {
+        require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
         compilatio_update_meta();
     }
 
