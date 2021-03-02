@@ -2250,7 +2250,7 @@ function compilatio_update_news() {
     global $DB;
 
     $news = compilatio_get_technical_news();
-    if ($news === false) {
+    if ($news == false) {
         return;
     }
 
