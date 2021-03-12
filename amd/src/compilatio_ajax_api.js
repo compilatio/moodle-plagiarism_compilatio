@@ -123,7 +123,7 @@ define(['jquery'], function($) {
 
     exports.compilatioTabs = function(basepath, alertsCount, idcourt, notifIcon, notifTitle) {
         $(document).ready(function() {
-            $.post(basepath + '/plagiarism/compilatio/ajax/getWaitingTime.php', {}, function(message) {
+            $.post(basepath + '/plagiarism/compilatio/ajax/get_waiting_time.php', {}, function(message) {
                 if (message != false) {
                     if (alertsCount > 0) {
                         $("#compi-notif-title").after(message);
