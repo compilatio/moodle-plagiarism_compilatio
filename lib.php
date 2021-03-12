@@ -734,7 +734,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $output .= "<div id='compilatio-show-notifications' title='";
             $output .= get_string("display_notifications", "plagiarism_compilatio");
             $output .= "' class='compilatio-icon active' ><i class='fa fa-bell fa-2x'></i>";
-            $output .= "<span>" . count($alerts) . "</span></div>";
+            $output .= "<span id='count-alerts'>" . count($alerts) . "</span></div>";
         }
 
         if ($plagiarismsettings["allow_search_tab"]) {
@@ -751,9 +751,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             </div>";
 
         $output .= "</div>";
-
-        $idcourt = optional_param('idcourt', null, PARAM_RAW);
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', array($alerts, $idcourt));
 
         $output .= "<div class='compilatio-clear'></div>";
 
@@ -797,7 +794,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         // Alerts tab.
         if (count($alerts) !== 0) {
             $output .= "<div id='compilatio-notifications'>";
-            $output .= "<h5>" . get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>";
+            $output .= "<h5 id='compi-notif-title'>" . get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>";
 
             foreach ($alerts as $alert) {
                 $output .= "
@@ -809,6 +806,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
             $output .= "</div>";
         }
+
+        $idcourt = optional_param('idcourt', null, PARAM_RAW);
 
         // Search tab.
         $output .= "<div id='compilatio-search'>
@@ -872,6 +871,18 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         }
 
         $output .= "</div>";
+
+        $params = array(
+            $CFG->httpswwwroot,
+            count($alerts),
+            $idcourt,
+            "<div id='compilatio-show-notifications' title='" . get_string("display_notifications", "plagiarism_compilatio")
+                . "' class='compilatio-icon active'><i class='fa fa-bell fa-2x'></i><span id='count-alerts'>1</span></div>",
+            "<div id='compilatio-notifications'><h5 id='compi-notif-title'>" .
+                get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>"
+        );
+
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', $params);
 
         return $output;
     }
@@ -2250,7 +2261,7 @@ function compilatio_update_news() {
     global $DB;
 
     $news = compilatio_get_technical_news();
-    if ($news == false) {
+    if ($news === false) {
         return;
     }
 

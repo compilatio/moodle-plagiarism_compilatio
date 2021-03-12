@@ -38,7 +38,7 @@ class ws_helper
     /**
      * Get a new instance of web service class
      *
-     * @param string $compid Document ID
+     * @param int $apiconfigid API Config ID
      * @return object Web service instance
      */
     public static function get_ws($apiconfigid = false) {
@@ -57,7 +57,6 @@ class ws_helper
             $CFG->proxyport,
             $CFG->proxyuser,
             $CFG->proxypassword);
-
     }
 
     /**
@@ -162,7 +161,8 @@ class ws_helper
     /**
      * Get the indexing state of a document.
      *
-     * @param  string $compid   Document ID
+     * @param  string $compid       Document ID
+     * @param  int   $apiconfigid   API Config ID
      * @return bool             Indexing state
      */
     public static function get_indexing_state($compid, $apiconfigid) {
@@ -176,6 +176,7 @@ class ws_helper
      * Set the indexing state of a document.
      * @param  string $compid           Document ID
      * @param  bool   $indexingstate    Indexing state
+     * @param  int   $apiconfigid       API Config ID
      * @return bool                     Return true if the indexing succeed, false otherwise
      */
     public static function set_indexing_state($compid, $indexingstate, $apiconfigid) {

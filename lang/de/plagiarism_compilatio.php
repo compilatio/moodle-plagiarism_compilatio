@@ -151,6 +151,10 @@ $string["display_stats"] = "Die Statistiken dieser Arbeit aufzeigen";
 $string["analysis_completed"] = 'Analyse beendet: Ähnlichkeitsquote von {$a}%.';
 $string["compilatio_help_assign"] = "Hilfe zum Compilatio Plugin anfordern.";
 $string["display_notifications"] = "Benachrichtigungen anzeigen";
+$string["waiting_time_title"] = "Für jede Analyse, die jetzt gestartet wird, beträgt die geschätzte Bearbeitungszeit ";
+$string["waiting_time_content"] = 'Davon {$a->queue} in Warteschleife und {$a->analysis_time} in Analyse<br><br>Klicken Sie <a href=\'../../plagiarism/compilatio/helpcenter.php?page=moodle-info-waiting&idgroupe=';
+$string["waiting_time_content_help"] = "' target='_blank'>hier</a> für die Anleitung zur vorbildlichen Nutzung, um die Verarbeitungszeit von Compilatio Analysen zu optimieren.";
+
 // CSV.
 $string["firstname"] = "Vorname";
 $string["lastname"] = "Nachname";
