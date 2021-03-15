@@ -192,6 +192,10 @@ $string["compilatio_author"] = 'Le document {$a->idcourt} in activity <b>{$a->mo
 $string["compilatio_search_help"] = "You can find the author of a document by retrieving the document identifier from the sources of the analysis report. Example: 1. Your document: <b>1st5xfj2</b> - Assign_Name(30)Name_Copied_Document.odt.";
 $string["allow_search_tab"] = "Activate the search tool to identify the author of a document.";
 $string["allow_search_tab_help"] = "The search tool allows you to search for a student's first and last name based on a document identifier visible in the analysis reports.  This tool is available in the assign activities only, but allows you to search all the documents present on your platform.";
+$string["waiting_time_title"] = "The estimated processing time for an analysis started now is ";
+$string["waiting_time_content"] = 'Including {$a->queue} in queue and {$a->analysis_time} of analysis<br><br>Click <a href=\'../../plagiarism/compilatio/helpcenter.php?page=moodle-info-waiting&idgroupe=';
+$string["waiting_time_content_help"] = "' target=\'_blank\'>here</a> to see best practices to follow to optimise the processing time of Compilatio analyses.";
+
 
 // CSV.
 $string["firstname"] = "First name";

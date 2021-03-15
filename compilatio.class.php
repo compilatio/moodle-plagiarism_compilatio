@@ -492,4 +492,24 @@ class compilatioservice {
 
     }
 
+    /**
+     * Get the waiting time for analysis begins
+     *
+     * @return string return the id_groupe if succeed, false otherwise.
+     */
+    public function get_waiting_time() {
+
+        try {
+            if (!is_object($this->soapcli)) {
+                return false;
+            }
+
+            $params = array($this->key);
+            return $this->soapcli->__call('getWaitingTime', $params);
+
+        } catch (SoapFault $fault) {
+            return false;
+        }
+
+    }
 }

@@ -185,6 +185,10 @@ $string["allow_teachers_to_show_reports"] = 'Autorizar a los profesores para pon
 $string["admin_disabled_reports"] = 'La visualización de los informes de similitudes para los estudiantes fue desactivada por el administrador.';
 $string["teacher"] = 'Profesor';
 $string["loading"] = 'Cargando, un momento por favor...';
+$string["waiting_time_title"] = "El tiempo estimado de procesamiento de cualquier análisis ejecutada ahora es de ";
+$string["waiting_time_content"] = 'De los cuales {$a->queue} de cola y {$a->analysis_time} de análisis<br><br>Haga clic <a href=\'../../plagiarism/compilatio/helpcenter.php?page=moodle-info-waiting&idgroupe=';
+$string["waiting_time_content_help"] = "' target='_blank'>aquí</a>, si quiere conocer cómo optimizar el tiempo de sus análisis con Compilatio.";
+
 // ALERTS.
 $string["unknownlang"] = "Atención, el idioma de algunos pasajes de este documento no fue reconocido.";
 // Help.

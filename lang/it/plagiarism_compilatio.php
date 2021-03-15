@@ -191,6 +191,10 @@ $string["allow_teachers_to_show_reports"] = 'Consentire ai docenti di mettere i 
 $string["admin_disabled_reports"] = 'L\'amministratore ha disattivato la funzionalità che permette di mostrare i rapporti di analisi agli studenti.';
 $string["teacher"] = 'Docente';
 $string["loading"] = 'Caricamento in corso, si prega di attendere...';
+$string["waiting_time_title"] = "Per ogni analisi avviata ora, il tempo di trattamento è stimato a ";
+$string["waiting_time_content"] = 'Diviso in {$a->queue} in lista d\'attesa e {$a->analysis_time} di analisi<br><br>Cliccare <a href=\'../../plagiarism/compilatio/helpcenter.php?page=moodle-info-waiting&idgroupe=';
+$string["waiting_time_content_help"] = "' target='blank'>qui</a> per conoscere le buone prassi da seguire per ottimizzare il tempo di trattamento delle analisi Compilatio.";
+
 // ALERTS.
 $string["unknownlang"] = "Attenzione, la lingua di alcuni passaggi di questo documento non è stata riconosciuta.";
 // Help.

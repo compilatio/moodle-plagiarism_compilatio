@@ -32,10 +32,10 @@ require_login();
 $idgroupe = required_param('idgroupe', PARAM_TEXT);
 
 // Gheck GET parameter.
-$availpages = ['moodle-admin', 'moodle-teacher'];
+$availpages = ['moodle-admin', 'moodle-teacher', 'moodle-info-waiting'];
 
-$page = optional_param('page', 0, PARAM_INT);
-if (!isset($page) || in_array($page, $availpages) === false) {
+$page = optional_param('page', 'moodle-teacher', PARAM_RAW);
+if (in_array($page, $availpages) === false) {
     $page = 'moodle-teacher';
 }
 echo("<!doctype html>
@@ -57,7 +57,7 @@ echo("<!doctype html>
 				t=x(s,'input');y(t,'type','submit');y(t,'id','compilatio-submit-redirect-hc');y(t,'style',\"display: none;\");
 				z(u,b);z(u,m);z(u,i);z(u,o);z(u,t);z(s.body,u);
 				s.getElementById('compilatio-submit-redirect-hc').click();
-			})('".$idgroupe."', '".$USER->email."', '".$USER->lang."', '".$page."')
+			})('".$idgroupe."', '".$USER->email."', '".current_language()."', '".$page."')
 		</script>
 	</body>
 </html>");
