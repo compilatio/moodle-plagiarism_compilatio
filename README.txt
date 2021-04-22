@@ -7,6 +7,7 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+- Update unindexed request to files table
 - Updating the minimum size for a document to be analyzed.
 - Make API calls in course modules asynchronous.
 - The alert message "Your Compilatio.net account expires soon" is now only visible to the administrator.
