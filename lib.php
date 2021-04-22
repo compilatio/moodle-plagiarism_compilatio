@@ -2957,7 +2957,8 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
 
         if ($eventdata['objecttable'] == 'assign_submission') {
             $mdlsubmissionfiles = $DB->get_records('files',
-                array('itemid' => $eventdata["objectid"], 'filearea' => 'submission_files'));
+                array('itemid' => $eventdata["objectid"], 'filearea' => 'submission_files',
+                    'component' => $eventdata["component"], 'contextid' => $eventdata["contextid"]));
 
             $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'content-%'";
             $allcompisubmissionfiles = $DB->get_records_sql($sql, array($cmid, $userid));
@@ -2965,7 +2966,8 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
 
         if ($eventdata['objecttable'] == 'forum_posts') {
             $mdlsubmissionfiles = $DB->get_records('files',
-                array('itemid' => $eventdata["objectid"], 'filearea' => 'attachment'));
+                array('itemid' => $eventdata["objectid"], 'filearea' => 'attachment',
+                    'component' => $eventdata["component"], 'contextid' => $eventdata["contextid"]));
 
             $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND filename LIKE ?";
             $allcompisubmissionfiles = $DB->get_records_sql($sql, array($cmid, 'post-' . $eventdata['objectid'] . '-%'));
@@ -2973,7 +2975,8 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
 
         if ($eventdata['objecttable'] == 'workshop_submissions') {
             $mdlsubmissionfiles = $DB->get_records('files',
-                array('itemid' => $eventdata["objectid"], 'filearea' => 'submission_attachment'));
+                array('itemid' => $eventdata["objectid"], 'filearea' => 'submission_attachment',
+                    'component' => $eventdata["component"], 'contextid' => $eventdata["contextid"]));
 
             $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'content-%'";
             $allcompisubmissionfiles = $DB->get_records_sql($sql, array($cmid, $userid));
