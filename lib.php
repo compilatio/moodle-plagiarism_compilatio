@@ -2535,7 +2535,7 @@ function compilatio_get_global_statistics($html = true) {
             course.id,
             course.fullname "course",
             modules.name "module_type",
-            CONCAT(COALESCE(assign.name, ""), COALESCE(forum.name, ""), COALESCE(workshop.name, "")) "module_name",
+            CONCAT(COALESCE(assign.name, \'\'), COALESCE(forum.name, \'\'), COALESCE(workshop.name, \'\')) "module_name",
             AVG(similarityscore) "avg",
             MIN(similarityscore) "min",
             MAX(similarityscore) "max",
@@ -2552,7 +2552,10 @@ function compilatio_get_global_statistics($html = true) {
         GROUP BY cm,
             course.id,
             course.fullname,
-            assign.name
+            assign.name,
+            forum.name,
+            workshop.name,
+            modules.name
         ORDER BY course.fullname, assign.name';
 
     $rows = $DB->get_records_sql($sql);
