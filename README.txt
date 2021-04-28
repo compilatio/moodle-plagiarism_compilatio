@@ -12,6 +12,8 @@ CHANGES
 - Make API calls in course modules asynchronous.
 - The alert message "Your Compilatio.net account expires soon" is now only visible to the administrator.
 - Add the estimated waiting time for an analysis to start.
+- Fix SQL query in admin stats for PostgresSQL.
+- Fix SQL query on moodle table "files" with no indexes.
 
 QUICK INSTALL
 ================
