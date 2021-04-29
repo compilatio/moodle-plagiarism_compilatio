@@ -136,6 +136,8 @@ define(['jquery'], function($) {
                     }
                 }
 
+                $('#compilatio-tabs').show();
+
                 var selectedElement = '';
                 if (idcourt) {
                     selectedElement = '#compilatio-search';
@@ -145,13 +147,7 @@ define(['jquery'], function($) {
                     selectedElement = '#compilatio-home';
                 }
 
-                $('#compilatio-container').css('height', 'auto');
-                $('#compilatio-tabs').show();
-
-                var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
-                var elements = $('#compilatio-notifications, #compilatio-stats, #compilatio-help, #compilatio-home, #compilatio-search');
-
-                elements.not($(selectedElement)).hide();
+                $(selectedElement).show();
 
                 $('#compilatio-show-notifications').on('click', function() {
                         tabClick($(this), $('#compilatio-notifications'));
@@ -165,6 +161,9 @@ define(['jquery'], function($) {
                 $('#show-search').on('click', function() {
                         tabClick($(this), $('#compilatio-search'));
                 });
+
+                var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
+                var elements = $('#compilatio-notifications, #compilatio-stats, #compilatio-help, #compilatio-home, #compilatio-search');
 
                 /**
                  * TabClick

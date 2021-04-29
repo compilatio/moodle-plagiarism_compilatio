@@ -506,388 +506,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
     }
 
     /**
-     * Hook to allow status of submitted files to be updated - called on grading/report pages
-     *
-     * @param object $course - full Course object
-     * @param object $cm - full cm object
-     * @return string
-     */
-    public function update_status($course, $cm) {
-
-        global $CFG, $PAGE, $OUTPUT, $DB, $SESSION;
-
-        $alerts = array();
-        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-        $output = '';
-
-        $export = optional_param('compilatio_export', '', PARAM_BOOL);
-        if ($export) {
-            csv_helper::generate_assign_csv($cm->id);
-        }
-
-        // Store plagiarismfiles in $SESSION.
-        $sql = "cm = ? AND externalid IS NOT null";
-        $params = array($cm->id);
-        $SESSION->compilatio_plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, $params);
-        $plagiarismfilesids = array_keys($SESSION->compilatio_plagiarismfiles);
-
-        if (isset($SESSION->compilatio_alert)) {
-            $alerts[] = $SESSION->compilatio_alert;
-            unset($SESSION->compilatio_alert);
-        }
-        if (isset($SESSION->compilatio_alert_max_attempts)) {
-            $alerts[] = $SESSION->compilatio_alert_max_attempts;
-            unset($SESSION->compilatio_alert_max_attempts);
-        }
-
-        $compilatioenabled = $plagiarismsettings["enabled"] && $plagiarismsettings["enable_mod_assign"];
-        $sql = "select value from {plagiarism_compilatio_config} where cm=? and name='use_compilatio'";
-        $activecompilatio = $DB->get_record_sql($sql, array($cm->id));
-        // Compilatio not enabled, return.
-
-        if ($activecompilatio === false) {
-            // Plagiarism settings have not been saved :.
-            $plagiarismdefaults = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => 0), '', 'name, value');
-
-            $plagiarismelements = $this->config_options();
-            foreach ($plagiarismelements as $element) {
-                if (isset($plagiarismdefaults[$element])) {
-                    $newelement = new Stdclass();
-                    $newelement->cm = $cm->id;
-                    $newelement->name = $element;
-                    $newelement->value = $plagiarismdefaults[$element];
-
-                    $DB->insert_record('plagiarism_compilatio_config', $newelement);
-                }
-            }
-            // Get the new status.
-            $activecompilatio = $DB->get_record_sql($sql, array($cm->id));
-        }
-
-        if ($activecompilatio == null ||
-            $activecompilatio->value != 1 ||
-            !$compilatioenabled) {
-            return "";
-        }
-
-        // Get compilatio analysis type.
-        $sql = "cm = ? AND name='compilatio_analysistype'";
-        $params = array($cm->id);
-        $record = $DB->get_record_select('plagiarism_compilatio_config', $sql, $params);
-        $value = $record->value;
-
-        if ($value == COMPILATIO_ANALYSISTYPE_MANUAL) { // Display a button that start all the analysis of the activity.
-
-            $url = $PAGE->url;
-            $url->param('compilatiostartanalysis', true);
-            $startallanalysisbutton = "
-                <button class='compilatio-button comp-button comp-start-btn' >
-                    <i class='fa fa-play-circle'></i>
-                    " . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "
-                </button>";
-
-        } else if ($value == COMPILATIO_ANALYSISTYPE_PROG) { // Display the date of analysis if its type is set on 'Timed'.
-            // Get analysis date :.
-            $sql = "cm = ? AND name='compilatio_timeanalyse'";
-            $params = array($cm->id);
-            $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_config', $sql, $params);
-            $record = reset($plagiarismfiles); // Get the first value of the array.
-            $date = userdate($record->value);
-            if ($record->value > time()) {
-                $programmedanalysisdate = get_string("programmed_analysis_future", "plagiarism_compilatio", $date);
-            } else {
-                $programmedanalysisdate = get_string("programmed_analysis_past", "plagiarism_compilatio", $date);
-            }
-        }
-
-        // Get the DB record containing the webservice status :.
-        $oldconnectionstatus = $DB->get_record('plagiarism_compilatio_data', array('name' => 'connection_webservice'));
-        // If the record exists and if the webservice is marked as unreachable in Cron function :.
-        if ($oldconnectionstatus != null && $oldconnectionstatus->value === '0') {
-            $alerts[] = array(
-                "class" => "danger",
-                "title" => get_string("webservice_unreachable_title", "plagiarism_compilatio"),
-                "content" => get_string("webservice_unreachable_content", "plagiarism_compilatio"));
-        }
-
-        // Display a notification of the unsupported files.
-        $files = compilatio_get_unsupported_files($cm->id);
-        if (count($files) !== 0) {
-            $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
-            $alerts[] = array(
-                "class" => "danger",
-                "title" => get_string("unsupported_files", "plagiarism_compilatio"),
-                "content" => $list,
-            );
-        }
-
-        // Display a notification for the too short files.
-        $files = compilatio_get_too_short_files($cm->id);
-        if (count($files) !== 0) {
-            $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
-            $alerts[] = array(
-                "class" => "danger",
-                "title" => get_string("tooshort_files", "plagiarism_compilatio",
-                    get_config('plagiarism_compilatio', 'nb_mots_min')),
-                "content" => $list,
-            );
-        }
-
-        // Display a notification for the unextractable files.
-        $files = compilatio_get_unextractable_files($cm->id);
-        if (count($files) !== 0) {
-
-            $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
-
-            $alerts[] = array(
-                "class" => "danger",
-                "title" => get_string("unextractable_files", "plagiarism_compilatio"),
-                "content" => $list,
-            );
-
-            $url = $PAGE->url;
-            $url->param('restartfailedanalysis', true);
-            $restartfailedanalysisbutton = "
-                <button class='compilatio-button comp-button comp-restart-btn' >
-                    <i class='fa fa-play-circle'></i>
-                    " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
-                </button>";
-        }
-
-        // Display a notification for failed analyses.
-        $files = compilatio_get_failed_analysis_files($cm->id);
-        if (count($files) !== 0) {
-
-            $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
-
-            $alerts[] = array(
-                "class" => "danger",
-                "title" => get_string("failedanalysis_files", "plagiarism_compilatio"),
-                "content" => $list,
-            );
-
-            $url = $PAGE->url;
-            $url->param('restartfailedanalysis', true);
-            $restartfailedanalysisbutton = "
-                <button class='compilatio-button comp-button comp-restart-btn' >
-                    <i class='fa fa-play-circle'></i>
-                    " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
-                </button>";
-        }
-
-        // Display restart analyses button for timeout.
-        $files = compilatio_get_files_by_status_code($cm->id, 'timeout');
-        if (count($files) !== 0) {
-            $url = $PAGE->url;
-            $url->param('restartfailedanalysis', true);
-            $restartfailedanalysisbutton = "
-                <button class='compilatio-button comp-button comp-restart-btn' >
-                    <i class='fa fa-play-circle'></i>
-                    " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
-                </button>";
-        }
-
-        $documentsnotuploaded = compilatio_get_non_uploaded_documents($cm->id);
-        if (count($documentsnotuploaded) !== 0) {
-
-            $alerts[] = array(
-                "class" => "danger",
-                "title" => get_string("unsent_documents", "plagiarism_compilatio"),
-                "content" => get_string("unsent_documents_content", "plagiarism_compilatio"),
-            );
-
-            $startallanalysisbutton = "
-    			<button class='compilatio-button comp-button comp-start-btn' >
-    				<i class='fa fa-play-circle'></i>
-    				" . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "
-    			</button>";
-
-            $restartfailedanalysisbutton = "
-                <button class='compilatio-button comp-button comp-restart-btn' >
-                    <i class='fa fa-play-circle'></i>
-                    " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
-                </button>";
-        }
-
-        // Add the Compilatio news to the alerts displayed :.
-        $alerts = array_merge($alerts, compilatio_display_news());
-
-        $output .= "<div id='compilatio-container'>";
-
-        // Display logo.
-        $output .= output_helper::get_logo();
-
-        // Display the tabs: Notification tab will be hidden if there is 0 alerts.
-        $output .= "<div id='compilatio-tabs' style='display:none'>";
-
-        // Help icon.
-        $output .= "<div title='" . get_string("compilatio_help_assign", "plagiarism_compilatio") .
-            "' id='show-help' class='compilatio-icon'><i class='fa fa-question-circle fa-2x'></i></div>";
-
-        // Stat icon.
-        $output .= "<div id='show-stats' class='compilatio-icon'  title='" .
-        get_string("display_stats", "plagiarism_compilatio") .
-            "'><i class='fa fa-bar-chart fa-2x'></i></div>";
-
-        // Alert icon.
-        if (count($alerts) !== 0) {
-            $output .= "<div id='compilatio-show-notifications' title='";
-            $output .= get_string("display_notifications", "plagiarism_compilatio");
-            $output .= "' class='compilatio-icon active' ><i class='fa fa-bell fa-2x'></i>";
-            $output .= "<span id='count-alerts'>" . count($alerts) . "</span></div>";
-        }
-
-        if ($plagiarismsettings["allow_search_tab"]) {
-            // Search icon.
-            $output .= "<div title='" . get_string("compilatio_search_tab", "plagiarism_compilatio") .
-                "' id='show-search' class='compilatio-icon'><i class='fa fa-search fa-2x'></i></div>";
-        }
-
-        // Hide/Show button.
-        $output .= "
-            <div id='compilatio-hide-area' class='compilatio-icon'  title='" .
-        get_string("hide_area", "plagiarism_compilatio") . "'>
-                <i class='fa fa-chevron-up fa-2x'></i>
-            </div>";
-
-        $output .= "</div>";
-
-        $output .= "<div class='compilatio-clear'></div>";
-
-        // Home tab.
-        $output .= "
-			<div id='compilatio-home'>
-				<p>" . get_string('similarities_disclaimer', 'plagiarism_compilatio') . "</p>
-			</div>";
-
-        // Help tab.
-        $output .= "<div id='compilatio-help'>";
-
-        if (empty($plagiarismsettings['idgroupe'])) {
-            $output .= "<p>" . get_string('helpcenter_error', 'plagiarism_compilatio')
-                . "<a href='https://support.compilatio.net/'>https://support.compilatio.net</a></p>";
-        } else {
-            $output .= "<p><a href='../../plagiarism/compilatio/helpcenter.php?idgroupe=" . $plagiarismsettings['idgroupe'] . "'" .
-            "target='_blank' >" . get_string('helpcenter', 'plagiarism_compilatio') . "
-            <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
-                <path fill='none' stroke='#555' stroke-linecap='round'
-                stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
-            </svg></a></p>";
-        }
-
-        $output .= "
-                <p><a href='http://etat-services.compilatio.net/?lang=FR'" .
-                    "target='_blank' >" . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') . "
-                    <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
-                        <path fill='none' stroke='#555' stroke-linecap='round'
-                        stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
-                    </svg></a></p>
-            </div>";
-
-        // Stats tab.
-        $output .= "
-            <div id='compilatio-stats'>
-                <h5>" . get_string("tabs_title_stats", "plagiarism_compilatio") . " : </h5>" .
-        compilatio_get_statistics($cm->id) .
-            "</div>";
-
-        // Alerts tab.
-        if (count($alerts) !== 0) {
-            $output .= "<div id='compilatio-notifications'>";
-            $output .= "<h5 id='compi-notif-title'>" . get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>";
-
-            foreach ($alerts as $alert) {
-                $output .= "
-                    <div class='compilatio-alert compilatio-alert-" . $alert["class"] . "'>" .
-                    "<strong>" . $alert["title"] . "</strong><br/>" .
-                    $alert["content"] .
-                    "</div>";
-            }
-
-            $output .= "</div>";
-        }
-
-        $idcourt = optional_param('idcourt', null, PARAM_RAW);
-
-        // Search tab.
-        $output .= "<div id='compilatio-search'>
-            <h5>" . get_string("compilatio_search_tab", "plagiarism_compilatio") . "</h5>
-            <p>" . get_string("compilatio_search_help", "plagiarism_compilatio") . "</p>
-            <form class='form-inline' action=" . $PAGE->url . " method='post'>
-                <input class='form-control m-2' type='text' id='idcourt' name='idcourt' value='" . $idcourt
-                    . "' placeholder='" . get_string("compilatio_iddocument", "plagiarism_compilatio") . "'>
-                <input class='btn btn-primary' type='submit' value='" .get_string("compilatio_search", "plagiarism_compilatio"). "'>
-            </form>";
-
-        if (!empty($idcourt)) {
-            $sql = "SELECT user.lastname, user.firstname, cf.idcourt, cf.cm FROM {plagiarism_compilatio_files} cf
-                JOIN {user} user on cf.userid = user.id
-                WHERE cf.idcourt = ?";
-            $doc = $DB->get_record_sql($sql, array($idcourt));
-
-            if ($doc) {
-                $module = get_coursemodule_from_id(null, $doc->cm);
-                $doc->modulename = $module->name;
-                $output .= get_string('compilatio_author', 'plagiarism_compilatio', $doc);
-            } else {
-                $output .= get_string("compilatio_search_notfound", "plagiarism_compilatio");
-            }
-        }
-
-        $output .= "</div>";
-
-        // Display timed analysis date.
-        if (isset($programmedanalysisdate)) {
-            $output .= "<p id='compilatio-programmed-analysis'>$programmedanalysisdate</p>";
-        }
-
-        $output .= "</div>";
-
-        // Display buttons :.
-        $output .= "<div id='compilatio-button-container'>";
-
-        // Update button.
-        $url = $PAGE->url;
-        $url->param('compilatioupdate', true);
-        $output .= "
-    		<button class='compilatio-button comp-button'>
-    				<i class='fa fa-refresh'></i>
-    				" . get_string('updatecompilatioresults', 'plagiarism_compilatio') . "
-    		</button>";
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'refreshButton',
-            array($CFG->httpswwwroot, $plagiarismfilesids, get_string('update_in_progress', 'plagiarism_compilatio')));
-
-        // Start all analysis button.
-        if (isset($startallanalysisbutton)) {
-            $output .= $startallanalysisbutton;
-            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
-                array($CFG->httpswwwroot, $cm->id));
-        }
-
-        if (isset($restartfailedanalysisbutton)) {
-            $output .= $restartfailedanalysisbutton;
-            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'restartFailedAnalysis',
-                array($CFG->httpswwwroot, $cm->id));
-        }
-
-        $output .= "</div>";
-
-        $params = array(
-            $CFG->httpswwwroot,
-            count($alerts),
-            $idcourt,
-            "<div id='compilatio-show-notifications' title='" . get_string("display_notifications", "plagiarism_compilatio")
-                . "' class='compilatio-icon active'><i class='fa fa-bell fa-2x'></i><span id='count-alerts'>1</span></div>",
-            "<div id='compilatio-notifications'><h5 id='compi-notif-title'>" .
-                get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>"
-        );
-
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', $params);
-
-        return $output;
-    }
-
-    /**
      * Send a mail to the student
      *
      * @param  array $plagiarismfile File
@@ -913,6 +531,413 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         email_to_user($user, $site->shortname, $emailsubject, $emailcontent);
     }
 
+}
+
+/**
+ * Output callback to insert a chunk of html at the start of the html document.
+ * This allow us to display the Compilatio frame with statistics, alerts,
+ * author search tool and buttons to launch all analyses and update submitted files status.
+ *
+ * @return string
+ */
+function plagiarism_compilatio_before_standard_top_of_body_html() {
+
+    global $CFG, $PAGE, $OUTPUT, $DB, $SESSION;
+
+    if (!$PAGE->context instanceof \context_module) {
+        return;
+    }
+
+    if (!has_capability('plagiarism/compilatio:viewreport', $PAGE->context)) {
+        return;
+    }
+
+    if ($PAGE->url->compare(new moodle_url('/mod/assign/view.php'), URL_MATCH_BASE)) {
+        if (empty(optional_param('action', null, PARAM_RAW))) {
+            return;
+        }
+        $module = 'assign';
+    } else if ($PAGE->url->compare(new moodle_url('/mod/forum/view.php'), URL_MATCH_BASE)) {
+        $module = 'forum';
+    } else if ($PAGE->url->compare(new moodle_url('/mod/workshop/view.php'), URL_MATCH_BASE)) {
+        $module = 'workshop';
+    } else {
+        return;
+    }
+
+    $cmid = $PAGE->context->instanceid;
+    $plagiarismsettings = (array) get_config('plagiarism_compilatio');
+
+    $compilatioenabled = $plagiarismsettings["enabled"] && $plagiarismsettings["enable_mod_" . $module];
+    $sql = "select value from {plagiarism_compilatio_config} where cm=? and name='use_compilatio'";
+    $activecompilatio = $DB->get_record_sql($sql, array($cmid));
+    // Compilatio not enabled, return.
+
+    if ($activecompilatio === false) {
+        // Plagiarism settings have not been saved :.
+        $plagiarismdefaults = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => 0), '', 'name, value');
+
+        $plugin = new plagiarism_plugin_compilatio();
+        $plagiarismelements = $plugin->config_options();
+        foreach ($plagiarismelements as $element) {
+            if (isset($plagiarismdefaults[$element])) {
+                $newelement = new Stdclass();
+                $newelement->cm = $cmid;
+                $newelement->name = $element;
+                $newelement->value = $plagiarismdefaults[$element];
+
+                $DB->insert_record('plagiarism_compilatio_config', $newelement);
+            }
+        }
+        // Get the new status.
+        $activecompilatio = $DB->get_record_sql($sql, array($cmid));
+    }
+
+    if ($activecompilatio == null ||
+        $activecompilatio->value != 1 ||
+        !$compilatioenabled) {
+        return;
+    }
+
+    $alerts = array();
+    $output = '';
+
+    $export = optional_param('compilatio_export', '', PARAM_BOOL);
+    if ($export) {
+        csv_helper::generate_cm_csv($cmid, $module);
+    }
+
+    // Store plagiarismfiles in $SESSION.
+    $sql = "cm = ? AND externalid IS NOT null";
+    $SESSION->compilatio_plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, array($cmid));
+    $plagiarismfilesids = array_keys($SESSION->compilatio_plagiarismfiles);
+
+    if (isset($SESSION->compilatio_alert)) {
+        $alerts[] = $SESSION->compilatio_alert;
+        unset($SESSION->compilatio_alert);
+    }
+    if (isset($SESSION->compilatio_alert_max_attempts)) {
+        $alerts[] = $SESSION->compilatio_alert_max_attempts;
+        unset($SESSION->compilatio_alert_max_attempts);
+    }
+
+    // Get compilatio analysis type.
+    $sql = "cm = ? AND name='compilatio_analysistype'";
+    $params = array($cmid);
+    $record = $DB->get_record_select('plagiarism_compilatio_config', $sql, $params);
+    $value = $record->value;
+
+    if ($value == COMPILATIO_ANALYSISTYPE_MANUAL) { // Display a button that start all the analysis of the activity.
+
+        $url = $PAGE->url;
+        $url->param('compilatiostartanalysis', true);
+        $startallanalysisbutton = "
+            <button class='compilatio-button comp-button comp-start-btn' >
+                <i class='fa fa-play-circle'></i>
+                " . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "
+            </button>";
+
+    } else if ($value == COMPILATIO_ANALYSISTYPE_PROG) { // Display the date of analysis if its type is set on 'Timed'.
+        // Get analysis date :.
+        $sql = "cm = ? AND name='compilatio_timeanalyse'";
+        $params = array($cmid);
+        $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_config', $sql, $params);
+        $record = reset($plagiarismfiles); // Get the first value of the array.
+        $date = userdate($record->value);
+        if ($record->value > time()) {
+            $programmedanalysisdate = get_string("programmed_analysis_future", "plagiarism_compilatio", $date);
+        } else {
+            $programmedanalysisdate = get_string("programmed_analysis_past", "plagiarism_compilatio", $date);
+        }
+    }
+
+    // Get the DB record containing the webservice status :.
+    $oldconnectionstatus = $DB->get_record('plagiarism_compilatio_data', array('name' => 'connection_webservice'));
+    // If the record exists and if the webservice is marked as unreachable in Cron function :.
+    if ($oldconnectionstatus != null && $oldconnectionstatus->value === '0') {
+        $alerts[] = array(
+            "class" => "danger",
+            "title" => get_string("webservice_unreachable_title", "plagiarism_compilatio"),
+            "content" => get_string("webservice_unreachable_content", "plagiarism_compilatio"));
+    }
+
+    // Display a notification of the unsupported files.
+    $files = compilatio_get_unsupported_files($cmid);
+    if (count($files) !== 0) {
+        $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
+        $alerts[] = array(
+            "class" => "danger",
+            "title" => get_string("unsupported_files", "plagiarism_compilatio"),
+            "content" => $list,
+        );
+    }
+
+    // Display a notification for the too short files.
+    $files = compilatio_get_too_short_files($cmid);
+    if (count($files) !== 0) {
+        $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
+        $alerts[] = array(
+            "class" => "danger",
+            "title" => get_string("tooshort_files", "plagiarism_compilatio",
+                get_config('plagiarism_compilatio', 'nb_mots_min')),
+            "content" => $list,
+        );
+    }
+
+    // Display a notification for the unextractable files.
+    $files = compilatio_get_unextractable_files($cmid);
+    if (count($files) !== 0) {
+
+        $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
+
+        $alerts[] = array(
+            "class" => "danger",
+            "title" => get_string("unextractable_files", "plagiarism_compilatio"),
+            "content" => $list,
+        );
+
+        $url = $PAGE->url;
+        $url->param('restartfailedanalysis', true);
+        $restartfailedanalysisbutton = "
+            <button class='compilatio-button comp-button comp-restart-btn' >
+                <i class='fa fa-play-circle'></i>
+                " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
+            </button>";
+    }
+
+    // Display a notification for failed analyses.
+    $files = compilatio_get_failed_analysis_files($cmid);
+    if (count($files) !== 0) {
+
+        $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
+
+        $alerts[] = array(
+            "class" => "danger",
+            "title" => get_string("failedanalysis_files", "plagiarism_compilatio"),
+            "content" => $list,
+        );
+
+        $url = $PAGE->url;
+        $url->param('restartfailedanalysis', true);
+        $restartfailedanalysisbutton = "
+            <button class='compilatio-button comp-button comp-restart-btn' >
+                <i class='fa fa-play-circle'></i>
+                " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
+            </button>";
+    }
+
+    // Display restart analyses button for timeout.
+    $files = compilatio_get_files_by_status_code($cmid, 'timeout');
+    if (count($files) !== 0) {
+        $url = $PAGE->url;
+        $url->param('restartfailedanalysis', true);
+        $restartfailedanalysisbutton = "
+            <button class='compilatio-button comp-button comp-restart-btn' >
+                <i class='fa fa-play-circle'></i>
+                " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
+            </button>";
+    }
+
+    $documentsnotuploaded = compilatio_get_non_uploaded_documents($cmid);
+    if (count($documentsnotuploaded) !== 0) {
+
+        $alerts[] = array(
+            "class" => "danger",
+            "title" => get_string("unsent_documents", "plagiarism_compilatio"),
+            "content" => get_string("unsent_documents_content", "plagiarism_compilatio"),
+        );
+
+        $startallanalysisbutton = "
+            <button class='compilatio-button comp-button comp-start-btn' >
+                <i class='fa fa-play-circle'></i>
+                " . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "
+            </button>";
+
+        $restartfailedanalysisbutton = "
+            <button class='compilatio-button comp-button comp-restart-btn' >
+                <i class='fa fa-play-circle'></i>
+                " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
+            </button>";
+    }
+
+    // Add the Compilatio news to the alerts displayed :.
+    $alerts = array_merge($alerts, compilatio_display_news());
+
+    $output .= "<div id='compilatio-container'>";
+
+    // Display the tabs: Notification tab will be hidden if there is 0 alerts.
+    $output .= "<div id='compilatio-tabs' style='display:none'>";
+
+    // Display logo.
+    $output .= output_helper::get_logo();
+
+    // Help icon.
+    $output .= "<div title='" . get_string("compilatio_help_assign", "plagiarism_compilatio") .
+        "' id='show-help' class='compilatio-icon'><i class='fa fa-question-circle fa-2x'></i></div>";
+
+    // Stat icon.
+    $output .= "<div id='show-stats' class='compilatio-icon'  title='" .
+    get_string("display_stats", "plagiarism_compilatio") .
+        "'><i class='fa fa-bar-chart fa-2x'></i></div>";
+
+    // Alert icon.
+    if (count($alerts) !== 0) {
+        $output .= "<div id='compilatio-show-notifications' title='";
+        $output .= get_string("display_notifications", "plagiarism_compilatio");
+        $output .= "' class='compilatio-icon active' ><i class='fa fa-bell fa-2x'></i>";
+        $output .= "<span id='count-alerts'>" . count($alerts) . "</span></div>";
+    }
+
+    if ($plagiarismsettings["allow_search_tab"]) {
+        // Search icon.
+        $output .= "<div title='" . get_string("compilatio_search_tab", "plagiarism_compilatio") .
+            "' id='show-search' class='compilatio-icon'><i class='fa fa-search fa-2x'></i></div>";
+    }
+
+    // Hide/Show button.
+    $output .= "
+        <div id='compilatio-hide-area' class='compilatio-icon'  title='" .
+    get_string("hide_area", "plagiarism_compilatio") . "'>
+            <i class='fa fa-chevron-up fa-2x'></i>
+        </div>";
+
+    $output .= "</div>";
+
+    $output .= "<div class='compilatio-clear'></div>";
+
+    // Home tab.
+    $output .= "
+        <div id='compilatio-home' class='compilatio-tabs-content'>
+            <p>" . get_string('similarities_disclaimer', 'plagiarism_compilatio') . "</p>
+        </div>";
+
+    // Help tab.
+    $output .= "<div id='compilatio-help' class='compilatio-tabs-content'>";
+
+    if (empty($plagiarismsettings['idgroupe'])) {
+        $output .= "<p>" . get_string('helpcenter_error', 'plagiarism_compilatio')
+            . "<a href='https://support.compilatio.net/'>https://support.compilatio.net</a></p>";
+    } else {
+        $output .= "<p><a href='../../plagiarism/compilatio/helpcenter.php?idgroupe=" . $plagiarismsettings['idgroupe'] . "'" .
+        "target='_blank' >" . get_string('helpcenter', 'plagiarism_compilatio') . "
+        <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
+            <path fill='none' stroke='#555' stroke-linecap='round'
+            stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
+        </svg></a></p>";
+    }
+
+    $output .= "
+            <p><a href='http://etat-services.compilatio.net/?lang=FR'" .
+                "target='_blank' >" . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') . "
+                <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
+                    <path fill='none' stroke='#555' stroke-linecap='round'
+                    stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
+                </svg></a></p>
+        </div>";
+
+    // Stats tab.
+    $output .= "
+        <div id='compilatio-stats' class='compilatio-tabs-content'>
+            <h5>" . get_string("tabs_title_stats", "plagiarism_compilatio") . " : </h5>" .
+    compilatio_get_statistics($cmid) .
+        "</div>";
+
+    // Alerts tab.
+    if (count($alerts) !== 0) {
+        $output .= "<div id='compilatio-notifications' class='compilatio-tabs-content'>";
+        $output .= "<h5 id='compi-notif-title'>" . get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>";
+
+        foreach ($alerts as $alert) {
+            $output .= "
+                <div class='compilatio-alert compilatio-alert-" . $alert["class"] . "'>" .
+                "<strong>" . $alert["title"] . "</strong><br/>" .
+                $alert["content"] .
+                "</div>";
+        }
+
+        $output .= "</div>";
+    }
+
+    $idcourt = optional_param('idcourt', null, PARAM_RAW);
+
+    // Search tab.
+    $output .= "<div id='compilatio-search' class='compilatio-tabs-content'>
+        <h5>" . get_string("compilatio_search_tab", "plagiarism_compilatio") . "</h5>
+        <p>" . get_string("compilatio_search_help", "plagiarism_compilatio") . "</p>
+        <form class='form-inline' action=" . $PAGE->url . " method='post'>
+            <input class='form-control m-2' type='text' id='idcourt' name='idcourt' value='" . $idcourt
+                . "' placeholder='" . get_string("compilatio_iddocument", "plagiarism_compilatio") . "'>
+            <input class='btn btn-primary' type='submit' value='" .get_string("compilatio_search", "plagiarism_compilatio"). "'>
+        </form>";
+
+    if (!empty($idcourt)) {
+        $sql = "SELECT user.lastname, user.firstname, cf.idcourt, cf.cm FROM {plagiarism_compilatio_files} cf
+            JOIN {user} user on cf.userid = user.id
+            WHERE cf.idcourt = ?";
+        $doc = $DB->get_record_sql($sql, array($idcourt));
+
+        if ($doc) {
+            $module = get_coursemodule_from_id(null, $doc->cm);
+            $doc->modulename = $module->name;
+            $output .= get_string('compilatio_author', 'plagiarism_compilatio', $doc);
+        } else {
+            $output .= get_string("compilatio_search_notfound", "plagiarism_compilatio");
+        }
+    }
+
+    $output .= "</div>";
+
+    // Display timed analysis date.
+    if (isset($programmedanalysisdate)) {
+        $output .= "<p id='compilatio-programmed-analysis'>$programmedanalysisdate</p>";
+    }
+
+    $output .= "</div>";
+
+    if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
+        // Display buttons :.
+        $output .= "<div id='compilatio-button-container'>";
+
+        // Update button.
+        $url = $PAGE->url;
+        $url->param('compilatioupdate', true);
+        $output .= "
+            <button class='compilatio-button comp-button'>
+                    <i class='fa fa-refresh'></i>
+                    " . get_string('updatecompilatioresults', 'plagiarism_compilatio') . "
+            </button>";
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'refreshButton',
+            array($CFG->httpswwwroot, $plagiarismfilesids, get_string('update_in_progress', 'plagiarism_compilatio')));
+
+        // Start all analysis button.
+        if (isset($startallanalysisbutton)) {
+            $output .= $startallanalysisbutton;
+            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
+                array($CFG->httpswwwroot, $cmid));
+        }
+
+        if (isset($restartfailedanalysisbutton)) {
+            $output .= $restartfailedanalysisbutton;
+            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'restartFailedAnalysis',
+                array($CFG->httpswwwroot, $cmid));
+        }
+
+        $output .= "</div>";
+    }
+
+    $params = array(
+        $CFG->httpswwwroot,
+        count($alerts),
+        $idcourt,
+        "<div id='compilatio-show-notifications' title='" . get_string("display_notifications", "plagiarism_compilatio")
+            . "' class='compilatio-icon active'><i class='fa fa-bell fa-2x'></i><span id='count-alerts'>1</span></div>",
+        "<div id='compilatio-notifications'><h5 id='compi-notif-title'>" .
+            get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>"
+    );
+
+    $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', $params);
+
+    return $output;
 }
 
 /**
@@ -1963,62 +1988,48 @@ function compilatio_get_statistics($cmid) {
 
     $sql = "
         SELECT COUNT(DISTINCT pcf.id)
-        FROM {course_modules} cm
-        JOIN {assign_submission} ass ON ass.assignment = cm.instance
-        JOIN {files} files ON files.itemid = ass.id
-        JOIN {plagiarism_compilatio_files} pcf
-            ON pcf.identifier = files.contenthash
-        WHERE cm.id=? AND pcf.cm=? AND files.filearea='submission_files'";
+        FROM {plagiarism_compilatio_files} pcf
+        WHERE pcf.cm=?";
 
     $countallsql = $sql;
-    $documentscount = $DB->count_records_sql($countallsql, array($cmid, $cmid));
+    $documentscount = $DB->count_records_sql($countallsql, array($cmid));
 
     $countanalyzedsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_COMPLETE . "'";
-    $countanalyzed = $DB->count_records_sql($countanalyzedsql, array($cmid, $cmid));
+    $countanalyzed = $DB->count_records_sql($countanalyzedsql, array($cmid));
 
     $counthigherthanredsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_COMPLETE . "' AND similarityscore>$redthreshold";
-    $counthigherthanred = $DB->count_records_sql($counthigherthanredsql, array($cmid, $cmid));
+    $counthigherthanred = $DB->count_records_sql($counthigherthanredsql, array($cmid));
 
     $countlowerthangreensql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_COMPLETE . "' AND similarityscore<=$greenthreshold";
-    $countlowerthangreen = $DB->count_records_sql($countlowerthangreensql, array($cmid, $cmid));
+    $countlowerthangreen = $DB->count_records_sql($countlowerthangreensql, array($cmid));
 
     $countunsupportedsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_UNSUPPORTED . "'";
-    $countunsupported = $DB->count_records_sql($countunsupportedsql, array($cmid, $cmid));
+    $countunsupported = $DB->count_records_sql($countunsupportedsql, array($cmid));
 
     $countunextractablesql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_UNEXTRACTABLE . "'";
-    $countunextractable = $DB->count_records_sql($countunextractablesql, array($cmid, $cmid));
+    $countunextractable = $DB->count_records_sql($countunextractablesql, array($cmid));
 
     $counttooshortsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_TOO_SHORT . "'";
-    $counttooshort = $DB->count_records_sql($counttooshortsql, array($cmid, $cmid));
+    $counttooshort = $DB->count_records_sql($counttooshortsql, array($cmid));
 
     $countnotfoundsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_NOT_FOUND . "'";
-    $countnotfound = $DB->count_records_sql($countnotfoundsql, array($cmid, $cmid));
+    $countnotfound = $DB->count_records_sql($countnotfoundsql, array($cmid));
 
     $countfailedsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_FAILED . "'";
-    $countfailed = $DB->count_records_sql($countfailedsql, array($cmid, $cmid));
+    $countfailed = $DB->count_records_sql($countfailedsql, array($cmid));
 
     $countinqueuesql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_IN_QUEUE . "'";
-    $countinqueue = $DB->count_records_sql($countinqueuesql, array($cmid, $cmid));
+    $countinqueue = $DB->count_records_sql($countinqueuesql, array($cmid));
 
     $countanalysingsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_ANALYSING . "'";
-    $countanalysing = $DB->count_records_sql($countanalysingsql, array($cmid, $cmid));
+    $countanalysing = $DB->count_records_sql($countanalysingsql, array($cmid));
 
     $averagesql = "
-    	SELECT AVG(similarityscore) avg
-    	FROM {plagiarism_compilatio_files} pcf
-    	WHERE id IN (
-        	SELECT DISTINCT pcf.id
-        	FROM {course_modules} cm
-        	JOIN {assign_submission} ass ON ass.assignment = cm.instance
-        	JOIN {files} files ON files.itemid = ass.id
-        	JOIN {plagiarism_compilatio_files} pcf ON pcf.identifier = files.contenthash
-        	JOIN {user} usr ON pcf.userid= usr.id
-        	WHERE cm.id=?
-                AND pcf.cm=?
-                AND files.filearea='submission_files'
-                AND statuscode='" . COMPILATIO_STATUSCODE_COMPLETE . "')";
+        SELECT AVG(similarityscore) avg
+        FROM {plagiarism_compilatio_files} pcf
+        WHERE pcf.cm=? AND statuscode='" . COMPILATIO_STATUSCODE_COMPLETE . "'";
 
-    $avgresult = $DB->get_record_sql($averagesql, array($cmid, $cmid));
+    $avgresult = $DB->get_record_sql($averagesql, array($cmid));
     $avg = $avgresult->avg;
 
     $analysisstats = new StdClass();
@@ -2165,22 +2176,12 @@ function compilatio_get_files_by_status_code($cmid, $statuscode) {
     global $DB;
 
     $sql = "
-        SELECT DISTINCT
-            pcf.id,
-            pcf.filename,
-            usr.firstname,
-            usr.lastname
-        FROM {course_modules} cm
-        JOIN {assign_submission} ass ON ass.assignment = cm.instance
-        JOIN {files} files ON files.itemid = ass.id
-        JOIN {plagiarism_compilatio_files} pcf ON pcf.identifier = files.contenthash
+        SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname
+        FROM {plagiarism_compilatio_files} pcf
         JOIN {user} usr ON pcf.userid= usr.id
-        WHERE cm.id=?
-            AND pcf.cm=?
-            AND files.filearea='submission_files'
-            AND statuscode = '" . $statuscode . "'";
+        WHERE pcf.cm=? AND statuscode = ?";
 
-    $files = $DB->get_records_sql($sql, array($cmid, $cmid));
+    $files = $DB->get_records_sql($sql, array($cmid, $statuscode));
 
     return array_map(
         function ($file) {
@@ -2199,26 +2200,12 @@ function compilatio_get_max_attempts_files($cmid) {
     global $DB;
 
     $sql = "
-        SELECT DISTINCT pcf.id,pcf.filename, usr.firstname, usr.lastname
-        FROM {course_modules} cm
-        JOIN {assign_submission} ass ON ass.assignment = cm.instance
-        JOIN {files} files ON files.itemid = ass.id
-        JOIN {plagiarism_compilatio_files} pcf
-            ON pcf.identifier = files.contenthash
+        SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname
+        FROM {plagiarism_compilatio_files} pcf
         JOIN {user} usr ON pcf.userid= usr.id
-        WHERE cm.id=?
-            AND pcf.cm=?
-            AND files.filearea = 'submission_files'
-            AND statuscode = ?
-            AND pcf.attempt >= 6
-    ";
+        WHERE pcf.cm=? AND statuscode = ? AND pcf.attempt >= 6";
 
-    $params = array(
-        $cmid,
-        $cmid,
-        COMPILATIO_STATUSCODE_UNEXTRACTABLE,
-    );
-    $files = $DB->get_records_sql($sql, $params);
+    $files = $DB->get_records_sql($sql, array($cmid, COMPILATIO_STATUSCODE_UNEXTRACTABLE));
 
     return array_map(
         function ($file) {

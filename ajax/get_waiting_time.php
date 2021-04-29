@@ -40,6 +40,7 @@ require_login();
 $compilatio = compilatio_get_compilatio_service(get_config('plagiarism_compilatio', 'apiconfigid'));
 $reswait = $compilatio->get_waiting_time();
 $maxanalysistime = 1800;
+
 if ($reswait != false && $reswait->magister_queue + $reswait->magister_analysis_time > $maxanalysistime) {
 
     $waittime = new Stdclass();

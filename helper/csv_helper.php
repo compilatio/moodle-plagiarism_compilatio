@@ -63,42 +63,34 @@ class csv_helper
     }
 
     /**
-     * Generates CSV file for an assignment
+     * Generates CSV file for an course module
      *
      * @param string $cmid course module id of the assignment to export
+     * @param string $module type of course module
      * @return  void
      */
-    public static function generate_assign_csv($cmid) {
+    public static function generate_cm_csv($cmid, $module) {
 
         global $DB;
-
+        
         $sql = "
-            SELECT DISTINCT
-                pcf.id,
-                files.filename,
-                usr.firstname,
-                usr.lastname,
-                pcf.statuscode,
-                pcf.similarityscore,
-                pcf.timesubmitted
-            FROM {course_modules} cm
-            JOIN {assign_submission} ass ON ass.assignment = cm.instance
-            JOIN {files} files ON files.itemid = ass.id
-            JOIN {plagiarism_compilatio_files} pcf ON pcf.identifier = files.contenthash
+            SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname,
+                pcf.statuscode, pcf.similarityscore, pcf.timesubmitted
+            FROM {plagiarism_compilatio_files} pcf
             JOIN {user} usr ON pcf.userid= usr.id
-            WHERE cm.id=? AND pcf.cm=? AND files.filearea='submission_files'";
+            WHERE pcf.cm=?";
 
-        $files = $DB->get_records_sql($sql, array($cmid, $cmid));
+        $files = $DB->get_records_sql($sql, array($cmid));
 
         $moduleconfig = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => $cmid), '', 'name, value');
         $analysistype = $moduleconfig["compilatio_analysistype"];
 
         // Get the name of the activity in order to generate header line and the filename.
         $sql = "
-            SELECT assign.name
+            SELECT activity.name
             FROM {course_modules} cm
-            JOIN {assign} assign ON cm.course = assign.course
-            AND cm.instance = assign.id
+            JOIN {" . $module . "} activity ON cm.course = activity.course
+                AND cm.instance = activity.id
             WHERE cm.id =?";
 
         $name = "";

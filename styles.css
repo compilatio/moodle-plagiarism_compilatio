@@ -163,8 +163,10 @@ Head area in assignment
     cursor: pointer;
 }
 #compilatio-tabs {
-    padding-bottom: 20px;
     border-bottom: 2px solid #e3e3e3;
+}
+.compilatio-tabs-content {
+    display: none;
 }
 #compilatio-show-notifications span {
     position: relative;
@@ -185,18 +187,22 @@ Head area in assignment
     justify-content: center;
 }
 #compilatio-container {
-    height: 70px;
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
     min-width: 565px;
     border-color: #e3e3e3;
-    min-height: 20px;
+    min-height: 200px;
     padding: 19px;
     margin-bottom: 20px;
     background-color: #f5f5f5;
     border: 1px solid #e3e3e3;
     border-radius: 4px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
-    margin-top: 15px;
+    margin-top: 70px;
+    margin-left: 15px;
+    margin-right: 15px;
     color: #444;
 }
 #compilatio-container h5 {
