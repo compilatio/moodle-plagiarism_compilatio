@@ -63,7 +63,7 @@ define(['jquery'], function($) {
                 refreshButton.click(function() {
                     disableCompilatioButtons();
                     // Display progress bar.
-                    $("#compilatio-home").html("<p>" + infoStr + "<progress id='compi-update-progress' value='"
+                    $("#compi-home").html("<p>" + infoStr + "<progress id='compi-update-progress' value='"
                         + i + "' max='" + n + "'></progress></p>");
                     $("#compilatio-logo").click();
                     // Launch ajax requests.
@@ -127,7 +127,7 @@ define(['jquery'], function($) {
                 if (message != false) {
                     if (alertsCount > 0) {
                         $("#compi-notif-title").after(message);
-                        nbAlerts = parseInt($("#count-alerts").text());
+                        var nbAlerts = parseInt($("#count-alerts").text());
                         $("#count-alerts").text(nbAlerts + 1);
                     } else {
                         $("#show-stats").after(notifIcon);
@@ -140,37 +140,37 @@ define(['jquery'], function($) {
 
                 var selectedElement = '';
                 if (idcourt) {
-                    selectedElement = '#compilatio-search';
+                    selectedElement = '#compi-search';
                 } else if (alertsCount > 0) {
-                    selectedElement = '#compilatio-notifications';
+                    selectedElement = '#compi-notifications';
                 } else {
-                    selectedElement = '#compilatio-home';
+                    selectedElement = '#compi-home';
                 }
 
                 $(selectedElement).show();
 
                 $('#compilatio-show-notifications').on('click', function() {
-                        tabClick($(this), $('#compilatio-notifications'));
+                        tabClick($(this), $('#compi-notifications'));
                 });
                 $('#show-stats').on('click', function() {
-                        tabClick($(this), $('#compilatio-stats'));
+                        tabClick($(this), $('#compi-stats'));
                 });
                 $('#show-help').on('click', function() {
-                        tabClick($(this), $('#compilatio-help'));
+                        tabClick($(this), $('#compi-help'));
                 });
                 $('#show-search').on('click', function() {
-                        tabClick($(this), $('#compilatio-search'));
+                        tabClick($(this), $('#compi-search'));
                 });
 
                 var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
-                var elements = $('#compilatio-notifications, #compilatio-stats, #compilatio-help, #compilatio-home, #compilatio-search');
+                var elements = $('#compi-notifications, #compi-stats, #compi-help, #compi-home, #compi-search');
 
                 /**
                  * TabClick
                  * Show clicked tab.
                  *
-                 * @param tabClicked
-                 * @param contentToShow
+                 * @param {object} tabClicked
+                 * @param {object} contentToShow
                  */
                 function tabClick(tabClicked, contentToShow) {
                     if (!contentToShow.is(':visible')) {
@@ -185,7 +185,7 @@ define(['jquery'], function($) {
                 }
 
                 $('#compilatio-logo').on('click', function() {
-                    var elementClicked = $('#compilatio-home');
+                    var elementClicked = $('#compi-home');
                     elementClicked.show();
                     elements.not(elementClicked).hide();
                     tabs.removeClass('active');

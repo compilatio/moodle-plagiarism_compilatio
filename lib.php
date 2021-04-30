@@ -78,7 +78,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         if (isset($plagiarismsettings['enabled']) && $plagiarismsettings['enabled']) {
             // Now check to make sure required settings are set!.
             if (empty($plagiarismsettings['apiconfigid'])) {
-                print_error("Compilatio API Configuration is not set!");
+                throw new moodle_exception("Compilatio API Configuration is not set!");
             }
             return $plagiarismsettings;
         } else {
@@ -553,7 +553,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     }
 
     if ($PAGE->url->compare(new moodle_url('/mod/assign/view.php'), URL_MATCH_BASE)) {
-        if (empty(optional_param('action', null, PARAM_RAW))) {
+        if (optional_param('action', null, PARAM_RAW) != 'grading') {
             return;
         }
         $module = 'assign';
@@ -807,12 +807,12 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
 
     // Home tab.
     $output .= "
-        <div id='compilatio-home' class='compilatio-tabs-content'>
+        <div id='compi-home' class='compilatio-tabs-content'>
             <p>" . get_string('similarities_disclaimer', 'plagiarism_compilatio') . "</p>
         </div>";
 
     // Help tab.
-    $output .= "<div id='compilatio-help' class='compilatio-tabs-content'>";
+    $output .= "<div id='compi-help' class='compilatio-tabs-content'>";
 
     if (empty($plagiarismsettings['idgroupe'])) {
         $output .= "<p>" . get_string('helpcenter_error', 'plagiarism_compilatio')
@@ -837,14 +837,14 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
 
     // Stats tab.
     $output .= "
-        <div id='compilatio-stats' class='compilatio-tabs-content'>
+        <div id='compi-stats' class='compilatio-tabs-content'>
             <h5>" . get_string("tabs_title_stats", "plagiarism_compilatio") . " : </h5>" .
     compilatio_get_statistics($cmid) .
         "</div>";
 
     // Alerts tab.
     if (count($alerts) !== 0) {
-        $output .= "<div id='compilatio-notifications' class='compilatio-tabs-content'>";
+        $output .= "<div id='compi-notifications' class='compilatio-tabs-content'>";
         $output .= "<h5 id='compi-notif-title'>" . get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>";
 
         foreach ($alerts as $alert) {
@@ -861,7 +861,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     $idcourt = optional_param('idcourt', null, PARAM_RAW);
 
     // Search tab.
-    $output .= "<div id='compilatio-search' class='compilatio-tabs-content'>
+    $output .= "<div id='compi-search' class='compilatio-tabs-content'>
         <h5>" . get_string("compilatio_search_tab", "plagiarism_compilatio") . "</h5>
         <p>" . get_string("compilatio_search_help", "plagiarism_compilatio") . "</p>
         <form class='form-inline' action=" . $PAGE->url . " method='post'>
@@ -931,7 +931,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         $idcourt,
         "<div id='compilatio-show-notifications' title='" . get_string("display_notifications", "plagiarism_compilatio")
             . "' class='compilatio-icon active'><i class='fa fa-bell fa-2x'></i><span id='count-alerts'>1</span></div>",
-        "<div id='compilatio-notifications'><h5 id='compi-notif-title'>" .
+        "<div id='compi-notifications'><h5 id='compi-notif-title'>" .
             get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>"
     );
 
@@ -1502,7 +1502,7 @@ function compilatio_get_plagiarism_file($cmid, $userid, $file) {
 
         // Add new entry and get plagiarism_compilatio_file table record `id` for update_record_raw().
         if (($compid = $DB->insert_record('plagiarism_compilatio_files', $plagiarismfile, true)) === false) {
-            print_error("insert into compilatio_files failed");
+            throw new dml_write_exception("insert into compilatio_files failed");
         }
         $plagiarismfile->id = $compid;
     }
@@ -2945,28 +2945,27 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
 
         $compifilestokeep = array();
 
+        $fs = get_file_storage();
+
         if ($eventdata['objecttable'] == 'assign_submission') {
-            $mdlsubmissionfiles = $DB->get_records('files',
-                array('itemid' => $eventdata["objectid"], 'filearea' => 'submission_files',
-                    'component' => $eventdata["component"], 'contextid' => $eventdata["contextid"]));
+            $mdlsubmissionfiles = $fs->get_area_files($eventdata["contextid"], $eventdata["component"],
+                'submission_files', $eventdata["objectid"]);
 
             $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'content-%'";
             $allcompisubmissionfiles = $DB->get_records_sql($sql, array($cmid, $userid));
         }
 
         if ($eventdata['objecttable'] == 'forum_posts') {
-            $mdlsubmissionfiles = $DB->get_records('files',
-                array('itemid' => $eventdata["objectid"], 'filearea' => 'attachment',
-                    'component' => $eventdata["component"], 'contextid' => $eventdata["contextid"]));
+            $mdlsubmissionfiles = $fs->get_area_files($eventdata["contextid"], $eventdata["component"],
+                'attachment', $eventdata["objectid"]);
 
             $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND filename LIKE ?";
             $allcompisubmissionfiles = $DB->get_records_sql($sql, array($cmid, 'post-' . $eventdata['objectid'] . '-%'));
         }
 
         if ($eventdata['objecttable'] == 'workshop_submissions') {
-            $mdlsubmissionfiles = $DB->get_records('files',
-                array('itemid' => $eventdata["objectid"], 'filearea' => 'submission_attachment',
-                    'component' => $eventdata["component"], 'contextid' => $eventdata["contextid"]));
+            $mdlsubmissionfiles = $fs->get_area_files($eventdata["contextid"], $eventdata["component"],
+                'submission_attachment', $eventdata["objectid"]);
 
             $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'content-%'";
             $allcompisubmissionfiles = $DB->get_records_sql($sql, array($cmid, $userid));
@@ -2974,7 +2973,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
 
         foreach ($mdlsubmissionfiles as $submissionfile) {
             $file = $DB->get_record('plagiarism_compilatio_files',
-                array('cm' => $cmid, 'userid' => $userid, 'identifier' => $submissionfile->contenthash));
+                array('cm' => $cmid, 'userid' => $userid, 'identifier' => $submissionfile->get_contenthash()));
             if ($file) {
                 array_push($compifilestokeep, $file);
             }

@@ -111,7 +111,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                 try {
                     set_config('compilatio_use', '1', 'plagiarism');
                 } catch (Exception $e) {
-                    print_error("Failed to set plagiarism:compilatio_use to 1");
+                    throw new moodle_exception("Failed to set plagiarism:compilatio_use to 1");
                     return false;
                 }
             } else {
@@ -121,12 +121,12 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                 try {
                     set_config($newname, $v, 'plagiarism_compilatio');
                 } catch (Exception $e) {
-                    print_error("Failed to set plagiarism_compilatio:" . $newname . " to " . $v);
+                    throw new moodle_exception("Failed to set plagiarism_compilatio:" . $newname . " to " . $v);
                     return false;
                 }
                 if ($k != 'compilatio_use' || $CFG->version >= 2020061500) {
                     if (!unset_config($k, 'plagiarism')) {
-                        print_error("Failed to unset plagiarism:" . $k);
+                        throw new moodle_exception("Failed to unset plagiarism:" . $k);
                         return false;
                     }
                 }

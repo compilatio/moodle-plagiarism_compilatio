@@ -72,7 +72,7 @@ class csv_helper
     public static function generate_cm_csv($cmid, $module) {
 
         global $DB;
-        
+
         $sql = "
             SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname,
                 pcf.statuscode, pcf.similarityscore, pcf.timesubmitted

@@ -118,7 +118,7 @@ Head area in assignment
 .compilatio-help {
     float: left;
 }
-#compilatio-help > p {
+#compi-help > p {
     margin-top: 15px;
 }
 .compilatio-help img {
@@ -193,7 +193,7 @@ Head area in assignment
     overflow: hidden;
     min-width: 565px;
     border-color: #e3e3e3;
-    min-height: 200px;
+    min-height: 100px;
     padding: 19px;
     margin-bottom: 20px;
     background-color: #f5f5f5;
@@ -365,7 +365,7 @@ legend.compilatio_legend {
     filter: grayscale(100%);
     cursor: default;
 }
-#compilatio-home > p {
+#compi-home > p {
     margin-top: 15px;
 }
 .compi-alert {
