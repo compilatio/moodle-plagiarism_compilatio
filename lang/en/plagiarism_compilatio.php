@@ -173,6 +173,7 @@ $string['failedanalysis_files'] = "The analysis of the following file(s) did not
 $string['no_document_available_for_analysis'] = 'No documents were available for analysis';
 $string["analysis_started"] = '{$a} analysis have been requested.';
 $string["start_analysis_title"] = 'Analysis start';
+$string["start_analysis_in_progress"] = 'Launching of the analyses in progress';
 $string["not_analyzed"] = "The following documents can't be analyzed :";
 $string["account_expire_soon_title"] = "Your Compilatio.net account expires soon";
 $string["admin_account_expire_content"] = "Your current subscription will end at the end of the current month. If your contract does not expire at the end of the month, a new subscription will automatically be set up by our services. When this is done, this message will disappear. For more information, you can contact our sales or support department at support@compilatio.net.";
@@ -286,6 +287,7 @@ $string['max_file_size_allowed'] = 'Maximum document size : <strong>{$a->Mo} MB<
 // Failed documents.
 $string['restart_failed_analysis'] = 'Restart interrupted analysis';
 $string['restart_failed_analysis_title'] = 'Restart interrupted analysis :';
+$string['restart_failed_analysis_in_progress'] = 'Restart interrupted analyses in progress';
 // Max attempt reached.
 $string['max_attempts_reach_files'] = 'Analysis has been interrupted for the following files. Analyses were sent too many times, you cannot restart them anymore :';
 

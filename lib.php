@@ -185,15 +185,28 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                     return $output;
                 }
 
+                // Catch GET 'sendfile' param.
+                $trigger = optional_param('sendfile', 0, PARAM_INT);
                 $fileid = $linkarray["file"]->get_id();
-                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysis',
-                    array($CFG->httpswwwroot, $domid, $fileid, $linkarray['cmid']));
-
+                if ($trigger == $fileid) {
+                    if (!defined("COMPILATIO_MANUAL_SEND")) {
+                        define("COMPILATIO_MANUAL_SEND", true); // Hack to hide mtrace in function execution.
+                        compilatio_upload_files(array($linkarray['file']), $linkarray['cmid']);
+                        return $output . $this->get_links($linkarray);
+                    }
+                }
+                $urlparams = array("id" => $linkarray['cmid'],
+                                "sendfile" => $fileid,
+                                "action" => "grading",
+                                'page' => optional_param('page', null, PARAM_INT));
+                $moodleurl = new moodle_url("/mod/assign/view.php", $urlparams);
+                $url = array("url" => "$moodleurl", "target-blank" => false);
                 $spancontent = get_string("analyze", "plagiarism_compilatio");
                 $image = "play";
                 $title = get_string('startanalysis', 'plagiarism_compilatio');
                 $output .= output_helper::get_plagiarism_area($spancontent, $image, $title, "",
-                    "", false, $indexingstate, $domid, $docwarning);
+                    $url, false, $indexingstate, $domid, $docwarning);
+
                 return $output;
             } else {
                 return '';
@@ -739,6 +752,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     }
 
     $documentsnotuploaded = compilatio_get_non_uploaded_documents($cmid);
+
     if (count($documentsnotuploaded) !== 0) {
 
         $alerts[] = array(
@@ -907,19 +921,21 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
                     " . get_string('updatecompilatioresults', 'plagiarism_compilatio') . "
             </button>";
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'refreshButton',
-            array($CFG->httpswwwroot, $plagiarismfilesids, get_string('update_in_progress', 'plagiarism_compilatio')));
+            array($CFG->httpswwwroot, $plagiarismfilesids, count($documentsnotuploaded), get_string('update_in_progress', 'plagiarism_compilatio')));
 
         // Start all analysis button.
         if (isset($startallanalysisbutton)) {
             $output .= $startallanalysisbutton;
             $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
-                array($CFG->httpswwwroot, $cmid));
+                array($CFG->httpswwwroot, $cmid, get_string("start_analysis_title", "plagiarism_compilatio"),
+                get_string("start_analysis_in_progress", "plagiarism_compilatio")));
         }
 
         if (isset($restartfailedanalysisbutton)) {
             $output .= $restartfailedanalysisbutton;
             $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'restartFailedAnalysis',
-                array($CFG->httpswwwroot, $cmid));
+                array($CFG->httpswwwroot, $cmid, get_string("restart_failed_analysis_title", "plagiarism_compilatio"),
+                get_string("restart_failed_analysis_in_progress", "plagiarism_compilatio")));
         }
 
         $output .= "</div>";
@@ -2364,7 +2380,7 @@ function compilatio_format_date($date) {
 }
 
 /**
- * Get tbe submissions unknown from Compilatio table plagiarism_compilatio_files
+ * Get the submissions unknown from Compilatio table plagiarism_compilatio_files
  *
  * @param string $cmid cmid of the assignment
  */
@@ -2372,19 +2388,32 @@ function compilatio_get_non_uploaded_documents($cmid) {
 
     global $DB;
 
-    return $DB->get_records_sql("
-        SELECT files.*
-        FROM {course_modules} cm
-        JOIN {assignsubmission_file} assf ON assf.assignment = cm.instance
-        JOIN {files} files ON files.itemid = assf.submission
-            AND component='assf'
-            AND filearea='submission_files'
-            AND filename<>'.'
-        WHERE cm.id=? AND contenthash NOT IN (
-            SELECT DISTINCT identifier
-            FROM {plagiarism_compilatio_files} pcf
-            WHERE cm=cm.id AND files.userid=pcf.userid)",
-        array($cmid));
+    $notUploadedFiles = array();
+    $fs = get_file_storage();
+
+    $sql = "SELECT assf.submission as itemid, con.id as contextid
+            FROM {course_modules} cm
+                JOIN {assignsubmission_file} assf ON assf.assignment = cm.instance
+                JOIN {context} con ON cm.id = con.instanceid
+            WHERE cm.id=?";
+
+    $filesids = $DB->get_records_sql($sql, array($cmid));
+
+    foreach ($filesids as $fileid) {
+        $files = $fs->get_area_files($fileid->contextid, 'assignsubmission_file','submission_files', $fileid->itemid);
+
+        foreach ($files as $file) {
+            if ($file->get_filename() != '.') {
+                $compifile = $DB->get_record('plagiarism_compilatio_files', array('identifier' => $file->get_contenthash()));
+
+                if (!$compifile) {
+                    array_push($notUploadedFiles, $file);
+                }
+            }
+        }
+    }
+
+    return $notUploadedFiles;
 }
 
 /**
@@ -2397,8 +2426,6 @@ function compilatio_upload_files($files, $cmid) {
 
     global $DB;
 
-    $fs = get_file_storage();
-
     $compilatio = new plagiarism_plugin_compilatio();
     $plagiarismsettings = $compilatio->get_settings();
 
@@ -2410,16 +2437,20 @@ function compilatio_upload_files($files, $cmid) {
         array('cm' => $cmid, "name" => "compilatio_timeanalyse"));
 
     foreach ($files as $file) {
-        $userid = $DB->get_field('assign_submission', 'userid', array('id' => $file->itemid));
+        $userid = $DB->get_field('assign_submission', 'userid', array('id' => $file->get_itemid()));
 
-        $f = $fs->get_file_by_id($file->id);
-        compilatio_queue_file($cmid, $userid, $f, $plagiarismsettings, true); // Send the file to Compilatio.
+        compilatio_queue_file($cmid, $userid, $file, $plagiarismsettings, true); // Send the file to Compilatio.
+    }
+
+    foreach ($files as $file) {
+        $userid = $DB->get_field('assign_submission', 'userid', array('id' => $file->get_itemid()));
+
         /* Start analysis if the settings are on "manual" or "timed" and the planned time is greater than the current time
         Starting "auto" analysis is handled in "compilatio_send_file" */
         if ($analysistype == COMPILATIO_ANALYSISTYPE_MANUAL ||
             ($analysistype == COMPILATIO_ANALYSISTYPE_PROG &&
                 time() >= $timeanalysis)) {
-            $plagiarismfile = compilatio_get_plagiarism_file($cmid, $userid, $f);
+            $plagiarismfile = compilatio_get_plagiarism_file($cmid, $userid, $file);
             compilatio_startanalyse($plagiarismfile, $plagiarismsettings);
         }
     }

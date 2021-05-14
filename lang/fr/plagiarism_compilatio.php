@@ -163,6 +163,7 @@ $string['failedanalysis_files'] = "L'analyse des fichier(s) suivant(s) n'a pas f
 $string['no_document_available_for_analysis'] = "Aucun document n'était disponible pour analyse.";
 $string["analysis_started"] = '{$a} analyse(s) démandée(s).';
 $string["start_analysis_title"] = 'Démarrage manuel des analyses';
+$string["start_analysis_in_progress"] = 'Lancement des analyses en cours';
 $string["not_analyzed"] = "Les documents suivants n'ont pas pu être analysés :";
 $string["account_expire_soon_title"] = "Votre abonnement Compilatio.net expire bientôt";
 $string["admin_account_expire_content"] = "Votre abonnement actuel se terminera à la fin du mois en cours. Si votre contrat n'expire pas à la fin du mois, un nouvel abonnement sera automatiquement mis en place par nos services. Lorsque cela sera fait, ce message disparaitra. Pour plus d'informations, vous pouvez contacter notre service commercial ou notre support à l'adresse support@compilatio.net.";
@@ -279,6 +280,7 @@ $string['max_file_size_allowed'] = 'Taille maximale des documents : <strong>{$a-
 // Failed documents.
 $string['restart_failed_analysis'] = 'Relancer les analyses échouées';
 $string['restart_failed_analysis_title'] = 'Relance des analyses échouées :';
+$string['restart_failed_analysis_in_progress'] = 'Relance des analyses échouées en cours';
 // Max attempt reached.
 $string['max_attempts_reach_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio. La limite de relance d\'analyses a été atteinte :';
 

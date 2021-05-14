@@ -52,13 +52,19 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.refreshButton = function(basepath, fileIds, infoStr) {
+    exports.refreshButton = function(basepath, fileIds, docNotUploaded, infoStr) {
         $(document).ready(function() {
             var n = fileIds.length;
             var i = 0;
             var refreshButton = $("i.fa-refresh").parent("button");
             if (n == 0) {
                 disableCompilatioButtons();
+                if (docNotUploaded > 0) {
+                    $(".comp-start-btn").each(function() {
+                        $(this).removeAttr("disabled");
+                        $(this).removeClass("disabled");
+                    });
+                }
             } else {
                 refreshButton.click(function() {
                     disableCompilatioButtons();
@@ -82,11 +88,17 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.startAllAnalysis = function(basepath, cmid) {
+    exports.startAllAnalysis = function(basepath, cmid, title, message) {
         $(document).ready(function() {
             var startAllAnalysis = $("button.comp-start-btn");
             startAllAnalysis.click(function() {
                 disableCompilatioButtons();
+                $('#compi-notifications').show();
+                $('#compi-stats, #compi-help, #compi-home, #compi-search').hide();
+                $("#compi-notif-title").after(
+                    "<div class='compilatio-alert compilatio-alert-info'><strong>" + title
+                    + "</strong><br/>" + message + "</div>"
+                );
                 $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_all_analysis.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
@@ -95,12 +107,12 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.startAnalysis = function(basepath, eltId, docId, cmid = false) {
+    exports.startAnalysis = function(basepath, eltId, docId) {
         $(document).ready(function() {
             setTimeout(function() {
                 $(".compi-" + eltId + " > div:last-child").click(function() {
                     $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_analysis.php',
-                    {'docId': docId, 'cmid': cmid}, function() {
+                    {'docId': docId}, function() {
                         window.location.reload();
                     });
                 });
@@ -108,11 +120,17 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.restartFailedAnalysis = function(basepath, cmid) {
+    exports.restartFailedAnalysis = function(basepath, cmid, title, message) {
         $(document).ready(function() {
             var restartFailedAnalysis = $("button.comp-restart-btn");
             restartFailedAnalysis.click(function() {
                 disableCompilatioButtons();
+                $('#compi-notifications').show();
+                $('#compi-stats, #compi-help, #compi-home, #compi-search').hide();
+                $("#compi-notif-title").after(
+                    "<div class='compilatio-alert compilatio-alert-info'><strong>" + title
+                    + "</strong><br/>" + message + "</div>"
+                );
                 $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_restart_failed_analysis.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
