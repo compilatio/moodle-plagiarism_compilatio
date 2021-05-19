@@ -121,14 +121,16 @@ class compilatio_setup_form extends moodleform {
         $mods = get_plugin_list('mod');
         foreach ($mods as $mod => $modname) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
-                $modstring = 'enable_mod_' . $mod;
-                $string = "";
-                if (string_exists($modstring, "plagiarism_compilatio")) {
-                    $string = get_string($modstring, 'plagiarism_compilatio');
-                } else {
-                    $string = get_string('compilatioenableplugin', 'plagiarism_compilatio', $mod);
+                if ($mod != 'quiz') {
+                    $modstring = 'enable_mod_' . $mod;
+                    $string = "";
+                    if (string_exists($modstring, "plagiarism_compilatio")) {
+                        $string = get_string($modstring, 'plagiarism_compilatio');
+                    } else {
+                        $string = get_string('compilatioenableplugin', 'plagiarism_compilatio', $mod);
+                    }
+                    $mform->addElement('checkbox', $modstring, $string);
                 }
-                $mform->addElement('checkbox', $modstring, $string);
             }
         }
 
