@@ -10,6 +10,7 @@ CHANGES
 - Replacement of the deprecated function update_status.
 - Added Compilatio frame to forums and workshops.
 - Added the possibility to analyse all documents in assign retroactively.
+- Update plugin to be compatible with Moodle 3.11.
 
 QUICK INSTALL
 ================
