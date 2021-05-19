@@ -52,18 +52,24 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.refreshButton = function(basepath, fileIds, infoStr) {
+    exports.refreshButton = function(basepath, fileIds, docNotUploaded, infoStr) {
         $(document).ready(function() {
             var n = fileIds.length;
             var i = 0;
             var refreshButton = $("i.fa-refresh").parent("button");
             if (n == 0) {
                 disableCompilatioButtons();
+                if (docNotUploaded > 0) {
+                    $(".comp-start-btn").each(function() {
+                        $(this).removeAttr("disabled");
+                        $(this).removeClass("disabled");
+                    });
+                }
             } else {
                 refreshButton.click(function() {
                     disableCompilatioButtons();
                     // Display progress bar.
-                    $("#compilatio-home").html("<p>" + infoStr + "<progress id='compi-update-progress' value='"
+                    $("#compi-home").html("<p>" + infoStr + "<progress id='compi-update-progress' value='"
                         + i + "' max='" + n + "'></progress></p>");
                     $("#compilatio-logo").click();
                     // Launch ajax requests.
@@ -82,11 +88,17 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.startAllAnalysis = function(basepath, cmid) {
+    exports.startAllAnalysis = function(basepath, cmid, title, message) {
         $(document).ready(function() {
             var startAllAnalysis = $("button.comp-start-btn");
             startAllAnalysis.click(function() {
                 disableCompilatioButtons();
+                $('#compi-notifications').show();
+                $('#compi-stats, #compi-help, #compi-home, #compi-search').hide();
+                $("#compi-notif-title").after(
+                    "<div class='compilatio-alert compilatio-alert-info'><strong>" + title
+                    + "</strong><br/>" + message + "</div>"
+                );
                 $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_all_analysis.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
@@ -95,12 +107,12 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.startAnalysis = function(basepath, eltId, docId, cmid = false) {
+    exports.startAnalysis = function(basepath, eltId, docId) {
         $(document).ready(function() {
             setTimeout(function() {
                 $(".compi-" + eltId + " > div:last-child").click(function() {
                     $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_analysis.php',
-                    {'docId': docId, 'cmid': cmid}, function() {
+                    {'docId': docId}, function() {
                         window.location.reload();
                     });
                 });
@@ -108,11 +120,17 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.restartFailedAnalysis = function(basepath, cmid) {
+    exports.restartFailedAnalysis = function(basepath, cmid, title, message) {
         $(document).ready(function() {
             var restartFailedAnalysis = $("button.comp-restart-btn");
             restartFailedAnalysis.click(function() {
                 disableCompilatioButtons();
+                $('#compi-notifications').show();
+                $('#compi-stats, #compi-help, #compi-home, #compi-search').hide();
+                $("#compi-notif-title").after(
+                    "<div class='compilatio-alert compilatio-alert-info'><strong>" + title
+                    + "</strong><br/>" + message + "</div>"
+                );
                 $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_restart_failed_analysis.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
@@ -127,7 +145,7 @@ define(['jquery'], function($) {
                 if (message != false) {
                     if (alertsCount > 0) {
                         $("#compi-notif-title").after(message);
-                        nbAlerts = parseInt($("#count-alerts").text());
+                        var nbAlerts = parseInt($("#count-alerts").text());
                         $("#count-alerts").text(nbAlerts + 1);
                     } else {
                         $("#show-stats").after(notifIcon);
@@ -136,42 +154,41 @@ define(['jquery'], function($) {
                     }
                 }
 
-                var selectedElement = '';
-                if (idcourt) {
-                    selectedElement = '#compilatio-search';
-                } else if (alertsCount > 0) {
-                    selectedElement = '#compilatio-notifications';
-                } else {
-                    selectedElement = '#compilatio-home';
-                }
-
-                $('#compilatio-container').css('height', 'auto');
                 $('#compilatio-tabs').show();
 
-                var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
-                var elements = $('#compilatio-notifications, #compilatio-stats, #compilatio-help, #compilatio-home, #compilatio-search');
+                var selectedElement = '';
+                if (idcourt) {
+                    selectedElement = '#compi-search';
+                } else if (alertsCount > 0) {
+                    selectedElement = '#compi-notifications';
+                } else {
+                    selectedElement = '#compi-home';
+                }
 
-                elements.not($(selectedElement)).hide();
+                $(selectedElement).show();
 
                 $('#compilatio-show-notifications').on('click', function() {
-                        tabClick($(this), $('#compilatio-notifications'));
+                        tabClick($(this), $('#compi-notifications'));
                 });
                 $('#show-stats').on('click', function() {
-                        tabClick($(this), $('#compilatio-stats'));
+                        tabClick($(this), $('#compi-stats'));
                 });
                 $('#show-help').on('click', function() {
-                        tabClick($(this), $('#compilatio-help'));
+                        tabClick($(this), $('#compi-help'));
                 });
                 $('#show-search').on('click', function() {
-                        tabClick($(this), $('#compilatio-search'));
+                        tabClick($(this), $('#compi-search'));
                 });
+
+                var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
+                var elements = $('#compi-notifications, #compi-stats, #compi-help, #compi-home, #compi-search');
 
                 /**
                  * TabClick
                  * Show clicked tab.
                  *
-                 * @param tabClicked
-                 * @param contentToShow
+                 * @param {object} tabClicked
+                 * @param {object} contentToShow
                  */
                 function tabClick(tabClicked, contentToShow) {
                     if (!contentToShow.is(':visible')) {
@@ -186,7 +203,7 @@ define(['jquery'], function($) {
                 }
 
                 $('#compilatio-logo').on('click', function() {
-                    var elementClicked = $('#compilatio-home');
+                    var elementClicked = $('#compi-home');
                     elementClicked.show();
                     elements.not(elementClicked).hide();
                     tabs.removeClass('active');

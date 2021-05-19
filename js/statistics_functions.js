@@ -1,7 +1,8 @@
 /**
  * CompilatioPercentage
  *
- * @param v
+ * @param {int} v
+ * @return {string} pourcentage.
  */
 function compilatioPercentage(v) {
     return v + "%";
@@ -10,8 +11,9 @@ function compilatioPercentage(v) {
 /**
  * CompilatioUrlSorter
  *
- * @param a
- * @param b
+ * @param {string} a
+ * @param {string} b
+ * @return {Number}
  */
 function compilatioUrlSorter(a, b) {
 

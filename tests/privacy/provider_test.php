@@ -48,7 +48,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
 
         // On charge la liste des données personnelles que Compilatio stocke.
         $collection = new collection('plagiarism_compilatio');
-        $newcollection = provider::_get_metadata($collection);
+        $newcollection = provider::get_metadata($collection);
         $itemcollection = $newcollection->get_collection();
 
         // On vérifie qu'il y a bien cinq items.
@@ -129,7 +129,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         }
 
         // On vérifie que la liste des contextes retournée est bien égale à 5.
-        $contextlist = provider::_get_contexts_for_userid($student->id);
+        $contextlist = provider::get_contexts_for_userid($student->id);
         $this->assertCount(5, $contextlist);
     }
 
@@ -154,7 +154,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $context = context_module::instance($coursemodule->id);
 
         // On vérifie que, à l'exportation des données, il y a bien quelque chose à visualiser pour l'utilisateur.
-        provider::_export_plagiarism_user_data($student->id, $context, array(), array());
+        provider::export_plagiarism_user_data($student->id, $context, array(), array());
         $writer = writer::with_context($context);
 
         $this->assertTrue($writer->has_any_data());
@@ -185,7 +185,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         // On supprime les plagiarismfiles dans ce contexte précis.
         $context = context_module::instance($coursemodule->id);
         $this->create_partial_webservice();
-        provider::_delete_plagiarism_for_context($context);
+        provider::delete_plagiarism_for_context($context);
 
         // On vérifie qu'on a bien vidé la table plagiarism_compilatio_files.
         $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
@@ -222,7 +222,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         // On lance la suppression des fichiers de l'étudiant.
         $context = context_module::instance($coursemodule1->id);
         $this->create_partial_webservice('1'); // Les fichiers appartiennent bien à l'établissement.
-        provider::_delete_plagiarism_for_user($student->id, $context);
+        provider::delete_plagiarism_for_user($student->id, $context);
 
         // On vérifie qu'on a toujours les dix plagiarismfiles dans la table plagiarism_compilatio_files.
         $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
@@ -259,7 +259,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         // On lance la suppression des fichiers de l'étudiant.
         $context = context_module::instance($coursemodule1->id);
         $this->create_partial_webservice('0'); // Les fichiers appartiennent bien à l'étudiant.
-        provider::_delete_plagiarism_for_user($student->id, $context);
+        provider::delete_plagiarism_for_user($student->id, $context);
 
         // On vérifie qu'on a bien vidé la table plagiarism_compilatio_files.
         $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');

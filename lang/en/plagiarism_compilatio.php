@@ -82,17 +82,17 @@ $string['analysis_type'] = 'Analysis Start';
 $string['analysis_type_help'] = '<p>There are 3 possible options:</p>
 <ul>
 	<li><strong>Direct: </strong>The document is sent to Compilatio and analyzed straight away.</li>
-	<li><strong>Manual:</strong> The document is sent to Compilatio but the teacher must manually trigger the anaylyis of documents.</li>
+	<li><strong>Manual:</strong> The document is sent to Compilatio but the teacher must manually trigger the analysis of documents.</li>
 	<li><strong>Timed: </strong>The document is sent to Compilatio and analysed at the time/date set.</li>
 </ul>
-<p>To enable all documents to be compared with each other, wait until all work is submitted by students then trigger the analyis.</p>';
+<p>To enable all documents to be compared with each other, wait until all work is submitted by students then trigger the analysis.</p>';
 $string['analysis'] = 'Analysis Start';
 $string['analysis_help'] = '<p>There are 2 possible options:</p>
 <ul>
-	<li><strong>Manual:</strong> The document is sent to Compilatio but the teacher must manually trigger the anaylyis of documents.</li>
+	<li><strong>Manual:</strong> The document is sent to Compilatio but the teacher must manually trigger the analysis of documents.</li>
 	<li><strong>Timed: </strong>The document is sent to Compilatio and analysed at the time/date set.</li>
 </ul>
-<p>To enable all documents to be compared with each other, wait until all work is submitted by students then trigger the analyis.</p>';
+<p>To enable all documents to be compared with each other, wait until all work is submitted by students then trigger the analysis.</p>';
 $string['analysistype_manual'] = 'Manual';
 $string['analysistype_prog'] = 'Timed';
 $string['analysis_date'] = 'Analysis Date (Timed analysis only)';
@@ -153,14 +153,14 @@ $string['red_threshold'] = "red otherwise";
 $string['similarity_percent'] = '% of similarities';
 $string['thresholds_settings'] = "Limits :";
 $string['thresholds_description'] = "Indicate the threshold that you want to use, in order to facilitate the finding of analysis report (% of similarities) :";
-$string['similarities_disclaimer'] = "You can analyze similarities in this assignment's documents with <a href='http://www.compilatio.net/en/' target='_blank'>Compilatio</a>.<br/> Be careful: similarities measured during analysis do not necessarily mean plagiarism. The analysis report helps you to identify if the similarities matched to suitable quotation or to plagiarism.";
+$string['similarities_disclaimer'] = "You can analyze similarities in this activity's documents with <a href='http://www.compilatio.net/en/' target='_blank'>Compilatio</a>.<br/> Be careful: similarities measured during analysis do not necessarily mean plagiarism. The analysis report helps you to identify if the similarities matched to suitable quotation or to plagiarism.";
 $string['progress'] = "Progress :";
 $string['results'] = "Results :";
 $string['errors'] = "Errors :";
 $string['documents_analyzing'] = '{$a} document(s) are being analyzed.';
 $string['documents_in_queue'] = '{$a} document(s) are in the queue to be analyzed.';
 $string['documents_analyzed'] = '{$a->countAnalyzed} document(s) out of {$a->documentsCount} have been sent and analyzed.';
-$string['average_similarities'] = 'In this assignment, the average similarities ratio is {$a}%.';
+$string['average_similarities'] = 'In this activity, the average similarities ratio is {$a}%.';
 $string['documents_analyzed_lower_green'] = '{$a->documentsUnderGreenThreshold} document(s) lower than {$a->greenThreshold}%.';
 $string['documents_analyzed_between_thresholds'] = '{$a->documentsBetweenThresholds} document(s) between {$a->greenThreshold}% and {$a->redThreshold}%.';
 $string['documents_analyzed_higher_red'] = '{$a->documentsAboveRedThreshold} document(s) greater than {$a->redThreshold}%.';
@@ -173,6 +173,7 @@ $string['failedanalysis_files'] = "The analysis of the following file(s) did not
 $string['no_document_available_for_analysis'] = 'No documents were available for analysis';
 $string["analysis_started"] = '{$a} analysis have been requested.';
 $string["start_analysis_title"] = 'Analysis start';
+$string["start_analysis_in_progress"] = 'Launching of the analyses in progress';
 $string["not_analyzed"] = "The following documents can't be analyzed :";
 $string["account_expire_soon_title"] = "Your Compilatio.net account expires soon";
 $string["admin_account_expire_content"] = "Your current subscription will end at the end of the current month. If your contract does not expire at the end of the month, a new subscription will automatically be set up by our services. When this is done, this message will disappear. For more information, you can contact our sales or support department at support@compilatio.net.";
@@ -180,7 +181,7 @@ $string["news_update"] = "Compilatio.net update";
 $string["news_incident"] = "Compilatio.net incident";
 $string["news_maintenance"] = "Compilatio.net maintenance";
 $string["news_analysis_perturbated"] = "Compilatio.net - Analysis perturbated";
-$string["display_stats"] = "Display statistics about this assignment";
+$string["display_stats"] = "Display statistics about this activity";
 $string["analysis_completed"] = 'Analysis completed: {$a}% of similarities.';
 $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
 $string["display_notifications"] = "Display notifications";
@@ -191,7 +192,7 @@ $string["compilatio_search_notfound"] = "No document was found for this identifi
 $string["compilatio_author"] = 'Le document {$a->idcourt} in activity <b>{$a->modulename}</b> belongs to <b>{$a->lastname} {$a->firstname}</b>.';
 $string["compilatio_search_help"] = "You can find the author of a document by retrieving the document identifier from the sources of the analysis report. Example: 1. Your document: <b>1st5xfj2</b> - Assign_Name(30)Name_Copied_Document.odt.";
 $string["allow_search_tab"] = "Activate the search tool to identify the author of a document.";
-$string["allow_search_tab_help"] = "The search tool allows you to search for a student's first and last name based on a document identifier visible in the analysis reports.  This tool is available in the assign activities only, but allows you to search all the documents present on your platform.";
+$string["allow_search_tab_help"] = "The search tool allows you to search for a student's first and last name based on a document identifier visible in the analysis reports among all the documents present on your platform.";
 $string["waiting_time_title"] = "The estimated processing time for an analysis started now is ";
 $string["waiting_time_content"] = 'Including {$a->queue} in queue and {$a->analysis_time} of analysis<br><br>Click <a href=\'../../plagiarism/compilatio/helpcenter.php?page=moodle-info-waiting&idgroupe=';
 $string["waiting_time_content_help"] = "' target=\'_blank\'>here</a> to see best practices to follow to optimise the processing time of Compilatio analyses.";
@@ -209,13 +210,13 @@ $string['timesubmitted'] = "Submitted to Compilatio on";
 $string["not_analyzed_unextractable"] = '{$a} document(s) haven\'t been analysed because their content could not be extracted.';
 $string["not_analyzed_unsupported"] = '{$a} document(s) haven\'t been analysed because their format isn\'t supported.';
 $string["not_analyzed_tooshort"] = '{$a} document(s) haven\'t been analysed because they doesn\'t contain enough words.';
-$string['export_csv'] = 'Export data about this assignment into a CSV file';
+$string['export_csv'] = 'Export data about this activity into a CSV file';
 $string['hide_area'] = 'Hide Compilatio informations';
 $string['tabs_title_help'] = 'Help';
 $string['tabs_title_stats'] = 'Statistics';
 $string['tabs_title_notifications'] = 'Notifications';
 $string['queued'] = 'The document is now in queue and it is going to be analyzed soon by Compilatio';
-$string['no_documents_available'] = 'No documents are available for analysis in this assignment.';
+$string['no_documents_available'] = 'No documents are available for analysis in this activity.';
 $string['manual_analysis'] = 'The analysis of this document must be triggered manually.';
 $string['disclaimer_data'] = 'By enabling Compilatio, you accept the fact that data about your Moodle configuration will be collected in order to improve support and maintenance of this service.';
 $string['reset'] = 'Reset';
@@ -232,7 +233,7 @@ $string['enable_javascript'] = "Please enable Javacript in order to have a bette
  instructions how to enable JavaScript in your web browser</a>.";
 $string["manual_send_confirmation"] = '{$a} file(s) have been submitted to Compilatio.';
 $string["unsent_documents"] = 'Document(s) not sent';
-$string["unsent_documents_content"] = 'This assignment contains document(s) not submitted to Compilatio.';
+$string["unsent_documents_content"] = 'This activity contains document(s) not submitted to Compilatio.';
 $string["statistics_title"] = 'Statistics';
 $string["no_statistics_yet"] = 'No documents have been analyzed yet.';
 $string["minimum"] = 'Minimum rate';
@@ -286,6 +287,7 @@ $string['max_file_size_allowed'] = 'Maximum document size : <strong>{$a->Mo} MB<
 // Failed documents.
 $string['restart_failed_analysis'] = 'Restart interrupted analysis';
 $string['restart_failed_analysis_title'] = 'Restart interrupted analysis :';
+$string['restart_failed_analysis_in_progress'] = 'Restart interrupted analyses in progress';
 // Max attempt reached.
 $string['max_attempts_reach_files'] = 'Analysis has been interrupted for the following files. Analyses were sent too many times, you cannot restart them anymore :';
 

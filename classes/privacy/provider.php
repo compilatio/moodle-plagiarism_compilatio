@@ -70,7 +70,7 @@ class provider implements
      * @param   collection  $collection The initialised collection to add items to.
      * @return  collection  $collection The updated collection of user data.
      */
-    public static function _get_metadata(collection $collection) : collection {
+    public static function get_metadata(collection $collection) : collection {
 
         $collection->add_subsystem_link(
             'core_files',
@@ -131,7 +131,7 @@ class provider implements
      * @param   int         $userid         The user to search.
      * @return  contextlist $contextlist    The list of contexts used in this plugin.
      */
-    public static function _get_contexts_for_userid(int $userid) : contextlist {
+    public static function get_contexts_for_userid(int $userid) : contextlist {
 
         $sql = "SELECT c.id
                 FROM {context} c
@@ -154,7 +154,7 @@ class provider implements
      * @param   array       $subcontext The subcontext within the context to export this information to.
      * @param   array       $linkarray  The weird and wonderful link array used to display information for a specific item.
      */
-    public static function _export_plagiarism_user_data(int $userid, \context $context, array $subcontext, array $linkarray) {
+    public static function export_plagiarism_user_data(int $userid, \context $context, array $subcontext, array $linkarray) {
 
         global $DB;
 
@@ -174,7 +174,7 @@ class provider implements
      *
      * @param   \context    $context    The context to delete in.
      */
-    public static function _delete_plagiarism_for_context(\context $context) {
+    public static function delete_plagiarism_for_context(\context $context) {
 
         global $DB;
 
@@ -206,7 +206,7 @@ class provider implements
      * @param   int         $userid     The user to delete.
      * @param   \context    $context    The context to refine the deletion.
      */
-    public static function _delete_plagiarism_for_user(int $userid, \context $context) {
+    public static function delete_plagiarism_for_user(int $userid, \context $context) {
 
         global $DB;
 

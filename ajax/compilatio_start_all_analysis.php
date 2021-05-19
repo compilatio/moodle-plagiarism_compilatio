@@ -69,11 +69,9 @@ $files = compilatio_get_non_uploaded_documents($cmid);
 $countbegin = count($files);
 
 if ($countbegin != 0) {
-
     define("COMPILATIO_MANUAL_SEND", true);
     compilatio_upload_files($files, $cmid);
     $countsuccess += $countbegin - count(compilatio_get_non_uploaded_documents($cmid));
-
 }
 
 $counttotal = count($plagiarismfiles) + $countbegin;

@@ -7,13 +7,10 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Update unindexed request to files table
-- Updating the minimum size for a document to be analyzed.
-- Make API calls in course modules asynchronous.
-- The alert message "Your Compilatio.net account expires soon" is now only visible to the administrator.
-- Add the estimated waiting time for an analysis to start.
-- Fix SQL query in admin stats for PostgresSQL.
-- Fix SQL query on moodle table "files" with no indexes.
+- Replacement of the deprecated function update_status.
+- Added Compilatio frame to forums and workshops.
+- Added the possibility to analyse all documents in assign retroactively.
+- Update plugin to be compatible with Moodle 3.11.
 
 QUICK INSTALL
 ================

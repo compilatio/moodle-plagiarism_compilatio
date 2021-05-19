@@ -141,7 +141,7 @@ $string['similarity_percent'] = "% de similitudes";
 $string['thresholds_settings'] = "Réglage des seuils d'affichage des taux de similitudes :";
 $string['thresholds_description'] = "Indiquez les seuils que vous souhaitez utiliser, afin de faciliter le repérage des rapports d’analyse (% de similitudes) : ";
 // TODO.
-$string['similarities_disclaimer'] = "Vous pouvez analyser les similitudes présentes dans les documents de ce devoir à l’aide du logiciel <a href='http://compilatio.net' target='_blank'>Compilatio</a>.<br/>
+$string['similarities_disclaimer'] = "Vous pouvez analyser les similitudes présentes dans les documents de cette activité à l’aide du logiciel <a href='http://compilatio.net' target='_blank'>Compilatio</a>.<br/>
 	Attention, des similitudes mesurées lors d’une analyse ne révèlent pas nécessairement un plagiat.
 	Le rapport d’analyse vous aide à comprendre si les similitudes correspondent à des emprunts et citations convenablement identifiés ou à des plagiats.";
 $string['progress'] = "Progression :";
@@ -150,7 +150,7 @@ $string['errors'] = "Erreurs :";
 $string['documents_analyzed'] = '{$a->countAnalyzed} document(s) sur {$a->documentsCount} ont été analysés.';
 $string['documents_analyzing'] = '{$a} document(s) en cours d\'analyse.';
 $string['documents_in_queue'] = '{$a} document(s) en attente d\'analyse.';
-$string['average_similarities'] = 'Le taux de similitudes moyen pour ce devoir est de {$a}%.';
+$string['average_similarities'] = 'Le taux de similitudes moyen pour cette activité est de {$a}%.';
 $string['documents_analyzed_lower_green'] = '{$a->documentsUnderGreenThreshold} document(s) inférieur(s) à {$a->greenThreshold}%.';
 $string['documents_analyzed_between_thresholds'] = '{$a->documentsBetweenThresholds} document(s) entre {$a->greenThreshold}% et {$a->redThreshold}%.';
 $string['documents_analyzed_higher_red'] = '{$a->documentsAboveRedThreshold} document(s) supérieur(s) à {$a->redThreshold}%.';
@@ -163,6 +163,7 @@ $string['failedanalysis_files'] = "L'analyse des fichier(s) suivant(s) n'a pas f
 $string['no_document_available_for_analysis'] = "Aucun document n'était disponible pour analyse.";
 $string["analysis_started"] = '{$a} analyse(s) démandée(s).';
 $string["start_analysis_title"] = 'Démarrage manuel des analyses';
+$string["start_analysis_in_progress"] = 'Lancement des analyses en cours';
 $string["not_analyzed"] = "Les documents suivants n'ont pas pu être analysés :";
 $string["account_expire_soon_title"] = "Votre abonnement Compilatio.net expire bientôt";
 $string["admin_account_expire_content"] = "Votre abonnement actuel se terminera à la fin du mois en cours. Si votre contrat n'expire pas à la fin du mois, un nouvel abonnement sera automatiquement mis en place par nos services. Lorsque cela sera fait, ce message disparaitra. Pour plus d'informations, vous pouvez contacter notre service commercial ou notre support à l'adresse support@compilatio.net.";
@@ -172,7 +173,7 @@ $string["news_maintenance"] = "Maintenance Compilatio.net";
 $string["news_analysis_perturbated"] = "Analyses Compilatio.net perturbées";
 $string["updatecompilatioresults"] = "Rafraîchir les informations";
 $string["update_in_progress"] = "Mise à jour des informations en cours";
-$string["display_stats"] = "Afficher les statistiques de ce devoir";
+$string["display_stats"] = "Afficher les statistiques de cette activité";
 $string["analysis_completed"] = 'Analyse terminée: {$a}% de similitudes.';
 $string["compilatio_help_assign"] = "Obtenir de l&#39aide sur le plugin Compilatio";
 $string["display_notifications"] = "Afficher les notifications";
@@ -183,7 +184,7 @@ $string["compilatio_search_notfound"] = "Aucun document n'a été trouvé pour c
 $string["compilatio_author"] = 'Le document {$a->idcourt} présent dans l\'activité <b>{$a->modulename}</b> appartient à <b>{$a->lastname} {$a->firstname}</b>.';
 $string["compilatio_search_help"] = "Vous pouvez retrouver l'auteur d'un document en récupérant l'identifiant du document dans les sources du rapport d'analyse. Exemple : 1. Votre document: <b>1st5xfj2</b> - Nom_Activité(30)Nom_Document_Copié.odt.";
 $string["allow_search_tab"] = "Activer l'outil de recherche permettant d'identifier l'auteur d'un document.";
-$string["allow_search_tab_help"] = "L'outil de recherche permet de rechercher le nom et prénom d'un étudiant d'après un identifiant de document visible dans les rapports d'analyses. Cet outil est disponible dans les activités devoir uniquement, mais permet de faire une recherche sur tous les documents présent sur votre plateforme.";
+$string["allow_search_tab_help"] = "L'outil de recherche permet de rechercher le nom et prénom d'un étudiant d'après un identifiant de document visible dans les rapports d'analyses parmi tous les documents présent sur votre plateforme.";
 $string["waiting_time_title"] = "Pour toute analyse lancée maintenant, le temps de traitement estimé est de ";
 $string["waiting_time_content"] = 'Dont {$a->queue} en file d\'attente et {$a->analysis_time} d\'analyse<br><br>Cliquer <a href=\'../../plagiarism/compilatio/helpcenter.php?page=moodle-info-waiting&idgroupe=';
 $string["waiting_time_content_help"] = "' target='_blank'>ici</a> pour connaître les bonnes pratiques à suivre afin d'optimiser le temps de traitement des analyses Compilatio.";
@@ -201,13 +202,13 @@ $string["not_analyzed_unextractable"] = '{$a} document(s) n\'ont pas été analy
 $string["not_analyzed_unsupported"] = '{$a} document(s) n\'ont pas été analysés car leur format n\'est pas supporté.';
 $string["not_analyzed_tooshort"] = '{$a} document(s) n\'ont pas été analysés car ils ne contenaient pas assez de mots.';
 $string['analysis_date'] = "Date d'analyse (lancement programmé uniquement)";
-$string['export_csv'] = 'Exporter les données de ce devoir au format CSV';
+$string['export_csv'] = 'Exporter les données de cette activité au format CSV';
 $string['hide_area'] = 'Masquer les informations Compilatio';
 $string['tabs_title_help'] = 'Aide';
 $string['tabs_title_stats'] = 'Statistiques';
 $string['tabs_title_notifications'] = 'Notifications';
 $string['queued'] = 'Le document est en attente d\'analyse et va bientôt être traité par Compilatio';
-$string['no_documents_available'] = 'Aucun document n\'est disponible pour analyse dans ce devoir.';
+$string['no_documents_available'] = 'Aucun document n\'est disponible pour analyse dans cette activité.';
 $string['manual_analysis'] = "L'analyse de ce document doit être déclenchée manuellement";
 $string['updated_analysis'] = 'Les résultats de l\'analyse Compilatio ont été mis à jour.';
 $string['disclaimer_data'] = 'En activant Compilatio, vous acceptez que des informations concernant la configuration de votre plateforme Moodle soient collectées afin de faciliter le support et la maintenance du service.';
@@ -226,7 +227,7 @@ $string['enable_javascript'] = "Veuillez activer Javascript pour profiter de tou
  instructions pour activer JavaScript dans votre navigateur Web</a>.";
 $string["manual_send_confirmation"] = '{$a} fichier(s) soumis à Compilatio.';
 $string["unsent_documents"] = 'Document(s) non-soumis';
-$string["unsent_documents_content"] = 'Attention, ce devoir contient un (des) document(s) non soumis à Compilatio.';
+$string["unsent_documents_content"] = 'Attention, cette activité contient un (des) document(s) non soumis à Compilatio.';
 $string["statistics_title"] = 'Statistiques';
 $string["no_statistics_yet"] = 'Aucunes statistiques ne sont disponibles pour le moment.';
 $string["minimum"] = 'Minimum';
@@ -279,6 +280,7 @@ $string['max_file_size_allowed'] = 'Taille maximale des documents : <strong>{$a-
 // Failed documents.
 $string['restart_failed_analysis'] = 'Relancer les analyses échouées';
 $string['restart_failed_analysis_title'] = 'Relance des analyses échouées :';
+$string['restart_failed_analysis_in_progress'] = 'Relance des analyses échouées en cours';
 // Max attempt reached.
 $string['max_attempts_reach_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio. La limite de relance d\'analyses a été atteinte :';
 
