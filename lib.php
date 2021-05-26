@@ -175,6 +175,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         if (!empty($results['warning'])) {
             // Warning info.
             $docwarning = $results['warning'];
+        } else {
+            $docwarning = null;
         }
 
         // Add de/indexing feature for teachers.
@@ -897,8 +899,8 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         </form>";
 
     if (!empty($idcourt)) {
-        $sql = "SELECT user.lastname, user.firstname, cf.idcourt, cf.cm FROM {plagiarism_compilatio_files} cf
-            JOIN {user} user on cf.userid = user.id
+        $sql = "SELECT usr.lastname, usr.firstname, cf.idcourt, cf.cm FROM {plagiarism_compilatio_files} cf
+            JOIN {user} usr on cf.userid = usr.id
             WHERE cf.idcourt = ?";
         $doc = $DB->get_record_sql($sql, array($idcourt));
 

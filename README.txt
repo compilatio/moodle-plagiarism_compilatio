@@ -1,4 +1,4 @@
-Compilatio.net Plagiarism plugin for Moodle 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10
+Compilatio.net Plagiarism plugin for Moodle 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11
 
 Author: Compilatio <support@compilatio.net>
 Copyright 2020 Compilatio.net https://www.compilatio.net
@@ -11,6 +11,7 @@ CHANGES
 - Added Compilatio frame to forums and workshops.
 - Added the possibility to analyse all documents in assign retroactively.
 - Update plugin to be compatible with Moodle 3.11.
+- Fix SQL Query to search document author for PostgresSQL.
 
 QUICK INSTALL
 ================
