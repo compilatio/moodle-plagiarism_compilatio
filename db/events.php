@@ -87,5 +87,9 @@ $observers = array(
     array(
         'eventname' => '\tool_recyclebin\event\category_bin_item_created',
         'callback' => 'plagiarism_compilatio_observer::recyclebin_category_item_created'
-    )
+    ),
+    array(
+        'eventname' => '\mod_assign\event\assessable_submitted',
+        'callback' => 'plagiarism_compilatio_observer::assign_assessable_submitted'
+    ),
 );

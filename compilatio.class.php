@@ -512,4 +512,25 @@ class compilatioservice {
         }
 
     }
+
+    /**
+     * Check if the API key has access rights to the analyses by students.
+     *
+     * @return bool return true if api key has access to student analyses, false otherwise.
+     */
+    public function check_allow_student_analyses() {
+
+        try {
+            if (!is_object($this->soapcli)) {
+                return false;
+            }
+
+            $params = array($this->key);
+            return $this->soapcli->__call('checkAllowStudentAnalyses', $params);
+
+        } catch (SoapFault $fault) {
+            return false;
+        }
+
+    }
 }

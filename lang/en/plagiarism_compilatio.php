@@ -51,10 +51,7 @@ $string['compilatio_display_student_score'] = 'Show similarity score to student'
 $string['compilatio_display_student_score_help'] = 'The similarity score is the percentage of the submission that has been matched with other content.';
 $string['compilatio_display_student_report'] = 'Show similarity report to student';
 $string['compilatio_display_student_report_help'] = 'The similarity report gives a breakdown on what parts of the submission were plagiarised and the location of the detected sources.';
-$string['compilatio_draft_submit'] = 'When should the file be submitted to Compilatio';
 $string['showwhenclosed'] = 'When Activity closed';
-$string['submitondraft'] = 'Submit file when first uploaded';
-$string['submitonfinal'] = 'Submit file when student sends for marking';
 $string['defaultupdated'] = 'Default values updated';
 $string['defaults_desc'] = 'The following settings are the defaults set when enabling Compilatio within an Activity Module';
 $string['compilatiodefaults'] = 'Compilatio defaults';
@@ -153,6 +150,17 @@ $string['red_threshold'] = "red otherwise";
 $string['similarity_percent'] = '% of similarities';
 $string['thresholds_settings'] = "Limits :";
 $string['thresholds_description'] = "Indicate the threshold that you want to use, in order to facilitate the finding of analysis report (% of similarities) :";
+// Student submit.
+$string['compi_student_analyses'] = "Allow students to analyze their documents";
+$string['compi_student_analyses_help'] = "This allows students to analyze their draft files with Compilatio Magister, before final submission to the teacher.";
+$string['activate_submissiondraft'] = 'To allow students to analyze their drafts, you must enable the <b>{$a}</b> option in the section ';
+$string['allow_student_analyses'] = "Allow teachers to enable the option \"Allow students to analyze their draft files with Compilatio Magister, before final submission to the teacher\".";
+$string['student_analyze'] = "Student analysis";
+$string['student_start_analyze'] = "The analysis can be started by the student";
+$string['student_help'] = "You can analyze your draft with Compilatio Magister, to measure similarities in the text of your files.<br/>
+The contents of your draft will not be used by Compilatio as comparison material for future analyses.<br/>
+Your teacher will, however, have access to this analysis report.";
+
 $string['similarities_disclaimer'] = "You can analyze similarities in this activity's documents with <a href='http://www.compilatio.net/en/' target='_blank'>Compilatio</a>.<br/> Be careful: similarities measured during analysis do not necessarily mean plagiarism. The analysis report helps you to identify if the similarities matched to suitable quotation or to plagiarism.";
 $string['progress'] = "Progress :";
 $string['results'] = "Results :";

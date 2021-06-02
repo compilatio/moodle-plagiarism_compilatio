@@ -149,7 +149,7 @@ define(['jquery'], function($) {
                         $("#count-alerts").text(nbAlerts + 1);
                     } else {
                         $("#show-stats").after(notifIcon);
-                        $(".compilatio-clear").after(notifTitle + message + "</div>");
+                        $("#compilatio-tabs").after(notifTitle + message + "</div>");
                         alertsCount = 1;
                     }
                 }

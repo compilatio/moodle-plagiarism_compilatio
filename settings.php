@@ -67,6 +67,9 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     if (!isset($data->allow_search_tab)) {
         $data->allow_search_tab = 0;
     }
+    if (!isset($data->allow_student_analyses)) {
+        $data->allow_student_analyses = 0;
+    }
 
     foreach ($data as $field => $value) {
         // Ignore the button and API Config.
@@ -99,6 +102,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
                 'use_compilatio' => 1,
                 'compilatio_show_student_score' => 0,
                 'compilatio_show_student_report' => 0,
+                'compi_student_analyses' => 0,
                 'compilatio_studentemail' => 0,
                 'compilatio_analysistype' => 1,
                 'green_threshold' => 10,
@@ -114,7 +118,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         }
     }
 
-    cache_helper::invalidate_by_definition('core', 'config', array(), 'plagiarism');
+    cache_helper::invalidate_by_definition('core', 'config', array(), 'plagiarism_compilatio');
     // TODO - check settings to see if valid.
     $error = '';
     $quotas = compilatio_getquotas();
@@ -126,6 +130,12 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         }
         $incorrectconfig = true;
         $error = $quotas["error"];
+    } else {
+        $apiconfigid = get_config('plagiarism_compilatio', 'apiconfigid');
+        $compilatio = compilatio_get_compilatio_service($apiconfigid);
+        if (!$compilatio->check_allow_student_analyses()) {
+            set_config('allow_student_analyses', 0, 'plagiarism_compilatio');
+        }
     }
 
     compilatio_update_meta();

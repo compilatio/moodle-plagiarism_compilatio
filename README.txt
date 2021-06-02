@@ -7,11 +7,7 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Replacement of the deprecated function update_status.
-- Added Compilatio frame to forums and workshops.
-- Added the possibility to analyse all documents in assign retroactively.
-- Update plugin to be compatible with Moodle 3.11.
-- Fix SQL Query to search document author for PostgresSQL.
+- Add possibility for student to analyse their draft files for authorized API key.
 
 QUICK INSTALL
 ================

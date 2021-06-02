@@ -51,10 +51,7 @@ $string['compilatio_display_student_score_help'] = 'Le pourcentage de similitude
 $string['compilatio_display_student_score'] = 'Rendre le pourcentage de similitudes visible par les étudiants';
 $string['compilatio_display_student_report'] = 'Permettre à l\'étudiant de visualiser le rapport d\'analyse';
 $string['compilatio_display_student_report_help'] = 'Le rapport d’analyse d’un document présente les passages similaires avec les sources détectées et leurs pourcentages de similitudes.';
-$string['compilatio_draft_submit'] = 'Quand le fichier doit être soumis à Compilatio';
 $string['showwhenclosed'] = 'Quand l\'activité est fermée';
-$string['submitondraft'] = 'Soumettre un fichier quand le premier est chargé';
-$string['submitonfinal'] = 'Soumettre un fichier lorsqu\'un étudiant l\'envoie pour l\'analyse';
 $string['defaultupdated'] = 'Les valeurs par défaut ont été mises à jour';
 $string['defaults_desc'] = 'Les paramètres suivants sont utilisés comme valeurs par défaut dans les activités de Moodle intégrant Compilatio.';
 $string['compilatiodefaults'] = 'Valeurs par défaut pour Compilatio';
@@ -140,6 +137,16 @@ $string['red_threshold'] = "rouge au delà";
 $string['similarity_percent'] = "% de similitudes";
 $string['thresholds_settings'] = "Réglage des seuils d'affichage des taux de similitudes :";
 $string['thresholds_description'] = "Indiquez les seuils que vous souhaitez utiliser, afin de faciliter le repérage des rapports d’analyse (% de similitudes) : ";
+// Student analyses.
+$string['compi_student_analyses'] = "Permettre aux étudiants d'analyser leurs documents";
+$string['compi_student_analyses_help'] = "Ceci permet aux étudiants d'analyser leur fichiers en brouillon avec Compilatio Magister, avant le rendu final à l'enseignant.";
+$string['activate_submissiondraft'] = 'Pour permettre aux étudiants d\'analyser leurs brouillons, vous devez activer l\'option <b>{$a}</b> dans la partie ';
+$string['allow_student_analyses'] = "Permettre aux enseignants d'activer l'option \"Permettre aux étudiants d'analyser leur fichiers en brouillon avec Compilatio Magister, avant le rendu final à l'enseignant\".";
+$string['student_analyze'] = "Analyse par l'étudiant";
+$string['student_start_analyze'] = "L'analyse peut être lancée par l'étudiant";
+$string['student_help'] = "Vous pouvez analyser votre brouillon avec Compilatio Magister, afin de mesurer les similitudes présentes dans le texte de vos fichiers.<br/>
+Le contenu de votre brouillon ne sera pas utilisé par Compilatio comme matériel de comparaison pour les futures analyses effectuées.<br/>
+Votre enseignant aura cependant accès à ce rapport d'analyse.";
 // TODO.
 $string['similarities_disclaimer'] = "Vous pouvez analyser les similitudes présentes dans les documents de cette activité à l’aide du logiciel <a href='http://compilatio.net' target='_blank'>Compilatio</a>.<br/>
 	Attention, des similitudes mesurées lors d’une analyse ne révèlent pas nécessairement un plagiat.
