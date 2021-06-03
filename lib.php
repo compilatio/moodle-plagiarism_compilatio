@@ -1897,6 +1897,8 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_ANALYSING;
         } else if ($docstatus->documentStatus->status == "ANALYSE_NOT_STARTED") {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_ACCEPTED;
+        } else if ($docstatus->documentStatus->status == "ANALYSE_CRASHED") {
+            $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_FAILED;
         }
     }
     if (!$manuallytriggered) {
@@ -2406,11 +2408,11 @@ function compilatio_get_non_uploaded_documents($cmid) {
     $notuploadedfiles = array();
     $fs = get_file_storage();
 
-    $sql = "SELECT con.id as contextid, assf.submission as itemid
+    $sql = "SELECT assf.submission as itemid, con.id as contextid
             FROM {course_modules} cm
                 JOIN {assignsubmission_file} assf ON assf.assignment = cm.instance
                 JOIN {context} con ON cm.id = con.instanceid
-            WHERE cm.id=? AND contextlevel = 70";
+            WHERE cm.id=? AND con.contextlevel = 70 AND assf.numfiles > 0";
 
     $filesids = $DB->get_records_sql($sql, array($cmid));
 
@@ -2419,7 +2421,8 @@ function compilatio_get_non_uploaded_documents($cmid) {
 
         foreach ($files as $file) {
             if ($file->get_filename() != '.') {
-                $compifile = $DB->get_record('plagiarism_compilatio_files', array('identifier' => $file->get_contenthash()));
+                $compifile = $DB->get_record('plagiarism_compilatio_files',
+                    array('identifier' => $file->get_contenthash(), 'cm' => $cmid));
 
                 if (!$compifile) {
                     array_push($notuploadedfiles, $file);

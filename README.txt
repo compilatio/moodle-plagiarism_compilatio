@@ -12,6 +12,7 @@ CHANGES
 - Added the possibility to analyse all documents in assign retroactively.
 - Update plugin to be compatible with Moodle 3.11.
 - Fix SQL Query to search document author for PostgresSQL.
+- Fix SQL Query to get not uploaded documents.
 
 QUICK INSTALL
 ================
