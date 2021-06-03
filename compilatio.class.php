@@ -112,7 +112,7 @@ class compilatioservice {
                 $this->apiconfigid = $apiconfigid;
                 $key = $apiconfig->api_key;
                 $urlsoap = $apiconfig->url;
-
+                ini_set("soap.wsdl_cache_enabled", 0);
                 if (!empty($key)) {
                     $this->key = $key;
                     if (!empty($urlsoap)) {
@@ -462,6 +462,7 @@ class compilatioservice {
             }
 
             $params = array($this->key, $compid, $indexed);
+
             $result = $this->soapcli->__call('setIndexRefLibrary', $params);
             return $result['status'] == 200;
 
@@ -495,7 +496,7 @@ class compilatioservice {
     /**
      * Get the waiting time for analysis begins
      *
-     * @return string return the id_groupe if succeed, false otherwise.
+     * @return mixed return the magister waiting time if succeed, false otherwise.
      */
     public function get_waiting_time() {
 

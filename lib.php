@@ -1225,17 +1225,13 @@ function compilatio_send_pending_files($plagiarismsettings) {
             }
 
             $plugincm = compilatio_cm_use($plagiarismfile->cm);
-            $indexingstate = $plugincm['indexing_state'];
-
-            if ($indexingstate === false) {
-                $indexingstate = $DB->get_record("plagiarism_compilatio_config",
-                    array("cm" => 0, "name" => "indexing_state"),
-                    'name, value');
-                if ($indexingstate === false) {
-                    $indexingstate->value = true;
-                }
+            if (isset($plugincm['indexing_state'])) {
+                $indexingstate = $plugincm['indexing_state'];
+            } else {
+                $indexingstate = true;
             }
-            if (compilatio_student_analysis($plugincm['compi_student_analyses'], $cmid, $plagiarismfile->userid)) {
+
+            if (compilatio_student_analysis($plugincm['compi_student_analyses'], $plagiarismfile->cm, $plagiarismfile->userid)) {
                 $indexingstate = false;
             }
 
@@ -1245,8 +1241,8 @@ function compilatio_send_pending_files($plagiarismsettings) {
                 $compid = compilatio_send_file_to_compilatio($plagiarismfile,
                     $plagiarismsettings,
                     $tmpfile);
-
-                ws_helper::set_indexing_state($compid, $indexingstate->value, $plagiarismfile->apiconfigid);
+                
+                ws_helper::set_indexing_state($compid, $indexingstate, $plagiarismfile->apiconfigid);
 
                 unlink($tmpfile->filepath);
             } else {
@@ -1265,7 +1261,7 @@ function compilatio_send_pending_files($plagiarismsettings) {
                     $plagiarismsettings,
                     $file);
 
-                ws_helper::set_indexing_state($compid, $indexingstate->value, $plagiarismfile->apiconfigid);
+                ws_helper::set_indexing_state($compid, $indexingstate, $plagiarismfile->apiconfigid);
             }
         }
     }
@@ -1401,7 +1397,11 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename = '
             $mform->addElement('select', 'compi_student_analyses',
                 get_string("compi_student_analyses", "plagiarism_compilatio"), $ynoptions);
             $mform->addHelpButton('compi_student_analyses', 'compi_student_analyses', 'plagiarism_compilatio');
-            $mform->disabledif('compi_student_analyses', 'submissiondrafts', 'eq', '0');
+
+            $plugincm = compilatio_cm_use($PAGE->context->instanceid);
+            if ($plugincm["compi_student_analyses"] === '0') {
+                $mform->disabledif('compi_student_analyses', 'submissiondrafts', 'eq', '0');
+            }
 
             if ($CFG->version >= 2017111300) { // Method hideIf is available since moodle 3.4.
                 $group = [];
@@ -1939,6 +1939,8 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_ANALYSING;
         } else if ($docstatus->documentStatus->status == "ANALYSE_NOT_STARTED") {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_ACCEPTED;
+        } else if ($docstatus->documentStatus->status == "ANALYSE_CRASHED") {
+            $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_FAILED;
         }
     }
     if (!$manuallytriggered) {
@@ -2448,11 +2450,11 @@ function compilatio_get_non_uploaded_documents($cmid) {
     $notuploadedfiles = array();
     $fs = get_file_storage();
 
-    $sql = "SELECT con.id as contextid, assf.submission as itemid
+    $sql = "SELECT assf.submission as itemid, con.id as contextid
             FROM {course_modules} cm
                 JOIN {assignsubmission_file} assf ON assf.assignment = cm.instance
                 JOIN {context} con ON cm.id = con.instanceid
-            WHERE cm.id=? AND contextlevel = 70";
+            WHERE cm.id=? AND con.contextlevel = 70 AND assf.numfiles > 0";
 
     $filesids = $DB->get_records_sql($sql, array($cmid));
 
@@ -2461,7 +2463,7 @@ function compilatio_get_non_uploaded_documents($cmid) {
 
         foreach ($files as $file) {
             if ($file->get_filename() != '.') {
-                $compifile = $DB->get_record('plagiarism_compilatio_files', array('identifier' => $file->get_contenthash()));
+                $compifile = $DB->get_record('plagiarism_compilatio_files', array('identifier' => $file->get_contenthash(), 'cm' => $cmid));
 
                 if (!$compifile) {
                     array_push($notuploadedfiles, $file);
