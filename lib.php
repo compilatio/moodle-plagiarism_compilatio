@@ -1222,7 +1222,6 @@ function compilatio_update_meta() {
 
     $compilatio = compilatio_get_compilatio_service(get_config('plagiarism_compilatio', 'apiconfigid'));
     $idgroupe = $compilatio->get_id_groupe();
-    error_log($idgroupe);
 
     set_config('file_max_size', json_encode($filemaxsize), 'plagiarism_compilatio');
     set_config('file_types', json_encode($filetypes), 'plagiarism_compilatio');
@@ -1959,7 +1958,7 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
     $compilatio = compilatio_get_compilatio_service($plagiarismfile->apiconfigid);
 
     $docstatus = $compilatio->get_doc($plagiarismfile->externalid);
-    error_log(var_export($docstatus,true));
+
     if (isset($docstatus->documentStatus->status)) {
         if ($docstatus->documentStatus->status == "ANALYSE_COMPLETE") {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_COMPLETE;

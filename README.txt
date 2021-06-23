@@ -8,6 +8,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 - Add support for essay question in quiz.
+- Fix document not automatically indexed in reference library with Elastisafe API.
 
 QUICK INSTALL
 ================
