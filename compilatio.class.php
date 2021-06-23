@@ -490,7 +490,6 @@ class compilatioservice {
         } catch (SoapFault $fault) {
             return false;
         }
-
     }
 
     /**

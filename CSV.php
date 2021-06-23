@@ -54,7 +54,8 @@ if ($rawcsv) {
             course.id "course_id",
             course.fullname "course_name",
             cm "module_id",
-            CONCAT(COALESCE(assign.name, ""), COALESCE(forum.name, ""), COALESCE(workshop.name, "")) "module_name",
+            CONCAT(COALESCE(assign.name, ""), COALESCE(forum.name, ""), COALESCE(workshop.name, ""),
+            COALESCE(quiz.name, "")) "module_name",
             student.id "student_id",
             student.firstname "student_firstname",
             student.lastname "student_lastname",
@@ -70,6 +71,7 @@ if ($rawcsv) {
         LEFT JOIN {assign} assign ON cm.instance= assign.id AND cm.module= 1
         LEFT JOIN {forum} forum ON cm.instance= forum.id AND cm.module= 9
         LEFT JOIN {workshop} workshop ON cm.instance= workshop.id AND cm.module= 23
+        LEFT JOIN {quiz} quiz ON cm.instance= quiz.id AND cm.module= 17
         JOIN {course} course ON cm.course= course.id
         ORDER BY cm DESC';
 

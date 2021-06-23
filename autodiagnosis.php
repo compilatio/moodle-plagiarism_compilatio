@@ -89,6 +89,13 @@ if (isset($plagiarismsettings["enable_mod_forum"])) {
     $forumsuccess = false;
 }
 
+// Test if Compilatio is enabled for quiz.
+if (isset($plagiarismsettings["enable_mod_quiz"])) {
+    $quizsuccess = $plagiarismsettings["enable_mod_quiz"];
+} else {
+    $quizsuccess = false;
+}
+
 // API key test. Fails if GetQuota method return NULL.
 if (isset($plagiarismsettings["apiconfigid"])) {
     $apikeysuccess = ws_helper::test_connection();
@@ -184,6 +191,12 @@ if ($forumsuccess) {
     $alerts[] = array('success', get_string("plugin_enabled_forum", "plagiarism_compilatio"));
 } else {
     $alerts[] = array('warning', get_string("plugin_disabled_forum", "plagiarism_compilatio"));
+}
+
+if ($quizsuccess) {
+    $alerts[] = array('success', get_string("plugin_enabled_quiz", "plagiarism_compilatio"));
+} else {
+    $alerts[] = array('warning', get_string("plugin_enabled_quiz", "plagiarism_compilatio"));
 }
 
 /*

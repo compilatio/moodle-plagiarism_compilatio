@@ -61,6 +61,9 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     if (!isset($data->enable_mod_workshop)) {
         $data->enable_mod_workshop = 0;
     }
+    if (!isset($data->enable_mod_quiz)) {
+        $data->enable_mod_quiz = 0;
+    }
     if (!isset($data->allow_teachers_to_show_reports)) {
         $data->allow_teachers_to_show_reports = 0;
     }

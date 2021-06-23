@@ -92,6 +92,8 @@ $string['subscription_state'] = '<strong>Votre abonnement Compilatio.net est val
 $string['startanalysis'] = 'Démarrer l\'analyse';
 $string['failedanalysis'] = 'Compilatio n\'a pas réussi à analyser votre document : ';
 $string['unextractablefile'] = 'Le texte de votre document n’a pas pu être extrait correctement.';
+$string['quiz_help'] = 'Seules les questions de type composition dont la réponse contient au moins {$a} mots seront analysés.';
+
 // Auto diagnostic.
 $string["auto_diagnosis_title"] = "Auto-diagnostic";
 // API key.
@@ -113,10 +115,15 @@ $string['plugin_disabled'] = "Le plugin n'est pas activé pour la plateforme Moo
 // Plugin enabled for "assign".
 $string['plugin_enabled_assign'] = "Le plugin est activé pour les devoirs.";
 $string['plugin_disabled_assign'] = "Le plugin n'est pas activé pour les devoirs.";
+// Plugin enabled for "workshop".
 $string['plugin_enabled_workshop'] = "Le plugin est activé pour les ateliers.";
 $string['plugin_disabled_workshop'] = "Le plugin n'est pas activé pour les ateliers.";
+// Plugin enabled for "forum".
 $string['plugin_enabled_forum'] = "Le plugin est activé pour les forums.";
 $string['plugin_disabled_forum'] = "Le plugin n'est pas activé pour les forums.";
+// Plugin enabled for "quiz".
+$string['plugin_enabled_quiz'] = "Le plugin est activé pour les tests.";
+$string['plugin_disabled_quiz'] = "Le plugin n'est pas activé pour les tests.";
 $string['compilatioenableplugin'] = 'Activer Compilatio pour {$a}';
 $string['programmed_analysis_future'] = 'Les documents seront analysés par Compilatio le {$a}.';
 $string['programmed_analysis_past'] = 'Les documents ont été soumis pour analyse à Compilatio le {$a}.';
@@ -228,6 +235,7 @@ $string['compilatioenableplugin'] = 'Activer Compilatio pour {$a}';
 $string['enable_mod_assign'] = 'Activer Compilatio pour les devoirs (assign)';
 $string['enable_mod_workshop'] = 'Activer Compilatio pour les ateliers (workshop)';
 $string['enable_mod_forum'] = 'Activer Compilatio pour les forums';
+$string['enable_mod_quiz'] = 'Activer Compilatio pour les tests';
 $string['planned'] = "Planifié";
 $string['immediately'] = "Immédiatement";
 $string['enable_javascript'] = "Veuillez activer Javascript pour profiter de toutes les fonctionnalités du plugin Compilatio. <br/> Voici les <a href='http://www.enable-javascript.com/fr/' target='_blank'>

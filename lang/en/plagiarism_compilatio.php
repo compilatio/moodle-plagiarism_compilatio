@@ -108,6 +108,8 @@ $string['compilatio:triggeranalysis'] = 'Allow the teacher to manually trigger a
 $string['compilatio:viewreport'] = 'Allow the teacher to view the full report from Compilatio';
 $string['unextractablefile'] = 'The text in your document cannot be extracted.';
 $string['immediately'] = "Immediately";
+$string['quiz_help'] = 'Only essay questions whose answer contain at least {$a} words will be analyzed.';
+
 // Auto diagnostic.
 $string["auto_diagnosis_title"] = "Auto-diagnosis";
 // API key.
@@ -135,6 +137,9 @@ $string['plugin_disabled_workshop'] = "The plugin isn't enabled for workshops.";
 // Plugin enabled for "forum".
 $string['plugin_enabled_forum'] = "The plugin is enabled for forums.";
 $string['plugin_disabled_forum'] = "The plugin isn't enabled for forums.";
+// Plugin enabled for "quiz".
+$string['plugin_enabled_quiz'] = "The plugin is enabled for quiz.";
+$string['plugin_disabled_quiz'] = "The plugin isn't enabled for quiz.";
 $string['programmed_analysis_future'] = 'Documents will be analyzed by Compilatio on {$a}.';
 $string['programmed_analysis_past'] = 'Documents have been submitted for analysis to Compilatio on {$a}.';
 $string['webservice_unreachable_title'] = "Compilatio.net is unavailable.";
@@ -235,6 +240,7 @@ $string['analyzing'] = 'Analyzing';
 $string['enable_mod_assign'] = 'Enable Compilatio for assignments (assign)';
 $string['enable_mod_workshop'] = 'Enable Compilatio for workshops (workshop)';
 $string['enable_mod_forum'] = 'Enable Compilatio for forums';
+$string['enable_mod_quiz'] = 'Activer Compilatio for quiz';
 $string['planned'] = "Planned";
 $string['enable_javascript'] = "Please enable Javacript in order to have a better experience with Compilatio plugin.<br/>
  Here are the <a href='http://www.enable-javascript.com/' target='_blank'>
