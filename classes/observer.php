@@ -99,6 +99,38 @@ class plagiarism_compilatio_observer {
     }
 
     /**
+     * Upload a file / online text in essay question in quiz
+     * @param  \mod_quiz\event\attempt_submitted $event Event
+     * @return void
+     */
+    public static function quiz_submitted(
+        \mod_quiz\event\attempt_submitted $event) {
+            global $CFG;
+        try {
+            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+            compilatio_event_handler($event->get_data(), false, false);
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * Delete a attempt in quiz
+     * @param  \mod_quiz\event\attempt_deleted $event Event
+     * @return void
+     */
+    public static function quiz_attempt_deleted(
+        \mod_quiz\event\attempt_deleted $event) {
+            global $CFG;
+        try {
+            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+            compilatio_event_handler($event->get_data(), false, false);
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
      * Delete a post
      * @param  \mod_forum\event\post_deleted $event Event
      * @return void
@@ -265,6 +297,22 @@ class plagiarism_compilatio_observer {
      */
     public static function recyclebin_category_item_created(
         \tool_recyclebin\event\category_bin_item_created $event) {
+        global $CFG;
+        try {
+            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+            compilatio_event_handler($event->get_data(), false, false);
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * Student final submit on assign with draft
+     * @param  \mod_assign\event\assessable_submitted $event Event
+     * @return void
+     */
+    public static function assign_assessable_submitted(
+        \mod_assign\event\assessable_submitted $event) {
         global $CFG;
         try {
             require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');

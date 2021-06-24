@@ -45,6 +45,14 @@ $observers = array(
         'callback' => 'plagiarism_compilatio_observer::assignsubmission_onlinetext_uploaded'
     ),
     array(
+        'eventname' => '\mod_quiz\event\attempt_submitted',
+        'callback' => 'plagiarism_compilatio_observer::quiz_submitted'
+    ),
+    array(
+        'eventname' => '\mod_quiz\event\attempt_deleted',
+        'callback' => 'plagiarism_compilatio_observer::quiz_attempt_deleted'
+    ),
+    array(
         'eventname' => '\mod_forum\event\post_deleted',
         'callback' => 'plagiarism_compilatio_observer::forum_post_deleted'
     ),
@@ -87,5 +95,9 @@ $observers = array(
     array(
         'eventname' => '\tool_recyclebin\event\category_bin_item_created',
         'callback' => 'plagiarism_compilatio_observer::recyclebin_category_item_created'
-    )
+    ),
+    array(
+        'eventname' => '\mod_assign\event\assessable_submitted',
+        'callback' => 'plagiarism_compilatio_observer::assign_assessable_submitted'
+    ),
 );

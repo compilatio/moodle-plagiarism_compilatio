@@ -110,9 +110,19 @@ class compilatio_setup_form extends moodleform {
         $mform->setDefault('student_disclosure', get_string('studentdisclosuredefault', 'plagiarism_compilatio'));
 
         $mform->addElement('checkbox', 'allow_teachers_to_show_reports',
-                           get_string("allow_teachers_to_show_reports",
-                           "plagiarism_compilatio"));
+                           get_string("allow_teachers_to_show_reports", "plagiarism_compilatio"));
         $mform->setDefault('allow_teachers_to_show_reports', 0);
+
+        $apiconfigid = get_config('plagiarism_compilatio', 'apiconfigid');
+        if (!empty($apiconfigid)) {
+            $compilatio = compilatio_get_compilatio_service($apiconfigid);
+
+            if ($compilatio->check_allow_student_analyses()) {
+                $mform->addElement('checkbox', 'allow_student_analyses',
+                    get_string("allow_student_analyses", "plagiarism_compilatio"));
+                $mform->setDefault('allow_student_analyses', 0);
+            }
+        }
 
         $mform->addElement('checkbox', 'allow_search_tab', get_string("allow_search_tab", "plagiarism_compilatio"));
         $mform->setDefault('allow_search_tab', 0);
@@ -121,16 +131,14 @@ class compilatio_setup_form extends moodleform {
         $mods = get_plugin_list('mod');
         foreach ($mods as $mod => $modname) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
-                if ($mod != 'quiz') {
-                    $modstring = 'enable_mod_' . $mod;
-                    $string = "";
-                    if (string_exists($modstring, "plagiarism_compilatio")) {
-                        $string = get_string($modstring, 'plagiarism_compilatio');
-                    } else {
-                        $string = get_string('compilatioenableplugin', 'plagiarism_compilatio', $mod);
-                    }
-                    $mform->addElement('checkbox', $modstring, $string);
+                $modstring = 'enable_mod_' . $mod;
+                $string = "";
+                if (string_exists($modstring, "plagiarism_compilatio")) {
+                    $string = get_string($modstring, 'plagiarism_compilatio');
+                } else {
+                    $string = get_string('compilatioenableplugin', 'plagiarism_compilatio', $mod);
                 }
+                $mform->addElement('checkbox', $modstring, $string);
             }
         }
 
@@ -170,7 +178,6 @@ class compilatio_defaults_form extends moodleform {
         compilatio_get_form_elements($mform, true);
         $this->add_action_buttons(true);
     }
-
 }
 
 /**

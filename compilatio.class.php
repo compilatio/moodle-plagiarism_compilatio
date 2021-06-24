@@ -112,7 +112,7 @@ class compilatioservice {
                 $this->apiconfigid = $apiconfigid;
                 $key = $apiconfig->api_key;
                 $urlsoap = $apiconfig->url;
-
+                ini_set("soap.wsdl_cache_enabled", 0);
                 if (!empty($key)) {
                     $this->key = $key;
                     if (!empty($urlsoap)) {
@@ -462,6 +462,7 @@ class compilatioservice {
             }
 
             $params = array($this->key, $compid, $indexed);
+
             $result = $this->soapcli->__call('setIndexRefLibrary', $params);
             return $result['status'] == 200;
 
@@ -489,7 +490,6 @@ class compilatioservice {
         } catch (SoapFault $fault) {
             return false;
         }
-
     }
 
     /**
@@ -506,6 +506,27 @@ class compilatioservice {
 
             $params = array($this->key);
             return $this->soapcli->__call('getWaitingTime', $params);
+
+        } catch (SoapFault $fault) {
+            return false;
+        }
+
+    }
+
+    /**
+     * Check if the API key has access rights to the analyses by students.
+     *
+     * @return bool return true if api key has access to student analyses, false otherwise.
+     */
+    public function check_allow_student_analyses() {
+
+        try {
+            if (!is_object($this->soapcli)) {
+                return false;
+            }
+
+            $params = array($this->key);
+            return $this->soapcli->__call('checkAllowStudentAnalyses', $params);
 
         } catch (SoapFault $fault) {
             return false;

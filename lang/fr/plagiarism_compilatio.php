@@ -51,10 +51,7 @@ $string['compilatio_display_student_score_help'] = 'Le pourcentage de similitude
 $string['compilatio_display_student_score'] = 'Rendre le pourcentage de similitudes visible par les étudiants';
 $string['compilatio_display_student_report'] = 'Permettre à l\'étudiant de visualiser le rapport d\'analyse';
 $string['compilatio_display_student_report_help'] = 'Le rapport d’analyse d’un document présente les passages similaires avec les sources détectées et leurs pourcentages de similitudes.';
-$string['compilatio_draft_submit'] = 'Quand le fichier doit être soumis à Compilatio';
 $string['showwhenclosed'] = 'Quand l\'activité est fermée';
-$string['submitondraft'] = 'Soumettre un fichier quand le premier est chargé';
-$string['submitonfinal'] = 'Soumettre un fichier lorsqu\'un étudiant l\'envoie pour l\'analyse';
 $string['defaultupdated'] = 'Les valeurs par défaut ont été mises à jour';
 $string['defaults_desc'] = 'Les paramètres suivants sont utilisés comme valeurs par défaut dans les activités de Moodle intégrant Compilatio.';
 $string['compilatiodefaults'] = 'Valeurs par défaut pour Compilatio';
@@ -95,6 +92,8 @@ $string['subscription_state'] = '<strong>Votre abonnement Compilatio.net est val
 $string['startanalysis'] = 'Démarrer l\'analyse';
 $string['failedanalysis'] = 'Compilatio n\'a pas réussi à analyser votre document : ';
 $string['unextractablefile'] = 'Le texte de votre document n’a pas pu être extrait correctement.';
+$string['quiz_help'] = 'Seules les questions de type composition dont la réponse contient au moins {$a} mots seront analysés.';
+
 // Auto diagnostic.
 $string["auto_diagnosis_title"] = "Auto-diagnostic";
 // API key.
@@ -116,10 +115,15 @@ $string['plugin_disabled'] = "Le plugin n'est pas activé pour la plateforme Moo
 // Plugin enabled for "assign".
 $string['plugin_enabled_assign'] = "Le plugin est activé pour les devoirs.";
 $string['plugin_disabled_assign'] = "Le plugin n'est pas activé pour les devoirs.";
+// Plugin enabled for "workshop".
 $string['plugin_enabled_workshop'] = "Le plugin est activé pour les ateliers.";
 $string['plugin_disabled_workshop'] = "Le plugin n'est pas activé pour les ateliers.";
+// Plugin enabled for "forum".
 $string['plugin_enabled_forum'] = "Le plugin est activé pour les forums.";
 $string['plugin_disabled_forum'] = "Le plugin n'est pas activé pour les forums.";
+// Plugin enabled for "quiz".
+$string['plugin_enabled_quiz'] = "Le plugin est activé pour les tests.";
+$string['plugin_disabled_quiz'] = "Le plugin n'est pas activé pour les tests.";
 $string['compilatioenableplugin'] = 'Activer Compilatio pour {$a}';
 $string['programmed_analysis_future'] = 'Les documents seront analysés par Compilatio le {$a}.';
 $string['programmed_analysis_past'] = 'Les documents ont été soumis pour analyse à Compilatio le {$a}.';
@@ -140,6 +144,16 @@ $string['red_threshold'] = "rouge au delà";
 $string['similarity_percent'] = "% de similitudes";
 $string['thresholds_settings'] = "Réglage des seuils d'affichage des taux de similitudes :";
 $string['thresholds_description'] = "Indiquez les seuils que vous souhaitez utiliser, afin de faciliter le repérage des rapports d’analyse (% de similitudes) : ";
+// Student analyses.
+$string['compi_student_analyses'] = "Permettre aux étudiants d'analyser leurs documents";
+$string['compi_student_analyses_help'] = "Ceci permet aux étudiants d'analyser leur fichiers en brouillon avec Compilatio Magister, avant le rendu final à l'enseignant.";
+$string['activate_submissiondraft'] = 'Pour permettre aux étudiants d\'analyser leurs brouillons, vous devez activer l\'option <b>{$a}</b> dans la partie ';
+$string['allow_student_analyses'] = "Permettre aux enseignants d'activer l'option \"Permettre aux étudiants d'analyser leur fichiers en brouillon avec Compilatio Magister, avant le rendu final à l'enseignant\".";
+$string['student_analyze'] = "Analyse par l'étudiant";
+$string['student_start_analyze'] = "L'analyse peut être lancée par l'étudiant";
+$string['student_help'] = "Vous pouvez analyser votre brouillon avec Compilatio Magister, afin de mesurer les similitudes présentes dans le texte de vos fichiers.<br/>
+Le contenu de votre brouillon ne sera pas utilisé par Compilatio comme matériel de comparaison pour les futures analyses effectuées.<br/>
+Votre enseignant aura cependant accès à ce rapport d'analyse.";
 // TODO.
 $string['similarities_disclaimer'] = "Vous pouvez analyser les similitudes présentes dans les documents de cette activité à l’aide du logiciel <a href='http://compilatio.net' target='_blank'>Compilatio</a>.<br/>
 	Attention, des similitudes mesurées lors d’une analyse ne révèlent pas nécessairement un plagiat.
@@ -221,6 +235,7 @@ $string['compilatioenableplugin'] = 'Activer Compilatio pour {$a}';
 $string['enable_mod_assign'] = 'Activer Compilatio pour les devoirs (assign)';
 $string['enable_mod_workshop'] = 'Activer Compilatio pour les ateliers (workshop)';
 $string['enable_mod_forum'] = 'Activer Compilatio pour les forums';
+$string['enable_mod_quiz'] = 'Activer Compilatio pour les tests';
 $string['planned'] = "Planifié";
 $string['immediately'] = "Immédiatement";
 $string['enable_javascript'] = "Veuillez activer Javascript pour profiter de toutes les fonctionnalités du plugin Compilatio. <br/> Voici les <a href='http://www.enable-javascript.com/fr/' target='_blank'>

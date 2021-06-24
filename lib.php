@@ -97,7 +97,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             'use_compilatio',
             'compilatio_show_student_score',
             'compilatio_show_student_report',
-            'compilatio_draft_submit',
+            'compi_student_analyses',
             'compilatio_studentemail',
             'compilatio_timeanalyse',
             'compilatio_analysistype',
@@ -115,9 +115,36 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
      */
     public function get_links($linkarray) {
 
-        // Quiz are not managed by Compilatio.
+        // Quiz - only essay question are supported for the moment.
         if (!empty($linkarray['component']) && $linkarray['component'] == 'qtype_essay') {
-            return '';
+
+            if (empty($linkarray['cmid']) || empty($linkarray['content'])) {
+                $quba = question_engine::load_questions_usage_by_activity($linkarray['area']);
+
+                if (empty($linkarray['cmid'])) {
+                    // Try to get cm using the questions owning context.
+                    $context = $quba->get_owning_context();
+                    if ($context->contextlevel == CONTEXT_MODULE) {
+                        $cm = get_coursemodule_from_id(false, $context->instanceid);
+                    }
+                    $linkarray['cmid'] = $cm->id;
+                }
+                if (!empty($linkarray['cmid'])) {
+                    if (empty($linkarray['userid']) || (empty($linkarray['content'])) && empty($linkarray['file'])) {
+                        // Try to get userid from attempt step.
+                        $attempt = $quba->get_question_attempt($linkarray['itemid']);
+                        if (empty($linkarray['userid'])) {
+                            $linkarray['userid'] = $attempt->get_step(0)->get_user_id();
+                        }
+                        // If content and file not submitted, try to get the content.
+                        if (empty($linkarray['content']) && empty($linkarray['file'])) {
+                            $linkarray['content'] = $attempt->get_response_summary();
+                        }
+                    }
+                } else {
+                    return '';
+                }
+            }
         }
 
         // Check if Compilatio is enabled in moodle->module->cm.
@@ -131,12 +158,22 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         // Don't show Compilatio if not allowed.
         $modulecontext = context_module::instance($linkarray['cmid']);
         $teacher = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
-        if ($plugincm['compilatio_show_student_score'] == '0' && !$teacher) {
-            return '';
-        }
 
         global $DB, $CFG, $PAGE;
         $output = '';
+
+        $studentanalyse = compilatio_student_analysis($plugincm['compi_student_analyses'], $linkarray['cmid'], $linkarray['userid']);
+        if ($studentanalyse) {
+            if ($teacher) {
+                $output .= "<div>" . get_string("student_analyze", "plagiarism_compilatio");
+            } else {
+                $output .= "<div>" . get_string("student_help", "plagiarism_compilatio");
+            }
+        }
+
+        if ($plugincm['compilatio_show_student_score'] == '0' && !$studentanalyse && !$teacher) {
+            return '';
+        }
 
         // DOM Compilatio index for ajax callback.
         static $domid = 0;
@@ -172,15 +209,15 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         // Get result in DB if exists.
         $results = $this->get_file_results($linkarray['cmid'], $userid, $file);
 
+        // Warning info.
         if (!empty($results['warning'])) {
-            // Warning info.
             $docwarning = $results['warning'];
         } else {
             $docwarning = null;
         }
 
         // Add de/indexing feature for teachers.
-        if (!empty($results['externalid']) && $teacher) {
+        if (!empty($results['externalid']) && $teacher && !$studentanalyse) {
             // Ajax API call.
             $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'getIndexingState',
                 array($CFG->httpswwwroot, $domid, $results['externalid'], $results['apiconfigid']));
@@ -281,27 +318,46 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $span = "";
             $image = "";
 
-            // Check settings to see if we need to tell compilatio to process this file now.
-            // Check if this is a timed release and add hourglass image.
-            if ($plagiarismvalues['compilatio_analysistype'] == COMPILATIO_ANALYSISTYPE_PROG) {
-                $image = "prog";
-                $span = get_string('planned', 'plagiarism_compilatio');
-                $title = get_string('waitingforanalysis', 'plagiarism_compilatio',
-                    userdate($plagiarismvalues['compilatio_timeanalyse']));
-            } else if (has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext)) {
-                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysis',
+            if ($studentanalyse) {
+                if ($teacher) {
+                    $span = get_string("analyze", "plagiarism_compilatio");
+                    $title = get_string("student_start_analyze", "plagiarism_compilatio");
+                } else {
+                    $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysis',
                     array($CFG->httpswwwroot, $domid, $results['pid']));
-                $span = get_string("analyze", "plagiarism_compilatio");
-                $image = "play";
-                $title = get_string('startanalysis', 'plagiarism_compilatio');
-            } else if ($results['score'] !== '') { // If score === "" => Student, not allowed to see.
-                $image = "inprogress";
-                $title = get_string('processing_doc', 'plagiarism_compilatio');
-            }
-            if ($title !== "") {
+                    $span = get_string("analyze", "plagiarism_compilatio");
+                    $image = "play";
+                    $title = get_string('startanalysis', 'plagiarism_compilatio');
+                }
+
                 $output .= output_helper::get_plagiarism_area($domid, $span, $image, $title, "",
                     "", false, $indexingstate, $docwarning);
+
+            } else {
+                // Check settings to see if we need to tell compilatio to process this file now.
+                // Check if this is a timed release and add hourglass image.
+                if ($plagiarismvalues['compilatio_analysistype'] == COMPILATIO_ANALYSISTYPE_PROG) {
+                    $image = "prog";
+                    $span = get_string('planned', 'plagiarism_compilatio');
+                    $title = get_string('waitingforanalysis', 'plagiarism_compilatio',
+                        userdate($plagiarismvalues['compilatio_timeanalyse']));
+                } else if (has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext)) {
+                    $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysis',
+                        array($CFG->httpswwwroot, $domid, $results['pid']));
+                    $span = get_string("analyze", "plagiarism_compilatio");
+                    $image = "play";
+                    $title = get_string('startanalysis', 'plagiarism_compilatio');
+                } else if ($results['score'] !== '') { // If score === "" => Student, not allowed to see.
+                    $image = "inprogress";
+                    $title = get_string('processing_doc', 'plagiarism_compilatio');
+                }
+
+                if ($title !== "") {
+                    $output .= output_helper::get_plagiarism_area($domid, $span, $image, $title, "",
+                        "", false, $indexingstate, $docwarning);
+                }
             }
+
         } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_ANALYSING) {
             $span = get_string("analyzing", "plagiarism_compilatio");
             $image = "inprogress";
@@ -370,6 +426,11 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
             $output .= output_helper::get_plagiarism_area($domid, $span, $image, $title, "",
                 $url, true, $indexingstate, $docwarning);
         }
+
+        if ($studentanalyse) {
+            $output .= "</div>";
+        }
+
         return $output;
     }
 
@@ -430,6 +491,11 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
                 ($plugincm['compilatio_show_student_score'] == PLAGIARISM_COMPILATIO_SHOW_CLOSED && $assignclosed)) {
                 $viewscore = true;
             }
+
+            if (compilatio_student_analysis($plugincm['compi_student_analyses'], $cmid, $userid)) {
+                $viewreport = true;
+                $viewscore = true;
+            }
         } else {
             $selfreport = false;
         }
@@ -478,7 +544,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
 
         // Now check for differing filename and display info related to it.
         $previouslysubmitted = '';
-        if ($file->filename !== $plagiarismfile->filename) {
+        if (strpos($plagiarismfile->filename, 'quiz') !== 0 && strpos($plagiarismfile->filename, 'post') !== 0
+            && $file->filename !== $plagiarismfile->filename) {
             $previouslysubmitted = '<span class="compilatio-prevsubmitted">(';
             $previouslysubmitted .= get_string('previouslysubmitted', 'plagiarism_compilatio');
             $previouslysubmitted .= ': ' . $plagiarismfile->filename . ')</span>';
@@ -584,6 +651,8 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         $module = 'forum';
     } else if ($PAGE->url->compare(new moodle_url('/mod/workshop/view.php'), URL_MATCH_BASE)) {
         $module = 'workshop';
+    } else if ($PAGE->url->compare(new moodle_url('/mod/quiz/report.php'), URL_MATCH_BASE)) {
+        $module = 'quiz';
     } else {
         return;
     }
@@ -834,10 +903,13 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     $output .= "<div class='compilatio-clear'></div>";
 
     // Home tab.
-    $output .= "
-        <div id='compi-home' class='compilatio-tabs-content'>
-            <p>" . get_string('similarities_disclaimer', 'plagiarism_compilatio') . "</p>
-        </div>";
+    $output .= "<div id='compi-home' class='compilatio-tabs-content'>
+                    <p>" . get_string('similarities_disclaimer', 'plagiarism_compilatio') . "</p>";
+    if ($module == "quiz") {
+        $nbmotsmin = get_config('plagiarism_compilatio', 'nb_mots_min');
+        $output .= "<p><b>" . get_string('quiz_help', 'plagiarism_compilatio', $nbmotsmin) . "</b></p>";
+    }
+    $output .= "</div>";
 
     // Help tab.
     $output .= "<div id='compi-help' class='compilatio-tabs-content'>";
@@ -1070,13 +1142,7 @@ function plagiarism_compilatio_coursemodule_standard_elements($formwrapper, $mfo
     $plagiarismelements = $plugin->config_options();
     if (has_capability('plagiarism/compilatio:enable', $context)) {
         compilatio_get_form_elements($mform, false, $modulename);
-        if ($mform->elementExists('compilatio_draft_submit')) {
-            if ($mform->elementExists('var4')) {
-                $mform->disabledIf('compilatio_draft_submit', 'var4', 'eq', 0);
-            } else if ($mform->elementExists('submissiondrafts')) {
-                $mform->disabledIf('compilatio_draft_submit', 'submissiondrafts', 'eq', 0);
-            }
-        }
+
         // Disable all plagiarism elements if use_plagiarism eg 0.
         foreach ($plagiarismelements as $element) {
             if ($element != 'use_compilatio') { // Ignore this var.
@@ -1191,30 +1257,23 @@ function compilatio_send_pending_files($plagiarismsettings) {
                 continue;
             }
 
-            $indexingstate = $DB->get_record("plagiarism_compilatio_config",
-                array("cm" => $plagiarismfile->cm, "name" => "indexing_state"),
-                'name, value');
-            if ($indexingstate === false) {
-                $indexingstate = $DB->get_record("plagiarism_compilatio_config",
-                    array("cm" => 0, "name" => "indexing_state"),
-                    'name, value');
-                if ($indexingstate === false) {
-                    $indexingstate->value = true;
-                }
+            $plugincm = compilatio_cm_use($plagiarismfile->cm);
+            if (isset($plugincm['indexing_state'])) {
+                $indexingstate = $plugincm['indexing_state'];
+            } else {
+                $indexingstate = true;
+            }
+
+            if (compilatio_student_analysis($plugincm['compi_student_analyses'], $plagiarismfile->cm, $plagiarismfile->userid)) {
+                $indexingstate = false;
             }
 
             $tmpfile = compilatio_get_temp_file($plagiarismfile->filename);
 
             if ($tmpfile !== false) {
-                $compid = compilatio_send_file_to_compilatio($plagiarismfile,
-                    $plagiarismsettings,
-                    $tmpfile);
-
-                ws_helper::set_indexing_state($compid, $indexingstate->value, $plagiarismfile->apiconfigid);
-
+                $compid = compilatio_send_file_to_compilatio($plagiarismfile, $plagiarismsettings, $tmpfile);
                 unlink($tmpfile->filepath);
             } else {
-
                 // Not a temporary file.
                 $modulecontext = context_module::instance($plagiarismfile->cm);
                 $contextid = $modulecontext->id;
@@ -1225,12 +1284,17 @@ function compilatio_send_pending_files($plagiarismsettings) {
                 }
                 $file = $fs->get_file_by_id($f->id);
 
-                $compid = compilatio_send_file_to_compilatio($plagiarismfile,
-                    $plagiarismsettings,
-                    $file);
-
-                ws_helper::set_indexing_state($compid, $indexingstate->value, $plagiarismfile->apiconfigid);
+                $compid = compilatio_send_file_to_compilatio($plagiarismfile, $plagiarismsettings, $file);
             }
+
+            // Wait for document to be extract in Elsaf to be indexed.
+            unset($result);
+            do {
+                if (isset($result)) {
+                    sleep(1);
+                }
+                $result = ws_helper::set_indexing_state($compid, $indexingstate, $plagiarismfile->apiconfigid);
+            } while ($result === 'Error set_indexing_state() setIndexRefLibrary error Document extraction in progress');
         }
     }
 }
@@ -1271,8 +1335,10 @@ function compilatio_create_temp_file($cmid, $eventdata) {
         mkdir($CFG->dataroot . "/temp/compilatio", 0700);
     }
 
-    if ($eventdata->postid != null) {
+    if (!empty($eventdata->postid)) {
         $filename = "post-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->postid . ".htm";
+    } else if (isset($eventdata->attemptid)) {
+        $filename = "quiz-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->attemptid . ".htm";
     } else {
         $filename = "content-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->userid . ".htm";
     }
@@ -1300,7 +1366,7 @@ function compilatio_create_temp_file($cmid, $eventdata) {
  * @param boolean $defaults if this is being loaded from defaults form or from inside a mod.
  * @param string  $modulename
  */
-function compilatio_get_form_elements($mform, $defaults = false, $modulename='') {
+function compilatio_get_form_elements($mform, $defaults = false, $modulename = '') {
 
     global $PAGE, $CFG;
 
@@ -1315,12 +1381,13 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename='')
         2 => get_string("showwhenclosed", "plagiarism_compilatio"),
     );
 
-    $compilatiodraftoptions = array(
-        PLAGIARISM_COMPILATIO_DRAFTSUBMIT_IMMEDIATE => get_string("submitondraft", "plagiarism_compilatio"),
-        PLAGIARISM_COMPILATIO_DRAFTSUBMIT_FINAL => get_string("submitonfinal", "plagiarism_compilatio"),
-    );
-
     $mform->addElement('header', 'plagiarismdesc', get_string('compilatio', 'plagiarism_compilatio'));
+
+    if ($modulename === 'mod_quiz') {
+        $nbmotsmin = get_config('plagiarism_compilatio', 'nb_mots_min');
+        $mform->addElement('html', "<p><b>" . get_string('quiz_help', 'plagiarism_compilatio', $nbmotsmin) . "</b></p>");
+    }
+
     $mform->addElement('select', 'use_compilatio', get_string("use_compilatio", "plagiarism_compilatio"), $ynoptions);
     $mform->setDefault('use_compilatio', 1);
 
@@ -1364,17 +1431,32 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename='')
     } else {
         $mform->addElement('html', '<p>' . get_string("admin_disabled_reports", "plagiarism_compilatio") . '</p>');
     }
-    if ($mform->elementExists('var4') ||
-        $mform->elementExists('submissiondrafts')) {
-        $mform->addElement('html', '<div style="display:none">');
-        $mform->addElement('select', 'compilatio_draft_submit',
-            get_string("compilatio_draft_submit", "plagiarism_compilatio"),
-            $compilatiodraftoptions);
-        $mform->addElement('html', '</div>');
+
+    if (get_config("plagiarism_compilatio", "allow_student_analyses") === '1' && !$defaults) {
+        if ($mform->elementExists('submissiondrafts')) {
+            $mform->addElement('select', 'compi_student_analyses',
+                get_string("compi_student_analyses", "plagiarism_compilatio"), $ynoptions);
+            $mform->addHelpButton('compi_student_analyses', 'compi_student_analyses', 'plagiarism_compilatio');
+
+            $plugincm = compilatio_cm_use($PAGE->context->instanceid);
+            if ($plugincm["compi_student_analyses"] === '0') {
+                $mform->disabledif('compi_student_analyses', 'submissiondrafts', 'eq', '0');
+            }
+
+            if ($CFG->version >= 2017111300) { // Method hideIf is available since moodle 3.4.
+                $group = [];
+                $group[] = $mform->createElement("html", "<p style='color: #b94a48;'>" .
+                    get_string('activate_submissiondraft', 'plagiarism_compilatio',
+                    get_string('submissiondrafts', 'assign')) .
+                    "<b>" . get_string('submissionsettings', 'assign') . ".</b></p>");
+                $mform->addGroup($group, 'activatesubmissiondraft', '', ' ', false);
+                $mform->hideIf('activatesubmissiondraft', 'submissiondrafts', 'eq', '1');
+            }
+        }
     }
+
     $mform->addElement('select', 'compilatio_studentemail',
-        get_string("compilatio_studentemail", "plagiarism_compilatio"),
-        $ynoptions);
+        get_string("compilatio_studentemail", "plagiarism_compilatio"), $ynoptions);
     $mform->addHelpButton('compilatio_studentemail', 'compilatio_studentemail', 'plagiarism_compilatio');
 
     // Indexing state.
@@ -2421,6 +2503,7 @@ function compilatio_get_non_uploaded_documents($cmid) {
 
         foreach ($files as $file) {
             if ($file->get_filename() != '.') {
+
                 $compifile = $DB->get_record('plagiarism_compilatio_files',
                     array('identifier' => $file->get_contenthash(), 'cm' => $cmid));
 
@@ -2571,7 +2654,8 @@ function compilatio_get_global_statistics($html = true) {
             course.id,
             course.fullname "course",
             modules.name "module_type",
-            CONCAT(COALESCE(assign.name, \'\'), COALESCE(forum.name, \'\'), COALESCE(workshop.name, \'\')) "module_name",
+            CONCAT(COALESCE(assign.name, \'\'), COALESCE(forum.name, \'\'), COALESCE(workshop.name, \'\'),
+            COALESCE(quiz.name, \'\')) "module_name",
             AVG(similarityscore) "avg",
             MIN(similarityscore) "min",
             MAX(similarityscore) "max",
@@ -2580,9 +2664,10 @@ function compilatio_get_global_statistics($html = true) {
         JOIN {course_modules} course_modules
             ON plagiarism_compilatio_files.cm = course_modules.id
         JOIN {modules} modules ON modules.id = course_modules.module
-        LEFT JOIN {assign} assign ON course_modules.instance= assign.id AND course_modules.module= 1
-        LEFT JOIN {forum} forum ON course_modules.instance= forum.id AND course_modules.module= 9
-        LEFT JOIN {workshop} workshop ON course_modules.instance= workshop.id AND course_modules.module= 23
+        LEFT JOIN {assign} assign ON course_modules.instance = assign.id AND course_modules.module = 1
+        LEFT JOIN {forum} forum ON course_modules.instance = forum.id AND course_modules.module = 9
+        LEFT JOIN {workshop} workshop ON course_modules.instance = workshop.id AND course_modules.module = 23
+        LEFT JOIN {quiz} quiz ON course_modules.instance = quiz.id AND course_modules.module = 17
         JOIN {course} course ON course_modules.course= course.id
         WHERE statuscode=\'Analyzed\'
         GROUP BY cm,
@@ -2590,6 +2675,7 @@ function compilatio_get_global_statistics($html = true) {
             course.fullname,
             assign.name,
             forum.name,
+            quiz.name,
             workshop.name,
             modules.name
         ORDER BY course.fullname, assign.name';
@@ -2712,17 +2798,21 @@ function compilatio_handle_content($content, $userid, $courseid, $cmid, $postid 
         return;
     }
 
-    $data = new stdClass();
-    $data->courseid = $courseid;
-    $data->content = $content;
-    $data->userid = $userid;
-    $data->postid = $postid;
+    $nbmotsmin = get_config('plagiarism_compilatio', 'nb_mots_min');
 
-    $plagiarismsettings = (array) get_config('plagiarism_compilatio');
+    if (str_word_count(utf8_decode(strip_tags($content))) >= $nbmotsmin) {
+        $data = new stdClass();
+        $data->courseid = $courseid;
+        $data->content = $content;
+        $data->userid = $userid;
+        $data->postid = $postid;
 
-    $file = compilatio_create_temp_file($cmid, $data);
+        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
-    compilatio_queue_file($cmid, $userid, $file, $plagiarismsettings);
+        $file = compilatio_create_temp_file($cmid, $data);
+
+        compilatio_queue_file($cmid, $userid, $file, $plagiarismsettings);
+    }
 }
 
 /**
@@ -2837,6 +2927,12 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
 
     $cmid = $eventdata["contextinstanceid"];
 
+    if ($eventdata['objecttable'] == 'quiz_attempts' && $eventdata['action'] == 'submitted') {
+        $attemptid = $eventdata['objectid'];
+        compilatio_handle_quiz_attempt($attemptid);
+        return;
+    }
+
     if ($eventdata['crud'] != 'u' && $eventdata['crud'] != 'd'
         && $eventdata['component'] != 'tool_recyclebin') {
         if (!compilatio_enabled($cmid)) {
@@ -2875,10 +2971,23 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
                 $duplicates = array_merge($posts, $attachments);
             }
         }
+
         // In workshops.
         if ($eventdata['objecttable'] == 'workshop_submissions') {
             $duplicates = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
         }
+
+        // In quiz.
+        if ($eventdata['objecttable'] == 'quiz_attempts') {
+            $filename = "quiz-" . $eventdata['courseid'] . "-" . $cmid . "-" . $eventdata['objectid'] . ".htm";
+            $duplicates = $DB->get_records('plagiarism_compilatio_files',
+                array('cm' => $cmid, 'userid' => $userid, 'filename' => $filename));
+            compilatio_remove_duplicates($duplicates);
+
+            $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'quiz-%'";
+            $duplicates = $DB->get_records_sql($sql, array($cmid, $userid));
+        }
+
         // Course module delete.
         if ($eventdata['objecttable'] == 'course_modules') {
             if (class_exists('\tool_recyclebin\course_bin') && \tool_recyclebin\course_bin::is_enabled()) {
@@ -2959,10 +3068,34 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
 
             $DB->delete_records('plagiarism_compilatio_files', array('recyclebinid' => $eventdata['objectid']));
         }
+
         // Delete in assign.
-        if ($eventdata['objecttable'] == 'assign_submission') {
+        if ($eventdata['target'] == 'submission_status' && $eventdata['other']['newstatus'] != 'draft') {
             $duplicates = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
             compilatio_remove_duplicates($duplicates);
+        }
+
+        // Re-submit file when student submit a draft submission.
+        $plugincm = compilatio_cm_use($cmid);
+        if ($eventdata['target'] == 'assessable' && $plugincm['compi_student_analyses'] === '1') {
+
+            $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
+            compilatio_remove_duplicates($plagiarismfiles, false);
+
+            foreach ($plagiarismfiles as $pf) {
+                $pf->externalid = null;
+                $pf->reporturl = null;
+                $pf->statuscode = 'pending';
+                $pf->similarityscore = 0;
+                $pf->attempt = 0;
+                $pf->errorresponse = null;
+                $pf->recyclebinid = null;
+                $pf->apiconfigid = 0;
+                $pf->idcourt = null;
+                $pf->timesubmitted = time();
+
+                $DB->update_record('plagiarism_compilatio_files', $pf);
+            }
         }
     }
 
@@ -3065,6 +3198,64 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
     }
 }
 
+/**
+ * Function to handle Quiz attempts.
+ *
+ * @param int $attemptid - quiz attempt id
+ */
+function compilatio_handle_quiz_attempt($attemptid) {
+
+    global $CFG, $DB;
+
+    require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
+    $plagiarismsettings = (array) get_config('plagiarism_compilatio');
+    $fs = get_file_storage();
+
+    $attempt = \quiz_attempt::create($attemptid);
+    $userid = $attempt->get_userid();
+    $cmid = $attempt->get_cmid();
+
+    foreach ($attempt->get_slots() as $slot) {
+        $answer = $attempt->get_question_attempt($slot);
+        if ($answer->get_question()->get_type_name() == 'essay') {
+
+            // Check for duplicates files.
+            $identifier = sha1($answer->get_response_summary());
+            $duplicate = $DB->get_records('plagiarism_compilatio_files',
+                array('identifier' => $identifier, 'userid' => $userid, 'cm' => $cmid));
+            compilatio_remove_duplicates($duplicate);
+
+            // Online text content.
+            $nbmotsmin = get_config('plagiarism_compilatio', 'nb_mots_min');
+            if (str_word_count(utf8_decode(strip_tags($answer->get_response_summary()))) >= $nbmotsmin) {
+
+                $data = new stdClass();
+                $data->courseid = $attempt->get_courseid();
+                $data->content = $answer->get_response_summary();
+                $data->userid = $userid;
+                $data->attemptid = $attemptid;
+                $file = compilatio_create_temp_file($cmid, $data);
+
+                compilatio_queue_file($cmid, $userid, $file, $plagiarismsettings);
+            }
+
+            // Files attachments.
+            $context = context_module::instance($cmid);
+            $files = $answer->get_last_qt_files('attachments', $context->id);
+            foreach ($files as $file) {
+
+                // Check for duplicate files.
+                $sql = "SELECT * FROM {plagiarism_compilatio_files}
+                    WHERE cm = ? AND userid = ? AND identifier = ?";
+                $duplicates = $DB->get_records_sql($sql, array($cmid, $userid, $file->get_contenthash()));
+                compilatio_remove_duplicates($duplicates);
+
+                compilatio_queue_file($cmid, $userid, $file, $plagiarismsettings);
+            }
+        }
+    }
+}
 
 /**
  * Check allowed max file size
@@ -3111,7 +3302,6 @@ function compilatio_check_file_type($filename) {
 }
 
 /**
- *
  * Get or create a compilatio service.
  *
  * @param  int  $apiconfigid Identifier of the API configuration
@@ -3126,4 +3316,29 @@ function compilatio_get_compilatio_service($apiconfigid) {
         $CFG->proxyport,
         $CFG->proxyuser,
         $CFG->proxypassword);
+}
+
+/**
+ * Check if a submission can be analyzed by student.
+ *
+ * @param  int  $studentanalysesparam Value of the parameter compi_student_analyses for the cm
+ * @param  int  $cmid
+ * @param  int  $userid
+ * @return bool  Return true if it's a student analyse, false otherwise
+ */
+function compilatio_student_analysis($studentanalysesparam, $cmid, $userid) {
+
+    global $DB;
+    if (get_config("plagiarism_compilatio", "allow_student_analyses") === '1' && $studentanalysesparam === '1') {
+        $sql = "SELECT sub.status
+            FROM {course_modules} cm
+            JOIN {assign_submission} sub ON cm.instance = sub.assignment
+            WHERE cm.id = ? AND userid = ?";
+
+        $status = $DB->get_field_sql($sql, array($cmid, $userid));
+        if ($status == 'draft') {
+            return true;
+        }
+    }
+    return false;
 }

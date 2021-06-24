@@ -43,19 +43,25 @@ global $DB, $SESSION;
 
 $cmid = required_param('cmid', PARAM_TEXT);
 
-$sql = "cm = ? AND name='compilatio_analysistype'";
-$record = $DB->get_record_select('plagiarism_compilatio_config', $sql, array($cmid));
+$plugincm = compilatio_cm_use($cmid);
 
 // Counter incremented on success.
 $countsuccess = 0;
 $plagiarismfiles = array();
 $docsfailed = array();
-if ($record != null && $record->value == COMPILATIO_ANALYSISTYPE_MANUAL) {
+
+if ($plugincm['compilatio_analysistype'] == COMPILATIO_ANALYSISTYPE_MANUAL) {
+
     $sql = "cm = ? AND statuscode = ?";
     $params = array($cmid, COMPILATIO_STATUSCODE_ACCEPTED);
     $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, $params);
 
     foreach ($plagiarismfiles as $file) {
+
+        if (compilatio_student_analysis($plugincm['compi_student_analyses'], $cmid, $file->userid)) {
+            continue;
+        }
+
         if (compilatio_startanalyse($file)) {
             $countsuccess++;
         } else {
