@@ -50,11 +50,11 @@ $rawcsv = optional_param('raw', 1, PARAM_BOOL);
 
 if ($rawcsv) {
     $dbconfig = $DB->export_dbconfig();
-	if ($dbconfig->dbtype == 'pgsql') {
-		$todate = 'to_timestamp';
-	} else {
-		$todate = 'FROM_UNIXTIME';
-	}
+    if ($dbconfig->dbtype == 'pgsql') {
+        $todate = 'to_timestamp';
+    } else {
+        $todate = 'FROM_UNIXTIME';
+    }
     $sql = '
         SELECT pcf.id "id",
             course.id "course_id",

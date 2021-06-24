@@ -162,7 +162,9 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin
         global $DB, $CFG, $PAGE;
         $output = '';
 
-        $studentanalyse = compilatio_student_analysis($plugincm['compi_student_analyses'], $linkarray['cmid'], $linkarray['userid']);
+        $studentanalyse = compilatio_student_analysis($plugincm['compi_student_analyses'],
+            $linkarray['cmid'], $linkarray['userid']);
+
         if ($studentanalyse) {
             if ($teacher) {
                 $output .= "<div>" . get_string("student_analyze", "plagiarism_compilatio");
@@ -2503,7 +2505,6 @@ function compilatio_get_non_uploaded_documents($cmid) {
 
         foreach ($files as $file) {
             if ($file->get_filename() != '.') {
-
                 $compifile = $DB->get_record('plagiarism_compilatio_files',
                     array('identifier' => $file->get_contenthash(), 'cm' => $cmid));
 
