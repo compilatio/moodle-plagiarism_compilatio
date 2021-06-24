@@ -2503,7 +2503,9 @@ function compilatio_get_non_uploaded_documents($cmid) {
 
         foreach ($files as $file) {
             if ($file->get_filename() != '.') {
-                $compifile = $DB->get_record('plagiarism_compilatio_files', array('identifier' => $file->get_contenthash(), 'cm' => $cmid));
+
+                $compifile = $DB->get_record('plagiarism_compilatio_files',
+                    array('identifier' => $file->get_contenthash(), 'cm' => $cmid));
 
                 if (!$compifile) {
                     array_push($notuploadedfiles, $file);
