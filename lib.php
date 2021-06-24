@@ -2673,6 +2673,7 @@ function compilatio_get_global_statistics($html = true) {
             course.fullname,
             assign.name,
             forum.name,
+            quiz.name,
             workshop.name,
             modules.name
         ORDER BY course.fullname, assign.name';

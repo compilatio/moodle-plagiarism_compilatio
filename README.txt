@@ -7,8 +7,13 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Add support for essay question in quiz.
-- Fix document not automatically indexed in reference library with Elastisafe API.
+- Add support for essay question in quiz (Moodle 3.11).
+
+FIXES
+- Fix SQL Query to search document author for PostgresSQL.
+- Fix SQL Query to export global statistics to CSV for PostgresSQL.
+- Fix function to get not uploaded documents in order to analyse all documents in assign retroactively.
+- Fix document not automatically indexed in reference library.
 
 QUICK INSTALL
 ================

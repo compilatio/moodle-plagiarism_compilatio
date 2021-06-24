@@ -49,13 +49,19 @@ $PAGE->set_url($url);
 $rawcsv = optional_param('raw', 1, PARAM_BOOL);
 
 if ($rawcsv) {
+    $dbconfig = $DB->export_dbconfig();
+	if ($dbconfig->dbtype == 'pgsql') {
+		$todate = 'to_timestamp';
+	} else {
+		$todate = 'FROM_UNIXTIME';
+	}
     $sql = '
         SELECT pcf.id "id",
             course.id "course_id",
             course.fullname "course_name",
             cm "module_id",
-            CONCAT(COALESCE(assign.name, ""), COALESCE(forum.name, ""), COALESCE(workshop.name, ""),
-            COALESCE(quiz.name, "")) "module_name",
+            CONCAT(COALESCE(assign.name, \'\'), COALESCE(forum.name, \'\'), COALESCE(workshop.name, \'\'),
+            COALESCE(quiz.name, \'\')) "module_name",
             student.id "student_id",
             student.firstname "student_firstname",
             student.lastname "student_lastname",
@@ -64,7 +70,7 @@ if ($rawcsv) {
             pcf.filename "file_name",
             pcf.statuscode "file_status",
             pcf.similarityscore "file_similarityscore",
-            FROM_UNIXTIME(pcf.timesubmitted) "file_submitted_on"
+            ' . $todate . '(pcf.timesubmitted) "file_submitted_on"
         FROM {plagiarism_compilatio_files} pcf
         JOIN {user} student ON pcf.userid=student.id
         JOIN {course_modules} cm ON pcf.cm = cm.id

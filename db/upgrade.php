@@ -182,5 +182,17 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021021800, 'plagiarism', 'compilatio');
     }
 
+    if ($oldversion < 2021062300) {
+        $cms = $DB->get_records_sql('SELECT distinct cm FROM {plagiarism_compilatio_config}');
+        foreach ($cms as $cm) {
+            $newelement = new Stdclass();
+            $newelement->cm = $cm->cm;
+            $newelement->name = "compi_student_analyses";
+            $newelement->value = 0;
+            $DB->insert_record('plagiarism_compilatio_config', $newelement);
+        }
+        upgrade_plugin_savepoint(true, 2021062300, 'plagiarism', 'compilatio');
+    }
+
     return true;
 }
