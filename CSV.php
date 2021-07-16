@@ -187,6 +187,9 @@ function clean_row($row) {
             case "413":
                 $data["file_status"] = "Too large";
                 break;
+            case "414":
+                $data["file_status"] = "Too long";
+                break;
             case "404":
                 $data["file_status"] = "Not found";
                 break;

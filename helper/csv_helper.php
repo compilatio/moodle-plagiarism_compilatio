@@ -129,6 +129,9 @@ class csv_helper
                 case COMPILATIO_STATUSCODE_TOO_SHORT:
                     $line["similarities"] = get_string("stats_tooshort", "plagiarism_compilatio");
                     break;
+                case COMPILATIO_STATUSCODE_TOO_LONG:
+                    $line["similarities"] = get_string("stats_toolong", "plagiarism_compilatio");
+                    break;
                 case COMPILATIO_STATUSCODE_UNSUPPORTED:
                     $line["similarities"] = get_string("unsupported", "plagiarism_compilatio");
                     break;
