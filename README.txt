@@ -16,6 +16,7 @@ FIXES
 - Fix function to get not uploaded documents in order to analyse all documents in assign retroactively.
 - Fix document not automatically indexed in reference library.
 - Fix calls to unset "nb_mots_min" setting.
+- User's name is no longer displayed in error messages for anonymous assignments.
 
 QUICK INSTALL
 ================
