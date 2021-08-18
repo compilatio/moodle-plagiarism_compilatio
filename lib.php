@@ -2338,53 +2338,65 @@ function compilatio_get_failed_analysis_files($cmid) {
 }
 
 /**
- * Lists files of an assignment according to the status code
- *
- * @param  string $cmid       Course module ID
- * @param  int    $statuscode Status Code
- * @return array              containing the student & the file
- */
-function compilatio_get_files_by_status_code($cmid, $statuscode) {
-
-    global $DB;
-
-    $sql = "
-        SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname
-        FROM {plagiarism_compilatio_files} pcf
-        JOIN {user} usr ON pcf.userid= usr.id
-        WHERE pcf.cm=? AND statuscode = ?";
-
-    $files = $DB->get_records_sql($sql, array($cmid, $statuscode));
-
-    return array_map(
-        function ($file) {
-            return $file->lastname . " " . $file->firstname . " : " . $file->filename;
-        }, $files);
-}
-
-/**
  * List files that have reach max attempts
  *
  * @param  int $cmid    Course module ID
  * @return array        Array contains files
  */
 function compilatio_get_max_attempts_files($cmid) {
+    return compilatio_get_files_by_status_code($cmid, COMPILATIO_STATUSCODE_UNEXTRACTABLE, 6);
+}
+
+/**
+ * Lists files of an assignment according to the status code
+ *
+ * @param  string $cmid       Course module ID
+ * @param  int    $statuscode Status Code
+ * @return array              containing the student & the file
+ */
+function compilatio_get_files_by_status_code($cmid, $statuscode, $attempt = 0) {
 
     global $DB;
 
-    $sql = "
-        SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname
+    $sql = "SELECT DISTINCT pcf.id, pcf.filename, pcf.userid
         FROM {plagiarism_compilatio_files} pcf
-        JOIN {user} usr ON pcf.userid= usr.id
-        WHERE pcf.cm=? AND statuscode = ? AND pcf.attempt >= 6";
+        WHERE pcf.cm=? AND statuscode = ? AND pcf.attempt >= ?";
 
-    $files = $DB->get_records_sql($sql, array($cmid, COMPILATIO_STATUSCODE_UNEXTRACTABLE));
+    $files = $DB->get_records_sql($sql, array($cmid, $statuscode, $attempt));
 
-    return array_map(
-        function ($file) {
-            return $file->lastname . " " . $file->firstname . " : " . $file->filename;
-        }, $files);
+    if (!empty($files)) {
+        // Don't display user name for anonymous assign.
+        $sql = "SELECT blindmarking, assign.id FROM {course_modules} cm
+            JOIN {assign} assign ON cm.instance= assign.id
+            WHERE cm.id = $cmid";
+        $anonymousassign = $DB->get_record_sql($sql);
 
+        if (!empty($anonymousassign) && $anonymousassign->blindmarking) {
+            foreach ($files as $file) {
+                $anonymousid = $DB->get_field('assign_user_mapping', 'id',
+                    array("assignment" => $anonymousassign->id, "userid" => $file->userid));
+                $file->user = get_string('hiddenuser', 'assign') . " " . $anonymousid;
+            }
+
+            return array_map(
+                function ($file) {
+                    return $file->user . " : " . $file->filename;
+                }, $files);
+        } else {
+            foreach ($files as $file) {
+                $user = $DB->get_record('user', array("id" => $file->userid));
+                $file->lastname = $user->lastname;
+                $file->firstname = $user->firstname;
+            }
+
+            return array_map(
+                function ($file) {
+                    return $file->lastname . " " . $file->firstname . " : " . $file->filename;
+                }, $files);
+        }
+    } else {
+        return array();
+    }
 }
 
 /**
