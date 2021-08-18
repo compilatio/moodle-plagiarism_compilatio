@@ -15,6 +15,7 @@ FIXES
 - Fix SQL Query to export global statistics to CSV for PostgresSQL.
 - Fix function to get not uploaded documents in order to analyse all documents in assign retroactively.
 - Fix document not automatically indexed in reference library.
+- Fix calls to unset "nb_mots_min" setting.
 
 QUICK INSTALL
 ================
