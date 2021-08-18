@@ -1240,7 +1240,11 @@ function compilatio_update_meta() {
 
     $filemaxsize = ws_helper::get_allowed_file_max_size();
     $filetypes = ws_helper::get_allowed_file_types();
-
+    
+    if (empty(get_config('plagiarism_compilatio', 'nb_mots_min'))) {
+        set_config('nb_mots_min', 100, 'plagiarism_compilatio');
+    }
+    
     $compilatio = compilatio_get_compilatio_service(get_config('plagiarism_compilatio', 'apiconfigid'));
     $idgroupe = $compilatio->get_id_groupe();
 
