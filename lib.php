@@ -1363,7 +1363,7 @@ function compilatio_create_temp_file($cmid, $eventdata) {
     if (!empty($eventdata->postid)) {
         $filename = "post-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->postid . ".htm";
     } else if (isset($eventdata->attemptid)) {
-        $filename = "quiz-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->attemptid . ".htm";
+        $filename = "quiz-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->attemptid . "-" . $eventdata->question . ".htm";
     } else {
         $filename = "content-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->userid . ".htm";
     }
@@ -3311,6 +3311,7 @@ function compilatio_handle_quiz_attempt($attemptid) {
                 $data->content = $answer->get_response_summary();
                 $data->userid = $userid;
                 $data->attemptid = $attemptid;
+                $data->question = "Q" . $answer->get_question_id();
                 $file = compilatio_create_temp_file($cmid, $data);
 
                 compilatio_queue_file($cmid, $userid, $file, $plagiarismsettings);

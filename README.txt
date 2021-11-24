@@ -17,6 +17,7 @@ FIXES
 - Fix document not automatically indexed in reference library.
 - Fix calls to unset "nb_mots_min" setting.
 - User's name is no longer displayed in error messages for anonymous assignments.
+- Fix documents blocked in pending state in quizzes.
 
 QUICK INSTALL
 ================
