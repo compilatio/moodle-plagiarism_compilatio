@@ -195,6 +195,22 @@ class plagiarism_compilatio_observer {
     }
 
     /**
+     * Delete all the course files
+     * @param  \core\event\course_reset_started $event Event
+     * @return void
+     */
+    public static function core_course_reset_started(
+        \core\event\course_reset_started $event) {
+        global $CFG;
+        try {
+            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+            compilatio_event_handler($event->get_data(), false, false);
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
      * Delete a assign file
      * @param  \mod_assign\event\submission_status_updated $event Event
      * @return void

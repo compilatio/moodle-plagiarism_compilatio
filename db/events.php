@@ -69,6 +69,10 @@ $observers = array(
         'callback' => 'plagiarism_compilatio_observer::core_user_deleted'
     ),
     array(
+        'eventname' => '\core\event\course_reset_started',
+        'callback' => 'plagiarism_compilatio_observer::core_course_reset_started'
+    ),
+    array(
         'eventname' => '\mod_assign\event\submission_status_updated',
         'callback' => 'plagiarism_compilatio_observer::assign_submission_status_updated'
     ),

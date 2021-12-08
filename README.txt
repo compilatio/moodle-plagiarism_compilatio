@@ -9,6 +9,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 CHANGES
 - Add support for essay question in quiz (Moodle 3.11).
 - Add error handling for documents with too many words.
+- Handle reset course event to delete files in Compilatio.
 
 FIXES
 - Fix SQL Query to search document author for PostgresSQL.

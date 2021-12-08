@@ -2969,26 +2969,37 @@ function compilatio_enabled($cmid) {
  */
 function plagiarism_compilatio_pre_course_delete($course) {
 
-    global $CFG, $DB, $SESSION;
+    global $SESSION;
 
     if (class_exists('\tool_recyclebin\course_bin') && \tool_recyclebin\category_bin::is_enabled()) {
         $SESSION->compilatio_course_deleted_id = $course->id;
     } else {
-        $duplicates = array();
+        compilatio_course_delete($course->id);
+    }
+}
 
-        $sql = '
-            SELECT cm
-            FROM {plagiarism_compilatio_files} plagiarism_compilatio_files
-            JOIN {course_modules} course_modules
-                ON plagiarism_compilatio_files.cm = course_modules.id
-            WHERE course_modules.course ='. $course->id;
+function compilatio_course_delete($courseId, $module = null) {
 
-        $coursemodules = $DB->get_records_sql($sql);
+    global $DB;
 
-        foreach ($coursemodules as $coursemodule) {
-            $duplicates = $DB->get_records('plagiarism_compilatio_files', array('cm' => $coursemodule->cm));
-            compilatio_remove_duplicates($duplicates);
-        }
+    $duplicates = array();
+
+    $sql = '
+        SELECT cm
+        FROM {plagiarism_compilatio_files} plagiarism_compilatio_files
+        JOIN {course_modules} course_modules
+            ON plagiarism_compilatio_files.cm = course_modules.id
+        WHERE course_modules.course = '. $courseId;
+
+    if (null !== $module) {
+        $sql .= " AND course_modules.module = " . $module;
+    }
+
+    $coursemodules = $DB->get_records_sql($sql);
+
+    foreach ($coursemodules as $coursemodule) {
+        $duplicates = $DB->get_records('plagiarism_compilatio_files', array('cm' => $coursemodule->cm));
+        compilatio_remove_duplicates($duplicates);
     }
 }
 
@@ -3084,6 +3095,24 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
         // User delete.
         if ($eventdata['objecttable'] == 'user') {
             $duplicates = $DB->get_records('plagiarism_compilatio_files', array('userid' => $eventdata['objectid']));
+        }
+
+        // Course reset.
+        if ($eventdata['target'] == 'course_reset') {
+            $options = $eventdata['other']['reset_options'];
+
+            $modules = [
+                1 => "reset_assign_submissions",
+                17 => "reset_quiz_attempts",
+                23 => "reset_workshop_submissions",
+                9 => "reset_forum_all",
+            ];
+
+            foreach($modules as $moduleId => $option) {
+                if (isset($options[$option]) && $options[$option] == 1) {
+                    compilatio_course_delete($eventdata['courseid'], $moduleId);
+                }
+            }
         }
         compilatio_remove_duplicates($duplicates);
     }
