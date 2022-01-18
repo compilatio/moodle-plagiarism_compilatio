@@ -2978,7 +2978,7 @@ function plagiarism_compilatio_pre_course_delete($course) {
     }
 }
 
-function compilatio_course_delete($courseId, $module = null) {
+function compilatio_course_delete($courseId, $modulename = null) {
 
     global $DB;
 
@@ -2988,14 +2988,24 @@ function compilatio_course_delete($courseId, $module = null) {
         SELECT cm
         FROM {plagiarism_compilatio_files} plagiarism_compilatio_files
         JOIN {course_modules} course_modules
-            ON plagiarism_compilatio_files.cm = course_modules.id
-        WHERE course_modules.course = '. $courseId;
+            ON plagiarism_compilatio_files.cm = course_modules.id';
 
-    if (null !== $module) {
-        $sql .= " AND course_modules.module = " . $module;
+    $conditions = array();
+    $conditions['courseid'] = $courseId;
+
+    if (null !== $modulename) {
+        $sql .= '
+            JOIN {modules} modules
+                ON modules.id = course_modules.module
+            WHERE course_modules.course = :courseid
+            AND modules.name = :modulename';
+        $conditions['modulename'] = $modulename;
+    } else {
+        $sql .= '
+            WHERE course_modules.course = :courseid';
     }
 
-    $coursemodules = $DB->get_records_sql($sql);
+    $coursemodules = $DB->get_records_sql($sql, $conditions);
 
     foreach ($coursemodules as $coursemodule) {
         $duplicates = $DB->get_records('plagiarism_compilatio_files', array('cm' => $coursemodule->cm));
@@ -3102,15 +3112,15 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
             $options = $eventdata['other']['reset_options'];
 
             $modules = [
-                1 => "reset_assign_submissions",
-                17 => "reset_quiz_attempts",
-                23 => "reset_workshop_submissions",
-                9 => "reset_forum_all",
+                'assign' => "reset_assign_submissions",
+                'quiz' => "reset_quiz_attempts",
+                'workshop' => "reset_workshop_submissions",
+                'forum' => "reset_forum_all",
             ];
 
-            foreach($modules as $moduleId => $option) {
+            foreach($modules as $modulename => $option) {
                 if (isset($options[$option]) && $options[$option] == 1) {
-                    compilatio_course_delete($eventdata['courseid'], $moduleId);
+                    compilatio_course_delete($eventdata['courseid'], $modulename);
                 }
             }
         }
