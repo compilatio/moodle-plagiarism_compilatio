@@ -19,6 +19,7 @@ FIXES
 - Fix calls to unset "nb_mots_min" setting.
 - User's name is no longer displayed in error messages for anonymous assignments.
 - Fix documents blocked in pending state in quizzes.
+- Fix use of inconsistent module id.
 
 QUICK INSTALL
 ================
