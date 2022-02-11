@@ -28,7 +28,6 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/helper/ws_helper.php');
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -46,27 +45,13 @@ if (isset($plagiarismsettings["enabled"])) {
     $enabledsuccess = false;
 }
 
-/*
- * Connection test : the soapcli attribute of compilatioclass will be a string
- * describing the error if any occurs.
- * API key does not matter here.
- */
-if (isset($plagiarismsettings["apiconfigid"])) {
-    $url = $DB->get_field('plagiarism_compilatio_apicon', 'url',
-        array('id' => $plagiarismsettings["apiconfigid"]));
+// Connection test.
+$compilatio = new CompilatioService("test");
+if ($compilatio->checkApikey() == "Forbidden ! Your api key is invalid") {
+    $connectionsuccess = true;
 } else {
-    $url = "https://service.compilatio.net/webservices/CompilatioUserClient.wsdl";
+    $connectionsuccess = false;
 }
-$apiconfig = new stdclass();
-$apiconfig->url = $url;
-$apiconfig->api_key = "KEY";
-
-$apiconfigid = $DB->insert_record('plagiarism_compilatio_apicon', $apiconfig);
-
-$compilatio = compilatio_get_compilatio_service($apiconfigid);
-$connectionsuccess = !is_string($compilatio->soapcli);
-
-$DB->delete_records('plagiarism_compilatio_apicon', array('id' => $apiconfigid));
 
 // Test if Compilatio is enabled for assign.
 if (isset($plagiarismsettings["enable_mod_assign"])) {
@@ -96,9 +81,10 @@ if (isset($plagiarismsettings["enable_mod_quiz"])) {
     $quizsuccess = false;
 }
 
-// API key test. Fails if GetQuota method return NULL.
-if (isset($plagiarismsettings["apiconfigid"])) {
-    $apikeysuccess = ws_helper::test_connection();
+// API key test.
+$compilatio = new CompilatioService($plagiarismsettings["apikey"]);
+if ($compilatio->checkApikey()) {
+    $apikeysuccess = true;
 } else {
     $apikeysuccess = false;
 }
@@ -130,43 +116,43 @@ if ($apikeysuccess) {
     $alerts[] = array('danger', get_string("api_key_not_valid", "plagiarism_compilatio"));
 }
 
-$lastcron = $DB->get_record('plagiarism_compilatio_data', array('name' => 'last_cron'));
+$lastcron = get_config('plagiarism_compilatio', 'last_cron');
 
 if ($lastcron == null) {
     // Cron function in lib.php has never been called.
     $alerts[] = array('danger', get_string("cron_check_never_called", "plagiarism_compilatio"));
 } else {
-    $cronfrequency = $DB->get_record('plagiarism_compilatio_data', array('name' => 'cron_frequency'));
+    $cronfrequency = get_config('plagiarism_compilatio', 'cron_frequency');
 
     if ($cronfrequency == null) {
         // We don't have data about frequency yet.
-        if ($lastcron->value <= strtotime("-1 hour")) {
+        if ($lastcron <= strtotime("-1 hour")) {
             // Cron hasn't been called within the previous hour.
-            $alerts[] = array('warning', get_string("cron_check", "plagiarism_compilatio", userdate($lastcron->value)) . " " .
+            $alerts[] = array('warning', get_string("cron_check", "plagiarism_compilatio", userdate($lastcron)) . " " .
                 get_string("cron_check_not_ok", "plagiarism_compilatio") . " " .
                 get_string("cron_recommandation", "plagiarism_compilatio")
             );
         } else {
-            $alerts[] = array('success', get_string("cron_check", "plagiarism_compilatio", userdate($lastcron->value)) . " " .
+            $alerts[] = array('success', get_string("cron_check", "plagiarism_compilatio", userdate($lastcron)) . " " .
                 get_string("cron_recommandation", "plagiarism_compilatio"));
         }
     } else {
-        if ($cronfrequency->value > 15 || $lastcron->value <= strtotime("-1 hour")) {// Warning.
-            $alert = get_string("cron_check", "plagiarism_compilatio", userdate($lastcron->value)) . " ";
+        if ($cronfrequency > 15 || $lastcron <= strtotime("-1 hour")) {// Warning.
+            $alert = get_string("cron_check", "plagiarism_compilatio", userdate($lastcron)) . " ";
 
-            if ($lastcron->value <= strtotime("-1 hour")) {
+            if ($lastcron <= strtotime("-1 hour")) {
                 // Cron hasn't been called within the previous hour.
                 $alert .= get_string("cron_check_not_ok", "plagiarism_compilatio") . " ";
             }
 
-            $alert .= get_string("cron_frequency", "plagiarism_compilatio", $cronfrequency->value) . " ";
+            $alert .= get_string("cron_frequency", "plagiarism_compilatio", $cronfrequency) . " ";
 
 
             $alerts[] = array('warning', $alert . get_string("cron_recommandation", "plagiarism_compilatio"));
         } else {
             // Cron is called more than once every 15 minutes.
-            $alerts[] = array('success', get_string("cron_check", "plagiarism_compilatio", userdate($lastcron->value)) . " " .
-                get_string("cron_frequency", "plagiarism_compilatio", $cronfrequency->value) . " " .
+            $alerts[] = array('success', get_string("cron_check", "plagiarism_compilatio", userdate($lastcron)) . " " .
+                get_string("cron_frequency", "plagiarism_compilatio", $cronfrequency) . " " .
                 get_string("cron_recommandation", "plagiarism_compilatio")
             );
         }

@@ -195,14 +195,11 @@ Head area in assignment
     border-color: #e3e3e3;
     min-height: 100px;
     padding: 19px;
-    margin-bottom: 20px;
     background-color: #f5f5f5;
     border: 1px solid #e3e3e3;
     border-radius: 4px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
-    margin-top: 70px;
-    margin-left: 15px;
-    margin-right: 15px;
+    margin: 70px 5% 20px 5%;
     color: #444;
 }
 #compilatio-container h5 {

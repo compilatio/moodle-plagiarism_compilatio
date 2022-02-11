@@ -32,8 +32,8 @@ $string['compilatio'] = 'Compilatio plagiarism plugin';
 // API configuration.
 $string['compilatioapi'] = 'Compilatio API Address';
 $string['compilatioapi_help'] = 'This is the address of the Compilatio API';
-$string['compilatiopassword'] = 'API key';
-$string['compilatiopassword_help'] = 'Personal code provided by Compilatio to access the API';
+$string['apikey'] = 'API key';
+$string['apikey_help'] = 'Personal code provided by Compilatio to access the API';
 $string['compilatiodate'] = 'Activation date';
 $string['compilatiodate_help'] = 'Click "Enable" if you want this API configuration to be automatically activated on a desired date. Leave the date blank if you want to activate it right away.';
 $string['apiconfiguration'] = "API configuration";
@@ -65,7 +65,7 @@ $string['previouslysubmitted'] = 'Previously submitted as';
 $string['report'] = 'report';
 $string['unknownwarning'] = 'An error occurred trying to send this file to Compilatio';
 $string['unsupportedfiletype'] = 'This file type is not supported by Compilatio';
-$string['toolarge'] = 'This file is too large for Compilatio to process. Maximum size : {$a->Mo} MB';
+$string['toolarge'] = 'This file is too large for Compilatio to process. Maximum size : {$a} MB';
 $string['tooshort'] = 'This document doesn’t contain enough words for Compilatio to process. Minimum size : {$a} words';
 $string['toolong'] = 'This document contain too many words to be analyzed. Maximum size : {$a} words';
 $string['failed'] = 'The analysis of this document did not work correctly.';
@@ -204,7 +204,7 @@ $string["compilatio_search_tab"] = "Find the author of a document.";
 $string["compilatio_search"] = "Search";
 $string["compilatio_iddocument"] = "Document identifier";
 $string["compilatio_search_notfound"] = "No document was found for this identifier among the documents loaded on your Moodle platform.";
-$string["compilatio_author"] = 'Le document {$a->idcourt} in activity <b>{$a->modulename}</b> belongs to <b>{$a->lastname} {$a->firstname}</b>.';
+$string["compilatio_author"] = 'The document in activity <b>{$a->modulename}</b> belongs to <b>{$a->lastname} {$a->firstname}</b>.';
 $string["compilatio_search_help"] = "You can find the author of a document by retrieving the document identifier from the sources of the analysis report. Example: 1. Your document: <b>1st5xfj2</b> - Assign_Name(30)Name_Copied_Document.odt.";
 $string["allow_search_tab"] = "Activate the search tool to identify the author of a document.";
 $string["allow_search_tab_help"] = "The search tool allows you to search for a student's first and last name based on a document identifier visible in the analysis reports among all the documents present on your platform.";
@@ -281,7 +281,7 @@ $string["unknownlang"] = "Caution, the language of some passages in this documen
 $string["badqualityanalysis"] = "Issues were encountered while analysing the document. It is possible that certain sources may not have been identified, or the result may be incomplete.";
 // HELP.
 $string['help_compilatio_format_content'] = "Compilatio.net handles most formats used in word processors and on the internet.
-The following formats are supported :";
+The following formats are supported : ";
 $string['goto_compilatio_service_status'] = "See Compilatio services status.";
 $string['helpcenter'] = "Access the Compilatio Help Center for the using of Compilatio plugin in Moodle.";
 $string['goto_helpcenter'] = "Click on the question mark to open a new window and connect to the Compilatio Help Center.";
@@ -301,7 +301,9 @@ $string['not_indexed_document'] = "Document not added to your institution's docu
 // Information settings.
 $string['information_settings'] = "Informations";
 // Max file size allowed.
-$string['max_file_size_allowed'] = 'Maximum document size : <strong>{$a->Mo} MB</strong>';
+$string['max_file_size_allowed'] = 'Files must not exceed <strong>{$a} MB</strong>';
+$string['min_max_word_required'] = 'To be able to be analyzed, a text must have between {$a->min} and {$a->max} word';
+
 // Failed documents.
 $string['restart_failed_analysis'] = 'Restart interrupted analysis';
 $string['restart_failed_analysis_title'] = 'Restart interrupted analysis :';
@@ -325,10 +327,8 @@ $string['privacy:metadata:plagiarism_compilatio_files:statuscode'] = 'The submis
 $string['privacy:metadata:plagiarism_compilatio_files:reporturl'] = 'The submission\'s URL report';
 $string['privacy:metadata:plagiarism_compilatio_files:similarityscore'] = 'The submission\'s similarity score';
 $string['privacy:metadata:plagiarism_compilatio_files:attempt'] = 'The number of times the user tried to analyze his submission';
-$string['privacy:metadata:plagiarism_compilatio_files:errorresponse'] = 'The response if an error occurred - actually, this field is not used anymore and is automatically set to \'NULL\'';
 $string['privacy:metadata:plagiarism_compilatio_files:recyclebinid'] = 'The recycle bin identifier in case the course module or course has been put in the recycle bin';
-$string['privacy:metadata:plagiarism_compilatio_files:apiconfigid'] = 'The identifier of the API configuration with which the submission is linked';
-$string['privacy:metadata:plagiarism_compilatio_files:idcourt'] = 'The submission\'s short ID stored in the Compilatio database';
+$string['privacy:metadata:plagiarism_compilatio_files:indexed'] = 'The submission\'s indexing state';
 
 $string['privacy:metadata:external_compilatio_document'] = 'Informations about the documents in Compilatio database';
 $string['privacy:metadata:external_compilatio_document:lastname'] = 'The last name of the Compilatio user who submitted the file - beware, this user is the one linked to the Compilatio API key of the Moodle platform (so it\'s usually the administrator of the platform)';

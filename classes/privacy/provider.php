@@ -95,10 +95,8 @@ class provider implements
             'reporturl'         => 'privacy:metadata:plagiarism_compilatio_files:reporturl',
             'similarityscore'   => 'privacy:metadata:plagiarism_compilatio_files:similarityscore',
             'attempt'           => 'privacy:metadata:plagiarism_compilatio_files:attempt',
-            'errorresponse'     => 'privacy:metadata:plagiarism_compilatio_files:errorresponse',
             'recyclebinid'      => 'privacy:metadata:plagiarism_compilatio_files:recyclebinid',
-            'apiconfigid'       => 'privacy:metadata:plagiarism_compilatio_files:apiconfigid',
-            'idcourt'           => 'privacy:metadata:plagiarism_compilatio_files:idcourt'
+            'indexed'           => 'privacy:metadata:plagiarism_compilatio_files:indexed',
         ], 'privacy:metadata:plagiarism_compilatio_files');
 
         $collection->add_external_location_link('External Compilatio Document', [
@@ -179,21 +177,17 @@ class provider implements
         global $DB;
 
         global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/compilatioAPI.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-        if (!empty($plagiarismsettings) && isset($plagiarismsettings['apiconfigid'])) {
-            $compilatio = \compilatioservice::getinstance($plagiarismsettings['apiconfigid'],
-                $CFG->proxyhost,
-                $CFG->proxyport,
-                $CFG->proxyuser,
-                $CFG->proxypassword);
+        if (!empty($plagiarismsettings) && isset($plagiarismsettings['apikey'])) {
+            $compilatio = new CompilatioService($plagiarismsettings['apikey']);
 
             $compids = $DB->get_fieldset_select('plagiarism_compilatio_files', 'externalid', 'cm = '.$context->instanceid);
             foreach ($compids as $compid) {
-                $compilatio->set_indexing_state($compid, false);
-                $compilatio->del_doc($compid);
+                $compilatio->setIndexingState($compid, false);
+                $compilatio->deleteDocument($compid);
             }
 
             $DB->delete_records('plagiarism_compilatio_files', array('cm' => $context->instanceid));
@@ -211,30 +205,26 @@ class provider implements
         global $DB;
 
         global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/compilatioAPI.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
         // If the student owns the document (and not the school), we can delete everything from the databases.
         if (!empty($plagiarismsettings)
-            && isset($plagiarismsettings['apiconfigid'])
+            && isset($plagiarismsettings['apikey'])
             && isset($plagiarismsettings['owner_file'])
             && $plagiarismsettings['owner_file'] === '0') {
 
-            $compilatio = \compilatioservice::getinstance($plagiarismsettings['apiconfigid'],
-                $CFG->proxyhost,
-                $CFG->proxyport,
-                $CFG->proxyuser,
-                $CFG->proxypassword);
+            $compilatio = new CompilatioService($plagiarismsettings['apikey']);
 
             // We get all user's documents.
             $compids = $DB->get_fieldset_select('plagiarism_compilatio_files', 'externalid', 'userid = '.$userid);
             // For each document...
             foreach ($compids as $compid) {
                 // We deindex then delete the document.
-                $compilatio->set_indexing_state($compid, false);
-                $compilatio->del_doc($compid);
+                $compilatio->setIndexingState($compid, false);
+                $compilatio->deleteDocument($compid);
             }
 
             $DB->delete_records('plagiarism_compilatio_files', array('userid' => $userid));
@@ -252,18 +242,14 @@ class provider implements
         global $DB;
 
         global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/compilatioAPI.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $cmid = $context->instanceid;
 
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-        if (!empty($plagiarismsettings) && isset($plagiarismsettings['apiconfigid'])) {
-            $compilatio = \compilatioservice::getinstance($plagiarismsettings['apiconfigid'],
-                $CFG->proxyhost,
-                $CFG->proxyport,
-                $CFG->proxyuser,
-                $CFG->proxypassword);
+        if (!empty($plagiarismsettings) && isset($plagiarismsettings['apikey'])) {
+            $compilatio = new CompilatioService($plagiarismsettings['apikey']);
 
             // For each user...
             foreach ($userids as $userid) {
@@ -273,8 +259,8 @@ class provider implements
                 // For each document...
                 foreach ($compids as $compid) {
                     // We deindex then delete the document.
-                    $compilatio->set_indexing_state($compid, false);
-                    $compilatio->del_doc($compid);
+                    $compilatio->setIndexingState($compid, false);
+                    $compilatio->deleteDocument($compid);
                 }
             }
 

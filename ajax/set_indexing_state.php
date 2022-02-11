@@ -33,29 +33,31 @@ require_once($CFG->libdir . '/plagiarismlib.php');
 
 // Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatioAPI.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 // Get helper class.
 require_once($CFG->dirroot . '/plagiarism/compilatio/helper/output_helper.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/helper/ws_helper.php');
 
 // Get constants.
 require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
+global $DB;
 
 // Get global Compilatio settings.
 $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $iddoc = optional_param('idDoc', '', PARAM_TEXT);
 $indexingstatepost = optional_param('indexingState', '', PARAM_TEXT);
-$apiconfigid = required_param('apiconfigid', PARAM_INT);
 
 if (isset($iddoc) && compilatio_valid_md5($iddoc) && isset($indexingstatepost)) {
     $indexingstate = (int) ((boolean) $indexingstatepost);
 
-    $indexingstate = ws_helper::set_indexing_state($iddoc, $indexingstate, $apiconfigid);
-    if ($indexingstate === true) {
+    $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+    if ($compilatio->setIndexingState($iddoc, $indexingstate) === true) {
+        $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('externalid' => $iddoc));
+        $plagiarismfile->indexed = $indexingstate;
+        $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
         echo ('true');
     } else {
         echo ('false');

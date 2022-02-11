@@ -17,38 +17,30 @@ define(['jquery'], function($) {
 
     var exports = {};
 
-    var getIndexingState = exports.getIndexingState = function(basepath, eltId, docId, apiconfigid) {
+    exports.toggleIndexingState = function(basepath, eltId, docId) {
         $(document).ready(function() {
-            $.post(basepath + '/plagiarism/compilatio/ajax/get_indexing_state.php',
-            {'idDoc': docId, 'apiconfigid': apiconfigid}, function(data) {
-                $(".compi-" + eltId + " .compilatio-library").detach();
-                $(".compi-" + eltId).prepend(data);
-
-                setTimeout(function() {
-                    $(".compi-" + eltId + " > div:first-child").click(function() {
-                        toggleIndexingState(basepath, eltId, docId, apiconfigid);
+            setTimeout(function() {
+                var btn = $(".compi-" + eltId + " > div:first-child");
+                btn.click(function() {
+                    if (btn.is('.compilatio-library-in')) {
+                        var indexingState = 0;
+                    }
+                    if (btn.is('.compilatio-library-out')) {
+                        var indexingState = 1;
+                    }
+                    $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php', {'idDoc': docId, 'indexingState': indexingState}, function(res) {
+                        if (res == 'true') {
+                            if (indexingState == 0) {
+                                btn.removeClass('compilatio-library-in');
+                                btn.addClass('compilatio-library-out');
+                            } else {
+                                btn.removeClass('compilatio-library-out');
+                                btn.addClass('compilatio-library-in');
+                            }
+                        }
                     });
-                }, 250); // Wait for all DOM updates be finished before binding events handlers.
-            });
-        });
-    };
-
-    var toggleIndexingState = exports.toggleIndexingState = function(basepath, eltId, docId, apiconfigid) {
-        var indexingState;
-        if ($(".compi-" + eltId + " > div:first-child").is('.compilatio-library-in')) {
-            $(".compi-" + eltId + " > div:first-child").removeClass('compilatio-library-in');
-            indexingState = 0;
-        }
-        if ($(".compi-" + eltId + " > div:first-child").is('.compilatio-library-out')) {
-            $(".compi-" + eltId + " > div:first-child").removeClass('compilatio-library-out');
-            indexingState = 1;
-        }
-        $(".compi-" + eltId + " > div:first-child").addClass('compilatio-library');
-        $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php',
-        {'idDoc': docId, 'indexingState': indexingState, 'apiconfigid': apiconfigid}, function(data) {
-            if (data == 'true') {
-                getIndexingState(basepath, eltId, docId, apiconfigid);
-            }
+                });
+            }, 300);
         });
     };
 
@@ -141,79 +133,65 @@ define(['jquery'], function($) {
 
     exports.compilatioTabs = function(basepath, alertsCount, idcourt, notifIcon, notifTitle) {
         $(document).ready(function() {
-            $.post(basepath + '/plagiarism/compilatio/ajax/get_waiting_time.php', {}, function(message) {
-                if (message != false) {
-                    if (alertsCount > 0) {
-                        $("#compi-notif-title").after(message);
-                        var nbAlerts = parseInt($("#count-alerts").text());
-                        $("#count-alerts").text(nbAlerts + 1);
-                    } else {
-                        $("#show-stats").after(notifIcon);
-                        $("#compilatio-tabs").after(notifTitle + message + "</div>");
-                        alertsCount = 1;
-                    }
-                }
+            $('#compilatio-tabs').show();
 
-                $('#compilatio-tabs').show();
+            var selectedElement = '';
+            if (idcourt) {
+                selectedElement = '#compi-search';
+            } else if (alertsCount > 0) {
+                selectedElement = '#compi-notifications';
+            } else {
+                selectedElement = '#compi-home';
+            }
 
-                var selectedElement = '';
-                if (idcourt) {
-                    selectedElement = '#compi-search';
-                } else if (alertsCount > 0) {
-                    selectedElement = '#compi-notifications';
-                } else {
-                    selectedElement = '#compi-home';
-                }
+            $(selectedElement).show();
 
-                $(selectedElement).show();
+            $('#compilatio-show-notifications').on('click', function() {
+                    tabClick($(this), $('#compi-notifications'));
+            });
+            $('#show-stats').on('click', function() {
+                    tabClick($(this), $('#compi-stats'));
+            });
+            $('#show-help').on('click', function() {
+                    tabClick($(this), $('#compi-help'));
+            });
+            $('#show-search').on('click', function() {
+                    tabClick($(this), $('#compi-search'));
+            });
 
-                $('#compilatio-show-notifications').on('click', function() {
-                        tabClick($(this), $('#compi-notifications'));
-                });
-                $('#show-stats').on('click', function() {
-                        tabClick($(this), $('#compi-stats'));
-                });
-                $('#show-help').on('click', function() {
-                        tabClick($(this), $('#compi-help'));
-                });
-                $('#show-search').on('click', function() {
-                        tabClick($(this), $('#compi-search'));
-                });
+            var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
+            var elements = $('#compi-notifications, #compi-stats, #compi-help, #compi-home, #compi-search');
 
-                var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
-                var elements = $('#compi-notifications, #compi-stats, #compi-help, #compi-home, #compi-search');
+            /**
+             * TabClick
+             * Show clicked tab.
+             *
+             * @param {object} tabClicked
+             * @param {object} contentToShow
+             */
+            function tabClick(tabClicked, contentToShow) {
+                if (!contentToShow.is(':visible')) {
+                    contentToShow.show();
+                    elements.not(contentToShow).hide();
 
-                /**
-                 * TabClick
-                 * Show clicked tab.
-                 *
-                 * @param {object} tabClicked
-                 * @param {object} contentToShow
-                 */
-                function tabClick(tabClicked, contentToShow) {
-                    if (!contentToShow.is(':visible')) {
-                        contentToShow.show();
-                        elements.not(contentToShow).hide();
+                    tabs.not(tabClicked).removeClass('active');
 
-                        tabs.not(tabClicked).removeClass('active');
-
-                        tabClicked.toggleClass('active');
-                        $('#compilatio-hide-area').fadeIn();
-                    }
-                }
-
-                $('#compilatio-logo').on('click', function() {
-                    var elementClicked = $('#compi-home');
-                    elementClicked.show();
-                    elements.not(elementClicked).hide();
-                    tabs.removeClass('active');
+                    tabClicked.toggleClass('active');
                     $('#compilatio-hide-area').fadeIn();
-                });
-                $('#compilatio-hide-area').on('click', function() {
-                    elements.hide();
-                    $(this).fadeOut();
-                    tabs.removeClass('active');
-                });
+                }
+            }
+
+            $('#compilatio-logo').on('click', function() {
+                var elementClicked = $('#compi-home');
+                elementClicked.show();
+                elements.not(elementClicked).hide();
+                tabs.removeClass('active');
+                $('#compilatio-hide-area').fadeIn();
+            });
+            $('#compilatio-hide-area').on('click', function() {
+                elements.hide();
+                $(this).fadeOut();
+                tabs.removeClass('active');
             });
         });
     };

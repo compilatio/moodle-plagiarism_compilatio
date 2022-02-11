@@ -32,8 +32,8 @@ $string["compilatioexplain"] = 'Para obtener informaciones adicionales sobre est
 $string["compilatio"] = 'Plugin de detección de plagio Compilatio';
 $string["compilatioapi"] = 'Dirección de la API';
 $string["compilatioapi_help"] = 'Se trata de la dirección de la API Compilatio';
-$string["compilatiopassword"] = 'Clave API';
-$string["compilatiopassword_help"] = 'Código personal provisto por Compilatio para acceder a la API';
+$string["apikey"] = 'Clave API';
+$string["apikey_help"] = 'Código personal provisto por Compilatio para acceder a la API';
 $string["use_compilatio"] = 'Detectar similitudes con Compilatio';
 $string["activate_compilatio"] = 'Activar el plugin Compilatio';
 $string["savedconfigsuccess"] = 'Los parámetros se salvaron correctamente';
@@ -50,7 +50,7 @@ $string["pending"] = 'Fichero en espera de entrega a Compilatio.';
 $string["previouslysubmitted"] = 'Ya entregado como';
 $string["unknownwarning"] = 'Un error ocurrió durante el envío del fichero a Compilatio.';
 $string["unsupportedfiletype"] = 'Este tipo de fichero no es compatible con Compilatio.';
-$string["toolarge"] = 'El fichero es demasiado voluminoso para ser tratado por Compilatio. Tamaño máximo : {$a->Mo} Mo';
+$string["toolarge"] = 'El fichero es demasiado voluminoso para ser tratado por Compilatio. Tamaño máximo : {$a} Mo';
 $string["compilatio_studentemail"] = 'Enviar un e-mail al estudiante';
 $string["compilatio_studentemail_help"] = 'Se enviará un e-mail al alumno cuando un fichero ha sido tratado para informarle que el informe está disponible.';
 $string["studentemailsubject"] = 'Compilatio trató el fichero.';
@@ -189,7 +189,7 @@ $string["waiting_time_content_help"] = "' target='_blank'>aquí</a>, si quiere c
 // ALERTS.
 $string["unknownlang"] = "Atención, el idioma de algunos pasajes de este documento no fue reconocido.";
 // Help.
-$string["help_compilatio_format_content"] = 'Compilatio.net es compatible con la mayoría de los formatos utilizados en la ofimática y en Internet. Se aceptan los formatos siguientes :';
+$string["help_compilatio_format_content"] = 'Compilatio.net es compatible con la mayoría de los formatos utilizados en la ofimática y en Internet. Se aceptan los formatos siguientes : ';
 $string['goto_helpcenter'] = "Haga clic en el signo de interrogación para abrir una nueva ventana y conectarse al centro de ayuda Compilatio.";
 $string['admin_goto_helpcenter'] = "Visite el centro de ayuda Compilatio para acceder a los artículos relativos a la administración del plugin Moodle.";
 // Buttons.
@@ -205,7 +205,7 @@ $string['not_indexed_document'] = "Documento no añadido a la biblioteca de refe
 // Information settings.
 $string['information_settings'] = "Información";
 // Max file size allowed.
-$string['max_file_size_allowed'] = 'Tamaño máximo de los documentos : <strong>{$a->Mo} Mo</strong>';
+$string['max_file_size_allowed'] = 'Tamaño máximo de los documentos : <strong>{$a} Mo</strong>';
 // Failed documents.
 $string['restart_failed_analysis'] = 'Lanzar de nuevo los análisis que fracasaron';
 $string['restart_failed_analysis_title'] = 'Lanzar de nuevo los análisis que fracasaron :';
@@ -227,7 +227,6 @@ $string['privacy:metadata:plagiarism_compilatio_files:statuscode'] = 'El estado 
 $string['privacy:metadata:plagiarism_compilatio_files:reporturl'] = 'La dirección URL del informe de análisis';
 $string['privacy:metadata:plagiarism_compilatio_files:similarityscore'] = 'El porcentaje de similitudes encontradas para este envío';
 $string['privacy:metadata:plagiarism_compilatio_files:attempt'] = 'El número de veces que un usuario intentó iniciar el análisis de un envío';
-$string['privacy:metadata:plagiarism_compilatio_files:errorresponse'] = 'La respuesta en caso de que hubiese un error - actualmente, este campo ya no se utiliza y aparece automáticamente como «NULL»';
 
 $string['privacy:metadata:external_compilatio_document'] = 'Información en cuanto a documentos en la base de datos de Compilatio';
 $string['privacy:metadata:external_compilatio_document:lastname'] = 'Apellido del usuario Compilatio que ha enviado el archivo - atención: este usuario es aquel que está vinculado con la clave API Compilatio en la plataforma Moodle (es, por lo tanto, a menudo el administrador de la plataforma)';

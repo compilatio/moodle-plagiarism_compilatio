@@ -31,8 +31,8 @@ $string['compilatioexplain'] = 'Weitere Informationen zu diesem Plugin finden Si
 $string['compilatio'] = 'Plugin zur Plagiatserkennung Compilatio';
 $string['compilatioapi'] = 'Adresse der API-Schnittstelle';
 $string['compilatioapi_help'] = 'Es handelt sich um die Adresse der Compilatio API-Schnittstelle';
-$string['compilatiopassword'] = 'API-Key';
-$string['compilatiopassword_help'] = 'Von Compilatio gelieferter persönlicher Zugangscode zur API-Schnittstelle';
+$string['apikey'] = 'API-Key';
+$string['apikey_help'] = 'Von Compilatio gelieferter persönlicher Zugangscode zur API-Schnittstelle';
 $string['use_compilatio'] = 'Ähnlichkeiten mit Compilatio erkennen';
 $string['activate_compilatio'] = 'Das Compilatio Plugin aktivieren';
 $string['savedconfigsuccess'] = 'Die Parameter wurden gespeichert';
@@ -49,7 +49,7 @@ $string['pending'] = 'Die Datei ist bei Compilatio in der Warteschleife.';
 $string['previouslysubmitted'] = 'Zuvor eingereicht als';
 $string['unknownwarning'] = 'Beim Verschicken der Datei an Compilatio ist ein Fehler aufgetreten';
 $string['unsupportedfiletype'] = 'Diese Dateiart wird von Compilatio nicht unterstützt';
-$string['toolarge'] = 'Die Datei ist zu groß, um von Compilatio verarbeitet zu werden. Maximale Größe: {$a->Mo} Mo';
+$string['toolarge'] = 'Die Datei ist zu groß, um von Compilatio verarbeitet zu werden. Maximale Größe: {$a} Mo';
 $string['compilatio_studentemail'] = 'Dem Studenten eine E-Mail senden';
 $string['compilatio_studentemail_help'] = 'Dadurch wird dem Studenten eine E-Mail mit der Information, dass der Bericht verfügbar ist, versendet.';
 $string['studentemailsubject'] = 'Die Datei wurde von Compilatio verarbeitet';
@@ -209,7 +209,7 @@ $string["loading"] = "Wird geladen, bitte warten...";
 // ALERTS.
 $string["unknownlang"] = "Achtung, die Sprache einiger Passagen in diesem Dokument wurde nicht erkannt.";
 // HELP.
-$string['help_compilatio_format_content'] = "Compilatio.net unterstützt die meisten in der Büroelektronik und im Internet verwendeten Formate. Folgende Formate werden akzeptiert:";
+$string['help_compilatio_format_content'] = "Compilatio.net unterstützt die meisten in der Büroelektronik und im Internet verwendeten Formate. Folgende Formate werden akzeptiert: ";
 $string['goto_helpcenter'] = "Klicken Sie auf das Fragezeichen, um ein neues Fenster zu öffnen und sich im Compilatio Hilfecenter einzuloggen.";
 $string['admin_goto_helpcenter'] = "Gehen Sie zum Compilatio Hilfecenter, um die Artikel zur Verwaltung des Moodle-Plug-Ins zu lesen.";
 // Buttons.
@@ -225,7 +225,7 @@ $string['not_indexed_document'] = "Das Dokument wurde nicht der Referenzbiblioth
 // Information settings.
 $string['information_settings'] = "Informationen";
 // Max file size allowed.
-$string['max_file_size_allowed'] = 'Maximale Größe der Dokumente : <strong>{$a->Mo} Mo</strong>';
+$string['max_file_size_allowed'] = 'Maximale Größe der Dokumente : <strong>{$a} Mo</strong>';
 // Failed documents.
 $string['restart_failed_analysis'] = 'Gescheiterte Analysen erneut auslösen';
 $string['restart_failed_analysis_title'] = 'Neustart der gescheiterten Analysen:';
@@ -247,7 +247,6 @@ $string['privacy:metadata:plagiarism_compilatio_files:statuscode'] = "Stand der 
 $string['privacy:metadata:plagiarism_compilatio_files:reporturl'] = "Die URL-Adresse des Analyseberichts";
 $string['privacy:metadata:plagiarism_compilatio_files:similarityscore'] = "Ähnlichkeitsprozentsatz für diese Einreichung";
 $string['privacy:metadata:plagiarism_compilatio_files:attempt'] = "Anzahl Analysestartversuche des Nutzers für eine Einreichung";
-$string['privacy:metadata:plagiarism_compilatio_files:errorresponse'] = "Antwort im Falle eines Fehlers – gegenwärtig wird dieses Feld nicht mehr genutzt und automatisch mit 'NULL' ausgegeben";
 
 $string['privacy:metadata:external_compilatio_document'] = "Informationen zu den Dokumenten in der Compilatio Datenbank";
 $string['privacy:metadata:external_compilatio_document:lastname'] = "Name des Compilatio Nutzers, der die Datei eingereicht hat – Achtung, dieser Nutzer ist derjenige, der mit dem  Compilatio API-Key auf der Moodle Plattform verknüpft ist (dies ist also häufig der Administrator der Plattform)";

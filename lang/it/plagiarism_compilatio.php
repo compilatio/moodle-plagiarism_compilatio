@@ -31,8 +31,8 @@ $string["compilatioexplain"] = 'Per ottenere maggiori informazioni su questo plu
 $string["compilatio"] = 'Plug-in di rilevamento del plagio Compilatio';
 $string["compilatioapi"] = 'Indirizzo API';
 $string["compilatioapi_help"] = 'È l\'indirizzo API Compilatio';
-$string["compilatiopassword"] = 'Chiave API';
-$string["compilatiopassword_help"] = 'Codice personale fornito da Compilatio per accedere all\'API';
+$string["apikey"] = 'Chiave API';
+$string["apikey_help"] = 'Codice personale fornito da Compilatio per accedere all\'API';
 $string["use_compilatio"] = 'Consentire il rilevamento delle similitudini con Compilatio';
 $string["activate_compilatio"] = 'Attivare Compilatio';
 $string["savedconfigsuccess"] = 'I parametri sono stati correttamenti salvati';
@@ -49,7 +49,7 @@ $string["pending"] = 'Il documento è in attesa di essere sottoposto a Compilati
 $string["previouslysubmitted"] = 'Sottoposto in precedenza come';
 $string["unknownwarning"] = 'Si è verificato un errore durante l\'invio del documento a Compilatio';
 $string["unsupportedfiletype"] = 'Questo tipo di documento non è supportato da Compilatio';
-$string["toolarge"] = 'Il documento è troppo esteso per essere analizzato da Compilatio. Grandezza massima : {$a->Mo} MB';
+$string["toolarge"] = 'Il documento è troppo esteso per essere analizzato da Compilatio. Grandezza massima : {$a} MB';
 $string["compilatio_studentemail"] = 'Inviare una mail allo studente';
 $string["compilatio_studentemail_help"] = 'Questo invierà una mail allo studente quando un documento sarà stato analizzato per fargli sapere che il rapporto di analisi è disponibile';
 $string["studentemailsubject"] = 'Il documento è stato analizzato da Compilatio';
@@ -196,7 +196,7 @@ $string["waiting_time_content_help"] = "' target='blank'>qui</a> per conoscere l
 $string["unknownlang"] = "Attenzione, la lingua di alcuni passaggi di questo documento non è stata riconosciuta.";
 // Help.
 $string['help_compilatio_format_content'] = "Compilatio.net prende in considerazione la maggior parte dei formati utilizzati.
-I seguenti formati sono accettati";
+I seguenti formati sono accettati : ";
 $string['goto_helpcenter'] = "Clicca sul punto di domanda per aprire una nuova finestra e collegarti al centro di assistenza Compilatio.";
 $string['admin_goto_helpcenter'] = "Accedi al centro di assistenza Compilatio per accedere agli articoli relativi alla gestione del plugin Moodle.";
 // Buttons.
@@ -216,7 +216,7 @@ $string['not_indexed_document'] = "Documento non indicizzato nella biblioteca di
 // Information settings.
 $string['information_settings'] = "Informazioni";
 // Max file size allowed.
-$string['max_file_size_allowed'] = 'Grandezza massima dei documenti : <strong>{$a->Mo} MB</strong>';
+$string['max_file_size_allowed'] = 'Grandezza massima dei documenti : <strong>{$a} MB</strong>';
 // Failed documents.
 $string['restart_failed_analysis'] = 'Riavviare le analisi errate';
 $string['restart_failed_analysis_title'] = 'Riavvio delle analisi errate :';
@@ -238,7 +238,6 @@ $string['privacy:metadata:plagiarism_compilatio_files:statuscode'] = "Lo stato d
 $string['privacy:metadata:plagiarism_compilatio_files:reporturl'] = "L'indirizzo URL del rapporto di analisi";
 $string['privacy:metadata:plagiarism_compilatio_files:similarityscore'] = "La percentuale di somiglianze riscontrate per questo documento inviato";
 $string['privacy:metadata:plagiarism_compilatio_files:attempt'] = "Il numero di volte che un utente ha tentato di eseguire l'analisi di un documento inviato";
-$string['privacy:metadata:plagiarism_compilatio_files:errorresponse'] = "La risposta in caso di errore - attualmente questo campo non è più utilizzato e viene impostato automaticamente su 'NULL'";
 
 $string['privacy:metadata:external_compilatio_document'] = "Informazioni sui documenti nel database Compilatio";
 $string['privacy:metadata:external_compilatio_document:lastname'] = "Nome dell'utente Compilatio che ha inviato il file - attenzione, questo utente è quello che è collegato alla chiave API di Compilatio sulla piattaforma Moodle (quindi probabilmente è l'amministratore della piattaforma)";

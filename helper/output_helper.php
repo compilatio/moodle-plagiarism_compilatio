@@ -32,8 +32,7 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
  * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class output_helper
-{
+class output_helper {
 
     /**
      * Get the jquery HTML <script> tag
@@ -98,19 +97,10 @@ class output_helper
      *                              index ["url"] contains the URL.
      * @param string $error         Span will be stylized as an error if $error is true.
      * @param mixed  $indexed       Indexing state of the document.
-     * @param string $warning       warning about document or analysis
      *
      * @return string Return the HTML formatted string.
      */
-    public static function get_plagiarism_area($compid,
-                                               $span = "",
-                                               $image = "",
-                                               $title = "",
-                                               $content = "",
-                                               $url = array(),
-                                               $error = false,
-                                               $indexed = null,
-                                               $warning = '') {
+    public static function get_plagiarism_area($compid, $span, $image, $title, $content, $url, $error, $indexed) {
 
         if ($content == '' && $span == '') {
             return '';
@@ -169,26 +159,6 @@ class output_helper
         }
 
         $html .= html_writer::end_div();
-
-        // Warning information.
-        if ($warning != '') {
-            // Get locale strings for warnings codes.
-            $errorinfos = explode(",", $warning);
-            if (count($errorinfos) > 1) {
-                $titles = array();
-                foreach ($errorinfos as $k => $e) {
-                    $titles[] = $k + 1 . '°) ' .get_string($e, "plagiarism_compilatio");
-                }
-                $title = implode("\n", $titles);
-            } else {
-                $title = get_string($warning, "plagiarism_compilatio");
-            }
-            $html .= html_writer::start_div('compi-alert');
-            $imgsrc = $OUTPUT->image_url('exclamation-yellow', 'plagiarism_compilatio');
-            $html .= html_writer::img($imgsrc, '/!\\', array('title' => $title));
-            $html .= html_writer::end_div();
-        }
-
         $html .= html_writer::end_div();
         $html .= html_writer::div("", 'compilatio-clear');
 

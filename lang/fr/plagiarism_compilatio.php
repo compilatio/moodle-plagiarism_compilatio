@@ -32,8 +32,8 @@ $string['compilatio'] = 'Plugin de détection de plagiat Compilatio';
 // API configuration.
 $string['compilatioapi'] = 'Adresse de l\'API';
 $string['compilatioapi_help'] = 'Il s\'agit de l\'adresse de l\'API Compilatio';
-$string['compilatiopassword'] = 'Clé API';
-$string['compilatiopassword_help'] = 'Code personnel fourni par Compilatio pour accéder à l\'API';
+$string['apikey'] = 'Clé API';
+$string['apikey_help'] = 'Code personnel fourni par Compilatio pour accéder à l\'API';
 $string['compilatiodate'] = "Date d'activation";
 $string['compilatiodate_help'] = "Cliquez sur \"Activer\" si vous voulez que cette configuration de l'API s'active automatiquement à une date voulue. Laisser la date vide si vous souhaitez l'activer tout de suite.";
 $string['apiconfiguration'] = "Configuration de l'API";
@@ -60,7 +60,7 @@ $string['pending'] = 'Le fichier est en attente de soumission à Compilatio.';
 $string['previouslysubmitted'] = 'Auparavant soumis comme';
 $string['unknownwarning'] = 'Une erreur s\'est produite lors de l\'envoi du fichier à Compilatio';
 $string['unsupportedfiletype'] = 'Ce type de fichier n\'est pas supporté par Compilatio';
-$string['toolarge'] = 'Le fichier est trop volumineux pour être traité par Compilatio. Taille maximale : {$a->Mo} Mo';
+$string['toolarge'] = 'Le fichier est trop volumineux pour être traité par Compilatio. Taille maximale : {$a} Mo';
 $string['tooshort'] = 'Ce document ne contient pas assez de mots pour être traité par Compilatio. Taille minimale : {$a} mots';
 $string['toolong'] = 'Ce document contient trop de mots pour être analysé. Taille maximale : {$a} mots';
 $string['failed'] = "L'analyse de ce document n'a pas fonctionné correctement.";
@@ -197,7 +197,7 @@ $string["compilatio_search_tab"] = "Rechercher l&#39auteur d&#39un document.";
 $string["compilatio_search"] = "Rechercher";
 $string["compilatio_iddocument"] = "Identifiant du document";
 $string["compilatio_search_notfound"] = "Aucun document n'a été trouvé pour cet identifiant parmi les documents chargés sur votre plateforme Moodle.";
-$string["compilatio_author"] = 'Le document {$a->idcourt} présent dans l\'activité <b>{$a->modulename}</b> appartient à <b>{$a->lastname} {$a->firstname}</b>.';
+$string["compilatio_author"] = 'Le document présent dans l\'activité <b>{$a->modulename}</b> appartient à <b>{$a->lastname} {$a->firstname}</b>.';
 $string["compilatio_search_help"] = "Vous pouvez retrouver l'auteur d'un document en récupérant l'identifiant du document dans les sources du rapport d'analyse. Exemple : 1. Votre document: <b>1st5xfj2</b> - Nom_Activité(30)Nom_Document_Copié.odt.";
 $string["allow_search_tab"] = "Activer l'outil de recherche permettant d'identifier l'auteur d'un document.";
 $string["allow_search_tab_help"] = "L'outil de recherche permet de rechercher le nom et prénom d'un étudiant d'après un identifiant de document visible dans les rapports d'analyses parmi tous les documents présent sur votre plateforme.";
@@ -275,7 +275,7 @@ $string["loading"] = "Chargement en cours, veuillez patienter...";
 $string["unknownlang"] = "Attention, la langue de certains passages de ce document n'a pas été reconnue.";
 $string["badqualityanalysis"] = "Des incidents ont été détectés lors l'analyse du document. Il est possible que certaines sources n'aient pas été identifiées ou que le résultat soit incomplet.";
 /* HELP */
-$string['help_compilatio_format_content'] = "Compilatio.net prend en charge la plupart des formats utilisés en bureautique et sur Internet. Les formats suivants sont acceptés :";
+$string['help_compilatio_format_content'] = "Compilatio.net prend en charge la plupart des formats utilisés en bureautique et sur Internet. Les formats suivants sont acceptés : ";
 $string['goto_compilatio_service_status'] = "Voir l'état des services Compilatio.";
 $string['helpcenter'] = "Accédez au centre d'aide Compilatio pour l'utilisation du plugin Compilatio dans Moodle.";
 $string['goto_helpcenter'] = "Cliquez sur le point d'interrogation pour ouvrir une nouvelle fenêtre et vous connecter au centre d'aide Compilatio.";
@@ -295,7 +295,9 @@ $string['not_indexed_document'] = "Document non ajouté à la bibliothèque de r
 // Information settings.
 $string['information_settings'] = "Informations";
 // Max file size allowed.
-$string['max_file_size_allowed'] = 'Taille maximale des documents : <strong>{$a->Mo} Mo</strong>';
+$string['max_file_size_allowed'] = 'Les fichiers ne doivent pas excéder <strong>{$a} Mo</strong>';
+$string['min_max_word_required'] = 'Pour pouvoir être analysé, un texte doit avoir entre {$a->min} et {$a->max} mots';
+
 // Failed documents.
 $string['restart_failed_analysis'] = 'Relancer les analyses échouées';
 $string['restart_failed_analysis_title'] = 'Relance des analyses échouées :';
@@ -319,10 +321,8 @@ $string['privacy:metadata:plagiarism_compilatio_files:statuscode'] = 'L\'état d
 $string['privacy:metadata:plagiarism_compilatio_files:reporturl'] = 'L\'adresse URL du rapport d\'analyse';
 $string['privacy:metadata:plagiarism_compilatio_files:similarityscore'] = 'Le pourcentage de similitudes trouvées pour cette soumission';
 $string['privacy:metadata:plagiarism_compilatio_files:attempt'] = 'Le nombre de fois qu\'un utilisateur a essayé de lancer l\'analyse d\'une soumission';
-$string['privacy:metadata:plagiarism_compilatio_files:errorresponse'] = 'La réponse au cas où il y aurait une erreur - actuellement, ce champ n\'est plus utilisé et est automatiquement mis à \'NULL\'';
 $string['privacy:metadata:plagiarism_compilatio_files:recyclebinid'] = "L'identifiant de la corbeille dans le cas où le module de cours ou le cours à été mis à la corbeille";
-$string['privacy:metadata:plagiarism_compilatio_files:apiconfigid'] = "L'identifiant de la configuration de l'API avec laquelle la soumission est liée";
-$string['privacy:metadata:plagiarism_compilatio_files:idcourt'] = "L'identifiant court de la soumission dans la base de données de Compilatio";
+$string['privacy:metadata:plagiarism_compilatio_files:indexed'] = "L'état d'indexation en bibliothèque de référence du fichier.";
 
 $string['privacy:metadata:external_compilatio_document'] = 'Informations à propos des documents dans la base de données de Compilatio';
 $string['privacy:metadata:external_compilatio_document:lastname'] = 'Nom de l\'utilisateur Compilatio qui a soumis le fichier - attention, cet utilisateur est celui qui est lié à la clé d\'API Compilatio sur la plateforme Moodle (c\'est donc souvent l\'administrateur de la plateforme)';
