@@ -45,6 +45,7 @@ $tabs[] = new tabobject('compilatiodefaults', 'compilatio_defaults.php', $strpla
 $tabs[] = new tabobject('compilatioautodiagnosis', 'autodiagnosis.php', $strautodiagnosis, $strautodiagnosis, false);
 $tabs[] = new tabobject('compilatiostatistics', 'statistics.php', $strstatistics, $strstatistics, false);
 $tabs[] = new tabobject('compilatiohelp', 'help.php', $strhelp, $strhelp, false);
+$tabs[] = new tabobject('compilatiomigrate', 'migrate.php', "Migration", "Migration", false);
 
 // Display tabs.
 print_tabs(array($tabs), $currenttab);

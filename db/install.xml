@@ -54,16 +54,19 @@
     <TABLE NAME="plagiarism_compilatio_news" COMMENT="Used to store news such as updates or maintenances from Compilatio">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="type" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="id_compilatio" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="type" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="id_compilatio" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="message_fr" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="message_it" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="message_es" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="message_pt" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="message_de" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="message_en" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="begin_display_on" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="UNIX Timestamp"/>
         <FIELD NAME="end_display_on" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="UNIX Timestamp"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="unique_id_compilatio" TYPE="unique" FIELDS="id_compilatio"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="plagiarism_compilatio_apicon" COMMENT="api config for plugin">

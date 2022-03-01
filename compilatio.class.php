@@ -117,9 +117,19 @@ class compilatioservice {
                     $this->key = $key;
                     if (!empty($urlsoap)) {
                         $param = array(
-                            'trace' => false,
+                            'cache_wsdl' => WSDL_CACHE_NONE,
+                            'trace' => true,
                             'soap_version' => SOAP_1_2,
-                            'exceptions' => true
+                            'exceptions' => true,
+                            'stream_context' => stream_context_create(
+                                [
+                                    'ssl' => [
+                                        'verify_peer'       => false,
+                                        'verify_peer_name'  => false,
+                                        'allow_self_signed' => true
+                                    ]
+                                ]
+                            )
                         );
                         if (!empty($proxyhost)) {
                             $param['proxy_host'] = $proxyhost;
@@ -203,6 +213,7 @@ class compilatioservice {
 
             $param = array($this->key, $compihash);
             $document = $this->soapcli->__call('getDocument', $param);
+
             return $document;
 
         } catch (SoapFault $fault) {
@@ -374,7 +385,27 @@ class compilatioservice {
             return $this->soapcli->__call('getTechnicalNews', $param);
 
         } catch (SoapFault $fault) {
-             return false;
+            return false;
+        }
+    }
+
+    /**
+     * Get a list of the current Compilatio alerts.
+     *
+     * @return mixed    return a Alert object if succeed, false otherwise.
+     */
+    public function get_alerts() {
+
+        try {
+            if (!is_object($this->soapcli)) {
+                return false;
+            }
+
+            $param = array($this->key);
+            return $this->soapcli->__call('getAlerts', $param);
+
+        } catch (SoapFault $fault) {
+            return false;
         }
     }
 

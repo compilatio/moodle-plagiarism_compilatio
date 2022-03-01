@@ -709,7 +709,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     }
 
     // Store plagiarismfiles in $SESSION.
-    $sql = "cm = ? AND externalid IS NOT null";
+    $sql = "cm = ? AND externalid IS NOT null AND statuscode != 'Analyzed'";
     $SESSION->compilatio_plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, array($cmid));
     $plagiarismfilesids = array_keys($SESSION->compilatio_plagiarismfiles);
 
@@ -2098,19 +2098,6 @@ function compilatio_send_statistics() {
 }
 
 /**
- * Get all Compilatio news from Compilatio Webservice
- *
- * @return array of news objects
- */
-function compilatio_get_technical_news() {
-
-    $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-    $compilatio = compilatio_get_compilatio_service($plagiarismsettings['apiconfigid']);
-
-    return $compilatio->get_technical_news();
-}
-
-/**
  * Get statistics for the assignment $cmid
  *
  * @param  string $cmid Course module ID
@@ -2432,19 +2419,28 @@ function compilatio_update_news() {
 
     global $DB;
 
-    $news = compilatio_get_technical_news();
-    if ($news === false) {
-        return;
+    $compilatio = compilatio_get_compilatio_service(get_config('plagiarism_compilatio', 'apiconfigid'));
+
+    $news = $compilatio->get_alerts();
+
+    if ($news !== false) {
+        $DB->delete_records_select('plagiarism_compilatio_news', '1=1');
+        foreach ($news as $new) {
+            $DB->insert_record("plagiarism_compilatio_news", $new);
+        }
     }
 
-    $DB->delete_records_select('plagiarism_compilatio_news', '1=1');
-    foreach ($news as $new) {
+    $news = $compilatio->get_technical_news();
 
-        $new->id_compilatio = $new->id;
-        $new->message_en = compilatio_decode($new->message_en);
-        $new->message_fr = compilatio_decode($new->message_fr);
-        unset($new->id);
-        $DB->insert_record("plagiarism_compilatio_news", $new);
+    if ($news !== false) {
+        $DB->delete_records_select('plagiarism_compilatio_news', '1=1');
+        foreach ($news as $new) {
+            $new->id_compilatio = $new->id;
+            $new->message_en = compilatio_decode($new->message_en);
+            $new->message_fr = compilatio_decode($new->message_fr);
+            unset($new->id);
+            $DB->insert_record("plagiarism_compilatio_news", $new);
+        }
     }
 }
 
@@ -2472,6 +2468,51 @@ function compilatio_decode($message) {
  *
  * @return array containing almerts according to the news in the DB.
  */
+function compilatio_display_news() {
+
+    global $DB;
+
+    $language = substr(current_language(), 0, 2);
+
+    $news = $DB->get_records_select('plagiarism_compilatio_news', 'end_display_on>? AND begin_display_on<?', array(time(), time()));
+
+    $alerts = array();
+
+    foreach ($news as $new) {
+        $message = $new->{'message_' . $language} ?? $new->message_en;
+
+        // Get the title of the notification according to the type of news:.
+        $title = get_string("news_alert", "plagiarism_compilatio");
+        $class = "warning";
+        switch ($new->type) {
+            case PLAGIARISM_COMPILATIO_NEWS_UPDATE:
+                $title = get_string("news_update", "plagiarism_compilatio"); // Info.
+                $class = "info";
+                break;
+            case PLAGIARISM_COMPILATIO_NEWS_INCIDENT:
+                $title = get_string("news_incident", "plagiarism_compilatio"); // Danger.
+                $class = "danger";
+                break;
+            case PLAGIARISM_COMPILATIO_NEWS_MAINTENANCE:
+                $title = get_string("news_maintenance", "plagiarism_compilatio"); // Warning.
+                $class = "warning";
+                break;
+            case PLAGIARISM_COMPILATIO_NEWS_ANALYSIS_PERTURBATED:
+                $title = get_string("news_analysis_perturbated", "plagiarism_compilatio"); // Danger.
+                $class = "danger";
+                break;
+        }
+
+        $alerts[] = array(
+            "class" => $class,
+            "title" => $title,
+            "content" => $message,
+        );
+    }
+
+    return $alerts;
+}
+
 function compilatio_display_news() {
 
     global $DB;

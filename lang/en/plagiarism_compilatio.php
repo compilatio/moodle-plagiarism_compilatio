@@ -192,6 +192,7 @@ $string["start_analysis_in_progress"] = 'Launching of the analyses in progress';
 $string["not_analyzed"] = "The following documents can't be analyzed :";
 $string["account_expire_soon_title"] = "Your Compilatio.net account expires soon";
 $string["admin_account_expire_content"] = "Your current subscription will end at the end of the current month. If your contract does not expire at the end of the month, a new subscription will automatically be set up by our services. When this is done, this message will disappear. For more information, you can contact our sales or support department at support@compilatio.net.";
+$string["news_alert"] = "Compilatio.net alert";
 $string["news_update"] = "Compilatio.net update";
 $string["news_incident"] = "Compilatio.net incident";
 $string["news_maintenance"] = "Compilatio.net maintenance";
