@@ -31,16 +31,14 @@ require_once($CFG->libdir . '/plagiarismlib.php');
 
 // Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatioAPI.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-
-// Get constants.
-require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
 global $DB, $SESSION;
 $id = optional_param('id', '', PARAM_TEXT);
 
 if (isset($id) && isset($SESSION->compilatio_plagiarismfiles[$id])) {
-    compilatio_check_analysis($SESSION->compilatio_plagiarismfiles[$id], true);
+    CompilatioAnalyses::check_analysis($SESSION->compilatio_plagiarismfiles[$id], true);
 }

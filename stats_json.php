@@ -27,6 +27,7 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
 
 require_login();
 
@@ -34,4 +35,4 @@ $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
 
-echo json_encode(compilatio_get_global_statistics());
+echo json_encode(CompilatioStatistics::get_global_statistics());

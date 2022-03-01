@@ -27,6 +27,8 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 
+use plagiarism_compilatio\CompilatioService;
+
 require_once($CFG->dirroot . '/lib/formslib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
@@ -70,7 +72,7 @@ class compilatio_setup_form extends moodleform {
         if (!empty($apikey)) {
             $compilatio = new CompilatioService($apikey);
 
-            if ($compilatio->checkAllowStudentAnalyses()) {
+            if ($compilatio->check_allow_student_analyses()) {
                 $mform->addElement('checkbox', 'allow_student_analyses',
                     get_string("allow_student_analyses", "plagiarism_compilatio"));
                 $mform->setDefault('allow_student_analyses', 0);

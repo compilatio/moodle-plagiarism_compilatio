@@ -29,65 +29,37 @@ require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 
-// Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatioAPI.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-// Get constants.
-require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
+use plagiarism_compilatio\CompilatioService;
 
 require_login();
 global $DB, $PAGE;
 
 $cmid = required_param('cmid', PARAM_TEXT);
 
-$plagiarismsettings = (array) get_config('plagiarism_compilatio');
+$compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
 
-$docsmaxattempsreached = array();
+// Restart failed analyses.
+$files = $DB->get_records("plagiarism_compilatio_files", array("cm" => $cmid, "status" => "error_analysis_failed"));
 
-$sql = "SELECT * FROM {plagiarism_compilatio_files}
-    WHERE cm=? AND (statuscode=? OR statuscode=? OR statuscode='timeout')";
-$plagiarismfiles = $DB->get_records_sql($sql, array(
-    $cmid,
-    COMPILATIO_STATUSCODE_FAILED,
-    COMPILATIO_STATUSCODE_UNEXTRACTABLE
-));
-compilatio_remove_duplicates($plagiarismfiles, false);
-foreach ($plagiarismfiles as $plagiarismfile) {
-    if ($plagiarismfile->statuscode == 'timeout') {
-        $plagiarismfile->statuscode = 'pending';
-        $plagiarismfile->attempt = 0;
-        $plagiarismfile->timesubmitted = time();
-        $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
-    } else if ($plagiarismfile->attempt < COMPILATIO_MAX_SUBMISSION_ATTEMPTS) {
-        $plagiarismfile->statuscode = 'pending';
-        $plagiarismfile->attempt++;
-        $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
-    } else {
-        $docsmaxattempsreached[] = $plagiarismfile->filename;
-    }
-}
-compilatio_send_pending_files($plagiarismsettings);
-
-// Restart analyses.
 $countsuccess = 0;
 $docsfailed = array();
-$params = array(
-    'cm' => $cmid,
-    'statuscode' => COMPILATIO_STATUSCODE_ACCEPTED
-);
-$plagiarismfiles = $DB->get_records('plagiarism_compilatio_files', $params);
-foreach ($plagiarismfiles as $plagiarismfile) {
-    if (compilatio_startanalyse($plagiarismfile)) {
+foreach ($files as $file) {
+    if ($compilatio->restart_analyse($file->externalid)) {
         $countsuccess++;
     } else {
-        $docsfailed[] = $plagiarismfile->filename;
+        $docsfailed[] = $file->filename;
     }
+    $file->status = 'queue';
+    $DB->update_record('plagiarism_compilatio_files', $file);
 }
 
-$counterrors = count($docsfailed);
-if ($counterrors === 0) {
+if (count($docsfailed) === 0) {
     $SESSION->compilatio_alert = array(
         "class" => "info",
         "title" => get_string("restart_failed_analysis_title", "plagiarism_compilatio"),
@@ -101,13 +73,26 @@ if ($counterrors === 0) {
     );
 }
 
-$countmaxattemptsreached = count($docsmaxattempsreached);
-$files = compilatio_get_max_attempts_files($cmid);
-if ($countmaxattemptsreached !== 0) {
-    $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
-    $SESSION->compilatio_alert_max_attempts = array(
-        "class" => "danger",
-        "title" => get_string("max_attempts_reach_files", "plagiarism_compilatio"),
-        "content" => $list,
-    );
+// Send sending failed files.
+$files = $DB->get_records("plagiarism_compilatio_files", array("cm" => $cmid, "status" => "error_sending_failed"));
+
+// TODO resend text content.
+
+$fs = get_file_storage();
+
+foreach ($files as $cmpfile) {
+    $module = get_coursemodule_from_id(null, $cmpfile->cm);
+
+    $modulecontext = context_module::instance($cmpfile->cm);
+    $contextid = $modulecontext->id;
+    $sql = "SELECT * FROM {files} f WHERE f.contenthash= ? AND contextid = ?";
+    $f = $DB->get_record_sql($sql, array($cmpfile->identifier, $contextid));
+    if (empty($f)) {
+        continue;
+    }
+    $file = $fs->get_file_by_id($f->id);
+
+    $DB->delete_records('plagiarism_compilatio_files', array('id' => $cmpfile->id));
+
+    CompilatioSendFile::send_file($cmpfile->cm, $cmpfile->userid, $file);
 }

@@ -29,15 +29,6 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 $tasks = array(
     array(
-        'classname' => 'plagiarism_compilatio\task\send_files',
-        'blocking' => 0,
-        'minute' => '*/5',
-        'hour' => '*',
-        'day' => '*',
-        'dayofweek' => '*',
-        'month' => '*'
-    ),
-    array(
         'classname' => 'plagiarism_compilatio\task\get_scores',
         'blocking' => 0,
         'minute' => '*/5',

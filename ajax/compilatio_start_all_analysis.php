@@ -29,13 +29,11 @@ require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 
-// Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatioAPI.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-
-// Get constants.
-require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
 
@@ -50,19 +48,18 @@ $countsuccess = 0;
 $plagiarismfiles = array();
 $docsfailed = array();
 
-if ($plugincm['compilatio_analysistype'] == COMPILATIO_ANALYSISTYPE_MANUAL) {
+if ($plugincm['analysis_type'] == 'manual') {
 
-    $sql = "cm = ? AND statuscode = ?";
-    $params = array($cmid, COMPILATIO_STATUSCODE_ACCEPTED);
-    $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, $params);
+    $sql = "cm = ? AND status = 'sent'";
+    $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, array($cmid));
 
     foreach ($plagiarismfiles as $file) {
 
-        if (compilatio_student_analysis($plugincm['compi_student_analyses'], $cmid, $file->userid)) {
+        if (compilatio_student_analysis($plugincm['student_analyses'], $cmid, $file->userid)) {
             continue;
         }
 
-        if (compilatio_startanalyse($file)) {
+        if (CompilatioAnalyses::start_analysis($file)) {
             $countsuccess++;
         } else {
             $docsfailed[] = $file["filename"];
@@ -71,13 +68,12 @@ if ($plugincm['compilatio_analysistype'] == COMPILATIO_ANALYSISTYPE_MANUAL) {
 }
 
 // Handle not sent documents :.
-$files = compilatio_get_non_uploaded_documents($cmid);
+$files = compilatio_get_unsent_documents($cmid);
 $countbegin = count($files);
 
 if ($countbegin != 0) {
-    define("COMPILATIO_MANUAL_SEND", true);
-    compilatio_upload_files($files, $cmid);
-    $countsuccess += $countbegin - count(compilatio_get_non_uploaded_documents($cmid));
+    CompilatioSendFile::send_unsent_files($files, $cmid);
+    $countsuccess += $countbegin - count(compilatio_get_unsent_documents($cmid));
 }
 
 $counttotal = count($plagiarismfiles) + $countbegin;

@@ -23,6 +23,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use plagiarism_compilatio\CompilatioService;
+
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
@@ -47,7 +49,7 @@ if (isset($plagiarismsettings["enabled"])) {
 
 // Connection test.
 $compilatio = new CompilatioService("test");
-if ($compilatio->checkApikey() == "Forbidden ! Your api key is invalid") {
+if ($compilatio->check_apikey() == "Forbidden ! Your api key is invalid") {
     $connectionsuccess = true;
 } else {
     $connectionsuccess = false;
@@ -83,7 +85,7 @@ if (isset($plagiarismsettings["enable_mod_quiz"])) {
 
 // API key test.
 $compilatio = new CompilatioService($plagiarismsettings["apikey"]);
-if ($compilatio->checkApikey()) {
+if ($compilatio->check_apikey()) {
     $apikeysuccess = true;
 } else {
     $apikeysuccess = false;

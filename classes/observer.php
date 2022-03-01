@@ -25,8 +25,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 /**
  * Manager class
  * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
@@ -43,8 +41,8 @@ class plagiarism_compilatio_observer {
     \mod_forum\event\assessable_uploaded $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data());
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data());
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -59,8 +57,8 @@ class plagiarism_compilatio_observer {
     \mod_workshop\event\assessable_uploaded $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data());
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data());
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -75,8 +73,8 @@ class plagiarism_compilatio_observer {
     \assignsubmission_onlinetext\event\assessable_uploaded $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, true);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, true);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -91,8 +89,8 @@ class plagiarism_compilatio_observer {
     \assignsubmission_file\event\assessable_uploaded $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), true, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), true, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -107,8 +105,8 @@ class plagiarism_compilatio_observer {
         \mod_quiz\event\attempt_submitted $event) {
             global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -123,8 +121,8 @@ class plagiarism_compilatio_observer {
         \mod_quiz\event\attempt_deleted $event) {
             global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -139,8 +137,8 @@ class plagiarism_compilatio_observer {
         \mod_forum\event\post_deleted $event) {
             global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -155,8 +153,8 @@ class plagiarism_compilatio_observer {
         \mod_workshop\event\submission_deleted $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -171,8 +169,8 @@ class plagiarism_compilatio_observer {
         \core\event\course_module_deleted $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -187,8 +185,8 @@ class plagiarism_compilatio_observer {
         \core\event\user_deleted $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -203,8 +201,8 @@ class plagiarism_compilatio_observer {
         \core\event\course_reset_started $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -219,8 +217,8 @@ class plagiarism_compilatio_observer {
         \mod_assign\event\submission_status_updated $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -235,8 +233,8 @@ class plagiarism_compilatio_observer {
         \tool_recyclebin\event\course_bin_item_restored $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -251,8 +249,8 @@ class plagiarism_compilatio_observer {
         \tool_recyclebin\event\course_bin_item_deleted $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -267,8 +265,8 @@ class plagiarism_compilatio_observer {
         \tool_recyclebin\event\course_bin_item_created $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -283,8 +281,8 @@ class plagiarism_compilatio_observer {
         \tool_recyclebin\event\category_bin_item_restored $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -299,8 +297,8 @@ class plagiarism_compilatio_observer {
         \tool_recyclebin\event\category_bin_item_deleted $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -315,8 +313,8 @@ class plagiarism_compilatio_observer {
         \tool_recyclebin\event\category_bin_item_created $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -331,8 +329,8 @@ class plagiarism_compilatio_observer {
         \mod_assign\event\assessable_submitted $event) {
         global $CFG;
         try {
-            require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-            compilatio_event_handler($event->get_data(), false, false);
+            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/event_handler.php');
+            CompilatioEventHandler::handle_event($event->get_data(), false, false);
         } catch (Exception $e) {
             return $e->getMessage();
         }

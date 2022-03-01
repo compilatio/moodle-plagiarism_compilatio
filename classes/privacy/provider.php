@@ -23,6 +23,7 @@
  */
 
 namespace plagiarism_compilatio\privacy;
+use plagiarism_compilatio\CompilatioService;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -90,7 +91,7 @@ class provider implements
             'identifier'        => 'privacy:metadata:plagiarism_compilatio_files:identifier',
             'filename'          => 'privacy:metadata:plagiarism_compilatio_files:filename',
             'timesubmitted'     => 'privacy:metadata:plagiarism_compilatio_files:timesubmitted',
-            'statuscode'        => 'privacy:metadata:plagiarism_compilatio_files:statuscode',
+            'status'            => 'privacy:metadata:plagiarism_compilatio_files:status',
             'externalid'        => 'privacy:metadata:plagiarism_compilatio_files:externalid',
             'reporturl'         => 'privacy:metadata:plagiarism_compilatio_files:reporturl',
             'similarityscore'   => 'privacy:metadata:plagiarism_compilatio_files:similarityscore',
@@ -177,7 +178,7 @@ class provider implements
         global $DB;
 
         global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/compilatioAPI.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
@@ -186,8 +187,8 @@ class provider implements
 
             $compids = $DB->get_fieldset_select('plagiarism_compilatio_files', 'externalid', 'cm = '.$context->instanceid);
             foreach ($compids as $compid) {
-                $compilatio->setIndexingState($compid, false);
-                $compilatio->deleteDocument($compid);
+                $compilatio->set_indexing_state($compid, false);
+                $compilatio->delete_document($compid);
             }
 
             $DB->delete_records('plagiarism_compilatio_files', array('cm' => $context->instanceid));
@@ -205,7 +206,7 @@ class provider implements
         global $DB;
 
         global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/compilatioAPI.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
@@ -223,8 +224,8 @@ class provider implements
             // For each document...
             foreach ($compids as $compid) {
                 // We deindex then delete the document.
-                $compilatio->setIndexingState($compid, false);
-                $compilatio->deleteDocument($compid);
+                $compilatio->set_indexing_state($compid, false);
+                $compilatio->delete_document($compid);
             }
 
             $DB->delete_records('plagiarism_compilatio_files', array('userid' => $userid));
@@ -242,7 +243,7 @@ class provider implements
         global $DB;
 
         global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/compilatioAPI.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $cmid = $context->instanceid;
@@ -259,8 +260,8 @@ class provider implements
                 // For each document...
                 foreach ($compids as $compid) {
                     // We deindex then delete the document.
-                    $compilatio->setIndexingState($compid, false);
-                    $compilatio->deleteDocument($compid);
+                    $compilatio->set_indexing_state($compid, false);
+                    $compilatio->delete_document($compid);
                 }
             }
 

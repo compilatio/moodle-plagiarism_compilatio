@@ -27,8 +27,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 /**
  * Method to upgrade the database between differents versions
  *
@@ -41,7 +39,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     if ($oldversion <= 2015081400) {
-        $DB->execute("UPDATE {plagiarism_compilatio_config} SET value='1' WHERE name='compilatio_analysistype' AND cm=0");
+        $DB->execute("UPDATE {plagiarism_compilatio_config} SET value='1' WHERE name='analysis_type' AND cm=0");
 
         upgrade_plugin_savepoint(true, 2015081400, 'plagiarism', 'compilatio');
     }
@@ -168,7 +166,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     if ($oldversion < 2021012500) {
         set_config('allow_search_tab', 0, 'plagiarism_compilatio');
 
-        $DB->execute("UPDATE {plagiarism_compilatio_config} SET value='1' WHERE name='compilatio_analysistype' AND value='0'");
+        $DB->execute("UPDATE {plagiarism_compilatio_config} SET value='1' WHERE name='analysis_type' AND value='0'");
 
         $table = new xmldb_table('plagiarism_compilatio_files');
         $field = new xmldb_field('idcourt', XMLDB_TYPE_CHAR, '10', null, null, null, null);
@@ -178,7 +176,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     }
 
     if ($oldversion < 2021021800) {
-        compilatio_update_meta();
+        compilatio_update_meta(); // TODO ça marche ce truc ?
         upgrade_plugin_savepoint(true, 2021021800, 'plagiarism', 'compilatio');
     }
 
@@ -187,7 +185,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         foreach ($cms as $cm) {
             $newelement = new Stdclass();
             $newelement->cm = $cm->cm;
-            $newelement->name = "compi_student_analyses";
+            $newelement->name = "student_analyses";
             $newelement->value = 0;
             $DB->insert_record('plagiarism_compilatio_config', $newelement);
         }

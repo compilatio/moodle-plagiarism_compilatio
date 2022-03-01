@@ -50,7 +50,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 if (($data = $mform->get_data()) && confirm_sesskey()) {
     $plagiarismplugin = new plagiarism_plugin_compilatio();
 
-    $data->compilatio_analysistype = COMPILATIO_ANALYSISTYPE_MANUAL;
+    $data->analysis_type = 'manual';
 
     $plagiarismelements = $plagiarismplugin->config_options();
     foreach ($plagiarismelements as $element) {

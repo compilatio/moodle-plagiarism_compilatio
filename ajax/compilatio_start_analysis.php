@@ -32,11 +32,9 @@ require_once($CFG->libdir . '/plagiarismlib.php');
 
 // Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatioAPI.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-
-// Get constants.
-require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
 
@@ -45,6 +43,6 @@ global $DB;
 $docid = required_param('docId', PARAM_RAW);
 
 $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('id' => $docid));
-$analyse = compilatio_startanalyse($plagiarismfile);
+$analyse = CompilatioAnalyses::start_analysis($plagiarismfile);
 
 

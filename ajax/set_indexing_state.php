@@ -27,20 +27,14 @@
  * @return  boolean
  */
 
+use plagiarism_compilatio\CompilatioService;
+
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
-
-// Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatioAPI.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-
-// Get helper class.
 require_once($CFG->dirroot . '/plagiarism/compilatio/helper/output_helper.php');
-
-// Get constants.
-require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
 global $DB;
@@ -50,11 +44,11 @@ $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $iddoc = optional_param('idDoc', '', PARAM_TEXT);
 $indexingstatepost = optional_param('indexingState', '', PARAM_TEXT);
 
-if (isset($iddoc) && compilatio_valid_md5($iddoc) && isset($indexingstatepost)) {
+if (isset($iddoc) && isset($indexingstatepost)) {
     $indexingstate = (int) ((boolean) $indexingstatepost);
 
     $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
-    if ($compilatio->setIndexingState($iddoc, $indexingstate) === true) {
+    if ($compilatio->set_indexing_state($iddoc, $indexingstate) === true) {
         $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('externalid' => $iddoc));
         $plagiarismfile->indexed = $indexingstate;
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);

@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 $strplagiarism         = get_string('compilatio', 'plagiarism_compilatio');
 $strplagiarismdefaults = get_string('compilatiodefaults', 'plagiarism_compilatio');
 $strautodiagnosis      = get_string('auto_diagnosis_title', 'plagiarism_compilatio');
-$strstatistics         = get_string('statistics_title', 'plagiarism_compilatio');
+$strstatistics         = get_string('tabs_title_stats', 'plagiarism_compilatio');
 $strhelp               = get_string('tabs_title_help', 'plagiarism_compilatio');
 
 // Display Compilatio logo.

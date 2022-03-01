@@ -25,15 +25,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 /**
  * Helper class for generate csv file
  * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class csv_helper
-{
+class csv_helper {
 
     /**
      * Get header
@@ -75,7 +72,7 @@ class csv_helper
 
         $sql = "
             SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname,
-                pcf.statuscode, pcf.similarityscore, pcf.timesubmitted
+                pcf.status, pcf.similarityscore, pcf.timesubmitted
             FROM {plagiarism_compilatio_files} pcf
             JOIN {user} usr ON pcf.userid= usr.id
             WHERE pcf.cm=?";
@@ -83,7 +80,7 @@ class csv_helper
         $files = $DB->get_records_sql($sql, array($cmid));
 
         $moduleconfig = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => $cmid), '', 'name, value');
-        $analysistype = $moduleconfig["compilatio_analysistype"];
+        $analysistype = $moduleconfig["analysis_type"];
 
         // Get the name of the activity in order to generate header line and the filename.
         $sql = "
@@ -119,39 +116,17 @@ class csv_helper
             $line["filename"]      = $file->filename;
             $line["timesubmitted"] = date("d/m/y H:i:s", $file->timesubmitted);
 
-            switch ($file->statuscode) {
-                case COMPILATIO_STATUSCODE_COMPLETE:
-                    $line["similarities"] = $file->similarityscore;
-                    break;
-                case COMPILATIO_STATUSCODE_UNEXTRACTABLE:
-                    $line["similarities"] = get_string("unextractable", "plagiarism_compilatio");
-                    break;
-                case COMPILATIO_STATUSCODE_TOO_SHORT:
-                    $line["similarities"] = get_string("stats_tooshort", "plagiarism_compilatio");
-                    break;
-                case COMPILATIO_STATUSCODE_TOO_LONG:
-                    $line["similarities"] = get_string("stats_toolong", "plagiarism_compilatio");
-                    break;
-                case COMPILATIO_STATUSCODE_UNSUPPORTED:
-                    $line["similarities"] = get_string("unsupported", "plagiarism_compilatio");
-                    break;
-                case COMPILATIO_STATUSCODE_ANALYSING:
-                    $line["similarities"] = get_string("analysing", "plagiarism_compilatio");
-                    break;
-                case COMPILATIO_STATUSCODE_IN_QUEUE:
-                    $line["similarities"] = get_string("queued", "plagiarism_compilatio");
-                    break;
-                default:
-                    if ($analysistype == COMPILATIO_ANALYSISTYPE_MANUAL) {
-                        $line["similarities"] = get_string("manual_analysis", "plagiarism_compilatio");
-                    } else if ($analysistype == COMPILATIO_ANALYSISTYPE_PROG) {
-                        $line["similarities"] = get_string("waitingforanalysis",
-                                                           "plagiarism_compilatio",
-                                                           userdate($moduleconfig['compilatio_timeanalyse']));
-                    } else {
-                        $line["similarities"] = "";
-                    }
-                    break;
+            if ($file->status == "scored") {
+                $line["similarities_rate"] = $file->similarityscore;
+            } else if ($file->status == "sent") {
+                if ($analysistype == 'manual') {
+                    $line["similarities_rate"] = get_string("manual_analysis", "plagiarism_compilatio");
+                } else if ($analysistype == 'planned') {
+                    $date = userdate($moduleconfig['time_analyse']);
+                    $line["similarities_rate"] = get_string("title_planned", "plagiarism_compilatio", $date);
+                }
+            } else {
+                $line["similarities_rate"] = get_string("title_" . $file->status, "plagiarism_compilatio");
             }
 
             if ($csv === $head) {

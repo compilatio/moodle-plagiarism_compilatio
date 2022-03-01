@@ -34,6 +34,7 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -68,7 +69,7 @@ if ($rawcsv) {
             student.email "student_email",
             pcf.id "file_id",
             pcf.filename "file_name",
-            pcf.statuscode "file_status",
+            pcf.status "file_status",
             pcf.similarityscore "file_similarityscore",
             ' . $todate . '(pcf.timesubmitted) "file_submitted_on"
         FROM {plagiarism_compilatio_files} pcf
@@ -132,12 +133,17 @@ if ($rawcsv) {
     unset($header["id"]);
     $return .= '"' . implode('","', array_keys($header)) . "\"\n";
     foreach ($rows as $row) {
-        $return .= '"' . implode('","', clean_row($row)) . "\"\n";
+        $row = (array) $row;
+        unset($row["id"]);
+        if ($row["file_status"] !== "scored") {
+            $row["file_similarityscore"] = "";
+        }
+        $return .= '"' . implode('","', $row) . "\"\n";
     }
 
     print chr(255) . chr(254) . mb_convert_encoding("sep=,\n" . $return, 'UTF-16LE', 'UTF-8');
 } else {
-    $rows = compilatio_get_global_statistics(false);
+    $rows = CompilatioStatistics::get_global_statistics(false);
 
     $filename = "compilatio_moodle_" . date("Y_m_d") . ".csv";
 
@@ -155,48 +161,4 @@ if ($rawcsv) {
     }
 
     print chr(255) . chr(254) . mb_convert_encoding("sep=,\n" . $return, 'UTF-16LE', 'UTF-8');
-}
-
-/**
- * Format the data for CSV export : Replacing statuscode with readable status
- * @param  array $row Row
- * @return array      Cleaned row
- */
-function clean_row($row) {
-    $data = (array) $row;
-    unset($data["id"]);
-
-    if ($data["file_status"] !== "Analyzed") {
-        $data["file_similarityscore"] = "";
-        switch ($data["file_status"]) {
-            case "202":
-                $data["file_status"] = "Accepted";
-                break;
-            case "203":
-                $data["file_status"] = "Analysing";
-                break;
-            case "415":
-                $data["file_status"] = "Unsupported";
-                break;
-            case "416":
-                $data["file_status"] = "Unextractable";
-                break;
-            case "412":
-                $data["file_status"] = "Too short";
-                break;
-            case "413":
-                $data["file_status"] = "Too large";
-                break;
-            case "414":
-                $data["file_status"] = "Too long";
-                break;
-            case "404":
-                $data["file_status"] = "Not found";
-                break;
-            case "418":
-                $data["file_status"] = "Failed analysis";
-                break;
-        }
-    }
-    return $data;
 }

@@ -29,6 +29,7 @@ require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/helper/output_helper.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
 
@@ -45,7 +46,7 @@ $currenttab = 'compilatiostatistics';
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 
-$rows = compilatio_get_global_statistics();
+$rows = CompilatioStatistics::get_global_statistics();
 
 if (count($rows) === 0) {
     echo get_string("no_statistics_yet", "plagiarism_compilatio");
@@ -61,7 +62,7 @@ if (count($rows) === 0) {
         'style' => 'margin-bottom:20px;',
         'class' => 'comp-button'
     ));
-    echo html_writer::tag('legend', get_string("assign_statistics", "plagiarism_compilatio"), array(
+    echo html_writer::tag('legend', get_string("activities_statistics", "plagiarism_compilatio"), array(
         'class' => 'compilatio_legend'
     ));
 
@@ -75,14 +76,6 @@ if (count($rows) === 0) {
     echo html_writer::script('', $CFG->wwwroot . '/plagiarism/compilatio/js/statistics_functions.js');
 
     $url = new moodle_url("/plagiarism/compilatio/stats_json.php");
-    // Noscript.
-    echo html_writer::start_tag('noscript');
-    echo html_writer::empty_tag('link', array(
-        'rel' => 'stylesheet',
-        'href' => $CFG->wwwroot. '/plagiarism/compilatio/css/no_js_styles.css'
-    ));
-    echo get_string("enable_javascript", "plagiarism_compilatio");
-    echo html_writer::end_tag('noscript');
 
     echo html_writer::tag('h5', "Compilatio - " . get_string("similarities", "plagiarism_compilatio"), array('colspan' => '4'));
 

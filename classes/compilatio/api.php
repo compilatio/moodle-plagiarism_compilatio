@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * compilatioAPI.php - Contains methods to communicate with Compilatio REST API.
+ * api.php - Contains methods to communicate with Compilatio REST API.
  *
  * @since 2.0
  * @package    plagiarism_compilatio
@@ -25,11 +25,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+namespace plagiarism_compilatio;
 
 /**
  * compilatioservice class
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2020 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioService {
@@ -191,17 +191,14 @@ class CompilatioService {
      * @param   string  $folderid       Document's folder ID
      * @return  string                  Return the document's ID, an error message otherwise
      */
-    public function set_document($filename, $folderid, $content, $indexed, /*$depositor, $author*/) {
+    public function set_document($filename, $folderid, $filepath, $indexed, /*$depositor, $author*/) {
 
         //$depositor = explode(' ', $depositor, 2);
         //$author = explode(' ', $author, 2);
 
-        $handle = fopen('/tmp/' . date('Y-m-d H:i:s') . ".txt", 'w+');
-        fwrite($handle, $content);
-
         $endpoint = "/api/private/document/";
         $params = array(
-            'file' => new CurlFile(realpath(stream_get_meta_data($handle)['uri'])),
+            'file' => new \CURLFile($filepath),
             'filename' => $filename,
             'title' => $filename,
             //'folder_id' => $folderid,
@@ -221,10 +218,11 @@ class CompilatioService {
 
         $response = json_decode($this->call_api($endpoint, "upload", $params));
 
-        if ($this->get_error_response($response, 201) === false) {
+        $error = $this->get_error_response($response, 201);
+        if ($error === false) {
             return $response->data->document->id;
         }
-        return false;
+        return $error;
     }
 
     /**
@@ -445,7 +443,7 @@ class CompilatioService {
             $response = json_decode($this->call_api($endpoint, "delete"));
 
             if ($this->get_error_response($response, 200) === false) {
-                return $this->startAnalyse($iddoc);
+                return $this->start_analyse($iddoc);
             }
         }
         return false;
@@ -505,7 +503,7 @@ class CompilatioService {
     public function get_terms_of_service($lang) {
         $endpoint = "/api/private/terms-of-service/magister/" . $lang;
 
-        $handle = fopen(__DIR__ . '/../../tmp/terms-of-service.pdf', 'w+');
+        //$handle = fopen(__DIR__ . '/../../tmp/terms-of-service.pdf', 'w+');
 
         if ($this->call_api($endpoint, "download", null, $handle) == 200) {
             return true;
@@ -538,9 +536,7 @@ class CompilatioService {
             return false;
 
         } else if (isset($response->errors->key) && $response->errors->key == 'need_terms_of_service_validation') {
-            $db = new Database();
-            $db->updateRecord("cmp_user", array("validated_terms_of_service" => 0), $this->userId);
-            return "Error need terms of service validation";
+            //TODO.
 
         } else {
             return $response->status->message;
@@ -557,7 +553,7 @@ class CompilatioService {
 
         $header = array(
             'X-Auth-Token: ' . $this->apikey,
-            'X-LMS-USER-ID: ' . $this->userId
+            'X-LMS-USER-ID: ' . $this->userid
         );
         if ($method !== "upload") {
             $header[] = 'Content-Type: application/json';
@@ -600,11 +596,10 @@ class CompilatioService {
     }
 
     private function build_post_fields($data, $existingkeys = '', &$returnarray = []) {
-        if (($data instanceof CURLFile) || !(is_array($data) || is_object($data))) {
-            $returnarray[$existingkeys]=$data;
+        if (($data instanceof \CURLFile) || !(is_array($data) || is_object($data))) {
+            $returnarray[$existingkeys] = $data;
             return $returnarray;
-        }
-        else {
+        } else {
             foreach ($data as $key => $item) {
                 $this->build_post_fields($item, $existingkeys ? $existingkeys . "[$key]" : $key, $returnarray);
             }

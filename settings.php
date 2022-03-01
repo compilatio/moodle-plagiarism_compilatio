@@ -22,6 +22,9 @@
  * @copyright 2012 Dan Marsden http://danmarsden.com
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+use plagiarism_compilatio\task\update_meta;
+use plagiarism_compilatio\CompilatioService;
+
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
@@ -67,11 +70,11 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     if (empty($plagiarismdefaults)) {
         $plagiarismelements = array(
                 'use_compilatio' => 1,
-                'compilatio_show_student_score' => 0,
-                'compilatio_show_student_report' => 0,
-                'compi_student_analyses' => 0,
-                'compilatio_studentemail' => 0,
-                'compilatio_analysistype' => 1,
+                'show_student_score' => 'never',
+                'show_student_report' => 'never',
+                'student_analyses' => 0,
+                'student_email' => 0,
+                'analysis_type' => 'manual',
                 'green_threshold' => 10,
                 'orange_threshold' => 25,
                 'indexing_state' => 1,
@@ -86,7 +89,8 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     }
 
     cache_helper::invalidate_by_definition('core', 'config', array(), 'plagiarism_compilatio');
-    compilatio_update_meta();
+    $updatemeta = new update_meta();
+    $updatemeta->execute();
 
     redirect('settings.php');
 }
@@ -100,9 +104,9 @@ $mform->set_data($plagiarismsettings);
 
 if (!empty($plagiarismsettings['enabled'])) {
     $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
-    $validapikey = $compilatio->checkApikey();
+    $validapikey = $compilatio->check_apikey();
     if ($validapikey === true) {
-        if (!$compilatio->checkAllowStudentAnalyses()) {
+        if (!$compilatio->check_allow_student_analyses()) {
             set_config('allow_student_analyses', 0, 'plagiarism_compilatio');
         }
         echo $OUTPUT->notification(get_string('enabledandworking', 'plagiarism_compilatio'), 'notifysuccess');
