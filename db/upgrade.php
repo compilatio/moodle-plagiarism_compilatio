@@ -200,9 +200,9 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         $table->add_field('message_es', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('message_de', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('message_it', XMLDB_TYPE_TEXT, null, null, null, null, null);
-
-        $field = new xmldb_field('id_compilatio', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
-        $dbman->change_field_notnull($table, $field);
+        
+        $field = new xmldb_field('id_compilatio');
+        $dbman->drop_field($table, $field);
 
         $field = new xmldb_field('type', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
         $dbman->change_field_notnull($table, $field);

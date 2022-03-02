@@ -55,7 +55,6 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="type" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="id_compilatio" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="message_fr" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="message_it" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="message_es" TYPE="text" NOTNULL="false" SEQUENCE="false"/>

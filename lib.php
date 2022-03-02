@@ -2425,8 +2425,10 @@ function compilatio_update_news() {
 
     if ($news !== false) {
         $DB->delete_records_select('plagiarism_compilatio_news', '1=1');
-        foreach ($news as $new) {
-            $DB->insert_record("plagiarism_compilatio_news", $new);
+        if (is_array($news) || is_object($news)) {
+            foreach ($news as $new) {
+                $DB->insert_record("plagiarism_compilatio_news", $new);
+            }
         }
     }
 
@@ -2435,9 +2437,11 @@ function compilatio_update_news() {
     if ($news !== false) {
         $DB->delete_records_select('plagiarism_compilatio_news', '1=1');
         foreach ($news as $new) {
-            $new->id_compilatio = $new->id;
             $new->message_en = compilatio_decode($new->message_en);
             $new->message_fr = compilatio_decode($new->message_fr);
+            $new->message_it = compilatio_decode($new->message_it);
+            $new->message_es = compilatio_decode($new->message_es);
+            $new->message_de = compilatio_decode($new->message_de);
             unset($new->id);
             $DB->insert_record("plagiarism_compilatio_news", $new);
         }
@@ -2483,64 +2487,6 @@ function compilatio_display_news() {
 
         // Get the title of the notification according to the type of news:.
         $title = get_string("news_alert", "plagiarism_compilatio");
-        $class = "warning";
-        switch ($new->type) {
-            case PLAGIARISM_COMPILATIO_NEWS_UPDATE:
-                $title = get_string("news_update", "plagiarism_compilatio"); // Info.
-                $class = "info";
-                break;
-            case PLAGIARISM_COMPILATIO_NEWS_INCIDENT:
-                $title = get_string("news_incident", "plagiarism_compilatio"); // Danger.
-                $class = "danger";
-                break;
-            case PLAGIARISM_COMPILATIO_NEWS_MAINTENANCE:
-                $title = get_string("news_maintenance", "plagiarism_compilatio"); // Warning.
-                $class = "warning";
-                break;
-            case PLAGIARISM_COMPILATIO_NEWS_ANALYSIS_PERTURBATED:
-                $title = get_string("news_analysis_perturbated", "plagiarism_compilatio"); // Danger.
-                $class = "danger";
-                break;
-        }
-
-        $alerts[] = array(
-            "class" => $class,
-            "title" => $title,
-            "content" => $message,
-        );
-    }
-
-    return $alerts;
-}
-
-function compilatio_display_news() {
-
-    global $DB;
-    // Get the moodle language -> function used by "get_string" to define language.
-    $language = current_language();
-
-    $news = $DB->get_records_select('plagiarism_compilatio_news', 'end_display_on>? AND begin_display_on<?', array(time(), time()));
-
-    $alerts = array();
-
-    foreach ($news as $new) {
-        $message = "";
-        // Get the field matching the language, english by default.
-        switch ($language) {
-            case "fr":
-                if (!$new->message_fr) {
-                    $message = $new->message_en;
-                } else {
-                    $message = $new->message_fr;
-                }
-                break;
-            default:
-                $message = $new->message_en;
-                break;
-        }
-
-        // Get the title of the notification according to the type of news:.
-        $title = "";
         $class = "warning";
         switch ($new->type) {
             case PLAGIARISM_COMPILATIO_NEWS_UPDATE:
