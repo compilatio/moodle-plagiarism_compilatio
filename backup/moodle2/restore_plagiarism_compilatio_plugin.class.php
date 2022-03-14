@@ -94,7 +94,7 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
             $oldid = $data->id;
             $data->cm = $this->task->get_moduleid();
 
-            $DB->insert_record('plagiarism_compilatio_config', $data);
+            $DB->insert_record('plagiarism_compilatio_module', $data);
         }
     }
 

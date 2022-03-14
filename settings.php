@@ -66,26 +66,20 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     }
 
     // Set the default config for course modules if not set.
-    $plagiarismdefaults = $DB->get_records('plagiarism_compilatio_config', array('cm' => 0));
+    $plagiarismdefaults = $DB->get_record('plagiarism_compilatio_module', array('cmid' => 0));
     if (empty($plagiarismdefaults)) {
-        $plagiarismelements = array(
-                'use_compilatio' => 1,
-                'show_student_score' => 'never',
-                'show_student_report' => 'never',
-                'student_analyses' => 0,
-                'student_email' => 0,
-                'analysis_type' => 'manual',
-                'green_threshold' => 10,
-                'orange_threshold' => 25,
-                'indexing_state' => 1,
-            );
-        foreach ($plagiarismelements as $name => $value) {
-            $newelement = new Stdclass();
-            $newelement->cm = 0;
-            $newelement->name = $name;
-            $newelement->value = $value;
-            $DB->insert_record('plagiarism_compilatio_config', $newelement);
-        }
+        $defaultconfig = new stdClass();
+        $defaultconfig->cmid = 0;
+        $defaultconfig->activated = 1;
+        $defaultconfig->showstudentscore = 'never';
+        $defaultconfig->showstudentreport = 'never';
+        $defaultconfig->studentanalyses = 0;
+        $defaultconfig->studentemail = 0;
+        $defaultconfig->analysistype = 'manual';
+        $defaultconfig->warningthreshold = 10;
+        $defaultconfig->criticalthreshold = 25;
+        $defaultconfig->defaultindexing = 1;
+        $DB->insert_record('plagiarism_compilatio_module', $defaultconfig);
     }
 
     cache_helper::invalidate_by_definition('core', 'config', array(), 'plagiarism_compilatio');

@@ -58,9 +58,9 @@ class CompilatioSendFile {
         $cmpfile->timesubmitted = time();
 
         $plugincm = compilatio_cm_use($cmid);
-        $cmpfile->indexed = $plugincm['indexing_state'] ?? true;
+        $cmpfile->indexed = $plugincm->defaultindexing ?? true;
 
-        if (compilatio_student_analysis($plugincm['student_analyses'], $cmid, $userid)) {
+        if (compilatio_student_analysis($plugincm->studentanalyses, $cmid, $userid)) {
             $cmpfile->indexed = false;
         }
 
@@ -103,9 +103,11 @@ class CompilatioSendFile {
             $handle = fopen($filepath, "w+");
             fwrite($handle, $content);
 
-            $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+            $cmconfig = $DB->get_record("plagiarism_compilatio_module", array("cmid" => $cmid));
 
-            $docid = $compilatio->set_document($cmpfile->filename, null, $filepath, $cmpfile->indexed, /*$depositor, $author*/);
+            $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $cmconfig->userid);
+
+            $docid = $compilatio->set_document($cmpfile->filename, $cmconfig->folderid, $filepath, $cmpfile->indexed, /*$depositor, $author*/);
 
             unlink($filepath);
 
@@ -137,15 +139,15 @@ class CompilatioSendFile {
 
         $compilatio = new plagiarism_plugin_compilatio();
 
-        $analysistype = $DB->get_field('plagiarism_compilatio_config', 'value', array('cm' => $cmid, "name" => "analysis_type"));
-        $timeanalysis = $DB->get_field('plagiarism_compilatio_config', 'value', array('cm' => $cmid, "name" => "time_analyse"));
+        $analysistype = $DB->get_field('plagiarism_compilatio_module', 'analysistype', array('cmid' => $cmid));
+        $analysistime = $DB->get_field('plagiarism_compilatio_module', 'analysistime', array('cmid' => $cmid));
 
         foreach ($files as $file) {
             $userid = $DB->get_field('assign_submission', 'userid', array('id' => $file->get_itemid()));
 
             $file = self::send_file($cmid, $userid, $file);
 
-            if ($analysistype == 'manual' || ($analysistype == 'planned' && time() >= $timeanalysis)) {
+            if ($analysistype == 'manual' || ($analysistype == 'planned' && time() >= $analysistime)) {
                 CompilatioAnalyses::start_analysis($file);
             }
         }

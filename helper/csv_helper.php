@@ -79,8 +79,8 @@ class csv_helper {
 
         $files = $DB->get_records_sql($sql, array($cmid));
 
-        $moduleconfig = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => $cmid), '', 'name, value');
-        $analysistype = $moduleconfig["analysis_type"];
+        $cmpcm = $DB->get_record('plagiarism_compilatio_module', array('cmid' => $cmid));
+        $analysistype = $cmpcm["analysistype"];
 
         // Get the name of the activity in order to generate header line and the filename.
         $sql = "
@@ -122,7 +122,7 @@ class csv_helper {
                 if ($analysistype == 'manual') {
                     $line["similarities_rate"] = get_string("manual_analysis", "plagiarism_compilatio");
                 } else if ($analysistype == 'planned') {
-                    $date = userdate($moduleconfig['time_analyse']);
+                    $date = userdate($cmpcm->analysistime);
                     $line["similarities_rate"] = get_string("title_planned", "plagiarism_compilatio", $date);
                 }
             } else {

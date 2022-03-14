@@ -55,18 +55,18 @@ $string['owner_file_student'] = 'The student is the only owner of his document';
 $string['owner_file_student_details'] = 'When a student request to delete all his data, his documents and reports will be deleted from Moodle and the Compilatio document database. Documents will no longer be available for comparison with other documents.';
 
 // Activity settings.
-$string['use_compilatio'] = 'Allow similarity detection with Compilatio';
-$string['indexing_state'] = "Add documents into the Document Database";
-$string['indexing_state_help'] = "Yes: Add documents in the document database. These documents will be used as comparison material for future analysis.
+$string['activated'] = 'Allow similarity detection with Compilatio';
+$string['defaultindexing'] = "Add documents into the Document Database";
+$string['defaultindexing_help'] = "Yes: Add documents in the document database. These documents will be used as comparison material for future analysis.
     No: Documents are not added in document database and won't be used for comparisons.";
-$string['compilatio_display_student_score'] = 'Show similarity score to student';
-$string['compilatio_display_student_score_help'] = 'The similarity score is the percentage of the submission that has been matched with other content.';
-$string['compilatio_display_student_report'] = 'Show similarity report to student';
-$string['compilatio_display_student_report_help'] = 'The similarity report gives a breakdown on what parts of the submission were plagiarised and the location of the detected sources.';
+$string['showstudentscore'] = 'Show similarity score to student';
+$string['showstudentscore_help'] = 'The similarity score is the percentage of the submission that has been matched with other content.';
+$string['showstudentreport'] = 'Show similarity report to student';
+$string['showstudentreport_help'] = 'The similarity report gives a breakdown on what parts of the submission were plagiarised and the location of the detected sources.';
 $string['immediately'] = "Immediately";
 $string['showwhenclosed'] = 'When Activity closed';
-$string['student_email'] = 'Send Student email';
-$string['student_email_help'] = 'This will send an e-mail to the student when a file has been processed to let them know that a report is available.';
+$string['studentemail'] = 'Send Student email';
+$string['studentemail_help'] = 'This will send an e-mail to the student when a file has been processed to let them know that a report is available.';
 $string['analysis'] = 'Analysis Start';
 $string['analysis_help'] = '<p>There are 2 possible options:</p>
     <ul>
@@ -80,8 +80,8 @@ $string['analysis_date'] = 'Analysis Date (Timed analysis only)';
 $string['thresholds_settings'] = "Limits :";
 $string['thresholds_description'] = "Indicate the threshold that you want to use, in order to facilitate the finding of analysis report (% of similarities) :";
 $string['numeric_threshold'] = "Threshold must be a number.";
-$string['green_threshold'] = "Green up to";
-$string['orange_threshold'] = "Orange up to";
+$string['warningthreshold'] = "Green up to";
+$string['criticalthreshold'] = "Orange up to";
 $string['red_threshold'] = "red otherwise";
 $string['similarity_percent'] = '% of similarities';
 $string['student_analyses'] = "Allow students to analyze their documents";

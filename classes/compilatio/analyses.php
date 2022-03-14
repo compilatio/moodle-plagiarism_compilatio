@@ -47,7 +47,8 @@ class CompilatioAnalyses {
 
         global $DB, $OUTPUT;
 
-        $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+        $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $plagiarismfile->cm));
+        $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $userid);
 
         $analyse = $compilatio->start_analyse($plagiarismfile->externalid);
 
@@ -89,7 +90,8 @@ class CompilatioAnalyses {
 
         global $DB;
 
-        $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+        $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $plagiarismfile->cm));
+        $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $userid);
 
         $doc = $compilatio->get_document($plagiarismfile->externalid);
 
@@ -109,9 +111,7 @@ class CompilatioAnalyses {
                 $plagiarismfile->similarityscore = $scores->similarity_percent ?? 0;
                 $plagiarismfile->reporturl = $compilatio->get_report_url($plagiarismfile->externalid);
 
-                $emailstudents = $DB->get_field('plagiarism_compilatio_config',
-                    'value',
-                    array('cm' => $plagiarismfile->cm, 'name' => 'student_email'));
+                $emailstudents = $DB->get_field('plagiarism_compilatio_module', 'studentemail', array('cmid' => $plagiarismfile->cm));
                 if (!empty($emailstudents)) {
                     $compilatio = new plagiarism_plugin_compilatio();
                     $compilatio->compilatio_send_student_email($plagiarismfile);

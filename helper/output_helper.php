@@ -103,19 +103,20 @@ class output_helper {
     public static function get_compilatio_btn(
         $domid,
         $file,
-        $config,
         $teacher,
         $cantriggeranalysis,
         $studentanalyse,
         $viewreport,
         $url
     ) {
-        global $OUTPUT, $PAGE, $CFG;
+        global $DB, $OUTPUT, $PAGE, $CFG;
 
         $error = false;
         $titlevariable = null;
         $image = '';
         $status = $file->status;
+
+        $config = $DB->get_record('plagiarism_compilatio_module', array('cmid' => $file->cm));
 
         // Add de/indexing feature for teachers.
         $indexed = null;
@@ -129,14 +130,14 @@ class output_helper {
             if ($viewreport) {
                 $url = array("target-blank" => true, "url" => $file->reporturl);
             }
-            $span = self::get_image_similarity($file->similarityscore, $config["green_threshold"] ?? 10, $config["orange_threshold"] ?? 25);
+            $span = self::get_image_similarity($file->similarityscore, $config->warningthreshold ?? 10, $config->criticalthreshold ?? 25);
             $titlevariable = $file->similarityscore;
 
         } else if ($status == 'sent') {
-            if ($config["analysis_type"] == 'planned') {
+            if ($config->analysistype == 'planned') {
                 $image = "prog";
                 $span = get_string('btn_planned', "plagiarism_compilatio");
-                $titlevariable = userdate($config["time_analyse"]);
+                $titlevariable = userdate($config->analysistime);
             } else if ($cantriggeranalysis || ($studentanalyse && !$teacher)) {
                 $image = "play";
                 if (null == $url) {

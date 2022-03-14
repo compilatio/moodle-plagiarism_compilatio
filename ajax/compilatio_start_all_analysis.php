@@ -48,14 +48,14 @@ $countsuccess = 0;
 $plagiarismfiles = array();
 $docsfailed = array();
 
-if ($plugincm['analysis_type'] == 'manual') {
+if ($plugincm->analysistype == 'manual') {
 
     $sql = "cm = ? AND status = 'sent'";
     $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, array($cmid));
 
     foreach ($plagiarismfiles as $file) {
 
-        if (compilatio_student_analysis($plugincm['student_analyses'], $cmid, $file->userid)) {
+        if (compilatio_student_analysis($plugincm->studentanalyses, $cmid, $file->userid)) {
             continue;
         }
 

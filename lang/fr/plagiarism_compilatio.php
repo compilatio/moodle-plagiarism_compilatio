@@ -55,18 +55,18 @@ $string['owner_file_student'] = "L'élève est l'unique propriétaire de son dev
 $string['owner_file_student_details'] = "En cas de demande de suppression des données personnelles d'un élève, les devoirs seront supprimés de la plateforme Moodle et de la bibliothèque de références Compilatio. Les devoirs ne seront plus disponibles pour une comparaison avec de nouveaux documents.";
 
 // Activity settings.
-$string['use_compilatio'] = 'Détecter des similitudes avec Compilatio';
-$string['indexing_state'] = "Ajouter les documents à la bibliothèque de références";
-$string['indexing_state_help'] = "Oui: Ajoute les documents dans la bibliothèque de références. Ces documents seront utilisés comme matériel de comparaison pour vos analyses.
+$string['activated'] = 'Détecter des similitudes avec Compilatio';
+$string['defaultindexing'] = "Ajouter les documents à la bibliothèque de références";
+$string['defaultindexing_help'] = "Oui: Ajoute les documents dans la bibliothèque de références. Ces documents seront utilisés comme matériel de comparaison pour vos analyses.
     Non: Les documents ne sont pas ajoutés à la bibliothèque de références et ne seront pas utilisés comme matériel de comparaison.";
-$string['compilatio_display_student_score'] = 'Rendre le pourcentage de similitudes visible par les étudiants';
-$string['compilatio_display_student_score_help'] = 'Le pourcentage de similitudes indique la quantité de texte dans le document qui a été retrouvée dans d’autres documents.';
-$string['compilatio_display_student_report'] = "Permettre à l'étudiant de visualiser le rapport d'analyse";
-$string['compilatio_display_student_report_help'] = 'Le rapport d’analyse d’un document présente les passages similaires avec les sources détectées et leurs pourcentages de similitudes.';
+$string['showstudentscore'] = 'Rendre le pourcentage de similitudes visible par les étudiants';
+$string['showstudentscore_help'] = 'Le pourcentage de similitudes indique la quantité de texte dans le document qui a été retrouvée dans d’autres documents.';
+$string['showstudentreport'] = "Permettre à l'étudiant de visualiser le rapport d'analyse";
+$string['showstudentreport_help'] = 'Le rapport d’analyse d’un document présente les passages similaires avec les sources détectées et leurs pourcentages de similitudes.';
 $string['immediately'] = "Immédiatement";
 $string['showwhenclosed'] = "Quand l'activité est fermée";
-$string['student_email'] = "Envoyer un mail à l'étudiant";
-$string['student_email_help'] = "Ceci enverra un e-mail à l'élève quand un fichier a été traité pour leur faire savoir que le rapport est disponible.";
+$string['studentemail'] = "Envoyer un mail à l'étudiant";
+$string['studentemail_help'] = "Ceci enverra un e-mail à l'élève quand un fichier a été traité pour leur faire savoir que le rapport est disponible.";
 $string['analysis'] = 'Lancement des analyses';
 $string['analysis_help'] = "<p>Vous disposez de deux options :</p>
     <ul>
@@ -80,8 +80,8 @@ $string['analysis_date'] = "Date d'analyse (lancement programmé uniquement)";
 $string['thresholds_settings'] = "Réglage des seuils d'affichage des taux de similitudes :";
 $string['thresholds_description'] = "Indiquez les seuils que vous souhaitez utiliser, afin de faciliter le repérage des rapports d’analyse (% de similitudes) : ";
 $string['numeric_threshold'] = "Le seuil doit être numérique.";
-$string['green_threshold'] = "Vert jusqu'à";
-$string['orange_threshold'] = "Orange jusqu'à";
+$string['warningthreshold'] = "Vert jusqu'à";
+$string['criticalthreshold'] = "Orange jusqu'à";
 $string['red_threshold'] = "rouge au delà";
 $string['similarity_percent'] = "% de similitudes";
 $string['student_analyses'] = "Permettre aux étudiants d'analyser leurs documents";

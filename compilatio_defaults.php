@@ -39,26 +39,46 @@ $resetuser = optional_param('reset', 0, PARAM_INT);
 $page = optional_param('page', 0, PARAM_INT);
 
 $mform = new compilatio_defaults_form(null);
+
 // Get the defaults - cmid(0) is the default list.
-$plagiarismdefaults = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => 0), '', 'name, value');
-if (!empty($plagiarismdefaults)) {
-    $mform->set_data($plagiarismdefaults);
+$defaultconfig = $DB->get_record('plagiarism_compilatio_module', array('cmid' => 0));
+if (!empty($defaultconfig)) {
+    $mform->set_data($defaultconfig);
 }
+
 echo $OUTPUT->header();
 $currenttab = 'compilatiodefaults';
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
+
 if (($data = $mform->get_data()) && confirm_sesskey()) {
-    $plagiarismplugin = new plagiarism_plugin_compilatio();
+    $plugin = new plagiarism_plugin_compilatio();
 
-    $data->analysis_type = 'manual';
+    $data->analysistype = 'manual';
 
-    $plagiarismelements = $plagiarismplugin->config_options();
+    $defaultconfig = $DB->get_record('plagiarism_compilatio_module', array('cmid' => 0));
+
+    $newconfig = false;
+    if (empty($defaultconfig)) {
+        $defaultconfig = new stdClass();
+        $defaultconfig->cmid = 0;
+        $newconfig = true;
+    }
+
+    foreach ($plugin->config_options() as $element) {
+        $defaultconfig->$element = $data->$element ?? 0;
+    }
+
+    if ($newconfig) {
+        $DB->insert_record('plagiarism_compilatio_module', $defaultconfig);
+    } else {
+        $DB->update_record('plagiarism_compilatio_module', $defaultconfig);
+    }
+
+
+
+    // Now set defaults.
     foreach ($plagiarismelements as $element) {
         if (isset($data->$element)) {
-            $newelement = new Stdclass();
-            $newelement->cm = 0;
-            $newelement->name = $element;
-            $newelement->value = $data->$element;
             if (isset($plagiarismdefaults[$element])) { // Update.
                 $newelement->id = $DB->get_field('plagiarism_compilatio_config', 'id', (array('cm' => 0, 'name' => $element)));
                 $DB->update_record('plagiarism_compilatio_config', $newelement);

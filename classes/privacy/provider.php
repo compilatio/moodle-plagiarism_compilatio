@@ -175,24 +175,14 @@ class provider implements
      */
     public static function delete_plagiarism_for_context(\context $context) {
 
-        global $DB;
-
-        global $CFG;
+        global $DB, $CFG;
         require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-        if (!empty($plagiarismsettings) && isset($plagiarismsettings['apikey'])) {
-            $compilatio = new CompilatioService($plagiarismsettings['apikey']);
+        $files = $DB->get_records('plagiarism_compilatio_files', array("cm" => $context->instanceid);
+        compilatio_delete_files($files);
 
-            $compids = $DB->get_fieldset_select('plagiarism_compilatio_files', 'externalid', 'cm = '.$context->instanceid);
-            foreach ($compids as $compid) {
-                $compilatio->set_indexing_state($compid, false);
-                $compilatio->delete_document($compid);
-            }
-
-            $DB->delete_records('plagiarism_compilatio_files', array('cm' => $context->instanceid));
-        }
+        $DB->delete_records('plagiarism_compilatio_files', array('cm' => $context->instanceid));
     }
 
     /**
@@ -203,30 +193,17 @@ class provider implements
      */
     public static function delete_plagiarism_for_user(int $userid, \context $context) {
 
-        global $DB;
+        global $DB, $CFG;
 
-        global $CFG;
         require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
+        $ownerfile = get_config('plagiarism_compilatio', 'owner_file');
 
         // If the student owns the document (and not the school), we can delete everything from the databases.
-        if (!empty($plagiarismsettings)
-            && isset($plagiarismsettings['apikey'])
-            && isset($plagiarismsettings['owner_file'])
-            && $plagiarismsettings['owner_file'] === '0') {
-
-            $compilatio = new CompilatioService($plagiarismsettings['apikey']);
-
-            // We get all user's documents.
-            $compids = $DB->get_fieldset_select('plagiarism_compilatio_files', 'externalid', 'userid = '.$userid);
-            // For each document...
-            foreach ($compids as $compid) {
-                // We deindex then delete the document.
-                $compilatio->set_indexing_state($compid, false);
-                $compilatio->delete_document($compid);
-            }
+        if ($ownerfile === '0') {
+            $files = $DB->get_records('plagiarism_compilatio_files', array("userid" => $userid);
+            compilatio_delete_files($files);
 
             $DB->delete_records('plagiarism_compilatio_files', array('userid' => $userid));
         }
@@ -240,34 +217,19 @@ class provider implements
      */
     public static function delete_plagiarism_for_users(array $userids, \context $context) {
 
-        global $DB;
-
-        global $CFG;
+        global $DB, $CFG;
         require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $cmid = $context->instanceid;
 
-        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-        if (!empty($plagiarismsettings) && isset($plagiarismsettings['apikey'])) {
-            $compilatio = new CompilatioService($plagiarismsettings['apikey']);
+        foreach ($userids as $userid) {
+            $files = $DB->get_records('plagiarism_compilatio_files', array("userid" => $userid, "cm" => $cmid));
+            compilatio_delete_files($files);
+        }
 
-            // For each user...
-            foreach ($userids as $userid) {
-                // We get the all Compilatio external IDs to retrieve the document.
-                $compids = $DB->get_fieldset_select('plagiarism_compilatio_files',
-                    'externalid', 'userid = '.$userid.' AND cm = '.$cmid);
-                // For each document...
-                foreach ($compids as $compid) {
-                    // We deindex then delete the document.
-                    $compilatio->set_indexing_state($compid, false);
-                    $compilatio->delete_document($compid);
-                }
-            }
-
-            foreach ($userids as $userid) {
-                $DB->delete_records('plagiarism_compilatio_files', array('userid' => $userid, 'cm' => $cmid));
-            }
+        foreach ($userids as $userid) {
+            $DB->delete_records('plagiarism_compilatio_files', array('userid' => $userid, 'cm' => $cmid));
         }
     }
 }

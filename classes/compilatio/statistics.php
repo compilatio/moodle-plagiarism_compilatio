@@ -161,9 +161,9 @@ class CompilatioStatistics {
 
         global $DB, $PAGE;
 
-        $plagiarismvalues = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => $cmid), '', 'name, value');
-        $greenthreshold = $plagiarismvalues["green_threshold"] ?? 10;
-        $redthreshold = $plagiarismvalues["orange_threshold"] ?? 25;
+        $plagiarismvalues = $DB->get_record('plagiarism_compilatio_module', array('cmid' => $cmid));
+        $greenthreshold = $plagiarismvalues->warningthreshold ?? 10;
+        $redthreshold = $plagiarismvalues->criticalthreshold ?? 25;
 
         $sql = "SELECT COUNT(DISTINCT pcf.id) FROM {plagiarism_compilatio_files} pcf WHERE pcf.cm=?";
 

@@ -210,7 +210,7 @@ class CompilatioEventHandler {
 
             // Re-submit file when student submit a draft submission.
             $plugincm = compilatio_cm_use($cmid);
-            if ($eventdata['target'] == 'assessable' && $plugincm['student_analyses'] === '1') {
+            if ($eventdata['target'] == 'assessable' && $plugincm->studentanalyses === '1') {
 
                 $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
                 compilatio_delete_files($plagiarismfiles, false);
@@ -317,7 +317,7 @@ class CompilatioEventHandler {
                     
             } else if ($eventdata['objecttable'] == 'assign_submission') {
                 $params = array('submission' => $eventdata["objectid"], 'assignment' => $cmid);
-                $identifier = sha1($DB->get_record('assignsubmission_onlinetext', $params)->onlinetext;
+                $identifier = sha1($DB->get_record('assignsubmission_onlinetext', $params))->onlinetext;
             }
 
             $compifile = $DB->get_record('plagiarism_compilatio_files', array('filename' => $filename, 'identifier' => $identifier));

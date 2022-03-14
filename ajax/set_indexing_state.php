@@ -46,12 +46,14 @@ $indexingstatepost = optional_param('indexingState', '', PARAM_TEXT);
 
 if (isset($iddoc) && isset($indexingstatepost)) {
     $indexingstate = (int) ((boolean) $indexingstatepost);
+    $file = $DB->get_record('plagiarism_compilatio_files', array('externalid' => $iddoc));
 
-    $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+    $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $file->cm));
+    $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $userid);
+
     if ($compilatio->set_indexing_state($iddoc, $indexingstate) === true) {
-        $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('externalid' => $iddoc));
-        $plagiarismfile->indexed = $indexingstate;
-        $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+        $file->indexed = $indexingstate;
+        $DB->update_record('plagiarism_compilatio_files', $file);
         echo ('true');
     } else {
         echo ('false');

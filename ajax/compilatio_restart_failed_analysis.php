@@ -50,6 +50,9 @@ $files = $DB->get_records("plagiarism_compilatio_files", array("cm" => $cmid, "s
 $countsuccess = 0;
 $docsfailed = array();
 foreach ($files as $file) {
+    $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $file->cm));
+    $compilatio->set_user_id($userid);
+
     if ($compilatio->restart_analyse($file->externalid)) {
         $countsuccess++;
     } else {

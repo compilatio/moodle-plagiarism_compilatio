@@ -180,7 +180,7 @@ class CompilatioService {
         if ($error === false) {
             return $response->data->user->id;
         }
-        return $error;
+        return $response->status->code ?? false;
     }
 
     /**
@@ -201,7 +201,7 @@ class CompilatioService {
             'file' => new \CURLFile($filepath),
             'filename' => $filename,
             'title' => $filename,
-            //'folder_id' => $folderid,
+            'folder_id' => $folderid,
             'indexed' => $indexed,
             'origin' => "moodle",
             //'depositor' => [
@@ -264,16 +264,7 @@ class CompilatioService {
      * @param   string  $name          Folder's name
      * @return  string                  Return the folder's ID, an error message otherwise
      */
-    public function set_folder($name, $defaultindexing, $warningthreshold = 10, $criticalthreshold = 25) {
-        // Thresholds validation.
-        if ($warningthreshold > $criticalthreshold ||
-            $warningthreshold > 100 || $warningthreshold < 0 ||
-            $criticalthreshold > 100 || $criticalthreshold < 0
-        ) {
-            $warningthreshold = 10;
-            $criticalthreshold = 25;
-        }
-
+    public function set_folder($name, $defaultindexing, $analysistype, $analysistime, $warningthreshold = 10, $criticalthreshold = 25) {
         $endpoint = "/api/private/folder/create";
         $params = array(
             'name' => $name,
@@ -282,7 +273,16 @@ class CompilatioService {
                 'critical' => $criticalthreshold,
             ),
             "default_indexing" => $defaultindexing,
+            "auto_analysis" => false,
+            "scheduled_analysis_enabled" => false,
         );
+
+        if ($analysistype == "auto") {
+            $params["auto_analysis"] = true;
+        } else if ($analysistype == "timed") {
+            $params["scheduled_analysis_enabled"] = true;
+            $params["scheduled_analysis_date"] = $analysistime;
+        }
 
         $response = json_decode($this->call_api($endpoint, "post", json_encode($params)));
 
