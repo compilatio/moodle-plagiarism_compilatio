@@ -24,7 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- /**
+/**
  * CompilatioAnalyses class
  * @copyright  2020 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -40,30 +40,30 @@ class CompilatioAnalyses {
     /**
      * Start an analyse
      *
-     * @param  object $plagiarismfile     File
+     * @param  object $cmpfile     File
      * @return mixed                      Return true if succeed, the analyse object
      */
-    public static function start_analysis($plagiarismfile) {
+    public static function start_analysis($cmpfile) {
 
         global $DB, $OUTPUT;
 
-        $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $plagiarismfile->cm));
+        $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $cmpfile->cm));
         $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $userid);
 
-        $analyse = $compilatio->start_analyse($plagiarismfile->externalid);
+        $analyse = $compilatio->start_analyse($cmpfile->externalid);
 
         if ($analyse === true) {
-            $plagiarismfile->status = "queue";
-            $plagiarismfile->timesubmitted = time();
+            $cmpfile->status = "queue";
+            $cmpfile->timesubmitted = time();
 
         } else if (strpos($analyse, 'No document found with id') !== false) {
-            $plagiarismfile->status = "error_not_found";
+            $cmpfile->status = "error_not_found";
 
         } else if (strpos($analyse, 'Document doesn\'t exceed minimum word limit') !== false) {
-            $plagiarismfile->status = "error_too_short";
+            $cmpfile->status = "error_too_short";
 
         } else if (strpos($analyse, 'Document exceed maximum word limit') !== false) {
-            $plagiarismfile->status = "error_too_long";
+            $cmpfile->status = "error_too_long";
 
         } else if (strpos($analyse, 'is not extracted, wait few seconds and retry.') !== false) {
             // Do nothing, wait for document extraction.
@@ -74,7 +74,7 @@ class CompilatioAnalyses {
             echo $OUTPUT->notification(get_string('failedanalysis', 'plagiarism_compilatio') . $analyse);
             return $analyse;
         }
-        $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+        $DB->update_record('plagiarism_compilatio_files', $cmpfile);
 
         return $analyse;
     }
@@ -82,50 +82,50 @@ class CompilatioAnalyses {
     /**
      * Check an analysis
      *
-     * @param  object $plagiarismfile    File
+     * @param  object $cmpfile    File
      * @param  bool   $manuallytriggered Manually triggered
      * @return void
      */
-    public static function check_analysis($plagiarismfile, $manuallytriggered = false) {
+    public static function check_analysis($cmpfile, $manuallytriggered = false) {
 
         global $DB;
 
-        $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $plagiarismfile->cm));
+        $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $cmpfile->cm));
         $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $userid);
 
-        $doc = $compilatio->get_document($plagiarismfile->externalid);
+        $doc = $compilatio->get_document($cmpfile->externalid);
 
         if ($doc == 'Not Found') {
-            $plagiarismfile->status = "error_not_found";
+            $cmpfile->status = "error_not_found";
         }
 
         if (isset($doc->analyses->anasim->state)) {
             $state = $doc->analyses->anasim->state;
 
             if ($state == 'running') {
-                $plagiarismfile->status = "analyzing";
+                $cmpfile->status = "analyzing";
             } else if ($state == 'finished') {
                 $scores = $doc->light_reports->anasim->scores;
 
-                $plagiarismfile->status = "scored";
-                $plagiarismfile->similarityscore = $scores->similarity_percent ?? 0;
-                $plagiarismfile->reporturl = $compilatio->get_report_url($plagiarismfile->externalid);
+                $cmpfile->status = "scored";
+                $cmpfile->similarityscore = $scores->similarity_percent ?? 0;
+                $cmpfile->reporturl = $compilatio->get_report_url($cmpfile->externalid);
 
-                $emailstudents = $DB->get_field('plagiarism_compilatio_module', 'studentemail', array('cmid' => $plagiarismfile->cm));
+                $emailstudents = $DB->get_field('plagiarism_compilatio_module', 'studentemail', array('cmid' => $cmpfile->cm));
                 if (!empty($emailstudents)) {
                     $compilatio = new plagiarism_plugin_compilatio();
-                    $compilatio->compilatio_send_student_email($plagiarismfile);
+                    $compilatio->compilatio_send_student_email($cmpfile);
                 }
 
             } else if ($state == 'crashed' || $state == 'aborted' || $state == 'canceled') {
-                $plagiarismfile->status = "error_analysis_failed";
+                $cmpfile->status = "error_analysis_failed";
             }
         }
 
         if (!$manuallytriggered) {
-            $plagiarismfile->attempt = $plagiarismfile->attempt + 1;
+            $cmpfile->attempt = $cmpfile->attempt + 1;
         }
 
-        $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+        $DB->update_record('plagiarism_compilatio_files', $cmpfile);
     }
 }

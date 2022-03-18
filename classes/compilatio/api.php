@@ -264,7 +264,9 @@ class CompilatioService {
      * @param   string  $name          Folder's name
      * @return  string                  Return the folder's ID, an error message otherwise
      */
-    public function set_folder($name, $defaultindexing, $analysistype, $analysistime, $warningthreshold = 10, $criticalthreshold = 25) {
+    public function set_folder($name, $defaultindexing, $analysistype, $analysistime,
+        $warningthreshold = 10, $criticalthreshold = 25) {
+
         $endpoint = "/api/private/folder/create";
         $params = array(
             'name' => $name,
@@ -298,7 +300,9 @@ class CompilatioService {
      * @param   int  $folderid          Folder ID
      * @return  string                  Return true if succeed, an error message otherwise
      */
-    public function update_folder($folderid, $name, $defaultindexing, $analysistype, $analysistime, $warningthreshold = 10, $criticalthreshold = 25) {
+    public function update_folder($folderid, $name, $defaultindexing, $analysistype, $analysistime,
+        $warningthreshold = 10, $criticalthreshold = 25) {
+
         $endpoint = "/api/private/folder/".$folderid;
 
         $params = array(

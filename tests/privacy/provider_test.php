@@ -78,7 +78,6 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->assertArrayHasKey('similarityscore', $privacyfields);
         $this->assertArrayHasKey('attempt', $privacyfields);
         $this->assertArrayHasKey('timesubmitted', $privacyfields);
-        $this->assertArrayHasKey('recyclebinid', $privacyfields);
         $this->assertArrayHasKey('indexed', $privacyfields);
 
         // On vérifie que External Compilatio Document est retourné.

@@ -24,7 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- /**
+/**
  * CompilatioSendFile class
  * @copyright  2020 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -70,7 +70,11 @@ class CompilatioSendFile {
 
         } else {
             $content = $file->get_content();
-            $cmpfile->filename = $file->get_filename();
+            if (null === $filename) {
+                $cmpfile->filename = $file->get_filename();
+            } else {
+                $cmpfile->filename = $filename . "-" . $file->get_filename(); // Forum.
+            }
             $cmpfile->identifier = $file->get_contenthash();
 
             if (!self::supported_file_type($cmpfile->filename)) {
@@ -126,7 +130,7 @@ class CompilatioSendFile {
     }
 
     /**
-     * Send files and start analyse for unsent files 
+     * Send files and start analyse for unsent files
      *
      * @param array  $files Array of file records
      * @param string $cmid  cmid of the assignment

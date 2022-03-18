@@ -235,7 +235,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                                 'page' => optional_param('page', null, PARAM_INT));
                 $moodleurl = new moodle_url("/mod/assign/view.php", $urlparams);
                 $url = array("url" => $moodleurl, "target-blank" => false);
-                
+
             } else {
                 return '';
             }
@@ -459,7 +459,7 @@ function get_compilatio_user() {
         $user->compilatioid = $compilatioid;
         $user->userid = $USER->id;
         $user->validatedtermsofservice = 0;
-        
+
         if (compilatio_valid_md5($compilatioid) && !$DB->insert_record('plagiarism_compilatio_user', $user)) {
             return false;
         }
@@ -496,7 +496,8 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
             $data->showstudentreport = 'never';
         }
 
-        $compilatio = new CompilatioService(get_config("plagiarism_compilatio", "apikey"), get_compilatio_user());
+        $userid = get_compilatio_user();
+        $compilatio = new CompilatioService(get_config("plagiarism_compilatio", "apikey"), $userid);
 
         // First get existing values.
         $cmconfig = $DB->get_record('plagiarism_compilatio_module', array('cmid' => $data->coursemodule));
@@ -506,13 +507,13 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
             $newconfig = true;
             $cmconfig = new stdClass();
             $cmconfig->cmid = $data->coursemodule;
-            $cmconfig->userid = $USER->id;
+            $cmconfig->userid = $userid;
 
             $compilatio->validate_terms_of_service();
-            $folderId = $compilatio->set_folder($data->name, $data->defaultindexing, $data->analysistype,
+            $folderid = $compilatio->set_folder($data->name, $data->defaultindexing, $data->analysistype,
                 $data->analysistime, $data->warningthreshold, $data->criticalthreshold);
-            if (compilatio_valid_md5($folderId)) {
-                $cmconfig->folderid = $folderId;
+            if (compilatio_valid_md5($folderid)) {
+                $cmconfig->folderid = $folderid;
             }
         }
 
@@ -910,52 +911,41 @@ function compilatio_enabled($cmid) {
  */
 function plagiarism_compilatio_pre_course_delete($course) {
 
-    global $SESSION;
+    global $SESSION, $DB;
 
     if (class_exists('\tool_recyclebin\course_bin') && \tool_recyclebin\category_bin::is_enabled()) {
         $SESSION->compilatio_course_deleted_id = $course->id;
     } else {
-        compilatio_course_delete($course->id);
+        $sql = 'SELECT module.id, module.cmid, module.userid, module.folderid
+                FROM {plagiarism_compilatio_module} module
+                JOIN {course_modules} course_modules ON module.cmid = course_modules.id
+                WHERE course_modules.course = ?';
+
+        compilatio_delete_modules($DB->get_records_sql($sql, array($course->id)));
     }
 }
 
 /**
- * Delete files of a course.
- * @param int    $courseid   Course identifier.
- * @param string $modulename Module name (e.g : assign).
+ * compilatio_delete_modules
+ *
+ * Deindex and remove documents and folder in Compilatio
+ * Remove files and module in moodle tables
+ *
+ * @param array    $modules
  */
-function compilatio_course_delete($courseid, $modulename = null) {
+function compilatio_delete_modules($modules) {
+    if (is_array($modules)) {
+        global $DB;
+        $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
 
-    global $DB;
-
-    $files = array();
-
-    $sql = '
-        SELECT cm
-        FROM {plagiarism_compilatio_files} plagiarism_compilatio_files
-        JOIN {course_modules} course_modules
-            ON plagiarism_compilatio_files.cm = course_modules.id';
-
-    $conditions = array();
-    $conditions['courseid'] = $courseid;
-
-    if (null !== $modulename) {
-        $sql .= '
-            JOIN {modules} modules
-                ON modules.id = course_modules.module
-            WHERE course_modules.course = :courseid
-            AND modules.name = :modulename';
-        $conditions['modulename'] = $modulename;
-    } else {
-        $sql .= '
-            WHERE course_modules.course = :courseid';
-    }
-
-    $coursemodules = $DB->get_records_sql($sql, $conditions);
-
-    foreach ($coursemodules as $coursemodule) {
-        $files = $DB->get_records('plagiarism_compilatio_files', array('cm' => $coursemodule->cm));
-        compilatio_delete_files($files);
+        foreach ($modules as $module) {
+            $files = $DB->get_records('plagiarism_compilatio_files', array('cm' => $module->cmid));
+            compilatio_delete_files($files);
+    
+            $compilatio->set_user_id($module->userid);
+            $compilatio->delete_folder($module->folderid);
+            $DB->delete_records('plagiarism_compilatio_module', array('id' => $module->id));
+        }
     }
 }
 
@@ -967,7 +957,6 @@ function compilatio_course_delete($courseid, $modulename = null) {
  *
  * @param array    $files
  * @param bool     $deletefilesmoodledb
- * @return boolean true if all documents have been processed, false otherwise
  */
 function compilatio_delete_files($files, $deletefilesmoodledb = true) {
     if (is_array($files)) {
@@ -1021,7 +1010,7 @@ function compilatio_student_analysis($studentanalysesparam, $cmid, $userid) {
     return false;
 }
 
- /**
+/**
  * Function to check for valid response from Compilatio
  *
  * @param  string $hash Hash

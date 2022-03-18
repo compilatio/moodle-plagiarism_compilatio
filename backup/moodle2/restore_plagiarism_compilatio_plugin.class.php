@@ -69,8 +69,8 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
         $paths = array();
 
         // Add own format stuff.
-        $elename = 'compilatioconfigmod';
-        $elepath = $this->get_pathfor('compilatio_configs/compilatio_config');
+        $elename = 'compilatiomodule';
+        $elepath = $this->get_pathfor('compilatio_modules/compilatio_module');
         $paths[] = new restore_path_element($elename, $elepath);
 
         $elename = 'compilatiofiles';
@@ -86,13 +86,13 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
      * @param  object $data Data
      * @return void
      */
-    public function process_compilatioconfigmod($data) {
+    public function process_compilatiomodule($data) {
         global $DB;
 
         if ($this->task->is_samesite()) { // Files can only be restored if this is the same site as was backed up.
             $data = (object)$data;
             $oldid = $data->id;
-            $data->cm = $this->task->get_moduleid();
+            $data->cmid = $this->task->get_moduleid();
 
             $DB->insert_record('plagiarism_compilatio_module', $data);
         }

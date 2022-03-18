@@ -210,8 +210,7 @@ class CompilatioStatistics {
                     $items[] = array("documents_analyzing", $stat->count);
                 }
 
-                // TODO only in php8.
-                if (str_starts_with($stat->status, "error")) {
+                if (strpos($stat->status, "error") === 0) {
                     if ($stat->status == "error_too_large") {
                         $stringvariable = (get_config('plagiarism_compilatio', 'max_size') / 1024 / 1024);
                     } else if ($stat->status == "error_too_long") {

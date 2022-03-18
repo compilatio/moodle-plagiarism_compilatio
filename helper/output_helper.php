@@ -157,8 +157,8 @@ class output_helper {
 
         } else if ($status == "analyzing") {
             $image = "inprogress";
-        // TODO str_starts_with = php8.
-        } else if (str_starts_with($status, "error")) {
+        
+        } else if (strpos($status, "error") === 0) {
             $image = "exclamation";
             $error = true;
             // TODO ? Relancer les analyses individuellement.

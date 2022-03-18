@@ -96,7 +96,6 @@ class provider implements
             'reporturl'         => 'privacy:metadata:plagiarism_compilatio_files:reporturl',
             'similarityscore'   => 'privacy:metadata:plagiarism_compilatio_files:similarityscore',
             'attempt'           => 'privacy:metadata:plagiarism_compilatio_files:attempt',
-            'recyclebinid'      => 'privacy:metadata:plagiarism_compilatio_files:recyclebinid',
             'indexed'           => 'privacy:metadata:plagiarism_compilatio_files:indexed',
         ], 'privacy:metadata:plagiarism_compilatio_files');
 

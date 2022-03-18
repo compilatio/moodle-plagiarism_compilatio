@@ -49,17 +49,19 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
         // Connect the visible container ASAP.
         $plugin->add_child($pluginwrapper);
 
-        $compilatioconfigs = new backup_nested_element('compilatio_configs');
-        $compilatioconfig = new backup_nested_element('compilatio_config', array('id'), array('name', 'value'));
+        $compilatioconfigs = new backup_nested_element('compilatio_modules');
+        $compilatioconfig = new backup_nested_element('compilatio_module', array('id'),
+            array('folderid', 'userid', 'activated', 'showstudentreport', 'showstudentscore', 'studentanalyses', 'studentemail',
+                'analysistype', 'analysistime', 'warningthreshold', 'criticalthreshold', 'defaultindexing'));
         $pluginwrapper->add_child($compilatioconfigs);
         $compilatioconfigs->add_child($compilatioconfig);
-        $compilatioconfig->set_source_table('plagiarism_compilatio_config', array('cm' => backup::VAR_PARENTID));
+        $compilatioconfig->set_source_table('plagiarism_compilatio_module', array('cmid' => backup::VAR_PARENTID));
 
         // Now information about files to module.
         $compilatiofiles = new backup_nested_element('compilatio_files');
         $compilatiofile = new backup_nested_element('compilatio_file', array('id'),
-                            array('userid', 'identifier', 'filename', 'externalid', 'reporturl', 'optout',
-                                  'status', 'similarityscore', 'timesubmitted', 'indexed'));
+            array('userid', 'identifier', 'filename', 'externalid', 'reporturl',
+                'status', 'similarityscore', 'timesubmitted', 'indexed'));
 
         $pluginwrapper->add_child($compilatiofiles);
         $compilatiofiles->add_child($compilatiofile);
