@@ -181,12 +181,12 @@ $string['restart_failed_analysis_title'] = 'Relance des analyses échouées :';
 $string['restart_failed_analysis_in_progress'] = 'Relance des analyses échouées en cours';
 
 // Search author tab.
-$string["compilatio_search_tab"] = "Rechercher l&#39auteur d&#39un document.";
+$string["compilatio_search_tab"] = "Rechercher le déposant d&#39un document.";
 $string["compilatio_search"] = "Rechercher";
 $string["compilatio_search_help"] = "Vous pouvez retrouver l'auteur d'un document en récupérant l'identifiant du document dans les sources du rapport d'analyse. Exemple : 1. Votre document: <b>de3ccb</b> - Nom_Activité(30)Nom_Document_Copié.odt.";
 $string["compilatio_iddocument"] = "Identifiant du document";
 $string["compilatio_search_notfound"] = "Aucun document n'a été trouvé pour cet identifiant parmi les documents chargés sur votre plateforme Moodle.";
-$string["compilatio_author"] = 'Le document présent dans l\'activité <b>{$a->modulename}</b> appartient à <b>{$a->lastname} {$a->firstname}</b>.';
+$string["compilatio_author"] = 'Le document présent dans l\'activité <b>{$a->modulename}</b> à été rendu par l\'utilisateur Moodle <b>{$a->lastname} {$a->firstname}</b>.';
 
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistiques';
@@ -253,12 +253,6 @@ $string['plugin_disabled_quiz'] = "Le plugin n'est pas activé pour les tests.";
 $string['compilatio:enable'] = "Autoriser l'enseignant à activer/désactiver Compilatio au sein d'une activité";
 $string['compilatio:triggeranalysis'] = "Autoriser l'enseignant à déclencher manuellement l'analyse";
 $string['compilatio:viewreport'] = "Autoriser l'enseignant à consulter le rapport complet depuis Compilatio";
-
-// News.
-$string["news_update"] = "Mise à jour Compilatio.net";
-$string["news_incident"] = "Incident Compilatio.net";
-$string["news_maintenance"] = "Maintenance Compilatio.net";
-$string["news_analysis_perturbated"] = "Analyses Compilatio.net perturbées";
 
 // CSV.
 $string["firstname"] = "Prénom";

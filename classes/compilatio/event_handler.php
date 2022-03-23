@@ -283,7 +283,7 @@ class CompilatioEventHandler {
             $userid = $event['userid'];
         }
 
-        $compifilestokeep = array();
+        $cmpfilestokeep = array();
 
         $fs = get_file_storage();
 

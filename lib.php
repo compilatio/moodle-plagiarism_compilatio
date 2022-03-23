@@ -364,6 +364,15 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
 
     $alerts = array();
 
+    $mod = $DB->get_record('plagiarism_compilatio_module', array("cmid" => $cmid));
+    if (null === $mod->folderid || null === $mod->userid) {
+        $alerts[] = array(
+            "class" => "danger",
+            "title" => "Erreur",
+            "content" => "Une erreur s'est produite lors de la création de l'activité. Les analyses automatiques et programmées ne fonctionnent pas. Vous pouvez lancer les analyses manuellement."
+        );
+    }
+
     if (isset($SESSION->compilatio_alert)) {
         $alerts[] = $SESSION->compilatio_alert;
         unset($SESSION->compilatio_alert);
@@ -423,8 +432,25 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         $countunsend = 0;
     }
 
-    // Add the Compilatio news to the alerts displayed :.
-    // TODO $alerts = array_merge($alerts, compilatio_display_news());
+    $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+
+    foreach ($compilatio->get_alerts() as $alert) {
+        $translation = $compilatio->get_translation(current_language(), $alert->text);
+
+        if (empty($translation)) {
+            $text = $alert->text;
+        } else {
+            $text = $translation;
+        }
+
+        if (time() > strtotime($alert->activation_period->start) && time() < strtotime($alert->activation_period->end)) {
+            $alerts[] = array(
+                "class" => "info",
+                "title" => "<i class='fa-lg fa fa-info-circle'></i>",
+                "content" => $text,
+            );
+        }
+    }
 
     return output_helper::get_compilatio_frame(
         $cmid,
@@ -461,8 +487,11 @@ function get_compilatio_user() {
         $user->validatedtermsofservice = 0;
 
         if (compilatio_valid_md5($compilatioid) && !$DB->insert_record('plagiarism_compilatio_user', $user)) {
-            return false;
+            return null;
         }
+
+        $compilatio->set_user_id($compilatioid);
+        $compilatio->validate_terms_of_service();
     }
     return $user->compilatioid;
 }
@@ -509,7 +538,6 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
             $cmconfig->cmid = $data->coursemodule;
             $cmconfig->userid = $userid;
 
-            $compilatio->validate_terms_of_service();
             $folderid = $compilatio->set_folder($data->name, $data->defaultindexing, $data->analysistype,
                 $data->analysistime, $data->warningthreshold, $data->criticalthreshold);
             if (compilatio_valid_md5($folderid)) {
@@ -633,8 +661,7 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename = '
         $mform->setDefault('analysistime', time() + 7 * 24 * 3600);
         $mform->disabledif('analysistime', 'analysistype', 'noteq', 'planned');
 
-        $lang = current_language();
-        if ($lang == 'fr' && $CFG->version >= 2017111300) { // Method hideIf is available since moodle 3.4.
+        if (current_language() == 'fr' && $CFG->version >= 2017111300) { // Method hideIf is available since moodle 3.4.
             $group = [];
             $group[] = $mform->createElement('static', 'calendar', '',
                 "<img style='width: 45em;' src='https://content.compilatio.net/images/calendrier_affluence_magister.png'>");
@@ -762,74 +789,6 @@ function compilatio_cm_use($cmid) {
     } else {
         return false;
     }
-}
-
-/**
- * Display the news of Compilatio
- *
- * @return array containing almerts according to the news in the DB.
- */
-function compilatio_display_news() {
-
-    global $DB;
-    // Get the moodle language -> function used by "get_string" to define language.
-    $language = current_language();
-
-    $news = $DB->get_records_select('plagiarism_compilatio_news', 'end_display_on>? AND begin_display_on<?', array(time(), time()));
-
-    $alerts = array();
-
-    foreach ($news as $new) {
-        $message = "";
-        // Get the field matching the language, english by default.
-        switch ($language) {
-            case "fr":
-                if (!$new->message_fr) {
-                    $message = $new->message_en;
-                } else {
-                    $message = $new->message_fr;
-                }
-                break;
-            default:
-                $message = $new->message_en;
-                break;
-        }
-
-        // Get the title of the notification according to the type of news:.
-        $title = "";
-        $class = "warning";
-        switch ($new->type) {
-            case CMP_NEWS_UPDATE:
-                $title = get_string("news_update", "plagiarism_compilatio"); // Info.
-                $class = "info";
-                break;
-            case CMP_NEWS_INCIDENT:
-                $title = get_string("news_incident", "plagiarism_compilatio"); // Danger.
-                $class = "danger";
-                break;
-            case CMP_NEWS_MAINTENANCE:
-                $title = get_string("news_maintenance", "plagiarism_compilatio"); // Warning.
-                $class = "warning";
-                break;
-            case CMP_NEWS_ANALYSIS_PERTURBATED:
-                $title = get_string("news_analysis_perturbated", "plagiarism_compilatio"); // Danger.
-                $class = "danger";
-                break;
-        }
-
-        $alerts[] = array(
-            "class" => $class,
-            "title" => $title,
-            "content" => $message,
-        );
-    }
-
-    return $alerts;
-
-    define('CMP_NEWS_UPDATE', 1);
-    define('CMP_NEWS_INCIDENT', 2);
-    define('CMP_NEWS_MAINTENANCE', 3);
-    define('CMP_NEWS_ANALYSIS_PERTURBATED', 4);
 }
 
 /**

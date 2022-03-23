@@ -181,12 +181,12 @@ $string['restart_failed_analysis_title'] = 'Restart interrupted analysis :';
 $string['restart_failed_analysis_in_progress'] = 'Restart interrupted analyses in progress';
 
 // Search author tab.
-$string["compilatio_search_tab"] = "Find the author of a document.";
+$string["compilatio_search_tab"] = "Find the depositor of a document.";
 $string["compilatio_search"] = "Search";
-$string["compilatio_search_help"] = "You can find the author of a document by retrieving the document identifier from the sources of the analysis report. Example: 1. Your document: <b>1st5xfj2</b> - Assign_Name(30)Name_Copied_Document.odt.";
+$string["compilatio_search_help"] = "You can find the depositor of a document by retrieving the document identifier from the sources of the analysis report. Example: 1. Your document: <b>1st5xfj2</b> - Assign_Name(30)Name_Copied_Document.odt.";
 $string["compilatio_iddocument"] = "Document identifier";
 $string["compilatio_search_notfound"] = "No document was found for this identifier among the documents loaded on your Moodle platform.";
-$string["compilatio_author"] = 'The document in activity <b>{$a->modulename}</b> belongs to <b>{$a->lastname} {$a->firstname}</b>.';
+$string["compilatio_author"] = 'The document in activity <b>{$a->modulename}</b> was submitted by the Moodle user <b>{$a->lastname} {$a->firstname}</b>.';
 
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistics';
@@ -253,12 +253,6 @@ $string['plugin_disabled_quiz'] = "The plugin isn't enabled for quiz.";
 $string['compilatio:enable'] = 'Allow the teacher to enable/disable Compilatio inside an activity';
 $string['compilatio:triggeranalysis'] = 'Allow the teacher to manually trigger analysis';
 $string['compilatio:viewreport'] = 'Allow the teacher to view the full report from Compilatio';
-
-// News.
-$string["news_update"] = "Compilatio.net update";
-$string["news_incident"] = "Compilatio.net incident";
-$string["news_maintenance"] = "Compilatio.net maintenance";
-$string["news_analysis_perturbated"] = "Compilatio.net - Analysis perturbated";
 
 // CSV.
 $string["firstname"] = "First name";

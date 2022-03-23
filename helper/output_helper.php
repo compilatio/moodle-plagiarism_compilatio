@@ -298,7 +298,7 @@ class output_helper {
         $countunsend,
         $analysisdate
     ) {
-        global $DB, $CFG, $PAGE;
+        global $DB, $CFG, $PAGE, $USER;
 
         $output = '';
         $output .= "<div id='compilatio-container'>";
@@ -354,12 +354,13 @@ class output_helper {
         // Help tab.
         $output .= "<div id='compi-help' class='compilatio-tabs-content'>";
 
-        if (empty($plagiarismsettings['idgroupe'])) {
+        if (empty($plagiarismsettings['apikey'])) {
             $output .= "<p>" . get_string('helpcenter_error', 'plagiarism_compilatio')
                 . "<a href='https://support.compilatio.net/'>https://support.compilatio.net</a></p>";
         } else {
-            $output .= "<p><a href='../../plagiarism/compilatio/helpcenter.php?idgroupe=" . $plagiarismsettings['idgroupe'] . "'" .
-            "target='_blank' >" . get_string('helpcenter', 'plagiarism_compilatio') . "
+            $userid = $DB->get_field('plagiarism_compilatio_user', "compilatioid", array("userid" => $USER->id));
+            $output .= "<p><a href='../../plagiarism/compilatio/helpcenter.php?userid=" . $userid . "'
+            target='_blank' >" . get_string('helpcenter', 'plagiarism_compilatio') . "
             <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
                 <path fill='none' stroke='#555' stroke-linecap='round'
                 stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
@@ -367,8 +368,8 @@ class output_helper {
         }
 
         $output .= "
-                <p><a href='http://etat-services.compilatio.net/?lang=FR'" .
-                    "target='_blank' >" . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') . "
+                <p><a href='http://etat-services.compilatio.net/?lang=FR'
+                    target='_blank' >" . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') . "
                     <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
                         <path fill='none' stroke='#555' stroke-linecap='round'
                         stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
@@ -429,8 +430,8 @@ class output_helper {
         $output .= "</div>";
 
         // Display timed analysis date.
-        if (isset($programmedanalysisdate)) {
-            $output .= "<p id='compilatio-programmed-analysis'>$programmedanalysisdate</p>";
+        if (isset($analysisdate)) {
+            $output .= "<p id='compilatio-programmed-analysis'>$analysisdate</p>";
         }
 
         $output .= "</div>";

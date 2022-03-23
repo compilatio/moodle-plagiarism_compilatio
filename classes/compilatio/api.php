@@ -64,38 +64,6 @@ class CompilatioService {
         return false;
     }
 
-     /**
-      * Get a list of the current Compilatio news.
-      *
-      * @return array    serviceInfos    Return an array of news, an error message otherwise
-      */
-    public function get_technical_news() {
-
-        $endpoint = "/api/private/service-info/list?limit=5";
-        $response = json_decode($this->call_api($endpoint));
-
-        if ($this->get_error_response($response, 200) === false) {
-            return $response->data->service_infos;
-        }
-        return false;
-    }
-
-    /**
-     * Get a list of the current Compilatio news.
-     *
-     * @return array    serviceInfos    Return an array of news, an error message otherwise
-     */
-    public function get_technical_news_2() {
-
-        $endpoint = "/api/private/alert/list";
-        $response = json_decode($this->call_api($endpoint));
-
-        if ($this->get_error_response($response, 200) === false) {
-            return $response->data->service_infos;
-        }
-        return false;
-    }
-
     /**
      * Check if the api key is valid
      *
@@ -422,7 +390,7 @@ class CompilatioService {
         );
 
         $response = json_decode($this->call_api($endpoint, "post", json_encode($params)));
-
+        error_log(var_export($response,true));
         $error = $this->get_error_response($response, 201);
         if ($error === false) {
             return true;
@@ -528,6 +496,60 @@ class CompilatioService {
 
         if ($this->get_error_response($response, 200) === false) {
             return $response->data->termsOfService_validated;
+        }
+        return false;
+    }
+
+    /**
+     * Validate user's terms of service.
+     *
+     * @return boolean Return true if terms of service has been validated, false otherwise
+     */
+    public function get_zendesk_jwt() {
+        $endpoint = "/api/private/user/zendesk/jwt";
+
+        $response = json_decode($this->call_api($endpoint));
+
+        if ($this->get_error_response($response, 200) === false) {
+            return $response->data->token;
+        }
+        return false;
+    }
+
+    /**
+     * Get a list of Compilatio alerts.
+     *
+     * @return  array   Return an array of alerts
+     */
+    public function get_alerts() {
+        $endpoint = "/api/private/alert/list/moodle";
+
+        $response = json_decode($this->call_api($endpoint));
+
+        if ($this->get_error_response($response, 200) === false) {
+            return $response->data->alerts;
+        }
+        return [];
+    }
+
+    /**
+     * Get a Compilatio translation.
+     *
+     * @param  string  $lang  Language
+     * @param  string  $key   Translation Key
+     * @return string  Return the translation string
+     */
+    public function get_translation($lang, $key) {
+        $endpoint = "/api/public/translation/last-version/" . $lang . "/key/" . $key;
+
+        $response = json_decode($this->call_api($endpoint));
+
+        if ($this->get_error_response($response, 200) === false) {
+            $translation = $response->data;
+            foreach (explode('.', $key) as $object) {
+                $translation = $translation->{$object};
+            }
+            return $translation;
         }
         return false;
     }

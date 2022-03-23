@@ -72,48 +72,15 @@ class update_meta extends \core\task\scheduled_task {
         }
         $compilatio->set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency);
 
-        // Get most recent news from Compilatio.
-        /* $news = $compilatio->get_technical_news();
-
-        if ($news !== false) {
-            $DB->delete_records_select('plagiarism_compilatio_news', '1=1');
-
-            $languages = ['fr', 'es', 'en', 'it', 'de'];
-
-            foreach ($news as $new) {
-                $serviceinfo = new \stdClass();
-                $serviceinfo->id_compilatio = $new->id;
-
-                switch ($new->level) {
-                    case '1':
-                        $serviceinfo->type = 'info';
-                        break;
-                    case '4':
-                        $serviceinfo->type = 'critical';
-                        break;
-                    default:
-                        $serviceinfo->type = 'warning';
-                        break;
-                }
-
-                foreach ($languages as $language) {
-                    $serviceinfo->{'message_' . $language} = $new->message->{$language};
-                }
-
-                $serviceinfo->begin_display_on = strtotime($new->metrics->start);
-                $serviceinfo->end_display_on = strtotime($new->metrics->end);
-
-                $DB->insert_record("plagiarism_compilatio_news", $serviceinfo);
-            }
-        } */
-
         // Update compilatio config.
         $config = $compilatio->get_config();
         set_config('min_word', $config->minDocumentWord, 'plagiarism_compilatio');
         set_config('max_word', $config->maxDocumentWord, 'plagiarism_compilatio');
         set_config('max_size', $config->maxDocumentSize, 'plagiarism_compilatio');
 
+        set_config('helpcenter_admin', $config->zendeskPages->moodle_admin, 'plagiarism_compilatio');
+        set_config('helpcenter_teacher', $config->zendeskPages->moodle_teacher, 'plagiarism_compilatio');
+
         set_config('file_types', json_encode($compilatio->get_allowed_file_types()), 'plagiarism_compilatio');
-        // TODO set_config('idgroupe', $compilatio->get_id_groupe(), 'plagiarism_compilatio');
     }
 }
