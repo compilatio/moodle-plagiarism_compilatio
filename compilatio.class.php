@@ -483,7 +483,12 @@ class compilatioservice {
             $params = array($this->key, $compid, $indexed);
 
             $result = $this->soapcli->__call('setIndexRefLibrary', $params);
-            return $result['status'] == 200;
+
+            if ($result['status'] ?? "" == 200) {
+                return true;
+            } else {
+                return false;
+            }
 
         } catch (SoapFault $fault) {
             return "Error set_indexing_state() " . $fault->faultcode . " " . $fault->faultstring;
