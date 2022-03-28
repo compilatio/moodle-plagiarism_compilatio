@@ -44,6 +44,14 @@ $string['formstartdate'] = "Date d'activation";
 $string['formcheck'] = "Valide";
 $string['formdelete'] = "Supprimer";
 
+$string['migration_title'] = "Migration v4 vers v5";
+$string['migration_info'] = "Compilatio met en place une nouvelle plateforme technique v5 pour l'ensemble de ses clients.<br>
+    Lorsque vous y serez invités par l'équipe technique, vous devrez exécuter une action  pour finaliser cette migration.";
+$string['migration_apikey'] = "Saisir la nouvelle clé API v5";
+$string['migration_btn'] = "Lancer la mise à jour des données enregistrées dans Moodle";
+$string['migration_success'] = "Tous les documents ont été mis à jour";
+$string['migration_success_doc'] = "documents ont été mis à jour";
+
 $string['use_compilatio'] = 'Détecter des similitudes avec Compilatio';
 $string['activate_compilatio'] = 'Activer le plug-in Compilatio';
 $string['savedconfigsuccess'] = 'Les paramètres ont bien été sauvegardés';
@@ -183,7 +191,6 @@ $string["start_analysis_in_progress"] = 'Lancement des analyses en cours';
 $string["not_analyzed"] = "Les documents suivants n'ont pas pu être analysés :";
 $string["account_expire_soon_title"] = "Votre abonnement Compilatio.net expire bientôt";
 $string["admin_account_expire_content"] = "Votre abonnement actuel se terminera à la fin du mois en cours. Si votre contrat n'expire pas à la fin du mois, un nouvel abonnement sera automatiquement mis en place par nos services. Lorsque cela sera fait, ce message disparaitra. Pour plus d'informations, vous pouvez contacter notre service commercial ou notre support à l'adresse support@compilatio.net.";
-$string["news_alert"] = "Alerte Compilatio.net";
 $string["news_update"] = "Mise à jour Compilatio.net";
 $string["news_incident"] = "Incident Compilatio.net";
 $string["news_maintenance"] = "Maintenance Compilatio.net";

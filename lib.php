@@ -2425,10 +2425,8 @@ function compilatio_update_news() {
 
     if ($news !== false) {
         $DB->delete_records_select('plagiarism_compilatio_news', '1=1');
-        if (is_array($news) || is_object($news)) {
-            foreach ($news as $new) {
-                $DB->insert_record("plagiarism_compilatio_news", $new);
-            }
+        foreach ($news as $new) {
+            $DB->insert_record("plagiarism_compilatio_news", $new);
         }
     }
 
@@ -2486,8 +2484,8 @@ function compilatio_display_news() {
         $message = $new->{'message_' . $language} ?? $new->message_en;
 
         // Get the title of the notification according to the type of news:.
-        $title = get_string("news_alert", "plagiarism_compilatio");
-        $class = "warning";
+        $title = "<i class='fa-lg fa fa-info-circle'></i>";
+        $class = "info";
         switch ($new->type) {
             case PLAGIARISM_COMPILATIO_NEWS_UPDATE:
                 $title = get_string("news_update", "plagiarism_compilatio"); // Info.

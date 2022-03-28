@@ -7,19 +7,8 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Add support for essay question in quiz (Moodle 3.11).
-- Add error handling for documents with too many words.
-- Handle reset course event to delete files in Compilatio.
-
-FIXES
-- Fix SQL Query to search document author for PostgresSQL.
-- Fix SQL Query to export global statistics to CSV for PostgresSQL.
-- Fix function to get not uploaded documents in order to analyse all documents in assign retroactively.
-- Fix document not automatically indexed in reference library.
-- Fix calls to unset "nb_mots_min" setting.
-- User's name is no longer displayed in error messages for anonymous assignments.
-- Fix documents blocked in pending state in quizzes.
-- Fix use of inconsistent module id.
+- Add tool in admin tab for migration from Compilatio v4 to v5.
+- Add Compilatio v5 alerts (technical news).
 
 QUICK INSTALL
 ================

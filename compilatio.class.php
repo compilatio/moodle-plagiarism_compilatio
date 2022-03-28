@@ -117,19 +117,9 @@ class compilatioservice {
                     $this->key = $key;
                     if (!empty($urlsoap)) {
                         $param = array(
-                            'cache_wsdl' => WSDL_CACHE_NONE,
-                            'trace' => true,
+                            'trace' => false,
                             'soap_version' => SOAP_1_2,
-                            'exceptions' => true,
-                            'stream_context' => stream_context_create(
-                                [
-                                    'ssl' => [
-                                        'verify_peer'       => false,
-                                        'verify_peer_name'  => false,
-                                        'allow_self_signed' => true
-                                    ]
-                                ]
-                            )
+                            'exceptions' => true
                         );
                         if (!empty($proxyhost)) {
                             $param['proxy_host'] = $proxyhost;

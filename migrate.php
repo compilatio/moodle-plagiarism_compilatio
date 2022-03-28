@@ -38,11 +38,12 @@ echo $OUTPUT->header();
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 $currenttab = 'compilatiomigrate';
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
-
-echo "<h3>Tool to update migrated Compilatio document ...</h3>";
+echo "<h3>" . get_string('migration_title', 'plagiarism_compilatio') . "</h3>";
+echo "<p>" . get_string('migration_info', 'plagiarism_compilatio') . "</p>";
 echo "<form class='form-inline' action='migrate.php' method='post'>
-        <input class='form-control m-2' type='text' id='apikey' name='apikey' placeholder='API Key v5' required>
-        <input class='btn btn-primary' type='submit' value='Migrate'>
+        <label>" . get_string('migration_apikey', 'plagiarism_compilatio') . " : </label>
+        <input class='form-control m-2' type='text' id='apikey' name='apikey' required>
+        <input class='btn btn-primary' type='submit' value='" . get_string('migration_btn', 'plagiarism_compilatio') . "'>
     </form>";
 
 $apikey = optional_param('apikey', null, PARAM_RAW);
@@ -79,23 +80,27 @@ if (!empty($apikey)) {
 
         if (isset($response->data->documents)) {
             foreach ($response->data->documents as $doc) {
-                $oldprodfile = $DB->get_record("plagiarism_compilatio_files", array("externalid" => $doc->old_prod_id));
-                if (!empty($oldprodfile)) {
-                    $oldprodfile->externalid = $doc->id;
-                    $oldprodfile->apiconfigid = $apiconfigid;
-                    if ($DB->update_record("plagiarism_compilatio_files", $oldprodfile)) {
-                        $countsuccess += 1; 
+                if (isset($doc->old_prod_id)) {
+                    $v4file = $DB->get_record("plagiarism_compilatio_files", array("externalid" => $doc->old_prod_id));
+                    if (!empty($v4file)) {
+                        $v4file->externalid = $doc->id;
+                        $v4file->apiconfigid = $apiconfigid;
+                        if ($DB->update_record("plagiarism_compilatio_files", $v4file)) {
+                            $countsuccess += 1; 
+                        }
                     }
                 }
             }
 
-            $sql = "SELECT * FROM mdl_plagiarism_compilatio_files WHERE apiconfigid != ?";
-            $remainingfiles = $DB->get_records_sql($sql, [$apiconfigid]);
-            if (empty($remainingfiles)) {
+            $sql = "SELECT * FROM {plagiarism_compilatio_files} files
+                JOIN {plagiarism_compilatio_apicon} apicon ON files.apiconfigid = apicon.id 
+                WHERE apiconfigid != ? AND api_key LIKE 'mo7-%'";
+            $v4files = $DB->get_records_sql($sql, [$apiconfigid]);
+            if (empty($v4files)) {
                 $DB->delete_records_select("plagiarism_compilatio_apicon", "id != ?", array($apiconfigid));
-                echo $OUTPUT->notification($countsuccess . " documents have been updated", 'notifysuccess');
+                echo $OUTPUT->notification(get_string('migration_success', 'plagiarism_compilatio'), 'notifysuccess');
             } else {
-                echo $OUTPUT->notification(count($remainingfiles) . " documents haven't been updated");
+                echo $OUTPUT->notification($countsuccess . " / " . $countsuccess + count($v4files) . " " . get_string('migration_success_doc', 'plagiarism_compilatio'));
             }
         } else {
             echo $OUTPUT->notification("Failed to get v5 documents : " . $response->status->message ?? "");
