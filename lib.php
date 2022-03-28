@@ -45,8 +45,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
  * @copyright  2012 Dan Marsden http://danmarsden.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class plagiarism_plugin_compilatio extends plagiarism_plugin
-{
+class plagiarism_plugin_compilatio extends plagiarism_plugin {
 
     /**
      * Green threshold
@@ -979,23 +978,23 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         $output .= "</div>";
     }
 
-    $idDocument = optional_param('idcourt', null, PARAM_RAW);
+    $iddocument = optional_param('idcourt', null, PARAM_RAW);
 
     // Search tab.
     $output .= "<div id='compi-search' class='compilatio-tabs-content'>
         <h5>" . get_string("compilatio_search_tab", "plagiarism_compilatio") . "</h5>
         <p>" . get_string("compilatio_search_help", "plagiarism_compilatio") . "</p>
         <form class='form-inline' action=" . $PAGE->url . " method='post'>
-            <input class='form-control m-2' type='text' id='idcourt' name='idcourt' value='" . $idDocument
+            <input class='form-control m-2' type='text' id='idcourt' name='idcourt' value='" . $iddocument
                 . "' placeholder='" . get_string("compilatio_iddocument", "plagiarism_compilatio") . "'>
             <input class='btn btn-primary' type='submit' value='" .get_string("compilatio_search", "plagiarism_compilatio"). "'>
         </form>";
 
-    if (!empty($idDocument)) {
+    if (!empty($iddocument)) {
         $sql = "SELECT usr.lastname, usr.firstname, cf.idcourt, cf.cm FROM {plagiarism_compilatio_files} cf
             JOIN {user} usr on cf.userid = usr.id
             WHERE cf.idcourt = ? OR cf.externalid = ?";
-        $doc = $DB->get_record_sql($sql, array($idDocument, $idDocument));
+        $doc = $DB->get_record_sql($sql, array($iddocument, $iddocument));
 
         if ($doc) {
             $module = get_coursemodule_from_id(null, $doc->cm);
@@ -1052,7 +1051,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     $params = array(
         $CFG->httpswwwroot,
         count($alerts),
-        $idDocument,
+        $iddocument,
         "<div id='compilatio-show-notifications' title='" . get_string("display_notifications", "plagiarism_compilatio")
             . "' class='compilatio-icon active'><i class='fa fa-bell fa-2x'></i><span id='count-alerts'>1</span></div>",
         "<div id='compi-notifications'><h5 id='compi-notif-title'>" .
@@ -1240,11 +1239,11 @@ function compilatio_update_meta() {
 
     $filemaxsize = ws_helper::get_allowed_file_max_size();
     $filetypes = ws_helper::get_allowed_file_types();
-    
+
     if (empty(get_config('plagiarism_compilatio', 'nb_mots_min'))) {
         set_config('nb_mots_min', 100, 'plagiarism_compilatio');
     }
-    
+
     $compilatio = compilatio_get_compilatio_service(get_config('plagiarism_compilatio', 'apiconfigid'));
     $idgroupe = $compilatio->get_id_groupe();
 
@@ -1363,7 +1362,8 @@ function compilatio_create_temp_file($cmid, $eventdata) {
     if (!empty($eventdata->postid)) {
         $filename = "post-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->postid . ".htm";
     } else if (isset($eventdata->attemptid)) {
-        $filename = "quiz-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->attemptid . "-" . $eventdata->question . ".htm";
+        $filename = "quiz-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->attemptid
+            . "-" . $eventdata->question . ".htm";
     } else {
         $filename = "content-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->userid . ".htm";
     }
@@ -1927,7 +1927,7 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
     $compilatio = compilatio_get_compilatio_service($plagiarismfile->apiconfigid);
 
     $analyse = $compilatio->start_analyse($plagiarismfile->externalid);
-    
+
     if ($analyse === true) {
         // Update plagiarism record.
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_IN_QUEUE;
@@ -1945,6 +1945,7 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
             preg_match('~least (\d+)~', $analyse->string, $nbmotsmin);
             set_config('nb_mots_min', $nbmotsmin[1], 'plagiarism_compilatio');
             return $analyse;
+
         // Elastisafe SOAP Faults.
         } else if ($analyse->code == 'startDocumentAnalyse error') {
             if ($analyse->string == 'Invalid document id') {
@@ -2339,6 +2340,7 @@ function compilatio_get_max_attempts_files($cmid) {
  *
  * @param  string $cmid       Course module ID
  * @param  int    $statuscode Status Code
+ * @param  int    $attempt    Number of attempts
  * @return array              containing the student & the file
  */
 function compilatio_get_files_by_status_code($cmid, $statuscode, $attempt = 0) {
@@ -2963,7 +2965,15 @@ function plagiarism_compilatio_pre_course_delete($course) {
     }
 }
 
-function compilatio_course_delete($courseId, $modulename = null) {
+/**
+ * compilatio_course_delete
+ *
+ * Remove Compilatio files of a given course for all course module or for given module type.
+ *
+ * @param int      $courseid
+ * @param string   $modulename
+ */
+function compilatio_course_delete($courseid, $modulename = null) {
 
     global $DB;
 
@@ -2976,7 +2986,7 @@ function compilatio_course_delete($courseId, $modulename = null) {
             ON plagiarism_compilatio_files.cm = course_modules.id';
 
     $conditions = array();
-    $conditions['courseid'] = $courseId;
+    $conditions['courseid'] = $courseid;
 
     if (null !== $modulename) {
         $sql .= '
@@ -3103,7 +3113,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
                 'forum' => "reset_forum_all",
             ];
 
-            foreach($modules as $modulename => $option) {
+            foreach ($modules as $modulename => $option) {
                 if (isset($options[$option]) && $options[$option] == 1) {
                     compilatio_course_delete($eventdata['courseid'], $modulename);
                 }

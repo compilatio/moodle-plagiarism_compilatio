@@ -72,7 +72,8 @@ if (!empty($apikey)) {
         set_config('apiconfigid', $apiconfigid, 'plagiarism_compilatio');
 
         $ch = curl_init();
-        $params[CURLOPT_URL] = "https://app.compilatio.net/api/private/documents/list?projection=" . json_encode(["old_prod_id" => true]);
+        $params[CURLOPT_URL] = "https://app.compilatio.net/api/private/documents/list?projection="
+            . json_encode(["old_prod_id" => true]);
 
         curl_setopt_array($ch, $params);
         $response = json_decode(curl_exec($ch));
@@ -86,21 +87,22 @@ if (!empty($apikey)) {
                         $v4file->externalid = $doc->id;
                         $v4file->apiconfigid = $apiconfigid;
                         if ($DB->update_record("plagiarism_compilatio_files", $v4file)) {
-                            $countsuccess += 1; 
+                            $countsuccess += 1;
                         }
                     }
                 }
             }
 
             $sql = "SELECT * FROM {plagiarism_compilatio_files} files
-                JOIN {plagiarism_compilatio_apicon} apicon ON files.apiconfigid = apicon.id 
+                JOIN {plagiarism_compilatio_apicon} apicon ON files.apiconfigid = apicon.id
                 WHERE apiconfigid != ? AND api_key LIKE 'mo7-%'";
             $v4files = $DB->get_records_sql($sql, [$apiconfigid]);
             if (empty($v4files)) {
                 $DB->delete_records_select("plagiarism_compilatio_apicon", "id != ?", array($apiconfigid));
                 echo $OUTPUT->notification(get_string('migration_success', 'plagiarism_compilatio'), 'notifysuccess');
             } else {
-                echo $OUTPUT->notification($countsuccess . " / " . $countsuccess + count($v4files) . " " . get_string('migration_success_doc', 'plagiarism_compilatio'));
+                echo $OUTPUT->notification($countsuccess . " / " . ($countsuccess + count($v4files))
+                    . " " . get_string('migration_success_doc', 'plagiarism_compilatio'));
             }
         } else {
             echo $OUTPUT->notification("Failed to get v5 documents : " . $response->status->message ?? "");

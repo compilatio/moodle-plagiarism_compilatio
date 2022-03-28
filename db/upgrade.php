@@ -27,8 +27,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 /**
  * Method to upgrade the database between differents versions
  *
@@ -200,7 +198,12 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         $table->add_field('message_es', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('message_de', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('message_it', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        
+
+        $index = new xmldb_index('mdl_plagcompnews_id__uix', XMLDB_INDEX_UNIQUE, array('id_compilatio'));
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+
         $field = new xmldb_field('id_compilatio');
         $dbman->drop_field($table, $field);
 
