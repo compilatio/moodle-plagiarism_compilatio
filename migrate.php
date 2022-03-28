@@ -102,7 +102,7 @@ if (!empty($apikey)) {
                 echo $OUTPUT->notification(get_string('migration_success', 'plagiarism_compilatio'), 'notifysuccess');
             } else {
                 echo $OUTPUT->notification($countsuccess . " / " . ($countsuccess + count($v4files))
-                    . " " . get_string('migration_success_doc', 'plagiarism_compilatio'));
+                    . " " . get_string('migration_success_doc', 'plagiarism_compilatio'), 'notifysuccess');
             }
         } else {
             echo $OUTPUT->notification("Failed to get v5 documents : " . $response->status->message ?? "");
