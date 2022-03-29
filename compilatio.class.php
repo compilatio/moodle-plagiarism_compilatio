@@ -25,8 +25,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 /**
  * compilatioservice class
  * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
@@ -203,6 +201,7 @@ class compilatioservice {
 
             $param = array($this->key, $compihash);
             $document = $this->soapcli->__call('getDocument', $param);
+
             return $document;
 
         } catch (SoapFault $fault) {
@@ -374,7 +373,27 @@ class compilatioservice {
             return $this->soapcli->__call('getTechnicalNews', $param);
 
         } catch (SoapFault $fault) {
-             return false;
+            return false;
+        }
+    }
+
+    /**
+     * Get a list of the current Compilatio alerts.
+     *
+     * @return mixed    return a Alert object if succeed, false otherwise.
+     */
+    public function get_alerts() {
+
+        try {
+            if (!is_object($this->soapcli)) {
+                return false;
+            }
+
+            $param = array($this->key);
+            return $this->soapcli->__call('getAlerts', $param);
+
+        } catch (SoapFault $fault) {
+            return false;
         }
     }
 
@@ -464,7 +483,12 @@ class compilatioservice {
             $params = array($this->key, $compid, $indexed);
 
             $result = $this->soapcli->__call('setIndexRefLibrary', $params);
-            return $result['status'] == 200;
+
+            if ($result['status'] ?? "" == 200) {
+                return true;
+            } else {
+                return false;
+            }
 
         } catch (SoapFault $fault) {
             return "Error set_indexing_state() " . $fault->faultcode . " " . $fault->faultstring;
