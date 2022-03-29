@@ -179,8 +179,6 @@ class ws_helper {
     public static function set_indexing_state($compid, $indexingstate, $apiconfigid) {
 
         $compilatio = self::get_ws($apiconfigid);
-        $test = $compilatio->set_indexing_state($compid, $indexingstate);
-        error_log(var_export($test,true));
         return $compilatio->set_indexing_state($compid, $indexingstate);
 
     }
