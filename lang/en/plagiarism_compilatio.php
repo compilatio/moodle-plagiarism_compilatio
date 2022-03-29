@@ -49,8 +49,24 @@ $string['migration_info'] = "Compilatio is implementing a new v5 technical platf
     When prompted by the technical team, you will need to perform an action to complete this migration.";
 $string['migration_apikey'] = "Enter the new v5 API key";
 $string['migration_btn'] = "Initiate the update of the data stored in Moodle";
-$string['migration_success'] = "All documents have been updated";
 $string['migration_success_doc'] = "documents have been updated";
+$string['migration_form_title'] = "Launch the update of the data stored in Moodle, to complete the migration from v4 to v5.";
+$string['migration_support'] = "
+    <p>If all documents have not been updated correctly, please contact the Compilatio support team at support@compilatio.net and specify:</p>
+    <p><<
+        <br>
+        An error occurred during the migration of data from v4 to v5 of a Moodle platform in our school
+        <ul>
+            <li>The following error message appeared: [message]</li>
+            <li>[school_name]</li>
+            <li>[Moodle instance name, if multiple instances used]</li>
+            <li>Your API v4 key number: [____]</li>
+            <li>API v5 key number: [____]</li>
+            <li>Name of the contact person at the institution:</li>
+            <li>Contact person's email:</li>
+            <li>Contact person's phone:</li>
+        </ul>
+    >><p>";
 
 $string['use_compilatio'] = 'Allow similarity detection with Compilatio';
 $string['activate_compilatio'] = 'Enable Compilatio';

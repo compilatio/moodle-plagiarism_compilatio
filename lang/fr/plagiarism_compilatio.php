@@ -46,11 +46,27 @@ $string['formdelete'] = "Supprimer";
 
 $string['migration_title'] = "Migration v4 vers v5";
 $string['migration_info'] = "Compilatio met en place une nouvelle plateforme technique v5 pour l'ensemble de ses clients.<br>
-    Lorsque vous y serez invités par l'équipe technique, vous devrez exécuter une action  pour finaliser cette migration.";
+    Lorsque vous y serez invités par l'équipe technique, vous devrez exécuter les actions ci-dessous pour finaliser cette migration.";
 $string['migration_apikey'] = "Saisir la nouvelle clé API v5";
 $string['migration_btn'] = "Lancer la mise à jour des données enregistrées dans Moodle";
-$string['migration_success'] = "Tous les documents ont été mis à jour";
 $string['migration_success_doc'] = "documents ont été mis à jour";
+$string['migration_form_title'] = "Lancer la mise à jour des données enregistrées dans Moodle, pour finaliser la migration de v4 vers v5.";
+$string['migration_support'] = "
+    <p>Si tous les documents n'ont pas été correctement mis à jour, merci de prendre contact avec l'équipe support de Compilatio en écrivant à support@compilatio.net et en précisant :</p>
+    <p><<
+        <br>
+        Une erreur est apparue dans le cadre de la migration des données de v4 vers v5 d’une plateforme Moodle de notre établissement
+        <ul>
+            <li>Le message d’erreur suivant est apparu : [message]</li>
+            <li>[nom_de_l_etablissement]</li>
+            <li>[nom de l’instance Moodle, si plusieurs instances utilisées]</li>
+            <li>N° de votre clé API v4 : [____]</li>
+            <li>N° de clé API v5 : [____]</li>
+            <li>Nom de la personne à contacter dans l’établissement :</li>
+            <li>Email de la personne à contacter :</li>
+            <li>Téléphone de la personne à contacter :</li>
+        </ul>
+    >><p>";
 
 $string['use_compilatio'] = 'Détecter des similitudes avec Compilatio';
 $string['activate_compilatio'] = 'Activer le plug-in Compilatio';

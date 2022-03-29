@@ -55,6 +55,7 @@ if (isset($iddoc) && compilatio_valid_md5($iddoc) && isset($indexingstatepost)) 
     $indexingstate = (int) ((boolean) $indexingstatepost);
 
     $indexingstate = ws_helper::set_indexing_state($iddoc, $indexingstate, $apiconfigid);
+
     if ($indexingstate === true) {
         echo ('true');
     } else {

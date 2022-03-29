@@ -40,6 +40,8 @@ $currenttab = 'compilatiomigrate';
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 echo "<h3>" . get_string('migration_title', 'plagiarism_compilatio') . "</h3>";
 echo "<p>" . get_string('migration_info', 'plagiarism_compilatio') . "</p>";
+
+echo "<h5 class='compi-migration'>" . get_string('migration_form_title', 'plagiarism_compilatio') . "</h5>";
 echo "<form class='form-inline' action='migrate.php' method='post'>
         <label>" . get_string('migration_apikey', 'plagiarism_compilatio') . " : </label>
         <input class='form-control m-2' type='text' id='apikey' name='apikey' required>
@@ -95,15 +97,14 @@ if (!empty($apikey)) {
 
             $sql = "SELECT * FROM {plagiarism_compilatio_files} files
                 JOIN {plagiarism_compilatio_apicon} apicon ON files.apiconfigid = apicon.id
-                WHERE apiconfigid != ? AND api_key LIKE 'mo7-%'";
+                WHERE externalid IS NOT NULL AND apiconfigid != ? AND api_key LIKE 'mo7-%'";
             $v4files = $DB->get_records_sql($sql, [$apiconfigid]);
-            if (empty($v4files)) {
-                $DB->delete_records_select("plagiarism_compilatio_apicon", "id != ?", array($apiconfigid));
-                echo $OUTPUT->notification(get_string('migration_success', 'plagiarism_compilatio'), 'notifysuccess');
-            } else {
-                echo $OUTPUT->notification($countsuccess . " / " . ($countsuccess + count($v4files))
-                    . " " . get_string('migration_success_doc', 'plagiarism_compilatio'), 'notifysuccess');
-            }
+
+            echo $OUTPUT->notification($countsuccess . " / " . ($countsuccess + count($v4files))
+                . " " . get_string('migration_success_doc', 'plagiarism_compilatio'), 'notifysuccess');
+
+            $DB->delete_records_select("plagiarism_compilatio_apicon", "id != ?", array($apiconfigid));
+
         } else {
             echo $OUTPUT->notification("Failed to get v5 documents : " . $response->status->message ?? "");
         }
@@ -111,6 +112,8 @@ if (!empty($apikey)) {
         echo $OUTPUT->notification("Invalid API Key");
     }
 }
+
+echo "<div class='compi-migration'>" . get_string('migration_support', 'plagiarism_compilatio') . "</div>";
 
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();
