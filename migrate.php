@@ -49,6 +49,7 @@ echo "<form class='form-inline' action='migrate.php' method='post'>
     </form>";
 
 $apikey = optional_param('apikey', null, PARAM_RAW);
+
 if (!empty($apikey)) {
     $countsuccess = 0;
 
@@ -103,6 +104,7 @@ if (!empty($apikey)) {
             echo $OUTPUT->notification($countsuccess . " / " . ($countsuccess + count($v4files))
                 . " " . get_string('migration_success_doc', 'plagiarism_compilatio'), 'notifysuccess');
 
+            $DB->set_field("plagiarism_compilatio_files", "apiconfigid", $apiconfigid);
             $DB->delete_records_select("plagiarism_compilatio_apicon", "id != ?", array($apiconfigid));
 
         } else {
