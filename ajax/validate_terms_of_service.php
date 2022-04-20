@@ -15,30 +15,35 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Checks a document analysis via Compilatio SOAP API
+ * Start a document analysis via Compilatio SOAP API
  *
  * This script is called by amd/build/ajax_api.js
  *
  * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @param string $_POST['id']
+ * @param string $_POST['userid']
  */
+
+use plagiarism_compilatio\CompilatioService;
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
-
-// Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 require_login();
-global $DB, $SESSION;
-$id = optional_param('id', '', PARAM_TEXT);
 
-if (isset($id) && isset($SESSION->compilatio_plagiarismfiles[$id])) {
-    CompilatioAnalyses::check_analysis($SESSION->compilatio_plagiarismfiles[$id], true);
-}
+global $DB;
+
+$userid = required_param('userid', PARAM_RAW);
+
+$user = $DB->get_record("plagiarism_compilatio_user", array("compilatioid" => $userid));
+$user->validatedtermsofservice = true;
+$DB->update_record('plagiarism_compilatio_user', $user);
+
+$compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $userid);
+$compilatio->validate_terms_of_service();
+
+

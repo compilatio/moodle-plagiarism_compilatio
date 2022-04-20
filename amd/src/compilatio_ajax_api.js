@@ -66,7 +66,7 @@ define(['jquery'], function($) {
                     $("#compilatio-logo").click();
                     // Launch ajax requests.
                     fileIds.forEach(function(id) {
-                        $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_check_analysis.php',
+                        $.post(basepath + '/plagiarism/compilatio/ajax/check_analysis.php',
                         {'id': id}, function() {
                             i++;
                             $("#compi-update-progress").val(i);
@@ -91,7 +91,7 @@ define(['jquery'], function($) {
                     "<div class='compilatio-alert compilatio-alert-info'><strong>" + title
                     + "</strong><br/>" + message + "</div>"
                 );
-                $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_all_analysis.php',
+                $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
                 });
@@ -103,7 +103,7 @@ define(['jquery'], function($) {
         $(document).ready(function() {
             setTimeout(function() {
                 $(".compi-" + eltId + " > div:last-child").click(function() {
-                    $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_analysis.php',
+                    $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis.php',
                     {'docId': docId}, function() {
                         window.location.reload();
                     });
@@ -123,8 +123,19 @@ define(['jquery'], function($) {
                     "<div class='compilatio-alert compilatio-alert-info'><strong>" + title
                     + "</strong><br/>" + message + "</div>"
                 );
-                $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_restart_failed_analysis.php',
+                $.post(basepath + '/plagiarism/compilatio/ajax/restart_failed_analysis.php',
                 {'cmid': cmid}, function() {
+                    window.location.reload();
+                });
+            });
+        });
+    };
+
+    exports.validateTermsOfService = function(basepath, userid) {
+        $(document).ready(function() {
+            $("#tos-btn").click(function() {
+                $.post(basepath + '/plagiarism/compilatio/ajax/validate_terms_of_service.php',
+                {'userid': userid}, function() {
                     window.location.reload();
                 });
             });

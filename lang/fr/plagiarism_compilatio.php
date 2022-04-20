@@ -55,6 +55,10 @@ $string['owner_file_student'] = "L'élève est l'unique propriétaire de son dev
 $string['owner_file_student_details'] = "En cas de demande de suppression des données personnelles d'un élève, les devoirs seront supprimés de la plateforme Moodle et de la bibliothèque de références Compilatio. Les devoirs ne seront plus disponibles pour une comparaison avec de nouveaux documents.";
 
 // Activity settings.
+$string['terms_of_service'] = 'J\'ai pris connaissance des <a href=\'{$a}\'>Conditions générales d\'utilisation</a> de Compilatio et je les accepte.';
+$string['terms_of_service_info'] = '<a href=\'{$a}\'>Conditions générales d\'utilisation</a> de Compilatio';
+$string['tos'] = 'Les <a href=\'{$a}\'>Conditions générales d\'utilisation</a> de Compilatio n\'ont pas été validés ou on été mises à jour.<br> Merci d\'en prendre connaissance et de les valider pour pouvoir utiliser Compilatio.';
+$string['tos_btn'] = "J'ai pris connaissance des Conditions générales d'utilisation et je les accepte.";
 $string['activated'] = 'Détecter des similitudes avec Compilatio';
 $string['defaultindexing'] = "Ajouter les documents à la bibliothèque de références";
 $string['defaultindexing_help'] = "Oui: Ajoute les documents dans la bibliothèque de références. Ces documents seront utilisés comme matériel de comparaison pour vos analyses.
@@ -84,8 +88,8 @@ $string['warningthreshold'] = "Vert jusqu'à";
 $string['criticalthreshold'] = "Orange jusqu'à";
 $string['red_threshold'] = "rouge au delà";
 $string['similarity_percent'] = "% de similitudes";
-$string['student_analyses'] = "Permettre aux étudiants d'analyser leurs documents";
-$string['student_analyses_help'] = "Ceci permet aux étudiants d'analyser leur fichiers en brouillon avec Compilatio Magister, avant le rendu final à l'enseignant.";
+$string['studentanalyses'] = "Permettre aux étudiants d'analyser leurs documents";
+$string['studentanalyses_help'] = "Ceci permet aux étudiants d'analyser leur fichiers en brouillon avec Compilatio Magister, avant le rendu final à l'enseignant.";
 $string['activate_submissiondraft'] = 'Pour permettre aux étudiants d\'analyser leurs brouillons, vous devez activer l\'option <b>{$a}</b> dans la partie';
 $string['quiz_help'] = 'Seules les questions de type composition dont la réponse contient au moins {$a} mots seront analysés.';
 $string["admin_disabled_reports"] = "L'administrateur a désactivé l'affichage des rapports de similitudes aux étudiants.";

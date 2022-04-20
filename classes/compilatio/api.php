@@ -121,6 +121,7 @@ class CompilatioService {
             'email' => $email,
             'locale' => [
                 "timezone" => "Europe/Paris",
+                //TODO langue ??
                 "lang" => "fr",
             ],
         );
@@ -159,7 +160,7 @@ class CompilatioService {
      * @param   string  $folderid       Document's folder ID
      * @return  string                  Return the document's ID, an error message otherwise
      */
-    public function set_document($filename, $folderid, $filepath, $indexed, /*$depositor, $author*/) {
+    public function set_document($filename, $folderid, $filepath, $indexed/*, $depositor, $author*/) {
 
         //$depositor = explode(' ', $depositor, 2);
         //$author = explode(' ', $author, 2);
@@ -249,7 +250,7 @@ class CompilatioService {
 
         if ($analysistype == "auto") {
             $params["auto_analysis"] = true;
-        } else if ($analysistype == "timed") {
+        } else if ($analysistype == "planned") {
             $params["scheduled_analysis_enabled"] = true;
             $params["scheduled_analysis_date"] = $analysistime;
         }
@@ -286,7 +287,7 @@ class CompilatioService {
 
         if ($analysistype == "auto") {
             $params["auto_analysis"] = true;
-        } else if ($analysistype == "timed") {
+        } else if ($analysistype == "planned") {
             $params["scheduled_analysis_enabled"] = true;
             $params["scheduled_analysis_date"] = $analysistime;
         }
@@ -390,7 +391,7 @@ class CompilatioService {
         );
 
         $response = json_decode($this->call_api($endpoint, "post", json_encode($params)));
-        error_log(var_export($response,true));
+
         $error = $this->get_error_response($response, 201);
         if ($error === false) {
             return true;
@@ -401,12 +402,12 @@ class CompilatioService {
     }
 
     /**
-     * Get analysis, delete it and start a new analysis for a document
+     * Get analysis and delete it
      *
      * @param  string   $iddoc  Document ID
      * @return mixed    Return true if succeed, an error message otherwise
      */
-    public function restart_analyse($iddoc) {
+    public function delete_analyse($iddoc) {
         $endpoint = "/api/private/analysis/get-by-doc/" . $iddoc;
         $response = json_decode($this->call_api($endpoint));
 
@@ -415,7 +416,7 @@ class CompilatioService {
             $response = json_decode($this->call_api($endpoint, "delete"));
 
             if ($this->get_error_response($response, 200) === false) {
-                return $this->start_analyse($iddoc);
+                return true;
             }
         }
         return false;
@@ -467,24 +468,6 @@ class CompilatioService {
     }
 
     /**
-     * Download Compilatio terms of service PDF file.
-     *
-     * @param  string  $lang  Language
-     * @return boolean Return true if download succeed, false otherwise
-     */
-    public function get_terms_of_service($lang) {
-        $endpoint = "/api/private/terms-of-service/magister/" . $lang;
-
-        //$handle = fopen(__DIR__ . '/../../tmp/terms-of-service.pdf', 'w+');
-
-        if ($this->call_api($endpoint, "download", null, $handle) == 200) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Validate user's terms of service.
      *
      * @return boolean Return true if terms of service has been validated, false otherwise
@@ -501,9 +484,9 @@ class CompilatioService {
     }
 
     /**
-     * Validate user's terms of service.
+     * Get zendesk jwt to authenticate user to help center.
      *
-     * @return boolean Return true if terms of service has been validated, false otherwise
+     * @return boolean Return jwt if succeed, false otherwise
      */
     public function get_zendesk_jwt() {
         $endpoint = "/api/private/user/zendesk/jwt";
@@ -562,8 +545,13 @@ class CompilatioService {
             return false;
 
         } else if (isset($response->errors->key) && $response->errors->key == 'need_terms_of_service_validation') {
-            //TODO.
-
+            if (!empty($this->userid)) {
+                global $DB;
+                $user = $DB->get_record("plagiarism_compilatio_user", array("compilatioid" => $this->userid));
+                $user->validatedtermsofservice = false;
+                $DB->update_record('plagiarism_compilatio_user', $user);
+            }
+            return $response->errors->key;
         } else {
             return $response->status->message;
         }

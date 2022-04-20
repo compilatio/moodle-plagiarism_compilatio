@@ -300,6 +300,27 @@ class output_helper {
     ) {
         global $DB, $CFG, $PAGE, $USER;
 
+        $user = $DB->get_record('plagiarism_compilatio_user', array("userid" => $USER->id));
+
+        if (!empty($user)) {
+            if ($user->validatedtermsofservice == 0) {
+                // TODO subtring ?
+                $lang = current_language();
+
+                $termsofservice = "https://app.compilatio.net/api/private/terms-of-service/magister/" . $lang;
+
+                $alerts[] = "
+                    <div class='compilatio-alert compilatio-alert-danger' style='display:flex;'>
+                        <p>" . get_string("tos", "plagiarism_compilatio", $termsofservice) . "<p>
+                        <input style='margin-left:3em;' id='tos-btn' class='btn btn-success' type='submit'
+                            value=\"" . get_string("tos_btn", "plagiarism_compilatio") . "\">
+                    </div>";
+                    $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'validateTermsOfService', array($CFG->httpswwwroot, $user->compilatioid));
+            }
+        } else {
+            //TODO ?
+        }
+
         $output = '';
         $output .= "<div id='compilatio-container'>";
 
@@ -354,12 +375,11 @@ class output_helper {
         // Help tab.
         $output .= "<div id='compi-help' class='compilatio-tabs-content'>";
 
-        if (empty($plagiarismsettings['apikey'])) {
+        if (empty($plagiarismsettings['apikey']) || empty($user)) {
             $output .= "<p>" . get_string('helpcenter_error', 'plagiarism_compilatio')
                 . "<a href='https://support.compilatio.net/'>https://support.compilatio.net</a></p>";
         } else {
-            $userid = $DB->get_field('plagiarism_compilatio_user', "compilatioid", array("userid" => $USER->id));
-            $output .= "<p><a href='../../plagiarism/compilatio/helpcenter.php?userid=" . $userid . "'
+            $output .= "<p><a href='../../plagiarism/compilatio/helpcenter.php?userid=" . $user->compilatioid . "'
             target='_blank' >" . get_string('helpcenter', 'plagiarism_compilatio') . "
             <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
                 <path fill='none' stroke='#555' stroke-linecap='round'
@@ -389,11 +409,15 @@ class output_helper {
             $output .= "<h5 id='compi-notif-title'>" . get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>";
 
             foreach ($alerts as $alert) {
-                $output .= "
-                    <div class='compilatio-alert compilatio-alert-" . $alert["class"] . "'>" .
-                    "<strong>" . $alert["title"] . "</strong><br/>" .
-                    $alert["content"] .
-                    "</div>";
+                if (isset($alert["content"])) {
+                    $output .= "
+                        <div class='compilatio-alert compilatio-alert-" . $alert["class"] . "'>" .
+                            "<strong>" . $alert["title"] . "</strong><br/>" .
+                            $alert["content"] .
+                        "</div>";
+                } else {
+                    $output .= $alert;
+                }
             }
 
             $output .= "</div>";

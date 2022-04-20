@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Start a document analysis via Compilatio SOAP API
+ * Checks a document analysis via Compilatio API
  *
  * This script is called by amd/build/ajax_api.js
  *
@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param string $_POST['id']
- * @param string $_POST['cmid']
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
@@ -37,12 +36,9 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 require_login();
+global $DB, $SESSION;
+$id = optional_param('id', '', PARAM_TEXT);
 
-global $DB;
-
-$docid = required_param('docId', PARAM_RAW);
-
-$plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('id' => $docid));
-$analyse = CompilatioAnalyses::start_analysis($plagiarismfile);
-
-
+if (isset($id) && isset($SESSION->compilatio_plagiarismfiles[$id])) {
+    CompilatioAnalyses::check_analysis($SESSION->compilatio_plagiarismfiles[$id], true);
+}

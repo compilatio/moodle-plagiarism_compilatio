@@ -55,6 +55,10 @@ $string['owner_file_student'] = 'The student is the only owner of his document';
 $string['owner_file_student_details'] = 'When a student request to delete all his data, his documents and reports will be deleted from Moodle and the Compilatio document database. Documents will no longer be available for comparison with other documents.';
 
 // Activity settings.
+$string['terms_of_service'] = 'I have read the <a href=\'{$a}\'>Terms of Service</a> of Compilatio and I accept them.';
+$string['terms_of_service_info'] = '<a href=\'{$a}\'>Terms of Service</a> of Compilatio';
+$string['tos'] = 'Les <a href=\'{$a}\'>Conditions générales d\'utilisation</a> de Compilatio n\'ont pas été validés ou on été mises à jour.<br> Merci d\'en prendre connaissance et de les valider pour pouvoir utiliser Compilatio.';
+$string['tos_btn'] = "J'ai pris connaissance des Conditions générales d'utilisation et je les accepte.";
 $string['activated'] = 'Allow similarity detection with Compilatio';
 $string['defaultindexing'] = "Add documents into the Document Database";
 $string['defaultindexing_help'] = "Yes: Add documents in the document database. These documents will be used as comparison material for future analysis.
@@ -84,8 +88,8 @@ $string['warningthreshold'] = "Green up to";
 $string['criticalthreshold'] = "Orange up to";
 $string['red_threshold'] = "red otherwise";
 $string['similarity_percent'] = '% of similarities';
-$string['student_analyses'] = "Allow students to analyze their documents";
-$string['student_analyses_help'] = "This allows students to analyze their draft files with Compilatio Magister, before final submission to the teacher.";
+$string['studentanalyses'] = "Allow students to analyze their documents";
+$string['studentanalyses_help'] = "This allows students to analyze their draft files with Compilatio Magister, before final submission to the teacher.";
 $string['activate_submissiondraft'] = 'To allow students to analyze their drafts, you must enable the <b>{$a}</b> option in the section';
 $string['quiz_help'] = 'Only essay questions whose answer contain at least {$a} words will be analyzed.';
 $string["admin_disabled_reports"] = "The administrator does not allow the teachers to display the similarity reports to the students.";

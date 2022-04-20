@@ -53,11 +53,12 @@ foreach ($files as $file) {
     $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $file->cm));
     $compilatio->set_user_id($userid);
 
-    if ($compilatio->restart_analyse($file->externalid)) {
+    if ($compilatio->delete_analyse($file->externalid) && $compilatio->start_analyse($file->externalid)) {
         $countsuccess++;
     } else {
         $docsfailed[] = $file->filename;
     }
+
     $file->status = 'queue';
     $DB->update_record('plagiarism_compilatio_files', $file);
 }

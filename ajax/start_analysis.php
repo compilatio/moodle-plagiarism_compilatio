@@ -15,38 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This script redirects to Compilatio helpcenter
+ * Start a document analysis via Compilatio API
+ *
+ * This script is called by amd/build/ajax_api.js
  *
  * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * It is called from assignments pages or plugin administration section
- *
+ * @param string $_POST['docId']
  */
 
-require_once(dirname(dirname(__FILE__)) . '/../config.php');
+require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
-use plagiarism_compilatio\CompilatioService;
+// Get global class.
+require_once($CFG->dirroot . '/plagiarism/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 require_login();
 
-// Check GET parameter.
-$availpages = ['admin', 'teacher'];
+global $DB;
 
-$page = optional_param('page', 'teacher', PARAM_RAW);
-$userid = optional_param('userid', null, PARAM_RAW);
+$docid = required_param('docId', PARAM_RAW);
 
-if (in_array($page, $availpages) === false) {
-    $page = 'teacher';
-}
+$plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('id' => $docid));
+$analyse = CompilatioAnalyses::start_analysis($plagiarismfile);
 
-$compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $userid);
-$token = $compilatio->get_zendesk_jwt();
 
-$helpcenterpage = get_config('plagiarism_compilatio', 'helpcenter_' . $page);
-
-header('Location: https://compilatio.zendesk.com/access/jwt?jwt=' . $token . "&return_to=" . urlencode($helpcenterpage));
-exit;

@@ -193,6 +193,9 @@ class CompilatioEventHandler {
 
         // Get user id.
         $userid = $event['relateduserid'];
+        if ($userid == null) {
+            $userid = $event['userid'];
+        }
 
         // Delete in assign.
         if ($event['target'] == 'submission_status' && $event['other']['newstatus'] != 'draft') {
@@ -205,18 +208,20 @@ class CompilatioEventHandler {
         if ($event['target'] == 'assessable' && $plugincm->studentanalyses === '1') {
 
             $files = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
-            compilatio_delete_files($files, false);
+            $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $plugincm->userid);
 
-            foreach ($files as $pf) {
-                $pf->externalid = null;
-                $pf->reporturl = null;
-                $pf->status = 'pending';
-                $pf->similarityscore = 0;
-                $pf->attempt = 0;
-                $pf->docId = null;
-                $pf->timesubmitted = time();
+            foreach ($files as $file) {
+                $compilatio->delete_analyse($file->externalid);
+                $compilatio->set_indexing_state($file->externalid, $plugincm->defaultindexing);
 
-                $DB->update_record('plagiarism_compilatio_files', $pf);
+                $file->reporturl = null;
+                $file->status = 'sent';
+                $file->similarityscore = 0;
+                $file->attempt = 0;
+                $file->timesubmitted = time();
+                $file->indexed = $plugincm->defaultindexing;
+
+                $DB->update_record('plagiarism_compilatio_files', $file);
             }
         }
     }

@@ -316,7 +316,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
  */
 function plagiarism_compilatio_before_standard_top_of_body_html() {
 
-    global $CFG, $PAGE, $OUTPUT, $DB, $SESSION;
+    global $CFG, $PAGE, $OUTPUT, $DB, $SESSION, $USER;
 
     if (!$PAGE->context instanceof \context_module) {
         return;
@@ -364,14 +364,17 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
 
     $alerts = array();
 
+    // TODO ?
     $mod = $DB->get_record('plagiarism_compilatio_module', array("cmid" => $cmid));
-    if (null === $mod->folderid || null === $mod->userid) {
+    if (null === $mod->folderid) {
         $alerts[] = array(
             "class" => "danger",
             "title" => "Erreur",
-            "content" => "Une erreur s'est produite lors de la création de l'activité. Les analyses automatiques et programmées ne fonctionnent pas. Vous pouvez lancer les analyses manuellement."
+            "content" => "Une erreur s'est produite lors de la création de l'activité.
+            Les analyses automatiques et programmées ne fonctionnent pas. Vous pouvez lancer les analyses manuellement."
         );
     }
+    // TODO ?
 
     if (isset($SESSION->compilatio_alert)) {
         $alerts[] = $SESSION->compilatio_alert;
@@ -435,7 +438,8 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
 
     foreach ($compilatio->get_alerts() as $alert) {
-        $translation = $compilatio->get_translation(current_language(), $alert->text);
+        $language = substr(current_language(), 0, 2);
+        $translation = $compilatio->get_translation($language, $alert->text);
 
         if (empty($translation)) {
             $text = $alert->text;
@@ -465,35 +469,10 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     );
 }
 
-function get_compilatio_user() {
+function get_compilatio_user($validatedtermsofservice) {
     global $USER, $DB;
 
-    $user = $DB->get_record('plagiarism_compilatio_user', array("userid" => $USER->id));
-
-    if (empty($user)) {
-        $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
-
-        // Check if user already exists in Compilatio.
-        $compilatioid = $compilatio->get_user($USER->email);
-
-        // Create the user if doesn't exists.
-        if ($compilatioid == 404) {
-            $compilatioid = $compilatio->set_user($USER->firstname, $USER->lastname, $USER->email);
-        }
-
-        $user = new stdClass();
-        $user->compilatioid = $compilatioid;
-        $user->userid = $USER->id;
-        $user->validatedtermsofservice = 0;
-
-        if (compilatio_valid_md5($compilatioid) && !$DB->insert_record('plagiarism_compilatio_user', $user)) {
-            return null;
-        }
-
-        $compilatio->set_user_id($compilatioid);
-        $compilatio->validate_terms_of_service();
-    }
-    return $user->compilatioid;
+    
 }
 
 /**
@@ -511,23 +490,6 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
     }
 
     if (isset($data->activated)) {
-        // Validation on thresholds.
-        if (!isset($data->warningthreshold, $data->criticalthreshold) ||
-            $data->warningthreshold > $data->criticalthreshold ||
-            $data->warningthreshold > 100 || $data->warningthreshold < 0 ||
-            $data->criticalthreshold > 100 || $data->criticalthreshold < 0
-        ) {
-            $data->warningthreshold = 10;
-            $data->criticalthreshold = 25;
-        }
-
-        if (get_config("plagiarism_compilatio", "allow_teachers_to_show_reports") !== '1') {
-            $data->showstudentreport = 'never';
-        }
-
-        $userid = get_compilatio_user();
-        $compilatio = new CompilatioService(get_config("plagiarism_compilatio", "apikey"), $userid);
-
         // First get existing values.
         $cmconfig = $DB->get_record('plagiarism_compilatio_module', array('cmid' => $data->coursemodule));
 
@@ -536,24 +498,79 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
             $newconfig = true;
             $cmconfig = new stdClass();
             $cmconfig->cmid = $data->coursemodule;
-            $cmconfig->userid = $userid;
-
-            $folderid = $compilatio->set_folder($data->name, $data->defaultindexing, $data->analysistype,
-                $data->analysistime, $data->warningthreshold, $data->criticalthreshold);
-            if (compilatio_valid_md5($folderid)) {
-                $cmconfig->folderid = $folderid;
-            }
         }
 
-        foreach ($plugin->config_options() as $element) {
-            $cmconfig->$element = $data->$element ?? 0;
+        if ($data->activated === '1') {
+            // Validation on thresholds.
+            if (!isset($data->warningthreshold, $data->criticalthreshold) ||
+                $data->warningthreshold > $data->criticalthreshold ||
+                $data->warningthreshold > 100 || $data->warningthreshold < 0 ||
+                $data->criticalthreshold > 100 || $data->criticalthreshold < 0
+            ) {
+                $data->warningthreshold = 10;
+                $data->criticalthreshold = 25;
+            }
+
+            if (get_config("plagiarism_compilatio", "allow_teachers_to_show_reports") !== '1') {
+                $data->showstudentreport = 'never';
+            }
+
+            $user = $DB->get_record('plagiarism_compilatio_user', array("userid" => $USER->id));
+
+            if (empty($user)) {
+                $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+
+                // Check if user already exists in Compilatio.
+                $compilatioid = $compilatio->get_user($USER->email);
+
+                // Create the user if doesn't exists.
+                if ($compilatioid == 404) {
+                    $compilatioid = $compilatio->set_user($USER->firstname, $USER->lastname, $USER->email);
+                }
+
+                $user = new stdClass();
+                $user->compilatioid = $compilatioid;
+                $user->userid = $USER->id;
+
+                if (compilatio_valid_md5($compilatioid)) {
+                    $id = $DB->insert_record('plagiarism_compilatio_user', $user);
+                    //TODO
+                    $user = $DB->get_record('plagiarism_compilatio_user', array("id" => $id));
+                }
+            }
+
+            $cmconfig->userid = $user->compilatioid;
+
+            $compilatio = new CompilatioService(get_config("plagiarism_compilatio", "apikey"), $user->compilatioid);
+
+            if ($data->termsofservice ?? false) {
+                $user->validatedtermsofservice = true;
+                $DB->update_record('plagiarism_compilatio_user', $user);
+
+                $compilatio->validate_terms_of_service();
+            }
+
+            foreach ($plugin->config_options() as $element) {
+                $cmconfig->$element = $data->$element ?? null;
+            }
+
+            if ($newconfig) {
+                $folderid = $compilatio->set_folder($data->name, $data->defaultindexing, $data->analysistype,
+                $data->analysistime, $data->warningthreshold, $data->criticalthreshold);
+                if (compilatio_valid_md5($folderid)) {
+                    $cmconfig->folderid = $folderid;
+                }
+            } else {
+                $compilatio->update_folder($cmconfig->folderid, $data->name, $data->defaultindexing, $data->analysistype,
+                    $data->analysistime, $data->warningthreshold, $data->criticalthreshold);
+            }
+        } else {
+            $cmconfig->activated = 0;
         }
 
         if ($newconfig) {
             $DB->insert_record('plagiarism_compilatio_module', $cmconfig);
         } else {
-            $compilatio->update_folder($cmconfig->folderid, $data->name, $data->defaultindexing, $data->analysistype,
-                $data->analysistime, $data->warningthreshold, $data->criticalthreshold);
             $DB->update_record('plagiarism_compilatio_module', $cmconfig);
         }
     }
@@ -631,7 +648,10 @@ function plagiarism_compilatio_coursemodule_standard_elements($formwrapper, $mfo
  */
 function compilatio_get_form_elements($mform, $defaults = false, $modulename = '') {
 
-    global $PAGE, $CFG;
+    global $PAGE, $CFG, $USER, $DB;
+
+    // TODO subtring ?
+    $lang = current_language();
 
     $ynoptions = array(
         0 => get_string('no'),
@@ -648,6 +668,24 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename = '
     $mform->addElement('select', 'activated', get_string("activated", "plagiarism_compilatio"), $ynoptions);
     $mform->setDefault('activated', 1);
 
+    if (!$defaults) {
+        $cmpuser = $DB->get_record('plagiarism_compilatio_user', array('userid' => $USER->id));
+        $termsofservice = "https://app.compilatio.net/api/private/terms-of-service/magister/" . $lang;
+
+        if (empty($cmpuser) || $cmpuser->validatedtermsofservice == 0) {
+            $mform->addElement('checkbox', 'termsofservice', get_string("terms_of_service", "plagiarism_compilatio", $termsofservice));
+            $mform->setDefault('termsofservice', 0);
+            $mform->addRule('termsofservice', null, 'required', null, 'client');
+
+            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_form', 'requiredTermsOfService');
+        } else {
+            $group = [];
+            $group[] = $mform->createElement("html", "<p>" . get_string("terms_of_service_info", "plagiarism_compilatio", $termsofservice) . "</p>");
+            $mform->addGroup($group, 'tos_info', '', ' ', false);
+            $mform->hideIf('tos_info', 'activated', 'eq', '0');
+        }
+    }
+
     $analysistypes = array('manual' => get_string('analysistype_manual', 'plagiarism_compilatio'),
         'planned' => get_string('analysistype_prog', 'plagiarism_compilatio'));
     if (!$defaults) { // Only show this inside a module page - not on default settings pages.
@@ -661,13 +699,14 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename = '
         $mform->setDefault('analysistime', time() + 7 * 24 * 3600);
         $mform->disabledif('analysistime', 'analysistype', 'noteq', 'planned');
 
-        if (current_language() == 'fr' && $CFG->version >= 2017111300) { // Method hideIf is available since moodle 3.4.
+        // TODO img in v4 !
+        /*if ($lang == 'fr') {
             $group = [];
             $group[] = $mform->createElement('static', 'calendar', '',
                 "<img style='width: 45em;' src='https://content.compilatio.net/images/calendrier_affluence_magister.png'>");
             $mform->addGroup($group, 'calendargroup', '', ' ', false);
             $mform->hideIf('calendargroup', 'analysistype', 'noteq', 'planned');
-        }
+        }*/
     }
 
     $showoptions = array(
@@ -692,20 +731,15 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename = '
                 get_string("studentanalyses", "plagiarism_compilatio"), $ynoptions);
             $mform->addHelpButton('studentanalyses', 'studentanalyses', 'plagiarism_compilatio');
 
-            $plugincm = compilatio_cm_use($PAGE->context->instanceid);
-            if ($plugincm->studentanalyses === '0') {
-                $mform->disabledif('studentanalyses', 'submissiondrafts', 'eq', '0');
-            }
+            $mform->disabledif('studentanalyses', 'submissiondrafts', 'eq', '0');
 
-            if ($CFG->version >= 2017111300) { // Method hideIf is available since moodle 3.4.
-                $group = [];
-                $group[] = $mform->createElement("html", "<p style='color: #b94a48;'>" .
-                    get_string('activate_submissiondraft', 'plagiarism_compilatio',
-                    get_string('submissiondrafts', 'assign')) .
-                    " <b>" . get_string('submissionsettings', 'assign') . ".</b></p>");
-                $mform->addGroup($group, 'activatesubmissiondraft', '', ' ', false);
-                $mform->hideIf('activatesubmissiondraft', 'submissiondrafts', 'eq', '1');
-            }
+            $group = [];
+            $group[] = $mform->createElement("html", "<p style='color: #b94a48;'>" .
+                get_string('activate_submissiondraft', 'plagiarism_compilatio',
+                get_string('submissiondrafts', 'assign')) .
+                " <b>" . get_string('submissionsettings', 'assign') . ".</b></p>");
+            $mform->addGroup($group, 'activatesubmissiondraft', '', ' ', false);
+            $mform->hideIf('activatesubmissiondraft', 'submissiondrafts', 'eq', '1');
         }
     }
 
@@ -962,7 +996,8 @@ function compilatio_student_analysis($studentanalysesparam, $cmid, $userid) {
             WHERE cm.id = ? AND userid = ?";
 
         $status = $DB->get_field_sql($sql, array($cmid, $userid));
-        if ($status == 'draft') {
+
+        if ($status == 'draft' || $status == 'new') {
             return true;
         }
     }

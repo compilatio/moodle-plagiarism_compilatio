@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Set document indexing state via Compilatio SOAP API
+ * Set document indexing state via Compilatio API
  *
  * This script is called by amd/build/ajax_api.js
  *

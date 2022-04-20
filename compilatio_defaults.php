@@ -65,7 +65,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     }
 
     foreach ($plugin->config_options() as $element) {
-        $defaultconfig->$element = $data->$element ?? 0;
+        $defaultconfig->$element = $data->$element ?? null;
     }
 
     if ($newconfig) {
