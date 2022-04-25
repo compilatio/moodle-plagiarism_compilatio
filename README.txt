@@ -10,6 +10,9 @@ CHANGES
 - Add tool in admin tab for migration from Compilatio v4 to v5.
 - Add Compilatio v5 alerts (technical news).
 
+FIXES
+- Fix Migration tool for migrations with a lot of documents.
+
 QUICK INSTALL
 ================
 1) Place these files in a new folder in your Moodle install under /plagiarism/compilatio
