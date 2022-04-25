@@ -12,6 +12,7 @@ CHANGES
 
 FIXES
 - Fix Migration tool for migrations with a lot of documents.
+- (v5) Fix documents blocked in queue state because they are too short to be analyzed.
 
 QUICK INSTALL
 ================

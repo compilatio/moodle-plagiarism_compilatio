@@ -1462,11 +1462,8 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename = '
             $mform->addElement('select', 'compi_student_analyses',
                 get_string("compi_student_analyses", "plagiarism_compilatio"), $ynoptions);
             $mform->addHelpButton('compi_student_analyses', 'compi_student_analyses', 'plagiarism_compilatio');
-
-            $plugincm = compilatio_cm_use($PAGE->context->instanceid);
-            if ($plugincm["compi_student_analyses"] === '0') {
-                $mform->disabledif('compi_student_analyses', 'submissiondrafts', 'eq', '0');
-            }
+        
+            $mform->disabledif('compi_student_analyses', 'submissiondrafts', 'eq', '0');
 
             if ($CFG->version >= 2017111300) { // Method hideIf is available since moodle 3.4.
                 $group = [];
@@ -1958,6 +1955,12 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
                 $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
                 preg_match('~of (\d+)~', $analyse->string, $nbmotsmax);
                 set_config('nb_mots_max', $nbmotsmax[1], 'plagiarism_compilatio');
+                return $analyse;
+            } else if (strpos($analyse->string, 'min file size') !== false) {
+                $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_SHORT;
+                $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+                preg_match('~: (\d+)~', $analyse->string, $nbmotsmin);
+                set_config('nb_mots_min', $nbmotsmin[1], 'plagiarism_compilatio');
                 return $analyse;
             }
 

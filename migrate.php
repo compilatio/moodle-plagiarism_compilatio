@@ -115,44 +115,6 @@ if (!empty($apikey)) {
                 echo $OUTPUT->notification("Failed to get v5 documents : " . $response->status->message ?? "");
             }
         } while ($continue);
-
-        /*$ch = curl_init();
-        $params[CURLOPT_URL] = "https://app.compilatio.net/api/private/documents/list?projection="
-            . json_encode(["old_prod_id" => true]);
-
-        curl_setopt_array($ch, $params);
-        $response = json_decode(curl_exec($ch));
-        curl_close($ch);
-
-        if (isset($response->data->documents)) {
-            foreach ($response->data->documents as $doc) {
-                if (isset($doc->old_prod_id)) {
-                    $v4file = $DB->get_record("plagiarism_compilatio_files", array("externalid" => $doc->old_prod_id));
-                    if (!empty($v4file)) {
-                        $v4file->externalid = $doc->id;
-                        $v4file->apiconfigid = $apiconfigid;
-                        if ($DB->update_record("plagiarism_compilatio_files", $v4file)) {
-                            $countsuccess += 1;
-                        }
-                    }
-                }
-            }
-
-            $sql = "SELECT * FROM {plagiarism_compilatio_files} files
-                JOIN {plagiarism_compilatio_apicon} apicon ON files.apiconfigid = apicon.id
-                WHERE externalid IS NOT NULL AND apiconfigid != ? AND api_key LIKE 'mo7-%'";
-            $v4files = $DB->get_records_sql($sql, [$apiconfigid]);
-
-            echo $OUTPUT->notification($countsuccess . " / " . ($countsuccess + count($v4files))
-                . " " . get_string('migration_success_doc', 'plagiarism_compilatio'), 'notifysuccess');
-
-            $DB->set_field("plagiarism_compilatio_files", "apiconfigid", $apiconfigid);
-            $DB->delete_records_select("plagiarism_compilatio_apicon", "id != ?", array($apiconfigid));
-
-        } else {
-            echo $OUTPUT->notification("Failed to get v5 documents : " . $response->status->message ?? "");
-        }*/
-
     } else {
         echo $OUTPUT->notification("Invalid API Key");
     }
