@@ -116,7 +116,7 @@ class output_helper {
         $image = '';
         $status = $file->status;
 
-        $config = $DB->get_record('plagiarism_compilatio_module', array('cmid' => $file->cm));
+        $config = $DB->get_record('plagiarism_compilatio_module', array('cmid' => $file->cm ?? null));
 
         // Add de/indexing feature for teachers.
         $indexed = null;
@@ -134,8 +134,8 @@ class output_helper {
             $titlevariable = $file->similarityscore;
 
         } else if ($status == 'sent') {
-            if ($config->analysistype == 'planned') {
-                $image = "prog";
+            if (($config->analysistype ?? null) == 'planned') {
+                $image = $status = "planned";
                 $span = get_string('btn_planned', "plagiarism_compilatio");
                 $titlevariable = userdate($config->analysistime);
             } else if ($cantriggeranalysis || ($studentanalyse && !$teacher)) {
@@ -161,10 +161,7 @@ class output_helper {
         } else if (strpos($status, "error") === 0) {
             $image = "exclamation";
             $error = true;
-            // TODO ? Relancer les analyses individuellement.
-            /*if ($status !== "error_failed_analysis" && $status !== "error_sending_failed") {
-                $span = get_string('btn_error', "plagiarism_compilatio");
-            }*/
+
             $span = get_string('btn_error', "plagiarism_compilatio");
 
             if ($status == "error_too_large") {
@@ -304,8 +301,7 @@ class output_helper {
 
         if (!empty($user)) {
             if ($user->validatedtermsofservice == 0) {
-                // TODO subtring ?
-                $lang = current_language();
+                $lang =  substr(current_language(), 0, 2);
 
                 $termsofservice = "https://app.compilatio.net/api/private/terms-of-service/magister/" . $lang;
 
@@ -318,7 +314,7 @@ class output_helper {
                     $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'validateTermsOfService', array($CFG->httpswwwroot, $user->compilatioid));
             }
         } else {
-            //TODO ?
+            //TODO Manage user not created ?
         }
 
         $output = '';

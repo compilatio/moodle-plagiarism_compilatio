@@ -39,15 +39,18 @@ $string['enabledandworking'] = 'Le plugin Compilatio est actif et fonctionnel.';
 $string['saved_config_failed'] = "<strong>La combinaison adresse - clé API est incorrecte. Le plugin est désactivé, merci de réessayer.<br/>
     La page d'<a href='autodiagnosis.php'>auto-diagnostic</a> peut vous aider à configurer ce plugin.</strong><br/>
     Erreur : ";
-$string['allow_student_analyses'] = "Permettre aux enseignants d'activer l'option \"Permettre aux étudiants d'analyser leur fichiers en brouillon avec Compilatio Magister, avant le rendu final à l'enseignant\".";
-$string["allow_search_tab"] = "Activer l'outil de recherche permettant d'identifier l'auteur d'un document.";
-$string["allow_search_tab_help"] = "L'outil de recherche permet de rechercher le nom et prénom d'un étudiant d'après un identifiant de document visible dans les rapports d'analyses parmi tous les documents présent sur votre plateforme.";
-$string['compilatioenableplugin'] = 'Activer Compilatio pour {$a}';
-$string['enable_mod_assign'] = 'Activer Compilatio pour les devoirs (assign)';
-$string['enable_mod_workshop'] = 'Activer Compilatio pour les ateliers (workshop)';
-$string['enable_mod_forum'] = 'Activer Compilatio pour les forums';
-$string['enable_mod_quiz'] = 'Activer Compilatio pour les tests';
-$string["allow_teachers_to_show_reports"] = "Permettre aux enseignants de mettre les rapports d'analyse à disposition des étudiants";
+$string["teacher_features_title"] = "Fonctionnalités activées pour les enseignants";
+$string["checkbox_show_reports"] = "Mettre les rapports d'analyse à disposition des étudiants";
+$string['checkbox_student_analyses'] = "Permettre aux étudiants d'analyser leur fichiers en brouillon avec Compilatio Magister, avant le rendu final à l'enseignant.";
+$string["checkbox_search_tab"] = "Outil de recherche permettant d'identifier l'auteur d'un document.";
+$string["checkbox_search_tab_help"] = "L'outil de recherche permet de rechercher le nom et prénom d'un étudiant d'après un identifiant de document visible dans les rapports d'analyses parmi tous les documents présent sur votre plateforme.";
+$string["checkbox_analyses_auto"] = "Lancement automatique des analyses";
+$string["checkbox_analyses_auto_help"] = "Les enseignants peuvent lancer les analyses manuellement ou programmer une date de lancement des analyses.";
+$string["enable_activities_title"] = "Activer Compilatio pour les activités";
+$string['enable_mod_assign'] = ' Devoirs (assign)';
+$string['enable_mod_workshop'] = 'Ateliers (workshop)';
+$string['enable_mod_forum'] = 'Forums';
+$string['enable_mod_quiz'] = 'Tests (quiz)';
 $string['owner_file'] = 'RGPD et propriété du devoir';
 $string['owner_file_school'] = "L'établissement est propriétaire des devoirs";
 $string['owner_file_school_details'] = "En cas de demande de suppression des données personnelles d'un élève, le contenu des devoirs sera conservé et disponible pour une comparaison future avec de nouveaux devoirs. À échéance du contrat avec Compilatio, toutes les données à caractère personnel de votre établissement, dont les devoirs, sont supprimées dans les délais prévus contractuellement.";
@@ -72,14 +75,16 @@ $string['showwhenclosed'] = "Quand l'activité est fermée";
 $string['studentemail'] = "Envoyer un mail à l'étudiant";
 $string['studentemail_help'] = "Ceci enverra un e-mail à l'élève quand un fichier a été traité pour leur faire savoir que le rapport est disponible.";
 $string['analysis'] = 'Lancement des analyses';
-$string['analysis_help'] = "<p>Vous disposez de deux options :</p>
+$string['analysis_help'] = "<p>Vous disposez de trois options :</p>
     <ul>
-        <li><strong> Manuel:</strong> Le document est envoyé à Compilatio, mais l'enseignant doit déclencher manuellement les analyses des documents</li>
-        <li><strong> Programmé:</strong> Le document est envoyé à Compilatio puis analysé à l'heure/date choisie(s) </li>
+        <li><strong> Manuel:</strong> L'analyse des documents doit être déclenchée manuellement via le bouton “Analyser” de chaque document ou via le bouton “Analyser tous les documents”.</li>
+        <li><strong> Programmé:</strong> Tous les documents sont analysés à l'heure/date choisie.</li>
+        <li><strong> Immédiat:</strong> Chaque document est analysé dès le dépôt par l’étudiant. Les documents de l’activité ne seront pas comparés entre eux.</li>
     </ul>
     <p>Pour que tous les documents soient comparés entre eux lors des analyses, déclenchez les analyses seulement lorsque tous les documents sont présents dans le devoir.</p>";
 $string['analysistype_manual'] = 'Manuel';
 $string['analysistype_prog'] = 'Programmé';
+$string['analysistype_auto'] = 'Immédiat';
 $string['analysis_date'] = "Date d'analyse (lancement programmé uniquement)";
 $string['thresholds_settings'] = "Réglage des seuils d'affichage des taux de similitudes :";
 $string['thresholds_description'] = "Indiquez les seuils que vous souhaitez utiliser, afin de faciliter le repérage des rapports d’analyse (% de similitudes) : ";

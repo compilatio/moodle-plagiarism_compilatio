@@ -33,6 +33,7 @@
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 
 use plagiarism_compilatio\CompilatioService;
 
@@ -118,6 +119,11 @@ class CompilatioSendFile {
             if (compilatio_valid_md5($docid)) {
                 $cmpfile->externalid = $docid;
                 $cmpfile->status = "sent";
+
+                if ($cmconfig->analysistype == "auto") {
+                    $cmpfile->status = "queue";
+                }
+
                 $DB->insert_record('plagiarism_compilatio_files', $cmpfile);
                 return $cmpfile;
             } else {
@@ -138,8 +144,6 @@ class CompilatioSendFile {
     public static function send_unsent_files($files, $cmid) {
 
         global $DB;
-
-        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 
         $compilatio = new plagiarism_plugin_compilatio();
 

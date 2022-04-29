@@ -364,8 +364,8 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
 
     $alerts = array();
 
-    // TODO ?
-    $mod = $DB->get_record('plagiarism_compilatio_module', array("cmid" => $cmid));
+    // TODO Manage folder not created ?
+    /*$mod = $DB->get_record('plagiarism_compilatio_module', array("cmid" => $cmid));
     if (null === $mod->folderid) {
         $alerts[] = array(
             "class" => "danger",
@@ -373,8 +373,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
             "content" => "Une erreur s'est produite lors de la création de l'activité.
             Les analyses automatiques et programmées ne fonctionnent pas. Vous pouvez lancer les analyses manuellement."
         );
-    }
-    // TODO ?
+    }*/
 
     if (isset($SESSION->compilatio_alert)) {
         $alerts[] = $SESSION->compilatio_alert;
@@ -525,7 +524,8 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
 
                 // Create the user if doesn't exists.
                 if ($compilatioid == 404) {
-                    $compilatioid = $compilatio->set_user($USER->firstname, $USER->lastname, $USER->email);
+                    $lang = substr(current_language(), 0, 2);
+                    $compilatioid = $compilatio->set_user($USER->firstname, $USER->lastname, $USER->email, $lang);
                 }
 
                 $user = new stdClass();
@@ -533,9 +533,7 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
                 $user->userid = $USER->id;
 
                 if (compilatio_valid_md5($compilatioid)) {
-                    $id = $DB->insert_record('plagiarism_compilatio_user', $user);
-                    //TODO
-                    $user = $DB->get_record('plagiarism_compilatio_user', array("id" => $id));
+                    $user->id = $DB->insert_record('plagiarism_compilatio_user', $user);
                 }
             }
 
@@ -543,7 +541,7 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
 
             $compilatio = new CompilatioService(get_config("plagiarism_compilatio", "apikey"), $user->compilatioid);
 
-            if ($data->termsofservice ?? false) {
+            if (isset($user->id) && $data->termsofservice ?? false) {
                 $user->validatedtermsofservice = true;
                 $DB->update_record('plagiarism_compilatio_user', $user);
 
@@ -553,6 +551,11 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
             foreach ($plugin->config_options() as $element) {
                 $cmconfig->$element = $data->$element ?? null;
             }
+
+            // Get Datetime for Compilatio folder.
+            $date = new DateTime();
+            $date->setTimestamp($data->analysistime);
+            $data->analysistime = $date->format('Y-m-d H:i:s');
 
             if ($newconfig) {
                 $folderid = $compilatio->set_folder($data->name, $data->defaultindexing, $data->analysistype,
@@ -650,8 +653,7 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename = '
 
     global $PAGE, $CFG, $USER, $DB;
 
-    // TODO subtring ?
-    $lang = current_language();
+    $lang = substr(current_language(), 0, 2);
 
     $ynoptions = array(
         0 => get_string('no'),
@@ -687,7 +689,8 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename = '
     }
 
     $analysistypes = array('manual' => get_string('analysistype_manual', 'plagiarism_compilatio'),
-        'planned' => get_string('analysistype_prog', 'plagiarism_compilatio'));
+        'planned' => get_string('analysistype_prog', 'plagiarism_compilatio'),
+        'auto' => get_string('analysistype_auto', 'plagiarism_compilatio'));
     if (!$defaults) { // Only show this inside a module page - not on default settings pages.
         $mform->addElement('select', 'analysistype', get_string('analysis', 'plagiarism_compilatio'), $analysistypes);
         $mform->addHelpButton('analysistype', 'analysis', 'plagiarism_compilatio');
@@ -699,14 +702,14 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename = '
         $mform->setDefault('analysistime', time() + 7 * 24 * 3600);
         $mform->disabledif('analysistime', 'analysistype', 'noteq', 'planned');
 
-        // TODO img in v4 !
-        /*if ($lang == 'fr') {
+        // TODO The image is stored in v4, must be updated to work on v5.
+        if ($lang == 'fr') {
             $group = [];
             $group[] = $mform->createElement('static', 'calendar', '',
-                "<img style='width: 45em;' src='https://content.compilatio.net/images/calendrier_affluence_magister.png'>");
+                "<img style='width: 40em;' src='https://content.compilatio.net/images/calendrier_affluence_magister.png'>");
             $mform->addGroup($group, 'calendargroup', '', ' ', false);
             $mform->hideIf('calendargroup', 'analysistype', 'noteq', 'planned');
-        }*/
+        }
     }
 
     $showoptions = array(

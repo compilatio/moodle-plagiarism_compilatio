@@ -113,16 +113,15 @@ class CompilatioService {
      * @param   string  $email          User's email
      * @return  string                  Return the user's ID, an error message otherwise
      */
-    public function set_user($firstname, $lastname, $email) {
+    public function set_user($firstname, $lastname, $email, $lang) {
         $endpoint = "/api/private/user/create";
         $params = array(
             'firstname' => $firstname,
             'lastname' => $lastname,
             'email' => $email,
             'locale' => [
-                "timezone" => "Europe/Paris",
-                //TODO langue ??
-                "lang" => "fr",
+                "timezone" => date_default_timezone_get(),
+                "lang" => $lang,
             ],
         );
 

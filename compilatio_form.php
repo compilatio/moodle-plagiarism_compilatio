@@ -64,24 +64,7 @@ class compilatio_setup_form extends moodleform {
         $mform->addHelpButton('student_disclosure', 'students_disclosure', 'plagiarism_compilatio');
         $mform->setDefault('student_disclosure', get_string('studentdisclosuredefault', 'plagiarism_compilatio'));
 
-        $mform->addElement('checkbox', 'allow_teachers_to_show_reports',
-                           get_string("allow_teachers_to_show_reports", "plagiarism_compilatio"));
-        $mform->setDefault('allow_teachers_to_show_reports', 0);
-
-        $apikey = get_config('plagiarism_compilatio', 'apikey');
-        if (!empty($apikey)) {
-            $compilatio = new CompilatioService($apikey);
-
-            if ($compilatio->check_allow_student_analyses()) {
-                $mform->addElement('checkbox', 'allow_student_analyses',
-                    get_string("allow_student_analyses", "plagiarism_compilatio"));
-                $mform->setDefault('allow_student_analyses', 0);
-            }
-        }
-
-        $mform->addElement('checkbox', 'allow_search_tab', get_string("allow_search_tab", "plagiarism_compilatio"));
-        $mform->setDefault('allow_search_tab', 0);
-        $mform->addHelpButton('allow_search_tab', 'allow_search_tab', 'plagiarism_compilatio');
+        $mform->addElement('html', get_string('enable_activities_title', 'plagiarism_compilatio'));
 
         $mods = get_plugin_list('mod');
         foreach ($mods as $mod => $modname) {
@@ -90,12 +73,35 @@ class compilatio_setup_form extends moodleform {
                 $string = "";
                 if (string_exists($modstring, "plagiarism_compilatio")) {
                     $string = get_string($modstring, 'plagiarism_compilatio');
-                } else {
-                    $string = get_string('compilatioenableplugin', 'plagiarism_compilatio', $mod);
                 }
                 $mform->addElement('checkbox', $modstring, $string);
             }
         }
+
+        $mform->addElement('html', get_string('teacher_features_title', 'plagiarism_compilatio'));
+
+        $mform->addElement('checkbox', 'checkbox_show_reports',
+                           get_string("checkbox_show_reports", "plagiarism_compilatio"));
+        $mform->setDefault('checkbox_show_reports', 0);
+
+        $apikey = get_config('plagiarism_compilatio', 'apikey');
+        if (!empty($apikey)) {
+            $compilatio = new CompilatioService($apikey);
+
+            if ($compilatio->check_allow_student_analyses()) {
+                $mform->addElement('checkbox', 'checkbox_student_analyses',
+                    get_string("checkbox_student_analyses", "plagiarism_compilatio"));
+                $mform->setDefault('checkbox_student_analyses', 0);
+            }
+        }
+
+        $mform->addElement('checkbox', 'checkbox_search_tab', get_string("checkbox_search_tab", "plagiarism_compilatio"));
+        $mform->setDefault('checkbox_search_tab', 0);
+        $mform->addHelpButton('checkbox_search_tab', 'checkbox_search_tab', 'plagiarism_compilatio');
+
+        $mform->addElement('checkbox', 'checkbox_analyses_auto', get_string("checkbox_analyses_auto", "plagiarism_compilatio"));
+        $mform->setDefault('checkbox_analyses_auto', 0);
+        $mform->addHelpButton('checkbox_analyses_auto', 'checkbox_analyses_auto', 'plagiarism_compilatio');
 
         $radioarray = array();
         $radioarray[] = $mform->createElement('radio',

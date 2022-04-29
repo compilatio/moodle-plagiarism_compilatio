@@ -41,7 +41,7 @@ class CompilatioAnalyses {
      * Start an analyse
      *
      * @param  object $cmpfile     File
-     * @return mixed                      Return true if succeed, the analyse object
+     * @return mixed Return true if succeed, the analyse object
      */
     public static function start_analysis($cmpfile) {
 
@@ -49,12 +49,6 @@ class CompilatioAnalyses {
 
         $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $cmpfile->cm));
         $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $userid);
-
-        //TODO something to block analyses if TOS not validated ?
-        // Check terms of service validation before start analyse.
-        /*if (!$DB->get_field("plagiarism_compilatio_user", "validatedtermsofservice", array("compilatioid" => $userid))) {
-            return false;
-        }*/
 
         $analyse = $compilatio->start_analyse($cmpfile->externalid);
 
