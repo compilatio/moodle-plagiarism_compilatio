@@ -7,12 +7,8 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Add tool in admin tab for migration from Compilatio v4 to v5.
-- Add Compilatio v5 alerts (technical news).
-
-FIXES
-- Fix Migration tool for migrations with a lot of documents.
-- (v5) Fix documents blocked in queue state because they are too short to be analyzed.
+- Add automatic analyses.
+- 
 
 QUICK INSTALL
 ================
