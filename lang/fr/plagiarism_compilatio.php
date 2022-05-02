@@ -40,12 +40,12 @@ $string['saved_config_failed'] = "<strong>La combinaison adresse - clé API est 
     La page d'<a href='autodiagnosis.php'>auto-diagnostic</a> peut vous aider à configurer ce plugin.</strong><br/>
     Erreur : ";
 $string["teacher_features_title"] = "Fonctionnalités activées pour les enseignants";
-$string["checkbox_show_reports"] = "Mettre les rapports d'analyse à disposition des étudiants";
-$string['checkbox_student_analyses'] = "Permettre aux étudiants d'analyser leur fichiers en brouillon avec Compilatio Magister, avant le rendu final à l'enseignant.";
-$string["checkbox_search_tab"] = "Outil de recherche permettant d'identifier l'auteur d'un document.";
-$string["checkbox_search_tab_help"] = "L'outil de recherche permet de rechercher le nom et prénom d'un étudiant d'après un identifiant de document visible dans les rapports d'analyses parmi tous les documents présent sur votre plateforme.";
-$string["checkbox_analyses_auto"] = "Lancement automatique des analyses";
-$string["checkbox_analyses_auto_help"] = "Les enseignants peuvent lancer les analyses manuellement ou programmer une date de lancement des analyses.";
+$string["enable_show_reports"] = "Mettre les rapports d'analyse à disposition des étudiants";
+$string['enable_student_analyses'] = "Permettre aux étudiants d'analyser leur fichiers en brouillon avec Compilatio Magister, avant le rendu final à l'enseignant.";
+$string["enable_search_tab"] = "Outil de recherche permettant d'identifier l'auteur d'un document.";
+$string["enable_search_tab_help"] = "L'outil de recherche permet de rechercher le nom et prénom d'un étudiant d'après un identifiant de document visible dans les rapports d'analyses parmi tous les documents présent sur votre plateforme.";
+$string["enable_analyses_auto"] = "Lancement automatique des analyses";
+$string["enable_analyses_auto_help"] = "Les enseignants peuvent lancer les analyses manuellement ou programmer une date de lancement des analyses.";
 $string["enable_activities_title"] = "Activer Compilatio pour les activités";
 $string['enable_mod_assign'] = ' Devoirs (assign)';
 $string['enable_mod_workshop'] = 'Ateliers (workshop)';
@@ -74,14 +74,21 @@ $string['immediately'] = "Immédiatement";
 $string['showwhenclosed'] = "Quand l'activité est fermée";
 $string['studentemail'] = "Envoyer un mail à l'étudiant";
 $string['studentemail_help'] = "Ceci enverra un e-mail à l'élève quand un fichier a été traité pour leur faire savoir que le rapport est disponible.";
-$string['analysis'] = 'Lancement des analyses';
-$string['analysis_help'] = "<p>Vous disposez de trois options :</p>
+$string['analysistype'] = 'Lancement des analyses';
+$string['analysistype_help'] = "<p>Vous disposez de deux options :
     <ul>
-        <li><strong> Manuel:</strong> L'analyse des documents doit être déclenchée manuellement via le bouton “Analyser” de chaque document ou via le bouton “Analyser tous les documents”.</li>
-        <li><strong> Programmé:</strong> Tous les documents sont analysés à l'heure/date choisie.</li>
-        <li><strong> Immédiat:</strong> Chaque document est analysé dès le dépôt par l’étudiant. Les documents de l’activité ne seront pas comparés entre eux.</li>
+        <li><strong> Manuel :</strong> L'analyse des documents doit être déclenchée manuellement via le bouton “Analyser” de chaque document ou via le bouton “Analyser tous les documents”.</li>
+        <li><strong> Programmé :</strong> Tous les documents sont analysés à l'heure/date choisie.</li>
     </ul>
-    <p>Pour que tous les documents soient comparés entre eux lors des analyses, déclenchez les analyses seulement lorsque tous les documents sont présents dans le devoir.</p>";
+    Pour que tous les documents soient comparés entre eux lors des analyses, déclenchez les analyses seulement lorsque tous les documents sont présents dans le devoir.</p>";
+$string['analysistype_auto'] = 'Lancement des analyses';
+$string['analysistype_auto_help'] = "<p>Vous disposez de trois options :
+    <ul>
+        <li><strong> Manuel :</strong> L'analyse des documents doit être déclenchée manuellement via le bouton “Analyser” de chaque document ou via le bouton “Analyser tous les documents”.</li>
+        <li><strong> Programmé :</strong> Tous les documents sont analysés à l'heure/date choisie.</li>
+        <li><strong> Immédiat :</strong> Chaque document est analysé dès le dépôt par l’étudiant. Les documents de l’activité ne seront pas comparés entre eux.</li>
+    </ul>
+    Pour que tous les documents soient comparés entre eux lors des analyses, déclenchez les analyses seulement lorsque tous les documents sont présents dans le devoir.</p>";
 $string['analysistype_manual'] = 'Manuel';
 $string['analysistype_prog'] = 'Programmé';
 $string['analysistype_auto'] = 'Immédiat';

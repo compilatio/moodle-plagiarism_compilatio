@@ -342,7 +342,7 @@ class output_helper {
             $output .= "<span id='count-alerts'>" . count($alerts) . "</span></div>";
         }
 
-        if ($plagiarismsettings["allow_search_tab"]) {
+        if ($plagiarismsettings["enable_search_tab"]) {
             // Search icon.
             $output .= "<div title='" . get_string("compilatio_search_tab", "plagiarism_compilatio") .
                 "' id='show-search' class='compilatio-icon'><i class='fa fa-search fa-2x'></i></div>";

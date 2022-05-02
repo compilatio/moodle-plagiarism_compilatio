@@ -184,7 +184,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                 $assignclosed = true;
             }
 
-            $allowed = get_config("plagiarism_compilatio", "allow_teachers_to_show_reports");
+            $allowed = get_config("plagiarism_compilatio", "enable_show_reports");
             $showreport = $plugincm->showstudentreport ?? null;
             if ($allowed === '1' && ($showreport == 'immediately' || ($showreport == 'closed' && $assignclosed))) {
                 $viewreport = true;
@@ -510,7 +510,7 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
                 $data->criticalthreshold = 25;
             }
 
-            if (get_config("plagiarism_compilatio", "allow_teachers_to_show_reports") !== '1') {
+            if (get_config("plagiarism_compilatio", "enable_show_reports") !== '1') {
                 $data->showstudentreport = 'never';
             }
 
@@ -689,11 +689,16 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename = '
     }
 
     $analysistypes = array('manual' => get_string('analysistype_manual', 'plagiarism_compilatio'),
-        'planned' => get_string('analysistype_prog', 'plagiarism_compilatio'),
-        'auto' => get_string('analysistype_auto', 'plagiarism_compilatio'));
+        'planned' => get_string('analysistype_prog', 'plagiarism_compilatio'));
+
+    if (get_config("plagiarism_compilatio", "enable_analyses_auto") == '1') {
+        $analysistypes['auto'] = get_string('analysistype_auto', 'plagiarism_compilatio');
+        $help = "analysistype_auto";
+    }
+
     if (!$defaults) { // Only show this inside a module page - not on default settings pages.
-        $mform->addElement('select', 'analysistype', get_string('analysis', 'plagiarism_compilatio'), $analysistypes);
-        $mform->addHelpButton('analysistype', 'analysis', 'plagiarism_compilatio');
+        $mform->addElement('select', 'analysistype', get_string('analysistype', 'plagiarism_compilatio'), $analysistypes);
+        $mform->addHelpButton('analysistype', $help ?? 'analysistype', 'plagiarism_compilatio');
         $mform->setDefault('analysistype', 'manual');
     }
 
@@ -721,14 +726,14 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename = '
     $mform->addElement('select', 'showstudentscore', get_string("showstudentscore", "plagiarism_compilatio"), $showoptions);
     $mform->addHelpButton('showstudentscore', 'showstudentscore', 'plagiarism_compilatio');
 
-    if (get_config("plagiarism_compilatio", "allow_teachers_to_show_reports") === '1') {
+    if (get_config("plagiarism_compilatio", "enable_show_reports") === '1') {
         $mform->addElement('select', 'showstudentreport', get_string("showstudentreport", "plagiarism_compilatio"), $showoptions);
         $mform->addHelpButton('showstudentreport', 'showstudentreport', 'plagiarism_compilatio');
     } else {
         $mform->addElement('html', '<p>' . get_string("admin_disabled_reports", "plagiarism_compilatio") . '</p>');
     }
 
-    if (get_config("plagiarism_compilatio", "allow_student_analyses") === '1' && !$defaults) {
+    if (get_config("plagiarism_compilatio", "enable_student_analyses") === '1' && !$defaults) {
         if ($mform->elementExists('submissiondrafts')) {
             $mform->addElement('select', 'studentanalyses',
                 get_string("studentanalyses", "plagiarism_compilatio"), $ynoptions);
@@ -992,7 +997,7 @@ function compilatio_delete_files($files, $deletefilesmoodledb = true) {
 function compilatio_student_analysis($studentanalysesparam, $cmid, $userid) {
 
     global $DB;
-    if (get_config("plagiarism_compilatio", "allow_student_analyses") === '1' && $studentanalysesparam === '1') {
+    if (get_config("plagiarism_compilatio", "enable_student_analyses") === '1' && $studentanalysesparam === '1') {
         $sql = "SELECT sub.status
             FROM {course_modules} cm
             JOIN {assign_submission} sub ON cm.instance = sub.assignment

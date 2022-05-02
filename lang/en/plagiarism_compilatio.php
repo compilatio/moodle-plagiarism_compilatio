@@ -40,12 +40,12 @@ $string['saved_config_failed'] = '<strong>The combination API key - adress enter
     The <a href="autodiagnosis.php">auto-diagnosis</a> page can help you to configure this plugin.</strong><br/>
     Error : ';
 $string["teacher_features_title"] = "Features enabled for teachers";
-$string["checkbox_show_reports"] = "Show similarity reports to students";
-$string['checkbox_student_analyses'] = "Allow students to analyze their draft files with Compilatio Magister, before final submission to the teacher.";
-$string["checkbox_search_tab"] = "Search tool to identify the author of a document.";
-$string["checkbox_search_tab_help"] = "The search tool allows you to search for a student's first and last name based on a document identifier visible in the analysis reports among all the documents present on your platform.";
-$string["checkbox_analyses_auto"] = "Automatic launch of analyses";
-$string["checkbox_analyses_auto_help"] = "Automatic launch of analyses";
+$string["enable_show_reports"] = "Show similarity reports to students";
+$string['enable_student_analyses'] = "Allow students to analyze their draft files with Compilatio Magister, before final submission to the teacher.";
+$string["enable_search_tab"] = "Search tool to identify the author of a document.";
+$string["enable_search_tab_help"] = "The search tool allows you to search for a student's first and last name based on a document identifier visible in the analysis reports among all the documents present on your platform.";
+$string["enable_analyses_auto"] = "Automatic launch of analyses";
+$string["enable_analyses_auto_help"] = "Automatic launch of analyses";
 $string["enable_activities_title"] = "Enable Compilatio for activities";
 $string['enable_mod_assign'] = 'Assignments';
 $string['enable_mod_workshop'] = 'Workshops';
@@ -74,14 +74,21 @@ $string['immediately'] = "Immediately";
 $string['showwhenclosed'] = 'When Activity closed';
 $string['studentemail'] = 'Send Student email';
 $string['studentemail_help'] = 'This will send an e-mail to the student when a file has been processed to let them know that a report is available.';
-$string['analysis'] = 'Analysis Start';
-$string['analysis_help'] = "<p>There are 3 possible options:</p>
+$string['analysistype'] = 'Analysis Start';
+$string['analysistype_help'] = "<p>You have two options:
+    <ul>
+        <li><strong>Manual:</strong> Analysis of documents must be triggered manually with the “Analyze” button of each document or with the “Analyze all documents” button.</li>
+        <li><strong>Scheduled: </strong> All documents are analyzed at the selected time/date.</li>
+    </ul>
+    To have all documents compared with each other during the analyses, wait until all works are submitted by students then trigger the analyses.</p>";
+$string['analysistype_auto'] = 'Analysis Start';
+$string['analysistype_auto_help'] = "<p>You have three options:
     <ul>
         <li><strong>Manual:</strong> Analysis of documents must be triggered manually with the “Analyze” button of each document or with the “Analyze all documents” button.</li>
         <li><strong>Scheduled: </strong> All documents are analyzed at the selected time/date.</li>
         <li><strong>Direct: </strong> Each document is analyzed as soon as the student submits it. The documents in the activity will not be compared to each other.</li>
     </ul>
-    <p>To have all documents compared with each other during the analyses, wait until all works are submitted by students then trigger the analyses.</p>";
+    To have all documents compared with each other during the analyses, wait until all works are submitted by students then trigger the analyses.</p>";
 $string['analysistype_manual'] = 'Manual';
 $string['analysistype_prog'] = 'Timed';
 $string['analysistype_auto'] = 'Direct';

@@ -46,7 +46,7 @@ if ($mform->is_cancelled()) {
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
     $elements = ["enabled", "enable_mod_assign", "enable_mod_forum", "enable_mod_workshop", "enable_mod_quiz",
-        "allow_teachers_to_show_reports", "allow_search_tab", "allow_student_analyses"];
+        "enable_show_reports", "enable_search_tab", "enable_student_analyses", "enable_analyses_auto"];
     foreach ($elements as $elem) {
         if (!isset($data->$elem)) {
             $data->$elem = 0;
@@ -101,7 +101,7 @@ if (!empty($plagiarismsettings['enabled'])) {
     $validapikey = $compilatio->check_apikey();
     if ($validapikey === true) {
         if (!$compilatio->check_allow_student_analyses()) {
-            set_config('allow_student_analyses', 0, 'plagiarism_compilatio');
+            set_config('enable_student_analyses', 0, 'plagiarism_compilatio');
         }
         echo $OUTPUT->notification(get_string('enabledandworking', 'plagiarism_compilatio'), 'notifysuccess');
     } else {
