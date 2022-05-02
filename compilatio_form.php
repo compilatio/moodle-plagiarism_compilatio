@@ -128,6 +128,10 @@ class compilatio_setup_form extends moodleform {
         $mform->setDefault('allow_search_tab', 0);
         $mform->addHelpButton('allow_search_tab', 'allow_search_tab', 'plagiarism_compilatio');
 
+        $mform->addElement('checkbox', 'allow_analyses_auto', get_string("allow_analyses_auto", "plagiarism_compilatio"));
+        $mform->setDefault('allow_analyses_auto', 0);
+        $mform->addHelpButton('allow_analyses_auto', 'allow_analyses_auto', 'plagiarism_compilatio');
+
         $mods = get_plugin_list('mod');
         foreach ($mods as $mod => $modname) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {

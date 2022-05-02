@@ -306,7 +306,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             if (!empty($results['renamed'])) {
                 $output .= $results['renamed'];
             }
-        } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_IN_QUEUE) {
+        } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_IN_QUEUE
+                || $results['statuscode'] == COMPILATIO_STATUSCODE_TOANALYZE) {
             $spancontent = get_string("queue", "plagiarism_compilatio");
             $image = "queue";
             $title = get_string('queued', 'plagiarism_compilatio');
@@ -1116,6 +1117,17 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
                 $DB->insert_record('plagiarism_compilatio_config', $newelement);
             }
         }
+
+        // Check if we are changing from timed or manual to instant.
+        // If changing to instant, make all existing files to get a report.
+        if (isset($existingelements['compilatio_analysistype']) &&
+            $existingelements['compilatio_analysistype'] !== $data->compilatio_analysistype
+            && $data->compilatio_analysistype == COMPILATIO_ANALYSISTYPE_AUTO) {
+            // Get all existing files in this assignment set to manual status.
+            $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files',
+                array('cm' => $data->coursemodule, 'statuscode' => COMPILATIO_STATUSCODE_ACCEPTED));
+            compilatio_analyse_files($plagiarismfiles);
+        }
     }
     return $data;
 }
@@ -1189,7 +1201,7 @@ function plagiarism_compilatio_coursemodule_standard_elements($formwrapper, $mfo
  *
  * @return void
  */
-function compilatio_trigger_timed_analyses() {
+function compilatio_trigger_analyses() {
 
     global $DB;
 
@@ -1205,6 +1217,9 @@ function compilatio_trigger_timed_analyses() {
                 AND " . $DB->sql_cast_char2int('cc3.value') . " < ?";
     $plagiarismfiles = $DB->get_records_sql($sql, array(time()));
     compilatio_analyse_files($plagiarismfiles);
+
+    $files = $DB->get_records("plagiarism_compilatio_files", ["statuscode" => COMPILATIO_STATUSCODE_TOANALYZE]);
+    compilatio_analyse_files($files);
 }
 
 /**
@@ -1418,11 +1433,15 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename = '
 
     $analysistypes = array(COMPILATIO_ANALYSISTYPE_MANUAL => get_string('analysistype_manual', 'plagiarism_compilatio'),
         COMPILATIO_ANALYSISTYPE_PROG => get_string('analysistype_prog', 'plagiarism_compilatio'));
+
+    if (get_config("plagiarism_compilatio", "allow_analyses_auto") == '1') {
+        $analysistypes[COMPILATIO_ANALYSISTYPE_AUTO] = get_string('analysistype_auto', 'plagiarism_compilatio');
+        $help = "analysis_auto";
+    }
+
     if (!$defaults) { // Only show this inside a module page - not on default settings pages.
-        $mform->addElement('select', 'compilatio_analysistype',
-            get_string('analysis', 'plagiarism_compilatio'),
-            $analysistypes);
-        $mform->addHelpButton('compilatio_analysistype', 'analysis', 'plagiarism_compilatio');
+        $mform->addElement('select', 'compilatio_analysistype', get_string('analysis', 'plagiarism_compilatio'), $analysistypes);
+        $mform->addHelpButton('compilatio_analysistype', $help ?? 'analysis', 'plagiarism_compilatio');
         $mform->setDefault('compilatio_analysistype', COMPILATIO_ANALYSISTYPE_MANUAL);
     }
 
@@ -1823,9 +1842,15 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
         $filecontents); // Doc content.
 
     if (compilatio_valid_md5($idcompi)) {
-        $plagiarismfile->externalid = $idcompi;
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_ACCEPTED;
+        $plagiarismfile->externalid = $idcompi;
         $plagiarismfile->apiconfigid = $plagiarismsettings['apiconfigid'];
+
+        $config = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => $cmid), '', 'name, value');
+        if ($config['compilatio_analysistype'] == COMPILATIO_ANALYSISTYPE_AUTO) {
+            $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOANALYZE;
+        }
+
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
         return $idcompi;
     }

@@ -100,23 +100,24 @@ $string['studentemailsubject'] = 'File processed by Compilatio';
 $string['studentemailcontent'] = 'The file you submitted to {$a->modulename} in {$a->coursename} has now been processed by the Plagiarism tool Compilatio.
 {$a->modulelink}';
 $string['filereset'] = 'A file has been reset for re-submission to Compilatio';
-$string['analysis_type'] = 'Analysis Start';
-$string['analysis_type_help'] = '<p>There are 3 possible options:</p>
-<ul>
-	<li><strong>Direct: </strong>The document is sent to Compilatio and analyzed straight away.</li>
-	<li><strong>Manual:</strong> The document is sent to Compilatio but the teacher must manually trigger the analysis of documents.</li>
-	<li><strong>Timed: </strong>The document is sent to Compilatio and analysed at the time/date set.</li>
-</ul>
-<p>To enable all documents to be compared with each other, wait until all work is submitted by students then trigger the analysis.</p>';
 $string['analysis'] = 'Analysis Start';
-$string['analysis_help'] = '<p>There are 2 possible options:</p>
-<ul>
-	<li><strong>Manual:</strong> The document is sent to Compilatio but the teacher must manually trigger the analysis of documents.</li>
-	<li><strong>Timed: </strong>The document is sent to Compilatio and analysed at the time/date set.</li>
-</ul>
-<p>To enable all documents to be compared with each other, wait until all work is submitted by students then trigger the analysis.</p>';
+$string['analysis_help'] = "<p>You have two options:
+    <ul>
+        <li><strong>Manual:</strong> Analysis of documents must be triggered manually with the “Analyze” button of each document or with the “Analyze all documents” button.</li>
+        <li><strong>Scheduled: </strong> All documents are analyzed at the selected time/date.</li>
+    </ul>
+    To have all documents compared with each other during the analyses, wait until all works are submitted by students then trigger the analyses.</p>";
+$string['analysis_auto'] = 'Analysis Start';
+$string['analysis_auto_help'] = "<p>You have three options:
+    <ul>
+        <li><strong>Manual:</strong> Analysis of documents must be triggered manually with the “Analyze” button of each document or with the “Analyze all documents” button.</li>
+        <li><strong>Scheduled: </strong> All documents are analyzed at the selected time/date.</li>
+        <li><strong>Direct: </strong> Each document is analyzed as soon as the student submits it. The documents in the activity will not be compared to each other.</li>
+    </ul>
+    To have all documents compared with each other during the analyses, wait until all works are submitted by students then trigger the analyses.</p>";
 $string['analysistype_manual'] = 'Manual';
 $string['analysistype_prog'] = 'Timed';
+$string['analysistype_auto'] = 'Direct';
 $string['analysis_date'] = 'Analysis Date (Timed analysis only)';
 $string['enabledandworking'] = 'The Compilatio plugin is enabled and working.';
 $string['subscription_state'] = '<strong>Your Compilatio.net subscription will expire at the end of {$a->end_date}. This month, you have analyzed the equivalent of {$a->used} document(s) containing less than 5,000 words.</strong>';
@@ -134,6 +135,8 @@ $string['compilatio:viewreport'] = 'Allow the teacher to view the full report fr
 $string['unextractablefile'] = 'The text in your document cannot be extracted.';
 $string['immediately'] = "Immediately";
 $string['quiz_help'] = 'Only essay questions whose answer contain at least {$a} words will be analyzed.';
+$string['allow_analyses_auto'] = 'Enable automatic analyses';
+$string['allow_analyses_auto_help'] = 'Enable automatic analyses';
 
 // Auto diagnostic.
 $string["auto_diagnosis_title"] = "Auto-diagnosis";
@@ -236,7 +239,6 @@ $string["waiting_time_title"] = "The estimated processing time for an analysis s
 $string["waiting_time_content"] = 'Including {$a->queue} in queue and {$a->analysis_time} of analysis<br><br>Click <a href=\'../../plagiarism/compilatio/helpcenter.php?page=moodle-info-waiting&idgroupe=';
 $string["waiting_time_content_help"] = "' target=\'_blank\'>here</a> to see best practices to follow to optimise the processing time of Compilatio analyses.";
 
-
 // CSV.
 $string["firstname"] = "First name";
 $string["lastname"] = "Last name";
@@ -315,7 +317,7 @@ $string['helpcenter_error'] = "We can't automatically connect you to the help ce
 $string['get_scores'] = "Retrieve plagiarism scores from Compilatio.net";
 $string['send_files'] = "Upload files to Compilatio.net for plagiarism detection";
 $string['update_meta'] = "Perform Compilatio.net's scheduled operations";
-$string['trigger_timed_analyses'] = "Trigger scheduled plagiarism analysis";
+$string['trigger_analyses'] = "Trigger analyses";
 // Indexing state.
 $string['indexing_state'] = "Add documents into the Document Database";
 $string['indexing_state_help'] = "Yes: Add documents in the document database. These documents will be used as comparison material for future analysis.

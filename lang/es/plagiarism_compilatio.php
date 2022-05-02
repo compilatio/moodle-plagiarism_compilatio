@@ -196,7 +196,6 @@ $string['admin_goto_helpcenter'] = "Visite el centro de ayuda Compilatio para ac
 $string['get_scores'] = "Recupera los grados de similitudes de Compilatio.net";
 $string['send_files'] = "Envia los documentos a Compilatio.net";
 $string['update_meta'] = "Realiza las tareas programadas de Compilatio.net";
-$string['trigger_timed_analyses'] = "Provoca los análisis programadas";
 // Indexing state.
 $string['indexing_state'] = "Añadir el documento a la biblioteca de referencias";
 $string['indexing_state_help'] = "El contenido del documento es indexado a la biblioteca de referencias. Sirve como base de comparación para los próximos análisis.";

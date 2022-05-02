@@ -216,7 +216,6 @@ $string['admin_goto_helpcenter'] = "Gehen Sie zum Compilatio Hilfecenter, um die
 $string['get_scores'] = "Ruft die Ähnlichkeitsquoten auf Compilatio.net ab";
 $string['send_files'] = "Schickt die Dateien an Compilatio.net zur Plagiatserkennung";
 $string['update_meta'] = "Führt die von Compilatio.net geplanten Aufgaben aus";
-$string['trigger_timed_analyses'] = "Löst die geplanten Plagiatsanalysen aus";
 // Indexing state.
 $string['indexing_state'] = "Dokumente zur Referenzbibliothek hinzufügen";
 $string['indexing_state_help'] = "Der Inhalt der Dokumente wird in der Referenzbibliothek angegeben. Er wird als Vergleichsmaterial für spätere Analysen verwendet.";
