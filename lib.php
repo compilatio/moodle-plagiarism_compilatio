@@ -709,7 +709,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     }
 
     // Store plagiarismfiles in $SESSION.
-    $sql = "cm = ? AND externalid IS NOT null AND statuscode != 'Analyzed'";
+    $sql = "cm = ? AND externalid IS NOT null";
     $SESSION->compilatio_plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, array($cmid));
     $plagiarismfilesids = array_keys($SESSION->compilatio_plagiarismfiles);
 
@@ -3215,7 +3215,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
 
         // Re-submit file when student submit a draft submission.
         $plugincm = compilatio_cm_use($cmid);
-        if ($eventdata['target'] == 'assessable' && $plugincm['compi_student_analyses'] === '1') {
+        if ($eventdata['target'] == 'assessable' && ($plugincm['compi_student_analyses'] ?? 0) === '1') {
 
             $plagiarismfiles = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
             compilatio_remove_duplicates($plagiarismfiles, false);

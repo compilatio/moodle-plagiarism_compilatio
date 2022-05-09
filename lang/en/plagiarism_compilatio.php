@@ -116,9 +116,9 @@ $string['analysis_auto_help'] = "<p>You have three options:
     </ul>
     To have all documents compared with each other during the analyses, wait until all works are submitted by students then trigger the analyses.</p>";
 $string['analysistype_manual'] = 'Manual';
-$string['analysistype_prog'] = 'Timed';
+$string['analysistype_prog'] = 'Scheduled';
 $string['analysistype_auto'] = 'Direct';
-$string['analysis_date'] = 'Analysis Date (Timed analysis only)';
+$string['analysis_date'] = 'Analysis Date (Scheduled analysis only)';
 $string['enabledandworking'] = 'The Compilatio plugin is enabled and working.';
 $string['subscription_state'] = '<strong>Your Compilatio.net subscription will expire at the end of {$a->end_date}. This month, you have analyzed the equivalent of {$a->used} document(s) containing less than 5,000 words.</strong>';
 $string['startanalysis'] = 'Start analysis';
@@ -135,8 +135,14 @@ $string['compilatio:viewreport'] = 'Allow the teacher to view the full report fr
 $string['unextractablefile'] = 'The text in your document cannot be extracted.';
 $string['immediately'] = "Immediately";
 $string['quiz_help'] = 'Only essay questions whose answer contain at least {$a} words will be analyzed.';
-$string['allow_analyses_auto'] = 'Enable automatic analyses';
-$string['allow_analyses_auto_help'] = 'Enable automatic analyses';
+$string["allow_analyses_auto"] = "Possibility to start the analyses directly";
+$string["allow_analyses_auto_help"] = "This option will allow teachers to activate the automatic launch of documents analysis on an activity (i.e. immediately after they have been submitted).<br>
+Note that in this case : 
+<ul>
+    <li>The number of scans performed by your institution may be significantly higher.</li>
+    <li>The documents of the first submitters are not compared with the documents of the last depositors.</li>
+</ul>
+In order to compare all the documents of an assignement, it is necessary to use the “scheduled” analysis, by choosing a date after the submission deadline.";
 
 // Auto diagnostic.
 $string["auto_diagnosis_title"] = "Auto-diagnosis";
@@ -187,7 +193,8 @@ $string['thresholds_description'] = "Indicate the threshold that you want to use
 $string['compi_student_analyses'] = "Allow students to analyze their documents";
 $string['compi_student_analyses_help'] = "This allows students to analyze their draft files with Compilatio Magister, before final submission to the teacher.";
 $string['activate_submissiondraft'] = 'To allow students to analyze their drafts, you must enable the <b>{$a}</b> option in the section';
-$string['allow_student_analyses'] = "Allow teachers to enable the option \"Allow students to analyze their draft files with Compilatio Magister, before final submission to the teacher\".";
+$string['allow_student_analyses'] = "Possibility to enable student analysis on drafts.";
+$string['allow_student_analyses_help'] = "This option will allow teachers to activate on an activity the analysis by students of their documents submitted in draft mode with Compilatio Magister, before final submission to the teacher.";
 $string['student_analyze'] = "Student analysis";
 $string['student_start_analyze'] = "The analysis can be started by the student";
 $string['student_help'] = "You can analyze your draft with Compilatio Magister, to measure similarities in the text of your files.<br/>
@@ -233,11 +240,13 @@ $string["compilatio_iddocument"] = "Document identifier";
 $string["compilatio_search_notfound"] = "No document was found for this identifier among the documents loaded on your Moodle platform.";
 $string["compilatio_author"] = 'Le document {$a->idcourt} in activity <b>{$a->modulename}</b> belongs to <b>{$a->lastname} {$a->firstname}</b>.';
 $string["compilatio_search_help"] = "You can find the author of a document by retrieving the document identifier from the sources of the analysis report. Example: 1. Your document: <b>1st5xfj2</b> - Assign_Name(30)Name_Copied_Document.odt.";
-$string["allow_search_tab"] = "Activate the search tool to identify the author of a document.";
+$string["allow_search_tab"] = "Search tool to identify the author of a document.";
 $string["allow_search_tab_help"] = "The search tool allows you to search for a student's first and last name based on a document identifier visible in the analysis reports among all the documents present on your platform.";
 $string["waiting_time_title"] = "The estimated processing time for an analysis started now is ";
 $string["waiting_time_content"] = 'Including {$a->queue} in queue and {$a->analysis_time} of analysis<br><br>Click <a href=\'../../plagiarism/compilatio/helpcenter.php?page=moodle-info-waiting&idgroupe=';
 $string["waiting_time_content_help"] = "' target=\'_blank\'>here</a> to see best practices to follow to optimise the processing time of Compilatio analyses.";
+$string["teacher_features_title"] = "Features enabled for teachers";
+$string["enable_activities_title"] = "Enable Compilatio for activities";
 
 // CSV.
 $string["firstname"] = "First name";
@@ -266,8 +275,8 @@ $string['error'] = 'Error';
 $string['analyze'] = 'Analyze';
 $string['queue'] = 'Queue';
 $string['analyzing'] = 'Analyzing';
-$string['enable_mod_assign'] = 'Enable Compilatio for assignments (assign)';
-$string['enable_mod_workshop'] = 'Enable Compilatio for workshops (workshop)';
+$string['enable_mod_assign'] = 'Enable Compilatio for assignments';
+$string['enable_mod_workshop'] = 'Enable Compilatio for workshops';
 $string['enable_mod_forum'] = 'Enable Compilatio for forums';
 $string['enable_mod_quiz'] = 'Enable Compilatio for quiz';
 $string['planned'] = "Planned";
@@ -298,7 +307,7 @@ $string["assign_statistics"] = 'Statistics about assignments';
 $string["similarities"] = 'Similarities';
 $string["context"] = 'Context';
 $string["pending_status"] = 'Pending';
-$string["allow_teachers_to_show_reports"] = "Allow teachers to show similarity reports to their students";
+$string["allow_teachers_to_show_reports"] = "Possibility to show similarity reports to students";
 $string["admin_disabled_reports"] = "The administrator does not allow the teachers to display the similarity reports to the students.";
 $string["teacher"] = "Teacher";
 $string["loading"] = "Loading, please wait...";
