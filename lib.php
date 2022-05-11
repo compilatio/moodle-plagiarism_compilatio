@@ -1846,7 +1846,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
         $plagiarismfile->externalid = $idcompi;
         $plagiarismfile->apiconfigid = $plagiarismsettings['apiconfigid'];
 
-        $config = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => $cmid), '', 'name, value');
+        $config = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => $plagiarismfile->cm), '', 'name, value');
         if ($config['compilatio_analysistype'] == COMPILATIO_ANALYSISTYPE_AUTO) {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOANALYZE;
         }
