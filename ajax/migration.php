@@ -61,7 +61,7 @@ if (!empty($apikey)) {
             echo "Error : Invalid API Key";
         }
     } else {
-        $params[CURLOPT_URL] = "https://app.compilatio.net/api/private/documents/list?limit=500&page=" . $i . "&sort%5BuploadDate%5D=1&projection="
+        $params[CURLOPT_URL] = "https://app.compilatio.net/api/private/document/list?limit=500&page=" . $i . "&projection="
         . json_encode(["old_prod_id" => true]);
 
         curl_setopt_array($ch, $params);
