@@ -49,6 +49,7 @@ $string['migration_info'] = "Compilatio met en place une nouvelle plateforme tec
     Lorsque vous y serez invités par l'équipe technique, vous devrez exécuter les actions ci-dessous pour finaliser cette migration.";
 $string['migration_apikey'] = "Saisir la nouvelle clé API v5";
 $string['migration_btn'] = "Lancer la mise à jour des données enregistrées dans Moodle";
+$string['migration_inprogress'] = "Mise à jour en cours, veuillez patienter";
 $string['migration_success_doc'] = "documents ont été mis à jour";
 $string['migration_form_title'] = "Lancer la mise à jour des données enregistrées dans Moodle, pour finaliser la migration de v4 vers v5.";
 $string['migration_support'] = "

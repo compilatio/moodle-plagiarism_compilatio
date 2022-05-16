@@ -49,6 +49,7 @@ $string['migration_info'] = "Compilatio is implementing a new v5 technical platf
     When prompted by the technical team, you will need to perform an action to complete this migration.";
 $string['migration_apikey'] = "Enter the new v5 API key";
 $string['migration_btn'] = "Initiate the update of the data stored in Moodle";
+$string['migration_inprogress'] = "Update in progress, please wait";
 $string['migration_success_doc'] = "documents have been updated";
 $string['migration_form_title'] = "Launch the update of the data stored in Moodle, to complete the migration from v4 to v5.";
 $string['migration_support'] = "
