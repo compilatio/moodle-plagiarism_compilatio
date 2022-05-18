@@ -45,7 +45,9 @@ define('COMPILATIO_STATUSCODE_TOO_LONG', '414');
 define('COMPILATIO_STATUSCODE_FAILED', '418');
 define('COMPILATIO_STATUSCODE_COMPLETE', 'Analyzed');
 define('COMPILATIO_STATUSCODE_IN_QUEUE', 'In queue');
+define('COMPILATIO_STATUSCODE_TOANALYZE', '201');
 
+define('COMPILATIO_ANALYSISTYPE_AUTO', 0);
 define('COMPILATIO_ANALYSISTYPE_MANUAL', 1); // File processed when teacher manually decides to.
 define('COMPILATIO_ANALYSISTYPE_PROG', 2);   // File processed on set time/date.
 

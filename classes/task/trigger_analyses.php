@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * trigger_timed_analyses.php - Contains Plagiarism plugin trigger_timed_analyses task.
+ * trigger_analyses.php - Contains Plagiarism plugin trigger_analyses task.
  *
  * @since 2.0
  * @package    plagiarism_compilatio
@@ -32,14 +32,14 @@ namespace plagiarism_compilatio\task;
  * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class trigger_timed_analyses extends \core\task\scheduled_task {
+class trigger_analyses extends \core\task\scheduled_task {
 
     /**
      * Get the task name
      * @return string Name
      */
     public function get_name() {
-        return get_string('trigger_timed_analyses', 'plagiarism_compilatio');
+        return get_string('trigger_analyses', 'plagiarism_compilatio');
     }
 
     /**
@@ -49,7 +49,7 @@ class trigger_timed_analyses extends \core\task\scheduled_task {
     public function execute() {
         global $CFG;
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-        compilatio_trigger_timed_analyses();
+        compilatio_trigger_analyses();
     }
 
 }

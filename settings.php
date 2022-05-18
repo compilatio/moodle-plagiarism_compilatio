@@ -49,29 +49,12 @@ if ($mform->is_cancelled()) {
 $incorrectconfig = false;
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
-    if (!isset($data->enabled)) {
-        $data->enabled = 0;
-    }
-    if (!isset($data->enable_mod_assign)) {
-        $data->enable_mod_assign = 0;
-    }
-    if (!isset($data->enable_mod_forum)) {
-        $data->enable_mod_forum = 0;
-    }
-    if (!isset($data->enable_mod_workshop)) {
-        $data->enable_mod_workshop = 0;
-    }
-    if (!isset($data->enable_mod_quiz)) {
-        $data->enable_mod_quiz = 0;
-    }
-    if (!isset($data->allow_teachers_to_show_reports)) {
-        $data->allow_teachers_to_show_reports = 0;
-    }
-    if (!isset($data->allow_search_tab)) {
-        $data->allow_search_tab = 0;
-    }
-    if (!isset($data->allow_student_analyses)) {
-        $data->allow_student_analyses = 0;
+    $elements = ["enabled", "enable_mod_assign", "enable_mod_forum", "enable_mod_workshop", "enable_mod_quiz",
+        "allow_teachers_to_show_reports", "allow_search_tab", "allow_student_analyses", "allow_analyses_auto"];
+    foreach ($elements as $elem) {
+        if (!isset($data->$elem)) {
+            $data->$elem = 0;
+        }
     }
 
     foreach ($data as $field => $value) {

@@ -207,7 +207,6 @@ $string['compilatio:viewreport'] = "Autorizzare l'insegnante a consultare il rap
 $string['get_scores'] = "Recupera la percentuale di similitudini da Compilatio.net";
 $string['send_files'] = "Carica i files su Compilatio.net per il rilevamento del plagio";
 $string['update_meta'] = "Esegui le operazioni pianificate da Compilatio.net";
-$string['trigger_timed_analyses'] = "Avvia le analisi anti plagio programmate";
 // Indexing state.
 $string['indexing_state'] = "Aggiungere i documenti alla biblioteca di riferimento";
 $string['indexing_state_help'] = "Il contenuto dei documenti è indicizzato nella biblioteca di riferimento. Verrà utilizzato come materiale di confronto per le future analisi.";

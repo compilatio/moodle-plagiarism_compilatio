@@ -49,6 +49,7 @@ $string['migration_info'] = "Compilatio met en place une nouvelle plateforme tec
     Lorsque vous y serez invités par l'équipe technique, vous devrez exécuter les actions ci-dessous pour finaliser cette migration.";
 $string['migration_apikey'] = "Saisir la nouvelle clé API v5";
 $string['migration_btn'] = "Lancer la mise à jour des données enregistrées dans Moodle";
+$string['migration_inprogress'] = "Mise à jour en cours, veuillez patienter";
 $string['migration_success_doc'] = "documents ont été mis à jour";
 $string['migration_form_title'] = "Lancer la mise à jour des données enregistrées dans Moodle, pour finaliser la migration de v4 vers v5.";
 $string['migration_support'] = "
@@ -95,29 +96,38 @@ $string['studentemailsubject'] = 'Le fichier a été traité par Compilatio';
 $string['studentemailcontent'] = 'Le fichier que vous avez soumis à {$a->modulename} dans {$a->coursename} a été traité par l\'outil de détection de plagiat Compilatio
 {$a->modulelink}';
 $string['filereset'] = 'Un fichier a été remis à zéro pour re-soumission à Compilatio';
-$string['analysis_type'] = 'Lancement des analyses';
-$string['analysis_type_help'] = '<p>Vous disposez de trois options :</p>
-<ul>
-	<li><strong> Immédiat:</strong> Le document est envoyé à Compilatio et analysé immédiatement </li>
-	<li><strong> Manuel:</strong> Le document est envoyé à Compilatio, mais l\'enseignant doit déclencher manuellement les analyses des documents</li>
-	<li><strong> Programmé:</strong> Le document est envoyé à Compilatio puis analysé à l\'heure/date choisie(s) </li>
-</ul>
-<p>Pour que tous les documents soient comparés entre eux lors des analyses, déclenchez les analyses seulement lorsque tous les documents sont présents dans le devoir.</p>';
 $string['analysis'] = 'Lancement des analyses';
-$string['analysis_help'] = '<p>Vous disposez de deux options :</p>
-<ul>
-	<li><strong> Manuel:</strong> Le document est envoyé à Compilatio, mais l\'enseignant doit déclencher manuellement les analyses des documents</li>
-	<li><strong> Programmé:</strong> Le document est envoyé à Compilatio puis analysé à l\'heure/date choisie(s) </li>
-</ul>
-<p>Pour que tous les documents soient comparés entre eux lors des analyses, déclenchez les analyses seulement lorsque tous les documents sont présents dans le devoir.</p>';
+$string['analysis_help'] = "<p>Vous disposez de deux options :
+    <ul>
+        <li><strong> Manuel :</strong> L'analyse des documents doit être déclenchée manuellement via le bouton “Analyser” de chaque document ou via le bouton “Analyser tous les documents”.</li>
+        <li><strong> Programmé :</strong> Tous les documents sont analysés à l'heure/date choisie.</li>
+    </ul>
+    Pour que tous les documents soient comparés entre eux lors des analyses, déclenchez les analyses seulement lorsque tous les documents sont présents dans le devoir.</p>";
+$string['analysis_auto'] = 'Lancement des analyses';
+$string['analysis_auto_help'] = "<p>Vous disposez de trois options :
+    <ul>
+        <li><strong> Manuel :</strong> L'analyse des documents doit être déclenchée manuellement via le bouton “Analyser” de chaque document ou via le bouton “Analyser tous les documents”.</li>
+        <li><strong> Programmé :</strong> Tous les documents sont analysés à l'heure/date choisie.</li>
+        <li><strong> Immédiat :</strong> Chaque document est analysé dès le dépôt par l’étudiant. Les documents de l’activité ne seront pas comparés entre eux.</li>
+    </ul>
+    Pour que tous les documents soient comparés entre eux lors des analyses, déclenchez les analyses seulement lorsque tous les documents sont présents dans le devoir.</p>";
 $string['analysistype_manual'] = 'Manuel';
 $string['analysistype_prog'] = 'Programmé';
+$string['analysistype_auto'] = 'Immédiat';
 $string['enabledandworking'] = 'Le plugin Compilatio est actif et fonctionnel.';
 $string['subscription_state'] = '<strong>Votre abonnement Compilatio.net est valable jusqu\'à la fin du mois de {$a->end_date}. Ce mois-ci, vous avez analysé l\'équivalent de {$a->used} document(s) de moins de 5.000 mots.</strong>';
 $string['startanalysis'] = 'Démarrer l\'analyse';
 $string['failedanalysis'] = 'Compilatio n\'a pas réussi à analyser votre document : ';
 $string['unextractablefile'] = 'Le texte de votre document n’a pas pu être extrait correctement.';
 $string['quiz_help'] = 'Seules les questions de type composition dont la réponse contient au moins {$a} mots seront analysés.';
+$string['allow_analyses_auto'] = 'Possibilité de lancer immédiatement les analyses';
+$string["allow_analyses_auto_help"] = "<p>Cette option permettra aux enseignants d'activer sur une activité le lancement automatique de l'analyse des documents (i.e. immédiatement après leur dépôt).<br>
+Notez que dans ce cas : 
+<ul>
+    <li>Le nombre d'analyses effectuées par votre établissement peut être significativement plus important.</li>
+    <li>Les documents des premiers déposants ne seront pas comparés avec les documents des derniers déposants.</li>
+</ul>
+Pour que tous les documents d'un devoir soient comparés entre eux, il est nécessaire d'utiliser l'analyse “programmée”, en choisissant une date postérieure à la date de fin de rendu des devoirs.</p>";
 
 // Auto diagnostic.
 $string["auto_diagnosis_title"] = "Auto-diagnostic";
@@ -173,7 +183,8 @@ $string['thresholds_description'] = "Indiquez les seuils que vous souhaitez util
 $string['compi_student_analyses'] = "Permettre aux étudiants d'analyser leurs documents";
 $string['compi_student_analyses_help'] = "Ceci permet aux étudiants d'analyser leur fichiers en brouillon avec Compilatio Magister, avant le rendu final à l'enseignant.";
 $string['activate_submissiondraft'] = 'Pour permettre aux étudiants d\'analyser leurs brouillons, vous devez activer l\'option <b>{$a}</b> dans la partie';
-$string['allow_student_analyses'] = "Permettre aux enseignants d'activer l'option \"Permettre aux étudiants d'analyser leur fichiers en brouillon avec Compilatio Magister, avant le rendu final à l'enseignant\".";
+$string['allow_student_analyses'] = "Possibilité d'activer l'analyse des brouillons par les étudiants.";
+$string['allow_student_analyses_help'] = "Cette option permettra aux enseignants d'activer sur une activité l'analyse par les étudiants de leurs documents rendus en mode brouillon avec Compilatio Magister, avant le rendu final à l'enseignant.";
 $string['student_analyze'] = "Analyse par l'étudiant";
 $string['student_start_analyze'] = "L'analyse peut être lancée par l'étudiant";
 $string['student_help'] = "Vous pouvez analyser votre brouillon avec Compilatio Magister, afin de mesurer les similitudes présentes dans le texte de vos fichiers.<br/>
@@ -223,11 +234,13 @@ $string["compilatio_iddocument"] = "Identifiant du document";
 $string["compilatio_search_notfound"] = "Aucun document n'a été trouvé pour cet identifiant parmi les documents chargés sur votre plateforme Moodle.";
 $string["compilatio_author"] = 'Le document {$a->idcourt} présent dans l\'activité <b>{$a->modulename}</b> appartient à <b>{$a->lastname} {$a->firstname}</b>.';
 $string["compilatio_search_help"] = "Vous pouvez retrouver l'auteur d'un document en récupérant l'identifiant du document dans les sources du rapport d'analyse. Exemple : 1. Votre document: <b>1st5xfj2</b> - Nom_Activité(30)Nom_Document_Copié.odt.";
-$string["allow_search_tab"] = "Activer l'outil de recherche permettant d'identifier l'auteur d'un document.";
+$string["allow_search_tab"] = "Outil de recherche permettant d'identifier l'auteur d'un document.";
 $string["allow_search_tab_help"] = "L'outil de recherche permet de rechercher le nom et prénom d'un étudiant d'après un identifiant de document visible dans les rapports d'analyses parmi tous les documents présent sur votre plateforme.";
 $string["waiting_time_title"] = "Pour toute analyse lancée maintenant, le temps de traitement estimé est de ";
 $string["waiting_time_content"] = 'Dont {$a->queue} en file d\'attente et {$a->analysis_time} d\'analyse<br><br>Cliquer <a href=\'../../plagiarism/compilatio/helpcenter.php?page=moodle-info-waiting&idgroupe=';
 $string["waiting_time_content_help"] = "' target='_blank'>ici</a> pour connaître les bonnes pratiques à suivre afin d'optimiser le temps de traitement des analyses Compilatio.";
+$string["teacher_features_title"] = "Fonctionnalités activées pour les enseignants";
+$string["enable_activities_title"] = "Activer Compilatio pour les activités";
 
 // CSV.
 $string["firstname"] = "Prénom";
@@ -291,7 +304,7 @@ $string["assign_statistics"] = 'Statistiques des devoirs';
 $string["similarities"] = 'Similitudes';
 $string["context"] = 'Contexte';
 $string["pending_status"] = 'Attente';
-$string["allow_teachers_to_show_reports"] = "Permettre aux enseignants de mettre les rapports d'analyse à disposition des étudiants";
+$string["allow_teachers_to_show_reports"] = "Possibilité de mettre les rapports d'analyse à disposition des étudiants";
 $string["admin_disabled_reports"] = "L'administrateur a désactivé l'affichage des rapports de similitudes aux étudiants.";
 $string["teacher"] = "Enseignant";
 $string["loading"] = "Chargement en cours, veuillez patienter...";
@@ -309,7 +322,7 @@ $string['helpcenter_error'] = "Nous ne pouvons pas vous connecter automatiquemen
 $string['get_scores'] = "Récupère les taux de similitudes depuis Compilatio.net";
 $string['send_files'] = "Envoie les fichiers à Compilatio.net pour détection de plagiat";
 $string['update_meta'] = "Exécute les tâches planifiées par Compilatio.net";
-$string['trigger_timed_analyses'] = "Déclenche les analyses de plagiat programmées";
+$string['trigger_analyses'] = "Déclenche les analyses";
 // Indexing state.
 $string['indexing_state'] = "Ajouter les documents à la bibliothèque de références";
 $string['indexing_state_help'] = "Oui: Ajoute les documents dans la bibliothèque de références. Ces documents seront utilisés comme matériel de comparaison pour vos analyses.

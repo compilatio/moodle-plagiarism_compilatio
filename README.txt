@@ -7,8 +7,8 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Add tool in admin tab for migration from Compilatio v4 to v5.
-- Add Compilatio v5 alerts (technical news).
+- Direct analysis has been re-added and can be enabled in the plugin settings.
+- (v5) The "Refresh the informations" now updates the similarity score in Moodle if the report has been updated in Magister 
 
 FIXES
 - Fix Migration tool for migrations with a lot of documents.

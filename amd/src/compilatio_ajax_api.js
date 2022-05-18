@@ -139,6 +139,32 @@ define(['jquery'], function($) {
         });
     };
 
+    exports.startMigration = function(basepath) {
+        $(document).ready(function() {
+            var startMigration = $("#compilatio-startmigration-btn");
+            startMigration.click(async function() {
+                startMigration.attr("disabled", "disabled");
+                var message = $('#compilatio-startmigration-info')
+                message.show();
+                var apikey = $('#apikey').val();
+                var i = 0;
+                do {
+                    var res = await $.post(basepath + '/plagiarism/compilatio/ajax/migration.php', {'apikey': apikey, 'i': i}).promise();
+                    i++;
+                }
+                while (res == true);
+
+                message.removeClass("alert-info");
+                if (res.match("^Error")) {
+                    message.addClass("alert-danger");
+                } else {
+                    message.addClass("alert-success");
+                }
+                message.html(res)
+            });
+        });
+    };
+
     exports.compilatioTabs = function(basepath, alertsCount, idcourt, notifIcon, notifTitle) {
         $(document).ready(function() {
             $.post(basepath + '/plagiarism/compilatio/ajax/get_waiting_time.php', {}, function(message) {
