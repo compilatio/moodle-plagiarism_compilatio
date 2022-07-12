@@ -2575,11 +2575,14 @@ function compilatio_get_non_uploaded_documents($cmid) {
     $notuploadedfiles = array();
     $fs = get_file_storage();
 
-    $sql = "SELECT assf.submission as itemid, con.id as contextid
+    $sql = "SELECT ass.id as itemid, con.id as contextid
             FROM {course_modules} cm
-                JOIN {assignsubmission_file} assf ON assf.assignment = cm.instance
                 JOIN {context} con ON cm.id = con.instanceid
-            WHERE cm.id=? AND con.contextlevel = 70 AND assf.numfiles > 0";
+                JOIN {assignsubmission_file} assf ON assf.assignment = cm.instance
+                JOIN {assign_submission} ass ON assf.submission = ass.id
+                JOIN {user_enrolments} ue ON ass.userid = ue.userid
+                JOIN {enrol} enr ON ue.enrolid = enr.id
+            WHERE cm.id=? AND con.contextlevel = 70 AND assf.numfiles > 0 AND enr.courseid = cm.course";
 
     $filesids = $DB->get_records_sql($sql, array($cmid));
 

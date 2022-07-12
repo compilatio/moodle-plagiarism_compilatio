@@ -13,6 +13,8 @@ CHANGES
 FIXES
 - Fix Migration tool for migrations with a lot of documents.
 - (v5) Fix documents blocked in queue state because they are too short to be analyzed.
+- Fix : Documents of users who have been unregistered from a course could be processed by the plugin.
+- Fix : Handle error in plugin settings if a v5 API key is entered with a v4 API url.
 
 QUICK INSTALL
 ================
