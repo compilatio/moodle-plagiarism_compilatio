@@ -56,7 +56,6 @@ $string['migration_support'] = "
     <p>If all documents have not been updated correctly, please contact the Compilatio support team at support@compilatio.net and specify:</p>
     <p><<
         <br>
-        An error occurred during the migration of data from v4 to v5 of a Moodle platform in our school
         <ul>
             <li>The following error message appeared: [message]</li>
             <li>[school_name]</li>

@@ -108,6 +108,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     // TODO - check settings to see if valid.
     $error = '';
     $quotas = compilatio_getquotas();
+
     if ($quotas["quotas"] == null) {
         // Disable compilatio as this config isn't correct.
         set_config('enabled', 0, 'plagiarism_compilatio');
@@ -115,16 +116,20 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             set_config('compilatio_use', 0, 'plagiarism');
         }
         $incorrectconfig = true;
-        $error = $quotas["error"];
+        if ($quotas["error"] == null) {
+            $error = "Invalid API configuration. If you are using a v5 API key please check that you set the API URL field to https://app.compilatio.net/api/private/soap/wsdl";
+        } else {
+            $error = $quotas["error"];
+        }
     } else {
         $apiconfigid = get_config('plagiarism_compilatio', 'apiconfigid');
         $compilatio = compilatio_get_compilatio_service($apiconfigid);
         if (!$compilatio->check_allow_student_analyses()) {
             set_config('allow_student_analyses', 0, 'plagiarism_compilatio');
         }
+        
+        compilatio_update_meta();
     }
-
-    compilatio_update_meta();
 
     redirect('settings.php?error=' . $error);
 }
