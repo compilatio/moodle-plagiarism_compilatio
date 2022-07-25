@@ -1310,7 +1310,7 @@ function compilatio_send_pending_files($plagiarismsettings) {
             $tmpfile = compilatio_get_temp_file($plagiarismfile->filename);
 
             if ($tmpfile !== false) {
-                $compid = compilatio_send_file_to_compilatio($plagiarismfile, $plagiarismsettings, $tmpfile);
+                $compid = compilatio_send_file_to_compilatio($plagiarismfile, $plagiarismsettings, $tmpfile, $indexingstate);
                 unlink($tmpfile->filepath);
             } else {
                 // Not a temporary file.
@@ -1323,17 +1323,8 @@ function compilatio_send_pending_files($plagiarismsettings) {
                 }
                 $file = $fs->get_file_by_id($f->id);
 
-                $compid = compilatio_send_file_to_compilatio($plagiarismfile, $plagiarismsettings, $file);
+                $compid = compilatio_send_file_to_compilatio($plagiarismfile, $plagiarismsettings, $file, $indexingstate);
             }
-
-            // Wait for document to be extract in Elsaf to be indexed.
-            unset($result);
-            do {
-                if (isset($result)) {
-                    sleep(1);
-                }
-                $result = ws_helper::set_indexing_state($compid, $indexingstate, $plagiarismfile->apiconfigid);
-            } while ($result === 'Error set_indexing_state() setIndexRefLibrary error Document extraction in progress');
         }
     }
 }
@@ -1806,7 +1797,7 @@ function compilatio_check_attempt_timeout($plagiarismfile, $hasmaxattempt = fals
  * @param  object $file               File
  * @return mixed                      Return the document ID if succeed, false otherwise
  */
-function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsettings, $file) {
+function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsettings, $file, $indexingstate = false) {
 
     global $DB, $CFG, $COURSE;
 
@@ -1834,12 +1825,17 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
     }
 
     $name = format_string($module->name, true, $COURSE->id) . "(" . $plagiarismfile->cm . ")_" . $filename;
+
     $filecontents = (!empty($file->filepath)) ? file_get_contents($file->filepath) : $file->get_content();
-    $idcompi = $compilatio->send_doc($name, // Title.
-        $name, // Description.
-        $filename, // File_name.
-        $mimetype, // Mime data.
-        $filecontents); // Doc content.
+
+    // v5 Doc sending
+    if (strlen($compilatio->key) === 40) {
+        $idcompi = $compilatio->send_doc_v5($name, $filename, $filecontents, $indexingstate);
+    // v4 Doc sending
+    } else {
+        $idcompi = $compilatio->send_doc($name, $name, $filename, $mimetype, $filecontents);
+        ws_helper::set_indexing_state($idcompi, $indexingstate, $plagiarismfile->apiconfigid);
+    }
 
     if (compilatio_valid_md5($idcompi)) {
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_ACCEPTED;
@@ -2006,7 +2002,7 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
  */
 function compilatio_valid_md5($hash) {
 
-    if (preg_match('/^[a-f0-9]{32}$/', $hash)) {
+    if (preg_match('/^[a-f0-9]{32,40}$/', $hash)) {
         return true;
     } else {
         return false;
