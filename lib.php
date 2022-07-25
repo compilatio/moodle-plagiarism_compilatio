@@ -1695,11 +1695,11 @@ function compilatio_queue_file($cmid,
     }
 
     // Check if the size is too large.
-    /*if (!compilatio_check_allowed_file_max_size($file)) {
+    if (!compilatio_check_allowed_file_max_size($file)) {
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_LARGE;
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
         return true;
-    }*/
+    }
 
     // Optionally send the file to Compilatio.
     if ($sendfile !== false) {
