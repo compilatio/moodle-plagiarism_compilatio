@@ -156,11 +156,7 @@ class compilatioservice {
      * @param  string $content     Content
      * @return string              Return the document ID if succeed, an error otherwise
      */
-    public function send_doc($title,
-                             $description,
-                             $filename,
-                             $mimetype,
-                             $content) {
+    public function send_doc($title, $description, $filename, $mimetype, $content) {
 
         try {
 
@@ -183,6 +179,52 @@ class compilatioservice {
 
         } catch (SoapFault $fault) {
             return 'Erreur send_doc() : ' . $fault->faultcode . " " .$fault->faultstring;
+        }
+    }
+
+    public function send_doc_v5($title, $filename, $content, $indexingstate) {
+        global $CFG;
+
+        if (!check_dir_exists($CFG->dataroot . "/temp/compilatio", true, true)) {
+            mkdir($CFG->dataroot . "/temp/compilatio", 0700);
+        }
+
+        $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H:i:s') . ".txt";
+        $handle = fopen($filepath, "w+");
+        fwrite($handle, $content);
+
+        $params = array(
+            'file' => new \CURLFile($filepath),
+            'filename' => $filename,
+            'title' => $title,
+            'indexed' => boolval($indexingstate),
+            'origin' => 'moodle'
+        );
+
+        $ch = curl_init();
+
+        $curloptions = array(
+            CURLOPT_URL => "https://app.compilatio.net/api/private/document/",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => array('X-Auth-Token: ' . $this->key),
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $params
+        );
+
+        curl_setopt_array($ch, $curloptions);
+        $response = json_decode(curl_exec($ch));
+        curl_close($ch);
+
+        unlink($filepath);
+
+        if (!isset($response->status->code, $response->status->message)) {
+            return "Error in function send_doc() : request response's status not found";
+        }
+
+        if ($response->status->code == 201) {
+            return $response->data->document->id;
+        } else {
+            return $response->status->message;
         }
     }
 

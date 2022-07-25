@@ -7,14 +7,7 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Direct analysis has been re-added and can be enabled in the plugin settings.
-- (v5) The "Refresh the informations" now updates the similarity score in Moodle if the report has been updated in Magister 
-
-FIXES
-- Fix Migration tool for migrations with a lot of documents.
-- (v5) Fix documents blocked in queue state because they are too short to be analyzed.
-- Fix : Documents of users who have been unregistered from a course could be processed by the plugin.
-- Fix : Handle error in plugin settings if a v5 API key is entered with a v4 API url.
+- (v5) The plugin now fully supports the upload of documents up to 100MB.
 
 QUICK INSTALL
 ================
@@ -22,6 +15,5 @@ QUICK INSTALL
 2) Visit the Notifications page in Moodle to trigger the upgrade scripts
 3) Enable the Plagiarism API under admin > Advanced Features
 4) Configure the Compilatio plugin under admin > plugins > Plagiarism > Compilatio
-
 
 For more information see: http://docs.moodle.org/en/Plagiarism_Prevention
