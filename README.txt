@@ -8,7 +8,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 - (v5) The plugin now fully supports the upload of documents up to 100MB.
-
+- Add progress bar when updating documents for v4 to v5 migration.
 QUICK INSTALL
 ================
 1) Place these files in a new folder in your Moodle install under /plagiarism/compilatio
