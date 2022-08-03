@@ -52,6 +52,8 @@ echo "<div class='form-inline'>
 
 echo "<div style='display:none' id='compilatio-startmigration-info' class='alert alert-info alert-block fade in' role='alert' data-aria-autofocus='true'>
         " . get_string('migration_inprogress', 'plagiarism_compilatio') . " <i class='fa fa-spinner fa-spin fa-circle-notch'></i>
+        <div id='migration-progress'>
+        </div>
     </div>";
 
 echo "<div class='compi-migration'>" . get_string('migration_support', 'plagiarism_compilatio') . "</div>";

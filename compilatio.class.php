@@ -218,7 +218,7 @@ class compilatioservice {
         unlink($filepath);
 
         if (!isset($response->status->code, $response->status->message)) {
-            return "Error in function send_doc() : request response's status not found";
+            return "Error in function send_doc() : request response's status not found: " . var_export($response, true);
         }
 
         if ($response->status->code == 201) {
