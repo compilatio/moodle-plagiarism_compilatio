@@ -150,7 +150,7 @@ define(['jquery'], function($) {
                 var i = 0;
 
                 do {
-                    var res = await $.post(basepath + '/plagiarism/compilatio/ajax/migration.php', {'apikey': "apikey", 'i': i}).promise();
+                    var res = await $.post(basepath + '/plagiarism/compilatio/ajax/migration.php', {'apikey': apikey, 'i': i}).promise();
                     if (i == 0 && res == true) {
                         $.get({url: "https://app.compilatio.net/api/private/document/count", headers: {'X-Auth-Token': apikey}}, function(response) {
                             $("#migration-progress").html("<progress id='migration-update-progress' value='0' max='" + (response.data.count / 500) + "'></progress>");

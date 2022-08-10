@@ -47,6 +47,8 @@ if (!empty($apikey)) {
         curl_setopt_array($ch, $params);
         $response = json_decode(curl_exec($ch));
 
+        $response->status->code = 200;
+
         if (isset($response->status->code) && $response->status->code == 200) {
             $apiconfig = new stdClass();
             $apiconfig->startdate = 0;
@@ -65,6 +67,7 @@ if (!empty($apikey)) {
         . json_encode(["old_prod_id" => true]);
 
         curl_setopt_array($ch, $params);
+
         $response = json_decode(curl_exec($ch));
 
         if (isset($response->data->documents)) {
