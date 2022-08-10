@@ -190,6 +190,7 @@ class compilatioservice {
         }
 
         $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H-i-s') . ".txt";
+        
         $handle = fopen($filepath, "w+");
         fwrite($handle, $content);
 
