@@ -58,13 +58,14 @@ if (!empty($apikey)) {
             set_config('apiconfigid', $_SESSION["apiconfigid"], 'plagiarism_compilatio');
             echo true;
         } else {
-            echo "Error : Invalid API Key";
+            echo "Error : Invalid API Key : " . ($response->status->message ?? '') . curl_error($ch);
         }
     } else {
         $params[CURLOPT_URL] = "https://app.compilatio.net/api/private/document/list?limit=500&page=" . $i . "&projection="
         . json_encode(["old_prod_id" => true]);
 
         curl_setopt_array($ch, $params);
+
         $response = json_decode(curl_exec($ch));
 
         if (isset($response->data->documents)) {

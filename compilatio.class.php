@@ -189,7 +189,8 @@ class compilatioservice {
             mkdir($CFG->dataroot . "/temp/compilatio", 0700);
         }
 
-        $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H:i:s') . ".txt";
+        $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H-i-s') . ".txt";
+        
         $handle = fopen($filepath, "w+");
         fwrite($handle, $content);
 

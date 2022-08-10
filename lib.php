@@ -1829,7 +1829,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
     $filecontents = (!empty($file->filepath)) ? file_get_contents($file->filepath) : $file->get_content();
 
     // v5 Doc sending
-    if (strlen($compilatio->key) === 40) {
+    if (strlen($compilatio->key) == 40) {
         $idcompi = $compilatio->send_doc_v5($name, $filename, $filecontents, $indexingstate);
     // v4 Doc sending
     } else {
