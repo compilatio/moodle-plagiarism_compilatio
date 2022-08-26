@@ -204,13 +204,32 @@ class compilatioservice {
 
         $ch = curl_init();
 
-        $curloptions = array(
+        $curloptions = [
             CURLOPT_URL => "https://app.compilatio.net/api/private/document/",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => array('X-Auth-Token: ' . $this->key),
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $params
-        );
+        ];
+
+        // Proxy settings.
+        if (!empty($CFG->proxyhost)) {
+            $curloptions[CURLOPT_PROXY] = $CFG->proxyhost;
+
+            $curloptions[CURLOPT_HTTPPROXYTUNNEL] = false;
+
+            if (!empty($CFG->proxytype) && ($CFG->proxytype == 'SOCKS5')) {
+                $curloptions[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
+            }
+
+            if (!empty($CFG->proxyport)) {
+                $curloptions[CURLOPT_PROXYPORT] = $CFG->$proxyport;
+            }
+
+            if (!empty($CFG->proxyuser) && !empty($CFG->proxypassword)) {
+                $curloptions[CURLOPT_PROXYUSERPWD] = $CFG->proxyuser . ':' . $CFG->proxypassword;
+            }
+        }
 
         curl_setopt_array($ch, $curloptions);
         $response = json_decode(curl_exec($ch));

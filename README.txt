@@ -13,6 +13,7 @@ CHANGES
 
 FIXES
 - Fix writing of file when sending to Compilatio for Windows servers.
+- Management of proxies for CURL requests.
 
 QUICK INSTALL
 ================

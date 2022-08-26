@@ -40,6 +40,25 @@ if (!empty($apikey)) {
         CURLOPT_HTTPHEADER => array('X-Auth-Token: ' . $apikey, 'Content-Type: application/json'),
     ];
 
+    // Proxy settings.
+    if (!empty($CFG->proxyhost)) {
+        $params[CURLOPT_PROXY] = $CFG->proxyhost;
+
+        $params[CURLOPT_HTTPPROXYTUNNEL] = false;
+
+        if (!empty($CFG->proxytype) && ($CFG->proxytype == 'SOCKS5')) {
+            $params[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
+        }
+
+        if (!empty($CFG->proxyport)) {
+            $params[CURLOPT_PROXYPORT] = $CFG->$proxyport;
+        }
+
+        if (!empty($CFG->proxyuser) && !empty($CFG->proxypassword)) {
+            $params[CURLOPT_PROXYUSERPWD] = $CFG->proxyuser . ':' . $CFG->proxypassword;
+        }
+    }
+
     if ($i == 0) {
         $_SESSION["countsuccess"] = 0;
         $params[CURLOPT_URL] = "https://app.compilatio.net/api/private/authentication/check-api-key";
