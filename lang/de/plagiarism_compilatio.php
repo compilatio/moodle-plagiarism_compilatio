@@ -40,10 +40,7 @@ $string['compilatio_display_student_score_help'] = 'Die Ähnlichkeitsquote zeigt
 $string['compilatio_display_student_score'] = 'Die Ähnlichkeitsquote pro Student sichtbar machen';
 $string['compilatio_display_student_report'] = 'Dem Studenten die Ansicht des Analyseberichts ermöglichen';
 $string['compilatio_display_student_report_help'] = 'Der Analysebericht eines Dokuments zeigt die den ermittelten Quellen ähnliche Stellen und die entsprechende Ähnlichkeitsquote auf.';
-$string['compilatio_draft_submit'] = 'Datum, an dem die Datei Compilatio vorgelegt werden muss';
 $string['showwhenclosed'] = 'Datum, an dem die Aktivität abgeschlossen wurde';
-$string['submitondraft'] = 'Eine Datei vorlegen, wenn das erste Dokument hochgeladen wurde';
-$string['submitonfinal'] = 'Eine Datei vorlegen, wenn sie ein Student zur Analyse übermittelt';
 $string['defaultupdated'] = 'Die Standartwerte wurden aktualisiert';
 $string['defaults_desc'] = 'Folgende Parameter werden als Standartwerte für die Aktivitäten von Compilatio innerhalb von Moodle verwendet.';
 $string['compilatiodefaults'] = 'Standartwerte für Compilatio.';
@@ -66,7 +63,6 @@ $string['analysis_type_help'] = '<p>Es stehen Ihnen drei Möglichkeiten zur Verf
     <li><strong> Geplant:</strong> Das Dokument wird an Compilatio gesendet und danach zu einer bestimmten Zeit/einem bestimmten Datum analysiert </li>
 </ul>
 <p>Damit die Dokumente bei der Analyse miteinander verglichen werden, lösen Sie die Analyse bitte erst dann aus, wenn alle Dokumente der Arbeit vorhanden sind.</p>';
-$string['analysistype_direct'] = 'Unmittelbar';
 $string['analysistype_manual'] = 'Manuell';
 $string['analysistype_prog'] = 'Geplant';
 $string['enabledandworking'] = 'Das Compilatio Plugin ist aktiv und funktionsfähig.';
@@ -152,6 +148,10 @@ $string["display_stats"] = "Die Statistiken dieser Arbeit aufzeigen";
 $string["analysis_completed"] = 'Analyse beendet: Ähnlichkeitsquote von {$a}%.';
 $string["compilatio_help_assign"] = "Hilfe zum Compilatio Plugin anfordern.";
 $string["display_notifications"] = "Benachrichtigungen anzeigen";
+$string["waiting_time_title"] = "Für jede Analyse, die jetzt gestartet wird, beträgt die geschätzte Bearbeitungszeit ";
+$string["waiting_time_content"] = 'Davon {$a->queue} in Warteschleife und {$a->analysis_time} in Analyse<br><br>Klicken Sie <a href=\'../../plagiarism/compilatio/helpcenter.php?page=moodle-info-waiting&idgroupe=';
+$string["waiting_time_content_help"] = "' target='_blank'>hier</a> für die Anleitung zur vorbildlichen Nutzung, um die Verarbeitungszeit von Compilatio Analysen zu optimieren.";
+
 // CSV.
 $string["firstname"] = "Vorname";
 $string["lastname"] = "Nachname";
@@ -180,9 +180,9 @@ $string['analyze'] = 'Analysieren';
 $string['queue'] = 'Wartezeit';
 $string['analyzing'] = 'Analyse';
 $string['compilatioenableplugin'] = 'Compilatio aktivieren für {$a}';
-$string['compilatio_enable_mod_assign'] = 'Compilatio für Aufgaben aktivieren';
-$string['compilatio_enable_mod_workshop'] = 'Compilatio für Workshops aktivieren';
-$string['compilatio_enable_mod_forum'] = 'Compilatio für Foren aktivieren';
+$string['enable_mod_assign'] = 'Compilatio für Aufgaben aktivieren';
+$string['enable_mod_workshop'] = 'Compilatio für Workshops aktivieren';
+$string['enable_mod_forum'] = 'Compilatio für Foren aktivieren';
 $string['planned'] = "Geplant";
 $string['immediately'] = "Unmittelbar";
 $string['enable_javascript'] = "Bitte aktivieren Sie JavaScript, um alle Funktionalitäten von Compilatio nutzen zu können. <br/> Finden Sie hier <a href='http://www.enable-javascript.com/fr/' target='_blank'>Anweisungen, um JavaScript in Ihrem Browser zu aktivieren</a>.";
@@ -209,27 +209,6 @@ $string["loading"] = "Wird geladen, bitte warten...";
 // ALERTS.
 $string["unknownlang"] = "Achtung, die Sprache einiger Passagen in diesem Dokument wurde nicht erkannt.";
 // HELP.
-$string['help_compilatio_settings_title'] = 'Welche Einstellungen in den Compilatio Parametern einer Aktivität auswählen?';
-$string['help_compilatio_settings_content'] = 'Im Compilatio Plugin stehen drei Analysetypen zur Verfügung:
-<ul>
-    <li>
-        Unmittelbar  : <br/>
-        Alle Dokumente werden nach ihrer Einreichung durch den Studenten an Compilatio geschickt und analysiert.
-        Empfohlen, wenn Sie die Resultate möglichst schnell erhalten möchten und es nicht notwendig ist, dass die Dokumente Ihrer Aktivität miteinander verglichen werden.
-    </li>
-    <li>
-        Geplant  : <br/>
-        Wählen Sie für die Compilatio Analysen ein Startdatum nach der Abgabefrist für die Studenten aus.
-        Empfohlen, wenn Sie alle Dokumente Ihrer Aktivität miteinander vergleichen möchten.
-    </li>
-    <li>
-        Manuell : <br/>
-        Die Dokumente Ihrer Aktivität werden erst analysiert, wenn Sie die Analysen manuell auslösen.
-        Um die Analyse eines Dokuments auszulösen, klicken Sie bitte in jedem Dokument auf die Schaltfläche „analysieren“.
-        Die Schaltfläche „alle Dokumente analysieren“ löst die Analyse aller in einer Arbeit vorhandenen Dokumente aus.
-    </li>
-</ul>
-';
 $string['help_compilatio_format_content'] = "Compilatio.net unterstützt die meisten in der Büroelektronik und im Internet verwendeten Formate. Folgende Formate werden akzeptiert:";
 $string['goto_helpcenter'] = "Klicken Sie auf das Fragezeichen, um ein neues Fenster zu öffnen und sich im Compilatio Hilfecenter einzuloggen.";
 $string['admin_goto_helpcenter'] = "Gehen Sie zum Compilatio Hilfecenter, um die Artikel zur Verwaltung des Moodle-Plug-Ins zu lesen.";
@@ -237,7 +216,6 @@ $string['admin_goto_helpcenter'] = "Gehen Sie zum Compilatio Hilfecenter, um die
 $string['get_scores'] = "Ruft die Ähnlichkeitsquoten auf Compilatio.net ab";
 $string['send_files'] = "Schickt die Dateien an Compilatio.net zur Plagiatserkennung";
 $string['update_meta'] = "Führt die von Compilatio.net geplanten Aufgaben aus";
-$string['trigger_timed_analyses'] = "Löst die geplanten Plagiatsanalysen aus";
 // Indexing state.
 $string['indexing_state'] = "Dokumente zur Referenzbibliothek hinzufügen";
 $string['indexing_state_help'] = "Der Inhalt der Dokumente wird in der Referenzbibliothek angegeben. Er wird als Vergleichsmaterial für spätere Analysen verwendet.";

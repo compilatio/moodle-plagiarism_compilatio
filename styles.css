@@ -9,6 +9,7 @@ Compilatio document area :
     border-radius: 3px;
     background-color: #f2f2f2;
     border: solid thin #e3e3e3;
+    cursor: pointer;
 }
 .compilatio-plagiarismreport,
 .compilatio-plagiarismreport a {
@@ -117,6 +118,9 @@ Head area in assignment
 .compilatio-help {
     float: left;
 }
+#compi-help > p {
+    margin-top: 15px;
+}
 .compilatio-help img {
     width: 24px;
 }
@@ -159,8 +163,10 @@ Head area in assignment
     cursor: pointer;
 }
 #compilatio-tabs {
-    padding-bottom: 20px;
     border-bottom: 2px solid #e3e3e3;
+}
+.compilatio-tabs-content {
+    display: none;
 }
 #compilatio-show-notifications span {
     position: relative;
@@ -179,20 +185,22 @@ Head area in assignment
 #compilatio-button-container {
     display: flex;
     justify-content: center;
+    margin: 0px 5% 0px 5%;
 }
 #compilatio-container {
-    height: 70px;
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
     min-width: 565px;
     border-color: #e3e3e3;
-    min-height: 20px;
+    min-height: 100px;
     padding: 19px;
-    margin-bottom: 20px;
     background-color: #f5f5f5;
     border: 1px solid #e3e3e3;
     border-radius: 4px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
-    margin-top: 15px;
+    margin: 70px 5% 20px 5%;
     color: #444;
 }
 #compilatio-container h5 {
@@ -320,7 +328,6 @@ legend.compilatio_legend {
 }
 .compilatio-area {
     display: flex;
-    justify-content: flex-end;
     -ms-align-items: center;
     align-items: center;
     position: relative;
@@ -343,7 +350,8 @@ legend.compilatio_legend {
 .compilatio-library-out {
     background-image: url([[pix:plagiarism_compilatio|library-out]]);
 }
-.compilatio-library-in, .compilatio-library-out {
+.compilatio-library-in,
+.compilatio-library-out {
     cursor: pointer;
 }
 #compi-update-progress {
@@ -355,15 +363,17 @@ legend.compilatio_legend {
     filter: grayscale(100%);
     cursor: default;
 }
-#compilatio-home > p {
+#compi-home > p {
     margin-top: 15px;
 }
 .compi-alert {
-    position: absolute;
-    top: -5px;
-    right: -10px;
+    position: relative;
+    top: -15px;
 }
 .compi-alert > img {
     width: 14px;
     position: relative;
+}
+.compi-migration {
+    margin-top: 2em;
 }

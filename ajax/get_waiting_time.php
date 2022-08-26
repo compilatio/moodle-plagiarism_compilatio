@@ -15,15 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Get document indexing state via Compilatio SOAP API
+ * Get waiting time for analysis begins via Compilatio SOAP API
  *
  * This script is called by amd/build/ajax_api.js
  *
  * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * @param   string $_POST['idDoc']
- * Echos html block relating to the document's indexing state
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
@@ -35,18 +32,28 @@ require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-// Get helper class.
-require_once($CFG->dirroot . '/plagiarism/compilatio/helper/output_helper.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/helper/ws_helper.php');
-
 // Get constants.
 require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
-$iddoc = optional_param('idDoc', '', PARAM_TEXT);
-$apiconfigid = required_param('apiconfigid', PARAM_INT);
 
-if (isset($iddoc) && compilatio_valid_md5($iddoc)) {
-    $indexingstate = ws_helper::get_indexing_state($iddoc, $apiconfigid);
-    echo(output_helper::get_indexing_state($indexingstate));
+$compilatio = compilatio_get_compilatio_service(get_config('plagiarism_compilatio', 'apiconfigid'));
+$reswait = $compilatio->get_waiting_time();
+$maxanalysistime = 1800;
+
+if ($reswait != false && $reswait->magister_queue + $reswait->magister_analysis_time > $maxanalysistime) {
+
+    $waittime = new Stdclass();
+    $waittime->total = format_time($reswait->magister_queue + $reswait->magister_analysis_time);
+    $waittime->queue = format_time($reswait->magister_queue);
+    $waittime->analysis_time = format_time($reswait->magister_analysis_time);
+
+    echo "<div class='compilatio-alert'>
+            <strong>" . get_string("waiting_time_title", "plagiarism_compilatio") . $waittime->total . "</strong><br/>" .
+            get_string("waiting_time_content", "plagiarism_compilatio", $waittime)
+            . get_config('plagiarism_compilatio', 'idgroupe')
+            . get_string("waiting_time_content_help", "plagiarism_compilatio") .
+        "</div>";
+} else {
+    echo false;
 }

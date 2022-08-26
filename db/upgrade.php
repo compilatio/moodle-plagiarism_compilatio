@@ -27,8 +27,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 /**
  * Method to upgrade the database between differents versions
  *
@@ -88,6 +86,137 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
         // Compilatio savepoint reached.
         upgrade_plugin_savepoint(true, 2014111000, 'plagiarism', 'compilatio');
+    }
+
+    if ($oldversion < 2020111200) {
+        $table = new xmldb_table('plagiarism_compilatio_files');
+        $field = new xmldb_field('recyclebinid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $dbman->add_field($table, $field);
+
+        upgrade_plugin_savepoint(true, 2020111200, 'plagiarism', 'compilatio');
+    }
+
+    // Get plugin configuration.
+    $legacyconfig = (array) get_config('plagiarism');
+    $newconfig = (array) get_config('plagiarism_compilatio');
+
+    // Writes the new plugin configuration with legacy values.
+    foreach ($legacyconfig as $k => $v) {
+        if (strpos($k, 'compilatio_') === 0) {
+            if ($k == 'compilatio_use') {
+                $newname = 'enabled';
+                // Forces old 'compilatio_use' to '1'. Enabling plugin will be deffered to 'enabled' parameter.
+                try {
+                    set_config('compilatio_use', '1', 'plagiarism');
+                } catch (Exception $e) {
+                    throw new moodle_exception("Failed to set plagiarism:compilatio_use to 1");
+                    return false;
+                }
+            } else {
+                $newname = substr($k, 11);
+            }
+            if (!isset($newconfig[$newname])) {
+                try {
+                    set_config($newname, $v, 'plagiarism_compilatio');
+                } catch (Exception $e) {
+                    throw new moodle_exception("Failed to set plagiarism_compilatio:" . $newname . " to " . $v);
+                    return false;
+                }
+                if ($k != 'compilatio_use' || $CFG->version >= 2020061500) {
+                    if (!unset_config($k, 'plagiarism')) {
+                        throw new moodle_exception("Failed to unset plagiarism:" . $k);
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
+    if ($oldversion < 2021011100) {
+        $table = new xmldb_table('plagiarism_compilatio_files');
+        $field = new xmldb_field('apiconfigid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 1);
+        $dbman->add_field($table, $field);
+
+        $table = new xmldb_table('plagiarism_compilatio_apicon');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('url', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('api_key', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('startdate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        $url = get_config('plagiarism_compilatio', 'api');
+        $key = get_config('plagiarism_compilatio', 'password');
+
+        $apikey = new stdclass();
+        $apikey->url = $url;
+        $apikey->api_key = $key;
+        $apikeyid = $DB->insert_record('plagiarism_compilatio_apicon', $apikey);
+
+        unset_config('api', 'plagiarism_compilatio');
+        unset_config('password', 'plagiarism_compilatio');
+
+        set_config('apiconfigid', $apikeyid, 'plagiarism_compilatio');
+
+        upgrade_plugin_savepoint(true, 2021011100, 'plagiarism', 'compilatio');
+    }
+
+    if ($oldversion < 2021012500) {
+        set_config('allow_search_tab', 0, 'plagiarism_compilatio');
+
+        $DB->execute("UPDATE {plagiarism_compilatio_config} SET value='1' WHERE name='compilatio_analysistype' AND value='0'");
+
+        $table = new xmldb_table('plagiarism_compilatio_files');
+        $field = new xmldb_field('idcourt', XMLDB_TYPE_CHAR, '10', null, null, null, null);
+        $dbman->add_field($table, $field);
+
+        upgrade_plugin_savepoint(true, 2021012500, 'plagiarism', 'compilatio');
+    }
+
+    if ($oldversion < 2021021800) {
+        compilatio_update_meta();
+        upgrade_plugin_savepoint(true, 2021021800, 'plagiarism', 'compilatio');
+    }
+
+    if ($oldversion < 2021062300) {
+        $cms = $DB->get_records_sql('SELECT distinct cm FROM {plagiarism_compilatio_config}');
+        foreach ($cms as $cm) {
+            $newelement = new Stdclass();
+            $newelement->cm = $cm->cm;
+            $newelement->name = "compi_student_analyses";
+            $newelement->value = 0;
+            $DB->insert_record('plagiarism_compilatio_config', $newelement);
+        }
+        upgrade_plugin_savepoint(true, 2021062300, 'plagiarism', 'compilatio');
+    }
+
+    if ($oldversion < 2022022800) {
+        $table = new xmldb_table('plagiarism_compilatio_news');
+        $table->add_field('message_pt', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('message_es', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('message_de', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('message_it', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        $index = new xmldb_index('mdl_plagcompnews_id__uix', XMLDB_INDEX_UNIQUE, array('id_compilatio'));
+        if ($dbman->index_exists($table, $index)) {
+            $dbman->drop_index($table, $index);
+        }
+
+        $field = new xmldb_field('id_compilatio');
+        $dbman->drop_field($table, $field);
+
+        $field = new xmldb_field('type', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $dbman->change_field_notnull($table, $field);
+
+        upgrade_plugin_savepoint(true, 2022022800, 'plagiarism', 'compilatio');
+    }
+
+    if ($oldversion < 2022080900) {
+        $table = new xmldb_table('plagiarism_compilatio_files');
+        $index = new xmldb_index('mdl_cmp_files_extid', false, array('externalid'));
+        $dbman->add_index($table, $index);
     }
 
     return true;

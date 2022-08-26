@@ -56,7 +56,7 @@ $tasks = array(
         'month' => '*'
     ),
     array(
-        'classname' => 'plagiarism_compilatio\task\trigger_timed_analyses',
+        'classname' => 'plagiarism_compilatio\task\trigger_analyses',
         'blocking' => 0,
         'minute' => '*/5',
         'hour' => '*',

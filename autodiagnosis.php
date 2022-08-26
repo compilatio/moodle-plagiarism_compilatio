@@ -37,11 +37,11 @@ $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
 $plagiarismplugin = new plagiarism_plugin_compilatio();
-$plagiarismsettings = (array) get_config('plagiarism');
+$plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
 // Test if compilatio is enabled.
-if (isset($plagiarismsettings["compilatio_use"])) {
-    $enabledsuccess = $plagiarismsettings["compilatio_use"] === "1";
+if (isset($plagiarismsettings["enabled"])) {
+    $enabledsuccess = $plagiarismsettings["enabled"] === "1";
 } else {
     $enabledsuccess = false;
 }
@@ -51,43 +51,53 @@ if (isset($plagiarismsettings["compilatio_use"])) {
  * describing the error if any occurs.
  * API key does not matter here.
  */
-if (isset($plagiarismsettings["compilatio_api"])) {
-    $compilatio = new compilatioservice(
-            "KEY", $plagiarismsettings['compilatio_api'], $CFG->proxyhost, $CFG->proxyport, $CFG->proxyuser, $CFG->proxypassword);
-    $connectionsuccess = !is_string($compilatio->soapcli);
+if (isset($plagiarismsettings["apiconfigid"])) {
+    $url = $DB->get_field('plagiarism_compilatio_apicon', 'url',
+        array('id' => $plagiarismsettings["apiconfigid"]));
 } else {
-    $compilatio = new compilatioservice(
-            "KEY", "https://service.compilatio.net/webservices/CompilatioUserClient.wsdl",
-            $CFG->proxyhost,
-            $CFG->proxyport,
-            $CFG->proxyuser,
-            $CFG->proxypassword);
-    $connectionsuccess = !is_string($compilatio->soapcli);
+    $url = "https://service.compilatio.net/webservices/CompilatioUserClient.wsdl";
 }
+$apiconfig = new stdclass();
+$apiconfig->url = $url;
+$apiconfig->api_key = "KEY";
+
+$apiconfigid = $DB->insert_record('plagiarism_compilatio_apicon', $apiconfig);
+
+$compilatio = compilatio_get_compilatio_service($apiconfigid);
+$connectionsuccess = !is_string($compilatio->soapcli);
+
+$DB->delete_records('plagiarism_compilatio_apicon', array('id' => $apiconfigid));
 
 // Test if Compilatio is enabled for assign.
-if (isset($plagiarismsettings["compilatio_enable_mod_assign"])) {
-    $assignsuccess = $plagiarismsettings["compilatio_enable_mod_assign"];
+if (isset($plagiarismsettings["enable_mod_assign"])) {
+    $assignsuccess = $plagiarismsettings["enable_mod_assign"];
 } else {
     $assignsuccess = false;
 }
 
 // Test if Compilatio is enabled for workshops.
-if (isset($plagiarismsettings["compilatio_enable_mod_workshop"])) {
-    $workshopsuccess = $plagiarismsettings["compilatio_enable_mod_workshop"];
+if (isset($plagiarismsettings["enable_mod_workshop"])) {
+    $workshopsuccess = $plagiarismsettings["enable_mod_workshop"];
 } else {
     $workshopsuccess = false;
 }
 
 // Test if Compilatio is enabled for forums.
-if (isset($plagiarismsettings["compilatio_enable_mod_forum"])) {
-    $forumsuccess = $plagiarismsettings["compilatio_enable_mod_forum"];
+if (isset($plagiarismsettings["enable_mod_forum"])) {
+    $forumsuccess = $plagiarismsettings["enable_mod_forum"];
 } else {
     $forumsuccess = false;
 }
 
+// Test if Compilatio is enabled for quiz.
+if (isset($plagiarismsettings["enable_mod_quiz"])) {
+    $quizsuccess = $plagiarismsettings["enable_mod_quiz"];
+} else {
+    $quizsuccess = false;
+}
+
 // API key test. Fails if GetQuota method return NULL.
-if (isset($plagiarismsettings["compilatio_password"], $plagiarismsettings["compilatio_api"])) {
+if (isset($plagiarismsettings["apiconfigid"])) {
     $apikeysuccess = ws_helper::test_connection();
 } else {
     $apikeysuccess = false;
@@ -181,6 +191,12 @@ if ($forumsuccess) {
     $alerts[] = array('success', get_string("plugin_enabled_forum", "plagiarism_compilatio"));
 } else {
     $alerts[] = array('warning', get_string("plugin_disabled_forum", "plagiarism_compilatio"));
+}
+
+if ($quizsuccess) {
+    $alerts[] = array('success', get_string("plugin_enabled_quiz", "plagiarism_compilatio"));
+} else {
+    $alerts[] = array('warning', get_string("plugin_enabled_quiz", "plagiarism_compilatio"));
 }
 
 /*

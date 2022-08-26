@@ -25,8 +25,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 /**
  * compilatioservice class
  * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
@@ -47,51 +45,99 @@ class compilatioservice {
     public $soapcli;
 
     /**
+     * Identifier of the configuration containing the API key and URL of the SOAP webservice
+     * @var int
+     */
+    public $apiconfigid;
+
+    /**
+     * Retourne l'instance unique.
+     *
+     * @param string $apiconfigid   API configuration Id
+     * @param string $proxyhost     Proxy host
+     * @param string $proxyport     Proxy port
+     * @param string $proxyusername Proxy username
+     * @param string $proxypassword Proxy password
+     * @return compilatioservice
+     */
+    public static function getinstance($apiconfigid,
+                                        $proxyhost='',
+                                        $proxyport='',
+                                        $proxyusername='',
+                                        $proxypassword='') {
+        if (self::$instance === null || self::$instance->apiconfigid != $apiconfigid) {
+            self::$instance = new compilatioservice($apiconfigid,
+                                                    $proxyhost,
+                                                    $proxyport,
+                                                    $proxyusername,
+                                                    $proxypassword);
+        }
+        return self::$instance;
+    }
+
+    /**
+     * Instance unique compilatioservice
+     * @var compilatioservice
+     */
+    private static $instance;
+
+    /**
      * Constructor : Create the connexion with the webservice
      * MODIF 2009-03-19: passage des paramètres
      * MODIF 2017-06-23: MAJ PHP 7
      *
-     * @param string $key           API key
-     * @param string $urlsoap       URL of the SOAP webservice
+     * @param string $apiconfigid   API configuration Id
      * @param string $proxyhost     Proxy host
      * @param string $proxyport     Proxy port
      * @param string $proxyusername Proxy username
      * @param string $proxypassword Proxy password
      */
-    public function __construct($key,
-                                $urlsoap,
+    private function __construct($apiconfigid,
                                 $proxyhost='',
                                 $proxyport='',
                                 $proxyusername='',
                                 $proxypassword='') {
 
+        global $DB;
+
         $this->key = null;
+        $this->apiconfigid = null;
 
         try {
-            if (!empty($key)) {
-                $this->key = $key;
-                if (!empty($urlsoap)) {
-                    $param = array(
-                        'trace' => false,
-                        'soap_version' => SOAP_1_2,
-                        'exceptions' => true
-                    );
-                    if (!empty($proxyhost)) {
-                        $param['proxy_host'] = $proxyhost;
-                        if (!empty($proxyport)) {
-                            $param['proxy_port'] = $proxyport;
+            $apiconfig = $DB->get_record('plagiarism_compilatio_apicon', array('id' => $apiconfigid));
+
+            if ($apiconfig) {
+                $this->apiconfigid = $apiconfigid;
+                $key = $apiconfig->api_key;
+                $urlsoap = $apiconfig->url;
+                ini_set("soap.wsdl_cache_enabled", 0);
+                if (!empty($key)) {
+                    $this->key = $key;
+                    if (!empty($urlsoap)) {
+                        $param = array(
+                            'trace' => false,
+                            'soap_version' => SOAP_1_2,
+                            'exceptions' => true
+                        );
+                        if (!empty($proxyhost)) {
+                            $param['proxy_host'] = $proxyhost;
+                            if (!empty($proxyport)) {
+                                $param['proxy_port'] = $proxyport;
+                            }
+                            if (!empty($proxyusername) && !empty($proxypassword)) {
+                                $param['proxy_login'] = $proxyusername;
+                                $param['proxy_password'] = $proxypassword;
+                            }
                         }
-                        if (!empty($proxyusername) && !empty($proxypassword)) {
-                            $param['proxy_login'] = $proxyusername;
-                            $param['proxy_password'] = $proxypassword;
-                        }
+                        $this->soapcli = new SoapClient($urlsoap, $param);
+                    } else {
+                        $this->soapcli = 'WS urlsoap not available';
                     }
-                    $this->soapcli = new SoapClient($urlsoap, $param);
                 } else {
-                    $this->soapcli = 'WS urlsoap not available';
+                    $this->soapcli = 'API key not available';
                 }
             } else {
-                $this->soapcli = 'API key not available';
+                $this->soapcli = 'API config not available';
             }
         } catch (SoapFault $fault) {
             $this->soapcli = "Error constructor compilatio " . $fault->faultcode . " " .$fault->faultstring;
@@ -110,11 +156,7 @@ class compilatioservice {
      * @param  string $content     Content
      * @return string              Return the document ID if succeed, an error otherwise
      */
-    public function send_doc($title,
-                             $description,
-                             $filename,
-                             $mimetype,
-                             $content) {
+    public function send_doc($title, $description, $filename, $mimetype, $content) {
 
         try {
 
@@ -140,6 +182,72 @@ class compilatioservice {
         }
     }
 
+    public function send_doc_v5($title, $filename, $content, $indexingstate) {
+        global $CFG;
+
+        if (!check_dir_exists($CFG->dataroot . "/temp/compilatio", true, true)) {
+            mkdir($CFG->dataroot . "/temp/compilatio", 0700);
+        }
+
+        $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H-i-s') . ".txt";
+        
+        $handle = fopen($filepath, "w+");
+        fwrite($handle, $content);
+
+        $params = array(
+            'file' => new \CURLFile($filepath),
+            'filename' => $filename,
+            'title' => $title,
+            'indexed' => boolval($indexingstate),
+            'origin' => 'moodle'
+        );
+
+        $ch = curl_init();
+
+        $curloptions = [
+            CURLOPT_URL => "https://app.compilatio.net/api/private/document/",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => array('X-Auth-Token: ' . $this->key),
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $params
+        ];
+
+        // Proxy settings.
+        if (!empty($CFG->proxyhost)) {
+            $curloptions[CURLOPT_PROXY] = $CFG->proxyhost;
+
+            $curloptions[CURLOPT_HTTPPROXYTUNNEL] = false;
+
+            if (!empty($CFG->proxytype) && ($CFG->proxytype == 'SOCKS5')) {
+                $curloptions[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
+            }
+
+            if (!empty($CFG->proxyport)) {
+                $curloptions[CURLOPT_PROXYPORT] = $CFG->$proxyport;
+            }
+
+            if (!empty($CFG->proxyuser) && !empty($CFG->proxypassword)) {
+                $curloptions[CURLOPT_PROXYUSERPWD] = $CFG->proxyuser . ':' . $CFG->proxypassword;
+            }
+        }
+
+        curl_setopt_array($ch, $curloptions);
+        $response = json_decode(curl_exec($ch));
+        curl_close($ch);
+
+        unlink($filepath);
+
+        if (!isset($response->status->code, $response->status->message)) {
+            return "Error in function send_doc() : request response's status not found";
+        }
+
+        if ($response->status->code == 201) {
+            return $response->data->document->id;
+        } else {
+            return $response->status->message;
+        }
+    }
+
     /**
      * Get back information about a document
      *
@@ -155,6 +263,7 @@ class compilatioservice {
 
             $param = array($this->key, $compihash);
             $document = $this->soapcli->__call('getDocument', $param);
+
             return $document;
 
         } catch (SoapFault $fault) {
@@ -326,7 +435,27 @@ class compilatioservice {
             return $this->soapcli->__call('getTechnicalNews', $param);
 
         } catch (SoapFault $fault) {
-             return false;
+            return false;
+        }
+    }
+
+    /**
+     * Get a list of the current Compilatio alerts.
+     *
+     * @return mixed    return a Alert object if succeed, false otherwise.
+     */
+    public function get_alerts() {
+
+        try {
+            if (!is_object($this->soapcli)) {
+                return false;
+            }
+
+            $param = array($this->key);
+            return $this->soapcli->__call('getAlerts', $param);
+
+        } catch (SoapFault $fault) {
+            return false;
         }
     }
 
@@ -414,8 +543,14 @@ class compilatioservice {
             }
 
             $params = array($this->key, $compid, $indexed);
+
             $result = $this->soapcli->__call('setIndexRefLibrary', $params);
-            return $result['status'] == 200;
+
+            if ($result['status'] ?? "" == 200) {
+                return true;
+            } else {
+                return false;
+            }
 
         } catch (SoapFault $fault) {
             return "Error set_indexing_state() " . $fault->faultcode . " " . $fault->faultstring;
@@ -423,4 +558,65 @@ class compilatioservice {
 
     }
 
+    /**
+     * Get the id_groupe for helpcenter login
+     *
+     * @return string return the id_groupe if succeed, false otherwise.
+     */
+    public function get_id_groupe() {
+
+        try {
+            if (!is_object($this->soapcli)) {
+                return false;
+            }
+
+            $params = array($this->key);
+            return $this->soapcli->__call('getIdGroupe', $params);
+
+        } catch (SoapFault $fault) {
+            return false;
+        }
+    }
+
+    /**
+     * Get the waiting time for analysis begins
+     *
+     * @return mixed return the magister waiting time if succeed, false otherwise.
+     */
+    public function get_waiting_time() {
+
+        try {
+            if (!is_object($this->soapcli)) {
+                return false;
+            }
+
+            $params = array($this->key);
+            return $this->soapcli->__call('getWaitingTime', $params);
+
+        } catch (SoapFault $fault) {
+            return false;
+        }
+
+    }
+
+    /**
+     * Check if the API key has access rights to the analyses by students.
+     *
+     * @return bool return true if api key has access to student analyses, false otherwise.
+     */
+    public function check_allow_student_analyses() {
+
+        try {
+            if (!is_object($this->soapcli)) {
+                return false;
+            }
+
+            $params = array($this->key);
+            return $this->soapcli->__call('checkAllowStudentAnalyses', $params);
+
+        } catch (SoapFault $fault) {
+            return false;
+        }
+
+    }
 }

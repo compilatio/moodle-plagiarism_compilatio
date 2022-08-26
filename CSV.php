@@ -49,16 +49,19 @@ $PAGE->set_url($url);
 $rawcsv = optional_param('raw', 1, PARAM_BOOL);
 
 if ($rawcsv) {
+    $dbconfig = $DB->export_dbconfig();
+    if ($dbconfig->dbtype == 'pgsql') {
+        $todate = 'to_timestamp';
+    } else {
+        $todate = 'FROM_UNIXTIME';
+    }
     $sql = '
         SELECT pcf.id "id",
             course.id "course_id",
             course.fullname "course_name",
-            teacher.id "teacher_id",
-            teacher.firstname "teacher_firstname",
-            teacher.lastname "teacher_lastname",
-            teacher.email "teacher_email",
             cm "module_id",
-            assign.name "module_name",
+            CONCAT(COALESCE(assign.name, \'\'), COALESCE(forum.name, \'\'), COALESCE(workshop.name, \'\'),
+            COALESCE(quiz.name, \'\')) "module_name",
             student.id "student_id",
             student.firstname "student_firstname",
             student.lastname "student_lastname",
@@ -67,17 +70,53 @@ if ($rawcsv) {
             pcf.filename "file_name",
             pcf.statuscode "file_status",
             pcf.similarityscore "file_similarityscore",
-            pcf.timesubmitted "file_submitted_on"
+            ' . $todate . '(pcf.timesubmitted) "file_submitted_on"
         FROM {plagiarism_compilatio_files} pcf
         JOIN {user} student ON pcf.userid=student.id
         JOIN {course_modules} cm ON pcf.cm = cm.id
-        JOIN {assign} assign ON cm.instance= assign.id
+        LEFT JOIN {assign} assign ON cm.instance= assign.id AND cm.module= 1
+        LEFT JOIN {forum} forum ON cm.instance= forum.id AND cm.module= 9
+        LEFT JOIN {workshop} workshop ON cm.instance= workshop.id AND cm.module= 23
+        LEFT JOIN {quiz} quiz ON cm.instance= quiz.id AND cm.module= 17
         JOIN {course} course ON cm.course= course.id
-        JOIN {event} event ON assign.id=event.instance
-        JOIN {user} teacher ON event.userid=teacher.id
-        ORDER BY cm';
+        ORDER BY cm DESC';
 
     $rows = $DB->get_records_sql($sql);
+
+    $courseid = "";
+    foreach ($rows as $row) {
+        if ($row->course_id != $courseid) {
+            $query = '
+                SELECT teacher.id "teacher_id",
+                    teacher.firstname "teacher_firstname",
+                    teacher.lastname "teacher_lastname",
+                    teacher.email "teacher_email"
+                FROM {course} course
+                JOIN {context} context ON context.instanceid= course.id
+                JOIN {role_assignments} role_assignments ON role_assignments.contextid= context.id
+                JOIN {user} teacher ON role_assignments.userid= teacher.id
+                WHERE context.contextlevel=50
+                    AND role_assignments.roleid=3
+                    AND course.id='. $row->course_id;
+            $courseid = $row->course_id;
+            $teachers = $DB->get_records_sql($query);
+        }
+        $teacherid = [];
+        $teacherfirstname = [];
+        $teacherlastname = [];
+        $teacheremail = [];
+
+        foreach ($teachers as $teacher) {
+            array_push($teacherid, $teacher->teacher_id);
+            array_push($teacherfirstname, $teacher->teacher_firstname);
+            array_push($teacherlastname, $teacher->teacher_lastname);
+            array_push($teacheremail, $teacher->teacher_email);
+        }
+        $row->teacher_id = implode(', ', $teacherid);
+        $row->teacher_firstname = implode(', ', $teacherfirstname);
+        $row->teacher_lastname = implode(', ', $teacherlastname);
+        $row->teacher_email = implode(', ', $teacheremail);
+    }
 
     $filename = "compilatio_moodle_" . date("Y_m_d") . ".csv";
 
@@ -142,8 +181,20 @@ function clean_row($row) {
             case "416":
                 $data["file_status"] = "Unextractable";
                 break;
+            case "412":
+                $data["file_status"] = "Too short";
+                break;
             case "413":
                 $data["file_status"] = "Too large";
+                break;
+            case "414":
+                $data["file_status"] = "Too long";
+                break;
+            case "404":
+                $data["file_status"] = "Not found";
+                break;
+            case "418":
+                $data["file_status"] = "Failed analysis";
                 break;
         }
     }

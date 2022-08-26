@@ -25,8 +25,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 /**
  * Backup class
  * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
@@ -60,8 +58,8 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
         // Now information about files to module.
         $compilatiofiles = new backup_nested_element('compilatio_files');
         $compilatiofile = new backup_nested_element('compilatio_file', array('id'),
-                            array('userid', 'identifier', 'filename', 'reporturl', 'optout',
-                                  'statuscode', 'similarityscore', 'errorresponse', 'timesubmitted'));
+                            array('userid', 'identifier', 'filename', 'externalid', 'reporturl', 'optout',
+                                  'statuscode', 'similarityscore', 'errorresponse', 'timesubmitted', 'apiconfigid', 'idcourt'));
 
         $pluginwrapper->add_child($compilatiofiles);
         $compilatiofiles->add_child($compilatiofile);

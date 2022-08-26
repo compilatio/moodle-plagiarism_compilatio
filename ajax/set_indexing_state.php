@@ -46,21 +46,17 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 require_login();
 
 // Get global Compilatio settings.
-$plagiarismsettings = (array) get_config('plagiarism');
+$plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $iddoc = optional_param('idDoc', '', PARAM_TEXT);
 $indexingstatepost = optional_param('indexingState', '', PARAM_TEXT);
+$apiconfigid = required_param('apiconfigid', PARAM_INT);
 
 if (isset($iddoc) && compilatio_valid_md5($iddoc) && isset($indexingstatepost)) {
     $indexingstate = (int) ((boolean) $indexingstatepost);
-    $compilatio = new compilatioservice($plagiarismsettings['compilatio_password'],
-        $plagiarismsettings['compilatio_api'],
-        $CFG->proxyhost,
-        $CFG->proxyport,
-        $CFG->proxyuser,
-        $CFG->proxypassword);
 
-    $call = $compilatio->set_indexing_state($iddoc, $indexingstate);
-    if ($call === true) {
+    $indexingstate = ws_helper::set_indexing_state($iddoc, $indexingstate, $apiconfigid);
+
+    if ($indexingstate === true) {
         echo ('true');
     } else {
         echo ('false');

@@ -25,37 +25,35 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 /**
  * Helper class to communicate with web service
  * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class ws_helper
-{
+class ws_helper {
 
     /**
      * Get a new instance of web service class
      *
-     * @return object   Web service instance
+     * @param int $apiconfigid API Config ID
+     * @return object Web service instance
      */
-    public static function get_ws() {
+    public static function get_ws($apiconfigid = false) {
 
         global $CFG;
 
         $ppc = new plagiarism_plugin_compilatio();
         $plagiarismsettings = $ppc->get_settings();
 
-        return new compilatioservice(
-            $plagiarismsettings['compilatio_password'],
-            $plagiarismsettings['compilatio_api'],
+        if (!$apiconfigid) {
+            $apiconfigid = $plagiarismsettings['apiconfigid'];
+        }
+
+        return compilatioservice::getinstance($apiconfigid,
             $CFG->proxyhost,
             $CFG->proxyport,
             $CFG->proxyuser,
-            $CFG->proxypassword
-        );
-
+            $CFG->proxypassword);
     }
 
     /**
@@ -160,12 +158,13 @@ class ws_helper
     /**
      * Get the indexing state of a document.
      *
-     * @param  string $compid   Document ID
+     * @param  string $compid       Document ID
+     * @param  int   $apiconfigid   API Config ID
      * @return bool             Indexing state
      */
-    public static function get_indexing_state($compid) {
+    public static function get_indexing_state($compid, $apiconfigid) {
 
-        $compilatio = self::get_ws();
+        $compilatio = self::get_ws($apiconfigid);
         return $compilatio->get_indexing_state($compid);
 
     }
@@ -174,11 +173,12 @@ class ws_helper
      * Set the indexing state of a document.
      * @param  string $compid           Document ID
      * @param  bool   $indexingstate    Indexing state
+     * @param  int   $apiconfigid       API Config ID
      * @return bool                     Return true if the indexing succeed, false otherwise
      */
-    public static function set_indexing_state($compid, $indexingstate) {
+    public static function set_indexing_state($compid, $indexingstate, $apiconfigid) {
 
-        $compilatio = self::get_ws();
+        $compilatio = self::get_ws($apiconfigid);
         return $compilatio->set_indexing_state($compid, $indexingstate);
 
     }

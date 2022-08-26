@@ -27,8 +27,6 @@
 
 namespace plagiarism_compilatio\task;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Task class
  * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}

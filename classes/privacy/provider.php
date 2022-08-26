@@ -70,7 +70,7 @@ class provider implements
      * @param   collection  $collection The initialised collection to add items to.
      * @return  collection  $collection The updated collection of user data.
      */
-    public static function _get_metadata(collection $collection) : collection {
+    public static function get_metadata(collection $collection) : collection {
 
         $collection->add_subsystem_link(
             'core_files',
@@ -95,7 +95,10 @@ class provider implements
             'reporturl'         => 'privacy:metadata:plagiarism_compilatio_files:reporturl',
             'similarityscore'   => 'privacy:metadata:plagiarism_compilatio_files:similarityscore',
             'attempt'           => 'privacy:metadata:plagiarism_compilatio_files:attempt',
-            'errorresponse'     => 'privacy:metadata:plagiarism_compilatio_files:errorresponse'
+            'errorresponse'     => 'privacy:metadata:plagiarism_compilatio_files:errorresponse',
+            'recyclebinid'      => 'privacy:metadata:plagiarism_compilatio_files:recyclebinid',
+            'apiconfigid'       => 'privacy:metadata:plagiarism_compilatio_files:apiconfigid',
+            'idcourt'           => 'privacy:metadata:plagiarism_compilatio_files:idcourt'
         ], 'privacy:metadata:plagiarism_compilatio_files');
 
         $collection->add_external_location_link('External Compilatio Document', [
@@ -128,7 +131,7 @@ class provider implements
      * @param   int         $userid         The user to search.
      * @return  contextlist $contextlist    The list of contexts used in this plugin.
      */
-    public static function _get_contexts_for_userid(int $userid) : contextlist {
+    public static function get_contexts_for_userid(int $userid) : contextlist {
 
         $sql = "SELECT c.id
                 FROM {context} c
@@ -151,7 +154,7 @@ class provider implements
      * @param   array       $subcontext The subcontext within the context to export this information to.
      * @param   array       $linkarray  The weird and wonderful link array used to display information for a specific item.
      */
-    public static function _export_plagiarism_user_data(int $userid, \context $context, array $subcontext, array $linkarray) {
+    public static function export_plagiarism_user_data(int $userid, \context $context, array $subcontext, array $linkarray) {
 
         global $DB;
 
@@ -171,7 +174,7 @@ class provider implements
      *
      * @param   \context    $context    The context to delete in.
      */
-    public static function _delete_plagiarism_for_context(\context $context) {
+    public static function delete_plagiarism_for_context(\context $context) {
 
         global $DB;
 
@@ -179,9 +182,9 @@ class provider implements
         require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-        $plagiarismsettings = (array) get_config('plagiarism');
-        if (!empty($plagiarismsettings)) {
-            $compilatio = new \compilatioservice($plagiarismsettings['compilatio_password'], $plagiarismsettings['compilatio_api'],
+        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
+        if (!empty($plagiarismsettings) && isset($plagiarismsettings['apiconfigid'])) {
+            $compilatio = \compilatioservice::getinstance($plagiarismsettings['apiconfigid'],
                 $CFG->proxyhost,
                 $CFG->proxyport,
                 $CFG->proxyuser,
@@ -203,7 +206,7 @@ class provider implements
      * @param   int         $userid     The user to delete.
      * @param   \context    $context    The context to refine the deletion.
      */
-    public static function _delete_plagiarism_for_user(int $userid, \context $context) {
+    public static function delete_plagiarism_for_user(int $userid, \context $context) {
 
         global $DB;
 
@@ -211,12 +214,15 @@ class provider implements
         require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-        $plagiarismsettings = (array) get_config('plagiarism');
+        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
         // If the student owns the document (and not the school), we can delete everything from the databases.
-        if (!empty($plagiarismsettings) && $plagiarismsettings['compilatio_owner_file'] === '0') {
+        if (!empty($plagiarismsettings)
+            && isset($plagiarismsettings['apiconfigid'])
+            && isset($plagiarismsettings['owner_file'])
+            && $plagiarismsettings['owner_file'] === '0') {
 
-            $compilatio = new \compilatioservice($plagiarismsettings['compilatio_password'], $plagiarismsettings['compilatio_api'],
+            $compilatio = \compilatioservice::getinstance($plagiarismsettings['apiconfigid'],
                 $CFG->proxyhost,
                 $CFG->proxyport,
                 $CFG->proxyuser,
@@ -251,9 +257,9 @@ class provider implements
 
         $cmid = $context->instanceid;
 
-        $plagiarismsettings = (array) get_config('plagiarism');
-        if (!empty($plagiarismsettings)) {
-            $compilatio = new \compilatioservice($plagiarismsettings['compilatio_password'], $plagiarismsettings['compilatio_api'],
+        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
+        if (!empty($plagiarismsettings) && isset($plagiarismsettings['apiconfigid'])) {
+            $compilatio = \compilatioservice::getinstance($plagiarismsettings['apiconfigid'],
                 $CFG->proxyhost,
                 $CFG->proxyport,
                 $CFG->proxyuser,
