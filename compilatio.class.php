@@ -223,7 +223,7 @@ class compilatioservice {
             }
 
             if (!empty($CFG->proxyport)) {
-                $curloptions[CURLOPT_PROXYPORT] = $CFG->$proxyport;
+                $curloptions[CURLOPT_PROXYPORT] = $CFG->proxyport;
             }
 
             if (!empty($CFG->proxyuser) && !empty($CFG->proxypassword)) {
