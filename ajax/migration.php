@@ -51,7 +51,7 @@ if (!empty($apikey)) {
         }
 
         if (!empty($CFG->proxyport)) {
-            $params[CURLOPT_PROXYPORT] = $CFG->$proxyport;
+            $params[CURLOPT_PROXYPORT] = $CFG->proxyport;
         }
 
         if (!empty($CFG->proxyuser) && !empty($CFG->proxypassword)) {
