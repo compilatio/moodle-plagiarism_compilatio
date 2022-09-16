@@ -7,7 +7,7 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 FIXES
-- Update proxy handling
+- Fix migration DB update
 
 QUICK INSTALL
 ================
