@@ -44,6 +44,9 @@ $string['formstartdate'] = "Date d'activation";
 $string['formcheck'] = "Valide";
 $string['formdelete'] = "Supprimer";
 
+$string['disable_ssl_verification'] = "Ignorer la vérification du certificat SSL.";
+$string['disable_ssl_verification_help'] = "Activez cette option si vous rencontrez des problèmes de vérification de certificats SSL ou si vous constatez des erreurs lors des envois de fichiers à Compilatio.";
+
 $string['migration_title'] = "Migration v4 vers v5";
 $string['migration_info'] = "Compilatio met en place une nouvelle plateforme technique v5 pour l'ensemble de ses clients.<br>
     Lorsque vous y serez invités par l'équipe technique, vous devrez exécuter les actions ci-dessous pour finaliser cette migration.";
@@ -114,7 +117,7 @@ $string['analysistype_manual'] = 'Manuel';
 $string['analysistype_prog'] = 'Programmé';
 $string['analysistype_auto'] = 'Immédiat';
 $string['enabledandworking'] = 'Le plugin Compilatio est actif et fonctionnel.';
-$string['subscription_state'] = '<strong>Votre abonnement Compilatio.net est valable jusqu\'à la fin du mois de {$a->end_date}. Ce mois-ci, vous avez analysé l\'équivalent de {$a->used} document(s) de moins de 5.000 mots.</strong>';
+$string['subscription_state'] = '<strong>Votre abonnement Compilatio est valable jusqu\'à la fin du mois de {$a->end_date}.</strong>';
 $string['startanalysis'] = 'Démarrer l\'analyse';
 $string['failedanalysis'] = 'Compilatio n\'a pas réussi à analyser votre document : ';
 $string['unextractablefile'] = 'Le texte de votre document n’a pas pu être extrait correctement.';
@@ -209,7 +212,7 @@ $string['unsupported_files'] = 'Les fichiers suivants n\'ont pas pu être analys
 $string['unextractable_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio car leur contenu n\'a pas pu être extrait correctement :';
 $string['tooshort_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio car ils ne contenaient pas assez de mots (Taille minimale : {$a} mots) :';
 $string['toolong_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio car ils contenaient trop de mots (Taille maximale : {$a} mots) :';
-$string['failedanalysis_files'] = "L'analyse des fichier(s) suivant(s) n'a pas fonctionné correctement. Vous pouvez relancer ces analyses :";
+$string['failedanalysis_files'] = "L'analyse des documents suivants n'a pas fonctionné correctement. Vous pouvez réinitialiser ces documents et relancer leur analyse :";
 $string['no_document_available_for_analysis'] = "Aucun document n'était disponible pour analyse.";
 $string["analysis_started"] = '{$a} analyse(s) démandée(s).';
 $string["start_analysis_title"] = 'Démarrage manuel des analyses';
@@ -333,9 +336,9 @@ $string['information_settings'] = "Informations";
 // Max file size allowed.
 $string['max_file_size_allowed'] = 'Taille maximale des documents : <strong>{$a->Mo} Mo</strong>';
 // Failed documents.
-$string['restart_failed_analysis'] = 'Relancer les analyses échouées';
-$string['restart_failed_analysis_title'] = 'Relance des analyses échouées :';
-$string['restart_failed_analysis_in_progress'] = 'Relance des analyses échouées en cours';
+$string['reset_failed_document'] = 'Réinitialiser les documents en erreur';
+$string['reset_failed_document_title'] = 'Réinitialisation des documents en erreur :';
+$string['reset_failed_document_in_progress'] = 'Réinitialisation des documents en erreur en cours';
 // Max attempt reached.
 $string['max_attempts_reach_files'] = 'Les fichiers suivants n\'ont pas pu être analysés par Compilatio. La limite de relance d\'analyses a été atteinte :';
 

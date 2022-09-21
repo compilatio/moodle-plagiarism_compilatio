@@ -800,7 +800,6 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     // Display a notification for the unextractable files.
     $files = compilatio_get_unextractable_files($cmid);
     if (count($files) !== 0) {
-
         $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
 
         $alerts[] = array(
@@ -808,20 +807,11 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
             "title" => get_string("unextractable_files", "plagiarism_compilatio"),
             "content" => $list,
         );
-
-        $url = $PAGE->url;
-        $url->param('restartfailedanalysis', true);
-        $restartfailedanalysisbutton = "
-            <button class='compilatio-button comp-button comp-restart-btn' >
-                <i class='fa fa-play-circle'></i>
-                " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
-            </button>";
     }
 
     // Display a notification for failed analyses.
     $files = compilatio_get_failed_analysis_files($cmid);
     if (count($files) !== 0) {
-
         $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
 
         $alerts[] = array(
@@ -829,25 +819,19 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
             "title" => get_string("failedanalysis_files", "plagiarism_compilatio"),
             "content" => $list,
         );
-
-        $url = $PAGE->url;
-        $url->param('restartfailedanalysis', true);
-        $restartfailedanalysisbutton = "
-            <button class='compilatio-button comp-button comp-restart-btn' >
-                <i class='fa fa-play-circle'></i>
-                " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
-            </button>";
     }
 
-    // Display restart analyses button for timeout.
-    $files = compilatio_get_files_by_status_code($cmid, 'timeout');
+    $sql = "SELECT * FROM {plagiarism_compilatio_files}
+        WHERE cm=? AND (statuscode LIKE '41_' OR statuscode='timeout') AND filename NOT LIKE '%.htm'";
+    $files = $DB->get_records_sql($sql, [$cmid]);
+
     if (count($files) !== 0) {
         $url = $PAGE->url;
         $url->param('restartfailedanalysis', true);
         $restartfailedanalysisbutton = "
             <button class='compilatio-button comp-button comp-restart-btn' >
                 <i class='fa fa-play-circle'></i>
-                " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
+                " . get_string('reset_failed_document', 'plagiarism_compilatio') . "
             </button>";
     }
 
@@ -866,12 +850,6 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
                 <button class='compilatio-button comp-button comp-start-btn' >
                     <i class='fa fa-play-circle'></i>
                     " . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "
-                </button>";
-
-            $restartfailedanalysisbutton = "
-                <button class='compilatio-button comp-button comp-restart-btn' >
-                    <i class='fa fa-play-circle'></i>
-                    " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
                 </button>";
         }
     } else {
@@ -1042,8 +1020,8 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         if (isset($restartfailedanalysisbutton)) {
             $output .= $restartfailedanalysisbutton;
             $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'restartFailedAnalysis',
-                array($CFG->httpswwwroot, $cmid, get_string("restart_failed_analysis_title", "plagiarism_compilatio"),
-                get_string("restart_failed_analysis_in_progress", "plagiarism_compilatio")));
+                array($CFG->httpswwwroot, $cmid, get_string("reset_failed_document_title", "plagiarism_compilatio"),
+                get_string("reset_failed_document_in_progress", "plagiarism_compilatio")));
         }
 
         $output .= "</div>";
@@ -1583,6 +1561,9 @@ function compilatio_remove_duplicates($duplicates, $deletefilesmoodledb = true) 
                     // Delete DB record.
                     if ($deletefilesmoodledb) {
                         $DB->delete_records('plagiarism_compilatio_files', array('id' => $doc->id));
+                    } else {
+                        $doc->externalid = null;
+                        $DB->update_record('plagiarism_compilatio_files', $doc);
                     }
                     $i++;
                 } else {
@@ -3207,9 +3188,17 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
         }
 
         // Delete in assign.
-        if ($eventdata['target'] == 'submission_status' && $eventdata['other']['newstatus'] != 'draft') {
-            $duplicates = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
-            compilatio_remove_duplicates($duplicates);
+        if ($eventdata['target'] == 'submission_status') {
+            // The event is triggered when a submission is deleted and when the submission is passed to draft.
+            $fs = get_file_storage();
+            $submissionfiles = $fs->get_area_files($eventdata["contextid"], "assignsubmission_file",
+                'submission_files', $eventdata["objectid"]);
+            
+            // If the documents have been deleted in the mdl_files table, we also delete them on our side.
+            if (empty($submissionfiles)) {
+                $duplicates = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
+                compilatio_remove_duplicates($duplicates);
+            }
         }
 
         // Re-submit file when student submit a draft submission.

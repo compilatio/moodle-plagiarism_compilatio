@@ -59,6 +59,10 @@ if (!empty($apikey)) {
         }
     }
 
+    if (get_config('plagiarism_compilatio', 'disable_ssl_verification') == 1) {
+        $params[CURLOPT_SSL_VERIFYPEER] = false;
+    }
+
     if ($i == 0) {
         $_SESSION["countsuccess"] = 0;
         $params[CURLOPT_URL] = "https://app.compilatio.net/api/private/authentication/check-api-key";

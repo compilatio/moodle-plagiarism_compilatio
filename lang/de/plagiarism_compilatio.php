@@ -66,7 +66,7 @@ $string['analysis_type_help'] = '<p>Es stehen Ihnen drei Möglichkeiten zur Verf
 $string['analysistype_manual'] = 'Manuell';
 $string['analysistype_prog'] = 'Geplant';
 $string['enabledandworking'] = 'Das Compilatio Plugin ist aktiv und funktionsfähig.';
-$string['subscription_state'] = '<strong>Ihr Compilatio.net Abonnement ist bis Ende des Monats {$a->end_date} gültig. In diesem Monat haben Sie {$a->used} Dokument(e) mit weniger als 5‘000 Wörtern analysiert.</strong>';
+$string['subscription_state'] = '<strong>Ihr Compilatio.net Abonnement ist bis Ende des Monats {$a->end_date} gültig.</strong>';
 $string['startanalysis'] = 'Die Analyse starten';
 $string['failedanalysis'] = 'Compilatio konnte Ihr Dokument nicht analysieren: ';
 $string['unextractablefile'] = 'Ihr Dokument enthält nicht genügend Wörter oder der Text konnte nicht richtig abgerufen werden.';
@@ -225,9 +225,6 @@ $string['not_indexed_document'] = "Das Dokument wurde nicht der Referenzbiblioth
 $string['information_settings'] = "Informationen";
 // Max file size allowed.
 $string['max_file_size_allowed'] = 'Maximale Größe der Dokumente : <strong>{$a->Mo} Mo</strong>';
-// Failed documents.
-$string['restart_failed_analysis'] = 'Gescheiterte Analysen erneut auslösen';
-$string['restart_failed_analysis_title'] = 'Neustart der gescheiterten Analysen:';
 // Max attempt reached.
 $string['max_attempts_reach_files'] = 'Folgende Dateien konnten nicht von Compilatio analysiert werden. Der Grenzwert zum Neustart der Analysen wurde erreicht:';
 // Privacy (DSGVO).

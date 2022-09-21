@@ -66,7 +66,7 @@ $string["analysis_type_help"] = '<p>Esistono 3 opzioni :</p>
 $string["analysistype_manual"] = 'Manuale';
 $string["analysistype_prog"] = 'Programmato';
 $string["enabledandworking"] = 'Il plug-in Compilatio è attivo e funzionale';
-$string["subscription_state"] = 'Il Suo abbonamento Compilatio.net è valido fino alla fine del mese di {$a->end_date}. Questo mese, ha analizzato l\'equivalente di {$a->used} documenti di almeno 5.000 parole';
+$string["subscription_state"] = 'Il Suo abbonamento Compilatio.net è valido fino alla fine del mese di {$a->end_date}.';
 $string["startanalysis"] = 'Avviare l\'analisi';
 $string["failedanalysis"] = 'Compilatio non è riuscito ad analizzare il suo documento:';
 $string["unextractablefile"] = 'Il suo documento non contiene abbastanza parole, o non è stato possibile estrarre correttamente il testo';
@@ -216,9 +216,6 @@ $string['not_indexed_document'] = "Documento non indicizzato nella biblioteca di
 $string['information_settings'] = "Informazioni";
 // Max file size allowed.
 $string['max_file_size_allowed'] = 'Grandezza massima dei documenti : <strong>{$a->Mo} MB</strong>';
-// Failed documents.
-$string['restart_failed_analysis'] = 'Riavviare le analisi errate';
-$string['restart_failed_analysis_title'] = 'Riavvio delle analisi errate :';
 // Max attempt reached.
 $string['max_attempts_reach_files'] = 'I file seguenti non sono stati analizzati da Compilatio. Il limite di riavvio delle analisi è stato raggiunto :';
 // Privacy (RGDP).

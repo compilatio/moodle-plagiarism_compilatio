@@ -119,6 +119,17 @@ class compilatioservice {
                             'soap_version' => SOAP_1_2,
                             'exceptions' => true
                         );
+
+                        if (get_config('plagiarism_compilatio', 'disable_ssl_verification') == 1) {
+                            $param['stream_context'] = stream_context_create([
+                                'ssl' => [
+                                    'verify_peer' => false,
+                                    'verify_peer_name' => false,
+                                    'allow_self_signed' => true
+                                ]
+                            ]);
+                        }
+
                         if (!empty($proxyhost)) {
                             $param['proxy_host'] = $proxyhost;
                             if (!empty($proxyport)) {
@@ -186,13 +197,19 @@ class compilatioservice {
         global $CFG;
 
         if (!check_dir_exists($CFG->dataroot . "/temp/compilatio", true, true)) {
-            mkdir($CFG->dataroot . "/temp/compilatio", 0700);
+            return "Failed to create compilatio temp directory";
         }
 
         $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H-i-s') . ".txt";
         
-        $handle = fopen($filepath, "w+");
-        fwrite($handle, $content);
+        $handle = fopen($filepath, "wb");
+        if ($handle == false) {
+            return "Failed to open file";
+        }
+        $bytes = fwrite($handle, $content);
+        mtrace($bytes . " bytes written.");
+
+        fclose($handle);
 
         $params = array(
             'file' => new \CURLFile($filepath),
@@ -231,20 +248,28 @@ class compilatioservice {
             }
         }
 
+        if (get_config('plagiarism_compilatio', 'disable_ssl_verification') == 1) {
+            $curloptions[CURLOPT_SSL_VERIFYPEER] = false;
+        }
+
         curl_setopt_array($ch, $curloptions);
-        $response = json_decode(curl_exec($ch));
+        $t = curl_exec($ch);
+        $response = json_decode($t);
+
         curl_close($ch);
 
         unlink($filepath);
 
         if (!isset($response->status->code, $response->status->message)) {
-            return "Error in function send_doc() : request response's status not found";
+            return "Error in function send_doc_v5 : request response's status not found / cURL params : "
+                . var_export($curloptions, true) . " / cURL Error : " . curl_error($ch) . " / cURL response : " . var_export($t, true);
         }
 
         if ($response->status->code == 201) {
             return $response->data->document->id;
         } else {
-            return $response->status->message;
+            return "Error in function send_doc_v5 : cURL params : "
+                . var_export($curloptions, true) . " / cURL Error : ". curl_error($ch) . " / cURL response : " . var_export($t, true);
         }
     }
 
@@ -346,7 +371,6 @@ class compilatioservice {
      * @return array Informations about quotas
      */
     public function get_quotas() {
-
         try {
             if (!is_object($this->soapcli)) {
                 return array("quotas" => null, "error" => $this->soapcli);
@@ -375,7 +399,6 @@ class compilatioservice {
 
             $param = array($this->key);
             return $this->soapcli->__call('getSubscriptionEndDate', $param);
-
         } catch (SoapFault $fault) {
             return false;
         }
