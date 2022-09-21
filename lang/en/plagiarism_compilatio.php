@@ -44,6 +44,10 @@ $string['formstartdate'] = "Activation date";
 $string['formcheck'] = "Check";
 $string['formdelete'] = "Delete";
 
+$string['disable_ssl_verification'] = "Ignore SSL certificate verification.";
+$string['disable_ssl_verification_help'] = "Can solve problems sending files to Compilatio, if your SSL directory has not been updated for at least 6 months.";
+
+
 $string['migration_title'] = "Migration v4 to v5";
 $string['migration_info'] = "Compilatio is implementing a new v5 technical platform for all its customers.<br>
     When prompted by the technical team, you will need to perform an action to complete this migration.";
@@ -120,7 +124,7 @@ $string['analysistype_prog'] = 'Scheduled';
 $string['analysistype_auto'] = 'Direct';
 $string['analysis_date'] = 'Analysis Date (Scheduled analysis only)';
 $string['enabledandworking'] = 'The Compilatio plugin is enabled and working.';
-$string['subscription_state'] = '<strong>Your Compilatio.net subscription will expire at the end of {$a->end_date}. This month, you have analyzed the equivalent of {$a->used} document(s) containing less than 5,000 words.</strong>';
+$string['subscription_state'] = '<strong>Your Compilatio subscription will expire at the end of {$a->end_date}.</strong>';
 $string['startanalysis'] = 'Start analysis';
 $string['compilatioenableplugin'] = 'Enable Compilatio for {$a}';
 $string['failedanalysis'] = 'Compilatio failed to analyse your document: ';
@@ -218,7 +222,7 @@ $string['unsupported_files'] = 'The following file(s) can\'t be analyzed by Comp
 $string['unextractable_files'] = 'The following file(s) can\'t be analyzed by Compilatio because their content could not be extracted :';
 $string['tooshort_files'] = 'The following file(s) can\'t be analyzed by Compilatio because they doesn’t contain enough words (Minimum size : {$a} words) :';
 $string['toolong_files'] = 'The following file(s) can\'t be analyzed by Compilatio because they contain too many words (Maximum size : {$a} words) :';
-$string['failedanalysis_files'] = "The analysis of the following file(s) did not work correctly. You can restart these analyses :";
+$string['failedanalysis_files'] = "The analysis of the following documents did not work correctly. You can reset these documents and re-launch their analysis:";
 $string['no_document_available_for_analysis'] = 'No documents were available for analysis';
 $string["analysis_started"] = '{$a} analysis have been requested.';
 $string["start_analysis_title"] = 'Analysis start';
@@ -338,9 +342,9 @@ $string['information_settings'] = "Informations";
 // Max file size allowed.
 $string['max_file_size_allowed'] = 'Maximum document size : <strong>{$a->Mo} MB</strong>';
 // Failed documents.
-$string['restart_failed_analysis'] = 'Restart interrupted analysis';
-$string['restart_failed_analysis_title'] = 'Restart interrupted analysis :';
-$string['restart_failed_analysis_in_progress'] = 'Restart interrupted analyses in progress';
+$string['reset_failed_document'] = 'Reset documents in error';
+$string['reset_failed_document_title'] = 'Reset documents in error:';
+$string['reset_failed_document_in_progress'] = 'Reset documents in error in progress';
 // Max attempt reached.
 $string['max_attempts_reach_files'] = 'Analysis has been interrupted for the following files. Analyses were sent too many times, you cannot restart them anymore :';
 

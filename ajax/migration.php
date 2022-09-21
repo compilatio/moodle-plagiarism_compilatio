@@ -51,7 +51,7 @@ if (!empty($apikey)) {
         }
 
         if (!empty($CFG->proxyport)) {
-            $params[CURLOPT_PROXYPORT] = $CFG->$proxyport;
+            $params[CURLOPT_PROXYPORT] = $CFG->proxyport;
         }
 
         if (!empty($CFG->proxyuser) && !empty($CFG->proxypassword)) {
@@ -59,12 +59,17 @@ if (!empty($apikey)) {
         }
     }
 
+    if (get_config('plagiarism_compilatio', 'disable_ssl_verification') == 1) {
+        $params[CURLOPT_SSL_VERIFYPEER] = false;
+    }
+
     if ($i == 0) {
         $_SESSION["countsuccess"] = 0;
         $params[CURLOPT_URL] = "https://app.compilatio.net/api/private/authentication/check-api-key";
 
         curl_setopt_array($ch, $params);
-        $response = json_decode(curl_exec($ch));
+        $t = curl_exec($ch);
+        $response = json_decode($t);
 
         if (isset($response->status->code) && $response->status->code == 200) {
             $apiconfig = new stdClass();
@@ -80,12 +85,12 @@ if (!empty($apikey)) {
             echo "Error : Invalid API Key : " . ($response->status->message ?? '') . curl_error($ch);
         }
     } else {
-        $params[CURLOPT_URL] = "https://app.compilatio.net/api/private/document/list?limit=500&page=" . $i . "&projection="
+        $params[CURLOPT_URL] = "https://app.compilatio.net/api/private/documents/list?limit=500&page=" . $i . "&sort[metadata.indexed]=1&projection="
         . json_encode(["old_prod_id" => true]);
 
         curl_setopt_array($ch, $params);
-
-        $response = json_decode(curl_exec($ch));
+        $t = curl_exec($ch);
+        $response = json_decode($t);
 
         if (isset($response->data->documents)) {
             if (!empty($response->data->documents)) {
@@ -115,7 +120,7 @@ if (!empty($apikey)) {
                 $DB->delete_records_select("plagiarism_compilatio_apicon", "id != ?", array($_SESSION["apiconfigid"]));
             }
         } else {
-            echo "Error : Failed to get v5 documents : " . $response->status->message ?? "";
+            echo "Error : Failed to get v5 documents : cURL params : " . var_export($params, true) . " / cURL Error : " . curl_error($ch) . " / cURL response : " . var_export($t, true);
         }
     }
 

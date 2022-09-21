@@ -131,7 +131,7 @@ define(['jquery'], function($) {
                     "<div class='compilatio-alert compilatio-alert-info'><strong>" + title
                     + "</strong><br/>" + message + "</div>"
                 );
-                $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_restart_failed_analysis.php',
+                $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_reset_failed_document.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
                 });

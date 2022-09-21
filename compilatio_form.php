@@ -90,7 +90,7 @@ class compilatio_setup_form extends moodleform {
 
         $mform->addElement('html', "<tr><td></td><td>");
         $mform->addElement('text', 'url', '', ['class' => 'test']);
-        $mform->setDefault('url', 'https://service.compilatio.net/webservices/CompilatioUserClient.wsdl');
+        $mform->setDefault('url', 'https://app.compilatio.net/api/private/soap/wsdl');
         $mform->addHelpButton('url', 'compilatioapi', 'plagiarism_compilatio');
         $mform->setType('url', PARAM_RAW);
         $mform->addElement('html', "</td><td>");
@@ -102,6 +102,10 @@ class compilatio_setup_form extends moodleform {
         $mform->addHelpButton('startdate', 'compilatiodate', 'plagiarism_compilatio');
         $mform->addElement('html', "<td></td><td></td></td></tr></table>");
         // API configuration.
+
+        $mform->addElement('checkbox', 'disable_ssl_verification', get_string("disable_ssl_verification", "plagiarism_compilatio"));
+        $mform->setDefault('disable_ssl_verification', 0);
+        $mform->addHelpButton('disable_ssl_verification', 'disable_ssl_verification', 'plagiarism_compilatio');
 
         $mform->addElement('textarea', 'student_disclosure',
                            get_string('students_disclosure', 'plagiarism_compilatio'),

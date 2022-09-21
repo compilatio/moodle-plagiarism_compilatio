@@ -47,12 +47,8 @@ $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $docsmaxattempsreached = array();
 
 $sql = "SELECT * FROM {plagiarism_compilatio_files}
-    WHERE cm=? AND (statuscode=? OR statuscode=? OR statuscode='timeout')";
-$plagiarismfiles = $DB->get_records_sql($sql, array(
-    $cmid,
-    COMPILATIO_STATUSCODE_FAILED,
-    COMPILATIO_STATUSCODE_UNEXTRACTABLE
-));
+    WHERE cm=? AND (statuscode LIKE '41_' OR statuscode='timeout')";
+$plagiarismfiles = $DB->get_records_sql($sql, [$cmid]);
 compilatio_remove_duplicates($plagiarismfiles, false);
 foreach ($plagiarismfiles as $plagiarismfile) {
     if ($plagiarismfile->statuscode == 'timeout') {
@@ -70,6 +66,7 @@ foreach ($plagiarismfiles as $plagiarismfile) {
 }
 compilatio_send_pending_files($plagiarismsettings);
 
+/*
 // Restart analyses.
 $countsuccess = 0;
 $docsfailed = array();
@@ -90,7 +87,7 @@ $counterrors = count($docsfailed);
 if ($counterrors === 0) {
     $SESSION->compilatio_alert = array(
         "class" => "info",
-        "title" => get_string("restart_failed_analysis_title", "plagiarism_compilatio"),
+        "title" => get_string("reset_failed_document_title", "plagiarism_compilatio"),
         "content" => get_string("analysis_started", "plagiarism_compilatio", $countsuccess),
     );
 } else {
@@ -99,7 +96,7 @@ if ($counterrors === 0) {
         "title" => get_string("not_analyzed", "plagiarism_compilatio"),
         "content" => "<ul><li>" . implode("</li><li>", $docsfailed) . "</li></ul>",
     );
-}
+}*/
 
 $countmaxattemptsreached = count($docsmaxattempsreached);
 $files = compilatio_get_max_attempts_files($cmid);
