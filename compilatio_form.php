@@ -91,6 +91,7 @@ class compilatio_setup_form extends moodleform {
         $mform->addElement('html', "<tr><td></td><td>");
         $mform->addElement('text', 'url', '', ['class' => 'test']);
         $mform->setDefault('url', 'https://app.compilatio.net/api/private/soap/wsdl');
+
         $mform->addHelpButton('url', 'compilatioapi', 'plagiarism_compilatio');
         $mform->setType('url', PARAM_RAW);
         $mform->addElement('html', "</td><td>");

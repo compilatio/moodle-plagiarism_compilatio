@@ -47,7 +47,6 @@ $string['formdelete'] = "Delete";
 $string['disable_ssl_verification'] = "Ignore SSL certificate verification.";
 $string['disable_ssl_verification_help'] = "Enable this option if you have problems verifying SSL certificates or if you experience errors when sending files to Compilatio.";
 
-
 $string['migration_title'] = "Migration v4 to v5";
 $string['migration_info'] = "Compilatio is implementing a new v5 technical platform for all its customers.<br>
     When prompted by the technical team, you will need to perform an action to complete this migration.";
