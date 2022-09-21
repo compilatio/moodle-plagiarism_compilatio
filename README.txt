@@ -9,6 +9,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 CHANGES
 - Add admin setting to ignore SSL certificate verification for API calls to Compilatio.
 - Replace restart failed analyses feature to reset all types of document in error.
+- Update default API URL in admin settings.
 
 FIXES
 - Fix documents deletion in assigns when the submission is in draft status.

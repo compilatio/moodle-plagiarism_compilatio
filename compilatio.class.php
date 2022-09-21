@@ -206,8 +206,8 @@ class compilatioservice {
         if ($handle == false) {
             return "Failed to open file";
         }
-        $temp = fwrite($handle, $content);
-        mtrace("fwrite : " . var_export($temp,true));
+        $bytes = fwrite($handle, $content);
+        mtrace($bytes . " bytes written.");
 
         fclose($handle);
 
@@ -229,7 +229,24 @@ class compilatioservice {
             CURLOPT_POSTFIELDS => $params
         ];
 
-        $curloptions = $this->addProxySettings($curloptions);
+        // Proxy settings.
+        if (!empty($CFG->proxyhost)) {
+            $curloptions[CURLOPT_PROXY] = $CFG->proxyhost;
+
+            $curloptions[CURLOPT_HTTPPROXYTUNNEL] = false;
+
+            if (!empty($CFG->proxytype) && ($CFG->proxytype == 'SOCKS5')) {
+                $curloptions[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
+            }
+
+            if (!empty($CFG->proxyport)) {
+                $curloptions[CURLOPT_PROXYPORT] = $CFG->proxyport;
+            }
+
+            if (!empty($CFG->proxyuser) && !empty($CFG->proxypassword)) {
+                $curloptions[CURLOPT_PROXYUSERPWD] = $CFG->proxyuser . ':' . $CFG->proxypassword;
+            }
+        }
 
         if (get_config('plagiarism_compilatio', 'disable_ssl_verification') == 1) {
             $curloptions[CURLOPT_SSL_VERIFYPEER] = false;
@@ -382,7 +399,6 @@ class compilatioservice {
             $param = array($this->key);
             return $this->soapcli->__call('getSubscriptionEndDate', $param);
         } catch (SoapFault $fault) {
-            error_log(var_export($fault,true));
             return false;
         }
     }
@@ -624,33 +640,5 @@ class compilatioservice {
             return false;
         }
 
-    }
-
-    /**
-     * Check if proxy settings are set and add them to curl options.
-     *
-     * @return array return updated curl options.
-     */
-    private function addProxySettings($curloptions) {
-        global $CFG;
-
-        if (!empty($CFG->proxyhost)) {
-            $curloptions[CURLOPT_PROXY] = $CFG->proxyhost;
-
-            $curloptions[CURLOPT_HTTPPROXYTUNNEL] = false;
-
-            if (!empty($CFG->proxytype) && ($CFG->proxytype == 'SOCKS5')) {
-                $curloptions[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
-            }
-
-            if (!empty($CFG->proxyport)) {
-                $curloptions[CURLOPT_PROXYPORT] = $CFG->proxyport;
-            }
-
-            if (!empty($CFG->proxyuser) && !empty($CFG->proxypassword)) {
-                $curloptions[CURLOPT_PROXYUSERPWD] = $CFG->proxyuser . ':' . $CFG->proxypassword;
-            }
-        }
-        return $curloptions;
     }
 }
