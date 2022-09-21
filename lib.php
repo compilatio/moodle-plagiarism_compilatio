@@ -800,7 +800,6 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     // Display a notification for the unextractable files.
     $files = compilatio_get_unextractable_files($cmid);
     if (count($files) !== 0) {
-
         $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
 
         $alerts[] = array(
@@ -808,20 +807,11 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
             "title" => get_string("unextractable_files", "plagiarism_compilatio"),
             "content" => $list,
         );
-
-        $url = $PAGE->url;
-        $url->param('restartfailedanalysis', true);
-        $restartfailedanalysisbutton = "
-            <button class='compilatio-button comp-button comp-restart-btn' >
-                <i class='fa fa-play-circle'></i>
-                " . get_string('reset_failed_document', 'plagiarism_compilatio') . "
-            </button>";
     }
 
     // Display a notification for failed analyses.
     $files = compilatio_get_failed_analysis_files($cmid);
     if (count($files) !== 0) {
-
         $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
 
         $alerts[] = array(
@@ -829,18 +819,12 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
             "title" => get_string("failedanalysis_files", "plagiarism_compilatio"),
             "content" => $list,
         );
-
-        $url = $PAGE->url;
-        $url->param('restartfailedanalysis', true);
-        $restartfailedanalysisbutton = "
-            <button class='compilatio-button comp-button comp-restart-btn' >
-                <i class='fa fa-play-circle'></i>
-                " . get_string('reset_failed_document', 'plagiarism_compilatio') . "
-            </button>";
     }
 
-    // Display restart analyses button for timeout.
-    $files = compilatio_get_files_by_status_code($cmid, 'timeout');
+    $sql = "SELECT * FROM {plagiarism_compilatio_files}
+        WHERE cm=? AND (statuscode LIKE '41_' OR statuscode='timeout') AND filename NOT LIKE '%.htm'";
+    $files = $DB->get_records_sql($sql, [$cmid]);
+
     if (count($files) !== 0) {
         $url = $PAGE->url;
         $url->param('restartfailedanalysis', true);
@@ -866,12 +850,6 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
                 <button class='compilatio-button comp-button comp-start-btn' >
                     <i class='fa fa-play-circle'></i>
                     " . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "
-                </button>";
-
-            $restartfailedanalysisbutton = "
-                <button class='compilatio-button comp-button comp-restart-btn' >
-                    <i class='fa fa-play-circle'></i>
-                    " . get_string('reset_failed_document', 'plagiarism_compilatio') . "
                 </button>";
         }
     } else {
@@ -1583,6 +1561,9 @@ function compilatio_remove_duplicates($duplicates, $deletefilesmoodledb = true) 
                     // Delete DB record.
                     if ($deletefilesmoodledb) {
                         $DB->delete_records('plagiarism_compilatio_files', array('id' => $doc->id));
+                    } else {
+                        $doc->externalid = null;
+                        $DB->update_record('plagiarism_compilatio_files', $doc);
                     }
                     $i++;
                 } else {

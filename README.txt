@@ -14,6 +14,7 @@ CHANGES
 FIXES
 - Fix documents deletion in assigns when the submission is in draft status.
 - Fix subscription end date which is not displayed or not up to date (with v5).
+- Improve files sending process.
 
 QUICK INSTALL
 ================
