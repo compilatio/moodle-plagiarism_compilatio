@@ -35,8 +35,6 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-use plagiarism_compilatio\CompilatioService;
-
 require_login();
 global $DB, $PAGE;
 

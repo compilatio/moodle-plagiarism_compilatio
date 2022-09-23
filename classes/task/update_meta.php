@@ -26,7 +26,8 @@
  */
 
 namespace plagiarism_compilatio\task;
-use plagiarism_compilatio\CompilatioService;
+
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 /**
  * Task class
@@ -52,14 +53,14 @@ class update_meta extends \core\task\scheduled_task {
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         // Update the "Compilatio unavailable" marker in the database.
-        $compilatio = new CompilatioService("test");
+        $compilatio = new \CompilatioService("test");
         if ($compilatio->check_apikey() == "Forbidden ! Your api key is invalid") {
             set_config('connection_webservice', 1, 'plagiarism_compilatio');
         } else {
             set_config('connection_webservice', 0, 'plagiarism_compilatio');
         }
 
-        $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+        $compilatio = new \CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
 
         // Send data about plugin version to Compilatio.
         $language = $CFG->lang;

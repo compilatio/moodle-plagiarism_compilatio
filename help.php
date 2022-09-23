@@ -30,8 +30,6 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
-use plagiarism_compilatio\CompilatioService;
-
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
 $context = context_system::instance();

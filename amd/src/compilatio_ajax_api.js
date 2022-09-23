@@ -8,7 +8,7 @@ define(['jquery'], function($) {
      * Disable Compilatio buttons (during multiple ajax/API calls)
      */
     function disableCompilatioButtons() {
-        $(".compilatio-button").each(function() {
+        $(".cmp-btn-lg").each(function() {
             $(this).attr("disabled", "disabled");
             $(this).addClass("disabled");
             $(this).attr("href", "#");
@@ -20,22 +20,26 @@ define(['jquery'], function($) {
     exports.toggleIndexingState = function(basepath, eltId, docId) {
         $(document).ready(function() {
             setTimeout(function() {
-                var btn = $(".compi-" + eltId + " > div:first-child");
+                var btn = $(".cmp-" + eltId + " > div:first-child > i");
                 btn.click(function() {
-                    if (btn.is('.compilatio-library-in')) {
+                    if (btn.is('.cmp-library-in')) {
                         var indexingState = 0;
                     }
-                    if (btn.is('.compilatio-library-out')) {
+                    if (btn.is('.cmp-library-out')) {
                         var indexingState = 1;
                     }
                     $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php', {'idDoc': docId, 'indexingState': indexingState}, function(res) {
                         if (res == 'true') {
                             if (indexingState == 0) {
-                                btn.removeClass('compilatio-library-in');
-                                btn.addClass('compilatio-library-out');
+                                btn.removeClass('cmp-library-in');
+                                btn.addClass('cmp-library-out');
+                                btn.removeClass('fa-check-circle');
+                                btn.addClass('fa-times-circle');
                             } else {
-                                btn.removeClass('compilatio-library-out');
-                                btn.addClass('compilatio-library-in');
+                                btn.removeClass('cmp-library-out');
+                                btn.addClass('cmp-library-in');
+                                btn.removeClass('fa-times-circle');
+                                btn.addClass('fa-check-circle');
                             }
                         }
                     });
@@ -52,7 +56,7 @@ define(['jquery'], function($) {
             if (n == 0) {
                 disableCompilatioButtons();
                 if (docNotUploaded > 0) {
-                    $(".comp-start-btn").each(function() {
+                    $(".cmp-start-btn").each(function() {
                         $(this).removeAttr("disabled");
                         $(this).removeClass("disabled");
                     });
@@ -61,15 +65,15 @@ define(['jquery'], function($) {
                 refreshButton.click(function() {
                     disableCompilatioButtons();
                     // Display progress bar.
-                    $("#compi-home").html("<p>" + infoStr + "<progress id='compi-update-progress' value='"
+                    $("#cmp-home").html("<p>" + infoStr + "<progress id='cmp-update-progress' value='"
                         + i + "' max='" + n + "'></progress></p>");
-                    $("#compilatio-logo").click();
+                    $("#cmp-logo").click();
                     // Launch ajax requests.
                     fileIds.forEach(function(id) {
                         $.post(basepath + '/plagiarism/compilatio/ajax/check_analysis.php',
                         {'id': id}, function() {
                             i++;
-                            $("#compi-update-progress").val(i);
+                            $("#cmp-update-progress").val(i);
                             if (i == n) {
                                 window.location.reload();
                             }
@@ -82,13 +86,13 @@ define(['jquery'], function($) {
 
     exports.startAllAnalysis = function(basepath, cmid, title, message) {
         $(document).ready(function() {
-            var startAllAnalysis = $("button.comp-start-btn");
+            var startAllAnalysis = $("button.cmp-start-btn");
             startAllAnalysis.click(function() {
                 disableCompilatioButtons();
-                $('#compi-notifications').show();
-                $('#compi-stats, #compi-help, #compi-home, #compi-search').hide();
-                $("#compi-notif-title").after(
-                    "<div class='compilatio-alert compilatio-alert-info'><strong>" + title
+                $('#cmp-notifications').show();
+                $('#cmp-stats, #cmp-help, #cmp-home, #cmp-search').hide();
+                $("#cmp-notif-title").after(
+                    "<div class='cmp-alert cmp-alert-info'><strong>" + title
                     + "</strong><br/>" + message + "</div>"
                 );
                 $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
@@ -102,7 +106,7 @@ define(['jquery'], function($) {
     exports.startAnalysis = function(basepath, eltId, docId) {
         $(document).ready(function() {
             setTimeout(function() {
-                $(".compi-" + eltId + " > div:last-child").click(function() {
+                $(".cmp-" + eltId + " > div:last-child").click(function() {
                     $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis.php',
                     {'docId': docId}, function() {
                         window.location.reload();
@@ -114,13 +118,13 @@ define(['jquery'], function($) {
 
     exports.restartFailedAnalysis = function(basepath, cmid, title, message) {
         $(document).ready(function() {
-            var restartFailedAnalysis = $("button.comp-restart-btn");
+            var restartFailedAnalysis = $("button.cmp-restart-btn");
             restartFailedAnalysis.click(function() {
                 disableCompilatioButtons();
-                $('#compi-notifications').show();
-                $('#compi-stats, #compi-help, #compi-home, #compi-search').hide();
-                $("#compi-notif-title").after(
-                    "<div class='compilatio-alert compilatio-alert-info'><strong>" + title
+                $('#cmp-notifications').show();
+                $('#cmp-stats, #cmp-help, #cmp-home, #cmp-search').hide();
+                $("#cmp-notif-title").after(
+                    "<div class='cmp-alert cmp-alert-info'><strong>" + title
                     + "</strong><br/>" + message + "</div>"
                 );
                 $.post(basepath + '/plagiarism/compilatio/ajax/restart_failed_analysis.php',
@@ -144,34 +148,34 @@ define(['jquery'], function($) {
 
     exports.compilatioTabs = function(basepath, alertsCount, idcourt, notifIcon, notifTitle) {
         $(document).ready(function() {
-            $('#compilatio-tabs').show();
+            $('#cmp-tabs').show();
 
             var selectedElement = '';
             if (idcourt) {
-                selectedElement = '#compi-search';
+                selectedElement = '#cmp-search';
             } else if (alertsCount > 0) {
-                selectedElement = '#compi-notifications';
+                selectedElement = '#cmp-notifications';
             } else {
-                selectedElement = '#compi-home';
+                selectedElement = '#cmp-home';
             }
 
             $(selectedElement).show();
 
-            $('#compilatio-show-notifications').on('click', function() {
-                    tabClick($(this), $('#compi-notifications'));
+            $('#cmp-show-notifications').on('click', function() {
+                tabClick($(this), $('#cmp-notifications'));
             });
             $('#show-stats').on('click', function() {
-                    tabClick($(this), $('#compi-stats'));
+                tabClick($(this), $('#cmp-stats'));
             });
             $('#show-help').on('click', function() {
-                    tabClick($(this), $('#compi-help'));
+                tabClick($(this), $('#cmp-help'));
             });
             $('#show-search').on('click', function() {
-                    tabClick($(this), $('#compi-search'));
+                tabClick($(this), $('#cmp-search'));
             });
 
-            var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
-            var elements = $('#compi-notifications, #compi-stats, #compi-help, #compi-home, #compi-search');
+            var tabs = $('#cmp-show-notifications, #show-stats, #show-help, #show-search');
+            var elements = $('#cmp-notifications, #cmp-stats, #cmp-help, #cmp-home, #cmp-search');
 
             /**
              * TabClick
@@ -188,21 +192,24 @@ define(['jquery'], function($) {
                     tabs.not(tabClicked).removeClass('active');
 
                     tabClicked.toggleClass('active');
-                    $('#compilatio-hide-area').fadeIn();
+                    $('#cmp-hide-area').fadeIn();
+                    $('.cmp-tabs-separator').show();
                 }
             }
 
-            $('#compilatio-logo').on('click', function() {
-                var elementClicked = $('#compi-home');
+            $('#cmp-logo').on('click', function() {
+                var elementClicked = $('#cmp-home');
                 elementClicked.show();
                 elements.not(elementClicked).hide();
                 tabs.removeClass('active');
-                $('#compilatio-hide-area').fadeIn();
+                $('#cmp-hide-area').fadeIn();
+                $('.cmp-tabs-separator').show();
             });
-            $('#compilatio-hide-area').on('click', function() {
+            $('#cmp-hide-area').on('click', function() {
                 elements.hide();
                 $(this).fadeOut();
                 tabs.removeClass('active');
+                $('.cmp-tabs-separator').hide();
             });
         });
     };

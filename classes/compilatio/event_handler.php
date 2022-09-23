@@ -15,25 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * event_handler.php - Contains methods to communicate with Compilatio REST API.
+ * event_handler.php - Contains methods to handle Moodle events.
  *
  * @package    plagiarism_compilatio
  * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2020 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
-
-use plagiarism_compilatio\CompilatioService;
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 /**
  * CompilatioEventHandler class
- * @copyright  2020 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioEventHandler {
@@ -198,9 +195,17 @@ class CompilatioEventHandler {
         }
 
         // Delete in assign.
-        if ($event['target'] == 'submission_status' && $event['other']['newstatus'] != 'draft') {
-            $files = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
-            compilatio_delete_files($files);
+        if ($event['target'] == 'submission_status') {
+            // The event is triggered when a submission is deleted and when the submission is passed to draft.
+            $fs = get_file_storage();
+            $submissionfiles = $fs->get_area_files($eventdata["contextid"], "assignsubmission_file",
+                'submission_files', $eventdata["objectid"]);
+            
+            // If the documents have been deleted in the mdl_files table, we also delete them on our side.
+            if (empty($submissionfiles)) {
+                $duplicates = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
+                compilatio_remove_duplicates($duplicates);
+            }
         }
 
         // Re-submit file when student submit a draft submission.

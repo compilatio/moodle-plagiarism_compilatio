@@ -27,10 +27,9 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 
-use plagiarism_compilatio\CompilatioService;
-
 require_once($CFG->dirroot . '/lib/formslib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 /**
  * Setup form class
@@ -57,6 +56,10 @@ class compilatio_setup_form extends moodleform {
         $mform->setType('apikey', PARAM_RAW);
         $mform->addHelpButton('apikey', 'apikey', 'plagiarism_compilatio');
         $mform->addRule('apikey', null, 'required', null, 'client');
+
+        $mform->addElement('checkbox', 'disable_ssl_verification', get_string("disable_ssl_verification", "plagiarism_compilatio"));
+        $mform->setDefault('disable_ssl_verification', 0);
+        $mform->addHelpButton('disable_ssl_verification', 'disable_ssl_verification', 'plagiarism_compilatio');
 
         $mform->addElement('textarea', 'student_disclosure',
                            get_string('students_disclosure', 'plagiarism_compilatio'),
@@ -92,16 +95,17 @@ class compilatio_setup_form extends moodleform {
                 $mform->addElement('checkbox', 'enable_student_analyses',
                     get_string("enable_student_analyses", "plagiarism_compilatio"));
                 $mform->setDefault('enable_student_analyses', 0);
+                $mform->addHelpButton('enable_student_analyses', 'enable_student_analyses', 'plagiarism_compilatio');
             }
         }
-
-        $mform->addElement('checkbox', 'enable_search_tab', get_string("enable_search_tab", "plagiarism_compilatio"));
-        $mform->setDefault('enable_search_tab', 0);
-        $mform->addHelpButton('enable_search_tab', 'enable_search_tab', 'plagiarism_compilatio');
 
         $mform->addElement('checkbox', 'enable_analyses_auto', get_string("enable_analyses_auto", "plagiarism_compilatio"));
         $mform->setDefault('enable_analyses_auto', 0);
         $mform->addHelpButton('enable_analyses_auto', 'enable_analyses_auto', 'plagiarism_compilatio');
+
+        $mform->addElement('checkbox', 'enable_search_tab', get_string("enable_search_tab", "plagiarism_compilatio"));
+        $mform->setDefault('enable_search_tab', 0);
+        $mform->addHelpButton('enable_search_tab', 'enable_search_tab', 'plagiarism_compilatio');
 
         $radioarray = array();
         $radioarray[] = $mform->createElement('radio',

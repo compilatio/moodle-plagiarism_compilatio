@@ -38,14 +38,28 @@ $string['apikey_help'] = 'Personal code provided by Compilatio to access the API
 $string['enabledandworking'] = 'The Compilatio plugin is enabled and working.';
 $string['saved_config_failed'] = '<strong>The combination API key - adress entered is invalid. Compilatio is disabled, please try again.<br/>
     The <a href="autodiagnosis.php">auto-diagnosis</a> page can help you to configure this plugin.</strong><br/>
-    Error : ';
+    Error :';
+$string['subscription'] = '<b>Informations about your subscription:</b>';
+$string['subscription_start'] = 'Start date:';
+$string['subscription_end'] = 'End date included:';
+$string['subscription_analysis_count'] = 'Analysed documents: {$a->usage} of {$a->value}';
+$string['subscription_analysis_page_count'] = 'Analysed pages: {$a->usage} of {$a->value}';
+$string['disable_ssl_verification'] = "Ignore SSL certificate verification.";
+$string['disable_ssl_verification_help'] = "Enable this option if you have problems verifying SSL certificates or if you experience errors when sending files to Compilatio.";
 $string["teacher_features_title"] = "Features enabled for teachers";
-$string["enable_show_reports"] = "Show similarity reports to students";
-$string['enable_student_analyses'] = "Allow students to analyze their draft files with Compilatio Magister, before final submission to the teacher.";
+$string["enable_show_reports"] = "Possibility to show similarity reports to students";
+$string['enable_student_analyses'] = "Possibility to enable student analysis on drafts.";
+$string['enable_student_analyses_help'] = "This option will allow teachers to activate on an activity the analysis by students of their documents submitted in draft mode with Compilatio Magister, before final submission to the teacher.";
 $string["enable_search_tab"] = "Search tool to identify the author of a document.";
 $string["enable_search_tab_help"] = "The search tool allows you to search for a student's first and last name based on a document identifier visible in the analysis reports among all the documents present on your platform.";
-$string["enable_analyses_auto"] = "Automatic launch of analyses";
-$string["enable_analyses_auto_help"] = "Automatic launch of analyses";
+$string["enable_analyses_auto"] = "Possibility to start the analyses directly";
+$string["enable_analyses_auto_help"] = "This option will allow teachers to activate the automatic launch of documents analysis on an activity (i.e. immediately after they have been submitted).<br>
+Note that in this case : 
+<ul>
+    <li>The number of scans performed by your institution may be significantly higher.</li>
+    <li>The documents of the first submitters are not compared with the documents of the last depositors.</li>
+</ul>
+In order to compare all the documents of an assignement, it is necessary to use the “scheduled” analysis, by choosing a date after the submission deadline.";
 $string["enable_activities_title"] = "Enable Compilatio for activities";
 $string['enable_mod_assign'] = 'Assignments';
 $string['enable_mod_workshop'] = 'Workshops';
@@ -60,8 +74,8 @@ $string['owner_file_student_details'] = 'When a student request to delete all hi
 // Activity settings.
 $string['terms_of_service'] = 'I have read the <a href=\'{$a}\'>Terms of Service</a> of Compilatio and I accept them.';
 $string['terms_of_service_info'] = '<a href=\'{$a}\'>Terms of Service</a> of Compilatio';
-$string['tos'] = 'Les <a href=\'{$a}\'>Conditions générales d\'utilisation</a> de Compilatio n\'ont pas été validés ou on été mises à jour.<br> Merci d\'en prendre connaissance et de les valider pour pouvoir utiliser Compilatio.';
-$string['tos_btn'] = "J'ai pris connaissance des Conditions générales d'utilisation et je les accepte.";
+$string['terms_of_service_alert'] = 'The Compilatio <a href=\'{$a}\'>Terms of Service</a> have not been validated or have been updated. Please read and accept them before using Compilatio.';
+$string['terms_of_service_alert_btn'] = "I have read the Terms of Service and I accept them.";
 $string['activated'] = 'Allow similarity detection with Compilatio';
 $string['defaultindexing'] = "Add documents into the Document Database";
 $string['defaultindexing_help'] = "Yes: Add documents in the document database. These documents will be used as comparison material for future analysis.
@@ -90,9 +104,9 @@ $string['analysistype_auto_help'] = "<p>You have three options:
     </ul>
     To have all documents compared with each other during the analyses, wait until all works are submitted by students then trigger the analyses.</p>";
 $string['analysistype_manual'] = 'Manual';
-$string['analysistype_prog'] = 'Timed';
+$string['analysistype_prog'] = 'Scheduled';
 $string['analysistype_auto'] = 'Direct';
-$string['analysis_date'] = 'Analysis Date (Timed analysis only)';
+$string['analysis_date'] = 'Analysis Date (Scheduled analysis only)';
 $string['thresholds_settings'] = "Limits :";
 $string['thresholds_description'] = "Indicate the threshold that you want to use, in order to facilitate the finding of analysis report (% of similarities) :";
 $string['numeric_threshold'] = "Threshold must be a number.";
@@ -115,7 +129,7 @@ $string['defaultupdated'] = 'Default values updated';
 $string['defaults_desc'] = 'The following settings are the defaults set when enabling Compilatio within an Activity Module';
 
 // Compilatio button.
-$string["title_scored"] = 'Analysis completed: {$a}% of similarities.';
+//$string["title_scored"] = 'Analysis completed: {$a}% of similarities.';
 $string['btn_sent'] = 'Analyze';
 $string['title_sent'] = "Start analysis";
 $string['btn_planned'] = "Planned";
@@ -136,8 +150,7 @@ $string['title_error_too_long'] = 'This document contain too many words to be an
 $string['title_error_not_found'] = "This document was not found. Please contact your moodle administrator. Error : document not found for this API key.";
 
 $string['previouslysubmitted'] = 'Previously submitted as';
-$string['student_analyze'] = "Student analysis";
-$string['student_start_analyze'] = "The analysis can be started by the student";
+$string['students_analyze'] = "The analysis can be started by the student";
 $string['student_help'] = "You can analyze your draft with Compilatio Magister, to measure similarities in the text of your files.<br/>
     The contents of your draft will not be used by Compilatio as comparison material for future analyses.<br/>
     Your teacher will, however, have access to this analysis report.";
@@ -208,16 +221,19 @@ $string["compilatio_author"] = 'The document in activity <b>{$a->modulename}</b>
 $string['tabs_title_stats'] = 'Statistics';
 $string["display_stats"] = "Display statistics about this activity";
 $string['export_csv'] = 'Export data about this activity into a CSV file';
-$string['progress'] = "Progress :";
-$string['results'] = "Results :";
-$string['errors'] = "Errors :";
-$string['documents_analyzed'] = '{$a->countAnalyzed} document(s) out of {$a->documentsCount} have been sent and analyzed.';
-$string['documents_analyzing'] = '{$a} document(s) are being analyzed.';
-$string['documents_in_queue'] = '{$a} document(s) are in the queue to be analyzed.';
-$string['average_similarities'] = 'In this activity, the average similarities ratio is {$a}%.';
-$string['documents_analyzed_lower_green'] = '{$a->documentsUnderGreenThreshold} document(s) lower than {$a->greenThreshold}%.';
-$string['documents_analyzed_between_thresholds'] = '{$a->documentsBetweenThresholds} document(s) between {$a->greenThreshold}% and {$a->redThreshold}%.';
-$string['documents_analyzed_higher_red'] = '{$a->documentsAboveRedThreshold} document(s) greater than {$a->redThreshold}%.';
+$string['progress'] = "Progress";
+$string['results'] = "Results";
+$string['errors'] = "Errors";
+$string['documents_analyzed'] = '{$a} analyzed documents';
+$string['documents_analyzing'] = '{$a} documents being analyzed';
+$string['documents_in_queue'] = '{$a} documents awaiting analysis';
+$string["stats_min"] = 'Minimum';
+$string["stats_max"] = 'Maximum';
+$string["stats_avg"] = 'Average';
+$string['stats_score'] = 'Similarities percentage';
+$string["stats_error_empty"] = "No errors detected";
+$string["stats_error_unknown"] = " unknown errors";
+$string['stats_threshold'] = 'Number of documents per threshold';
 $string['no_documents_available'] = 'No documents are available for analysis in this activity.';
 
 // Global Statistics.

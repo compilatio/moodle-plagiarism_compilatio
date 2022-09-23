@@ -29,8 +29,6 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
-use plagiarism_compilatio\CompilatioService;
-
 require_login();
 
 // Check GET parameter.

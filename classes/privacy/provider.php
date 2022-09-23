@@ -23,7 +23,8 @@
  */
 
 namespace plagiarism_compilatio\privacy;
-use plagiarism_compilatio\CompilatioService;
+
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 defined('MOODLE_INTERNAL') || die();
 

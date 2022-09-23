@@ -28,7 +28,6 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/helper/output_helper.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -54,16 +53,16 @@ if (count($rows) === 0) {
 
     $url = new moodle_url('/plagiarism/compilatio/CSV.php');
     echo html_writer::tag('legend', get_string("global_statistics", "plagiarism_compilatio"), array(
-        'class' => 'compilatio_legend'
+        'class' => 'cmp-legend'
     ));
     echo html_writer::tag('p', get_string("global_statistics_description", "plagiarism_compilatio"));
     echo html_writer::tag('a', get_string("export_raw_csv", "plagiarism_compilatio"), array(
         'href' => $url,
         'style' => 'margin-bottom:20px;',
-        'class' => 'comp-button'
+        'class' => 'cmp-btn cmp-btn-secondary'
     ));
     echo html_writer::tag('legend', get_string("activities_statistics", "plagiarism_compilatio"), array(
-        'class' => 'compilatio_legend'
+        'class' => 'cmp-legend'
     ));
 
     // Bootstrap.
@@ -80,7 +79,7 @@ if (count($rows) === 0) {
     echo html_writer::tag('h5', "Compilatio - " . get_string("similarities", "plagiarism_compilatio"), array('colspan' => '4'));
 
     $table = new html_table();
-    $table->id = 'compilatio-table-js';
+    $table->id = 'cmp-table-js';
     $table->attributes['data-toggle'] = 'table';
     $table->attributes['data-url'] = $url;
 
@@ -99,7 +98,7 @@ if (count($rows) === 0) {
     echo html_writer::table($table);
 
     $tablenojs = new html_table();
-    $tablenojs->id = 'compilatio-table-no-js';
+    $tablenojs->id = 'cmp-table-no-js';
     $tablenojs->attributes['class'] = 'table table-striped table-bordered table-hover';
     $tablehead = array(
         get_string("course"),
@@ -131,7 +130,7 @@ if (count($rows) === 0) {
     echo html_writer::tag('a', get_string("export_global_csv", "plagiarism_compilatio"), array(
         'href' => $url,
         'style' => 'margin-bottom:20px;',
-        'class' => 'comp-button'
+        'class' => 'cmp-btn cmp-btn-secondary'
     ));
 }
 echo $OUTPUT->box_end();

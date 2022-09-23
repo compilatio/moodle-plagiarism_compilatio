@@ -23,13 +23,13 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 use plagiarism_compilatio\task\update_meta;
-use plagiarism_compilatio\CompilatioService;
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -46,7 +46,7 @@ if ($mform->is_cancelled()) {
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
     $elements = ["enabled", "enable_mod_assign", "enable_mod_forum", "enable_mod_workshop", "enable_mod_quiz",
-        "enable_show_reports", "enable_search_tab", "enable_student_analyses", "enable_analyses_auto"];
+        "enable_show_reports", "enable_search_tab", "enable_student_analyses", "enable_analyses_auto", "disable_ssl_verification"];
     foreach ($elements as $elem) {
         if (!isset($data->$elem)) {
             $data->$elem = 0;
@@ -103,14 +103,36 @@ if (!empty($plagiarismsettings['enabled'])) {
         if (!$compilatio->check_allow_student_analyses()) {
             set_config('enable_student_analyses', 0, 'plagiarism_compilatio');
         }
-        echo $OUTPUT->notification(get_string('enabledandworking', 'plagiarism_compilatio'), 'notifysuccess');
+
+        $subscription = $compilatio->get_subscription_info();
+
+        $subscriptioninfos .= "<li>" . get_string('subscription_start', 'plagiarism_compilatio') . " "
+             compilatio_format_date($subscription->validity_period->start) . "</li>";
+        $subscriptioninfos .= "<li>" . get_string('subscription_end', 'plagiarism_compilatio') . " "
+            . compilatio_format_date($subscription->validity_period->end) . "</li>";
+
+        if (isset($subscription->quotas)) {
+            foreach($subscription->quotas as $quota) {
+                if (($quota->blocking === false && $quota->resource === 'analysis_count') ||
+                    ($quota->blocking === true && $quota->resource === 'analysis_page_count')) {
+
+                    $subscriptioninfos .= "<li>" . get_string('subscription_' . $quota->resource, 'plagiarism_compilatio', $quota) . "</li>";
+                }
+            }
+        }
+
+        echo $OUTPUT->notification(
+            "<p>" . get_string('enabledandworking', 'plagiarism_compilatio') . "</p>" 
+            . get_string('subscription', 'plagiarism_compilatio') . "<ul style='margin: 0;'>" . $subscriptioninfos . "</ul>",
+            'notifysuccess'
+        );
     } else {
         // Disable compilatio as this config isn't correct.
         set_config('enabled', 0, 'plagiarism_compilatio');
         if ($CFG->version < 2020061500) {
             set_config('compilatio_use', 0, 'plagiarism');
         }
-        echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . $validapikey);
+        echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . " " . $validapikey);
     }
 }
 

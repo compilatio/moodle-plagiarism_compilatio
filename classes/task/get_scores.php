@@ -48,7 +48,7 @@ class get_scores extends \core\task\scheduled_task {
      */
     public function execute() {
 
-        global $DB, $CFG;
+        /*global $DB, $CFG;
 
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
@@ -79,7 +79,7 @@ class get_scores extends \core\task\scheduled_task {
                     \CompilatioAnalyses::check_analysis($plagiarismfile); // Get status and set reporturl/status if required.
                 }
             }
-        }
+        }*/
     }
 
     /**

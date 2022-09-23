@@ -35,7 +35,7 @@ $strstatistics         = get_string('tabs_title_stats', 'plagiarism_compilatio')
 $strhelp               = get_string('tabs_title_help', 'plagiarism_compilatio');
 
 // Display Compilatio logo.
-echo output_helper::get_logo();
+echo "<img id='cmp-logo' style='margin-bottom: 15px;' src='" . new moodle_url("/plagiarism/compilatio/pix/compilatio.png") . "'>";
 echo '<div style="clear:both"></div>';
 
 // Create tabs.

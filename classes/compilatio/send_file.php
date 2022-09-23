@@ -15,27 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * send_file.php - Contains methods to communicate with Compilatio REST API.
+ * send_file.php - Contains methods to send files.
  *
  * @package    plagiarism_compilatio
  * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2020 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * CompilatioSendFile class
- * @copyright  2020 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
-
-use plagiarism_compilatio\CompilatioService;
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 class CompilatioSendFile {
     /**
@@ -101,12 +98,13 @@ class CompilatioSendFile {
 
         if ($send) {
             if (!check_dir_exists($CFG->dataroot . "/temp/compilatio", true, true)) {
-                mkdir($CFG->dataroot . "/temp/compilatio", 0700);
+                error_log("Error when sending the file to compilatio : failed to create compilatio temp directory");
             }
 
             $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H:i:s') . ".txt";
-            $handle = fopen($filepath, "w+");
+            $handle = fopen($filepath, "wb");
             fwrite($handle, $content);
+            fclose($handle);
 
             $cmconfig = $DB->get_record("plagiarism_compilatio_module", array("cmid" => $cmid));
 

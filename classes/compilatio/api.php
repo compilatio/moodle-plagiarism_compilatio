@@ -17,19 +17,16 @@
 /**
  * api.php - Contains methods to communicate with Compilatio REST API.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
  * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2020 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_compilatio;
-
 /**
  * compilatioservice class
- * @copyright  2020 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioService {
@@ -44,7 +41,7 @@ class CompilatioService {
 
     public function __construct($apikey, $userid = null) {
         $this->apikey = null;
-        $this->urlrest = "https://app.compilatio.net";
+        $this->urlrest = "https://benoit.corboss.compilatio.net";
         $this->userid = $userid;
 
         if (!empty($apikey)) {
@@ -70,11 +67,11 @@ class CompilatioService {
      * @return boolean Return true if valid, an error message otherwise
      */
     public function check_apikey() {
-        $endpoint = "/api/private/authentication/check-api-key";
+        $endpoint = "/api/private/user/lms/23a3a6980c0f49d98c5dc1ec03478e9161ad5d352cb4651b14865d21d0e81be";
 
         $response = json_decode($this->call_api($endpoint));
 
-        $error = $this->get_error_response($response, 200);
+        $error = $this->get_error_response($response, 404);
         if ($error === false) {
             return true;
         }
@@ -161,6 +158,7 @@ class CompilatioService {
      */
     public function set_document($filename, $folderid, $filepath, $indexed/*, $depositor, $author*/) {
 
+        // TODO Add depositor and author. 
         //$depositor = explode(' ', $depositor, 2);
         //$author = explode(' ', $author, 2);
 
@@ -515,6 +513,30 @@ class CompilatioService {
     }
 
     /**
+     * Get a list of Compilatio alerts.
+     *
+     * @return  array   Return an array of alerts
+     */
+    public function get_subscription_info() {
+        $endpoint = "/api/private/authentication/check-api-key";
+
+        $response = json_decode($this->call_api($endpoint));
+
+        if ($this->get_error_response($response, 200) === false) {
+            $groupid = $response->data->user->current_bundle->group_id;
+        }
+        error_log($groupid);
+
+        $endpoint = '/api/private/subscription/last-subscription/' . $groupid . '?id_type=owner_id&bundle_name=magister-standard';
+
+        $response = json_decode($this->call_api($endpoint));
+
+        if ($this->get_error_response($response, 200) === false) {
+            return $response->data->subscription;
+        }
+    }
+
+    /**
      * Get a Compilatio translation.
      *
      * @param  string  $lang  Language
@@ -572,6 +594,30 @@ class CompilatioService {
             $header[] = 'Content-Type: application/json';
         }
         $params[CURLOPT_HTTPHEADER] = $header;
+
+        // Proxy settings.
+        if (!empty($CFG->proxyhost)) {
+            $params[CURLOPT_PROXY] = $CFG->proxyhost;
+
+            $params[CURLOPT_HTTPPROXYTUNNEL] = false;
+
+            if (!empty($CFG->proxytype) && ($CFG->proxytype == 'SOCKS5')) {
+                $params[CURLOPT_PROXYTYPE] = CURLPROXY_SOCKS5;
+            }
+
+            if (!empty($CFG->proxyport)) {
+                $params[CURLOPT_PROXYPORT] = $CFG->proxyport;
+            }
+
+            if (!empty($CFG->proxyuser) && !empty($CFG->proxypassword)) {
+                $params[CURLOPT_PROXYUSERPWD] = $CFG->proxyuser . ':' . $CFG->proxypassword;
+            }
+        }
+
+        // SSL certificate verification.
+        if (get_config('plagiarism_compilatio', 'disable_ssl_verification') == 1) {
+            $params[CURLOPT_SSL_VERIFYPEER] = false;
+        }
 
         switch ($method){
             case "post":

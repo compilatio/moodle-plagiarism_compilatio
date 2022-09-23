@@ -23,13 +23,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use plagiarism_compilatio\CompilatioService;
-
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -192,7 +191,7 @@ if ($quizsuccess) {
  * Index 0 for criticality & index 1 for message
  */
 foreach ($alerts as $alert) {
-    echo "<div class='compilatio-alert compilatio-alert-" . $alert[0] . "'>" . $alert[1] . "</div>";
+    echo "<div class='cmp-alert cmp-alert-" . $alert[0] . "'>" . $alert[1] . "</div>";
 }
 
 echo $OUTPUT->box_end();

@@ -38,14 +38,28 @@ $string['apikey_help'] = "Code personnel fourni par Compilatio pour accéder à 
 $string['enabledandworking'] = 'Le plugin Compilatio est actif et fonctionnel.';
 $string['saved_config_failed'] = "<strong>La combinaison adresse - clé API est incorrecte. Le plugin est désactivé, merci de réessayer.<br/>
     La page d'<a href='autodiagnosis.php'>auto-diagnostic</a> peut vous aider à configurer ce plugin.</strong><br/>
-    Erreur : ";
+    Erreur :";
+$string['subscription'] = '<b>Informations concernant votre abonnement :</b>';
+$string['subscription_start'] = 'Date de début :';
+$string['subscription_end'] = 'Date de fin incluse :';
+$string['subscription_analysis_count'] = 'Documents analysés : {$a->usage} sur {$a->value}';
+$string['subscription_analysis_page_count'] = 'Pages analysés : {$a->usage} sur {$a->value}';
+$string['disable_ssl_verification'] = "Ignorer la vérification du certificat SSL.";
+$string['disable_ssl_verification_help'] = "Activez cette option si vous rencontrez des problèmes de vérification de certificats SSL ou si vous constatez des erreurs lors des envois de fichiers à Compilatio.";
 $string["teacher_features_title"] = "Fonctionnalités activées pour les enseignants";
-$string["enable_show_reports"] = "Mettre les rapports d'analyse à disposition des étudiants";
-$string['enable_student_analyses'] = "Permettre aux étudiants d'analyser leur fichiers en brouillon avec Compilatio Magister, avant le rendu final à l'enseignant.";
+$string["enable_show_reports"] = "Possibilité de mettre les rapports d'analyse à disposition des étudiants";
+$string['enable_student_analyses'] = "Possibilité d'activer l'analyse des brouillons par les étudiants.";
+$string['enable_student_analyses_help'] = "Cette option permettra aux enseignants d'activer sur une activité l'analyse par les étudiants de leurs documents rendus en mode brouillon avec Compilatio Magister, avant le rendu final à l'enseignant.";
 $string["enable_search_tab"] = "Outil de recherche permettant d'identifier l'auteur d'un document.";
 $string["enable_search_tab_help"] = "L'outil de recherche permet de rechercher le nom et prénom d'un étudiant d'après un identifiant de document visible dans les rapports d'analyses parmi tous les documents présent sur votre plateforme.";
-$string["enable_analyses_auto"] = "Lancement automatique des analyses";
-$string["enable_analyses_auto_help"] = "Les enseignants peuvent lancer les analyses manuellement ou programmer une date de lancement des analyses.";
+$string["enable_analyses_auto"] = "Possibilité de lancer immédiatement les analyses";
+$string["enable_analyses_auto_help"] = "<p>Cette option permettra aux enseignants d'activer sur une activité le lancement automatique de l'analyse des documents (i.e. immédiatement après leur dépôt).<br>
+Notez que dans ce cas : 
+<ul>
+    <li>Le nombre d'analyses effectuées par votre établissement peut être significativement plus important.</li>
+    <li>Les documents des premiers déposants ne seront pas comparés avec les documents des derniers déposants.</li>
+</ul>
+Pour que tous les documents d'un devoir soient comparés entre eux, il est nécessaire d'utiliser l'analyse “programmée”, en choisissant une date postérieure à la date de fin de rendu des devoirs.</p>";
 $string["enable_activities_title"] = "Activer Compilatio pour les activités";
 $string['enable_mod_assign'] = ' Devoirs (assign)';
 $string['enable_mod_workshop'] = 'Ateliers (workshop)';
@@ -60,8 +74,8 @@ $string['owner_file_student_details'] = "En cas de demande de suppression des do
 // Activity settings.
 $string['terms_of_service'] = 'J\'ai pris connaissance des <a href=\'{$a}\'>Conditions générales d\'utilisation</a> de Compilatio et je les accepte.';
 $string['terms_of_service_info'] = '<a href=\'{$a}\'>Conditions générales d\'utilisation</a> de Compilatio';
-$string['tos'] = 'Les <a href=\'{$a}\'>Conditions générales d\'utilisation</a> de Compilatio n\'ont pas été validés ou on été mises à jour.<br> Merci d\'en prendre connaissance et de les valider pour pouvoir utiliser Compilatio.';
-$string['tos_btn'] = "J'ai pris connaissance des Conditions générales d'utilisation et je les accepte.";
+$string['terms_of_service_alert'] = 'Les <a href=\'{$a}\'>Conditions générales d\'utilisation</a> de Compilatio n\'ont pas été validés ou on été mises à jour.<br> Merci d\'en prendre connaissance et de les valider pour pouvoir utiliser Compilatio.';
+$string['terms_of_service_alert_btn'] = "J'ai pris connaissance des Conditions générales d'utilisation et je les accepte.";
 $string['activated'] = 'Détecter des similitudes avec Compilatio';
 $string['defaultindexing'] = "Ajouter les documents à la bibliothèque de références";
 $string['defaultindexing_help'] = "Oui: Ajoute les documents dans la bibliothèque de références. Ces documents seront utilisés comme matériel de comparaison pour vos analyses.
@@ -115,7 +129,7 @@ $string['defaultupdated'] = "Les valeurs par défaut ont été mises à jour";
 $string['defaults_desc'] = "Les paramètres suivants sont utilisés comme valeurs par défaut dans les activités de Moodle intégrant Compilatio.";
 
 // Compilatio button.
-$string["title_scored"] = 'Analyse terminée: {$a}% de similitudes.';
+//$string["title_scored"] = 'Analyse terminée: {$a}% de similitudes.';
 $string['btn_sent'] = 'Analyser';
 $string['title_sent'] = "Démarrer l'analyse";
 $string['btn_planned'] = "Planifié";
@@ -136,8 +150,7 @@ $string['title_error_too_long'] = 'Ce document contient trop de mots pour être 
 $string['title_error_not_found'] = "Ce document n'a pas été trouvé. Veuillez contacter votre administrateur de moodle. Erreur : document non trouvé pour cette clé API.";
 
 $string['previouslysubmitted'] = "Auparavant soumis comme";
-$string['student_analyze'] = "Analyse par l'étudiant";
-$string['student_start_analyze'] = "L'analyse peut être lancée par l'étudiant";
+$string['student_analyze'] = "L'analyse peut être lancée par l'étudiant";
 $string['student_help'] = "Vous pouvez analyser votre brouillon avec Compilatio Magister, afin de mesurer les similitudes présentes dans le texte de vos fichiers.<br/>
     Le contenu de votre brouillon ne sera pas utilisé par Compilatio comme matériel de comparaison pour les futures analyses effectuées.<br/>
     Votre enseignant aura cependant accès à ce rapport d'analyse.";

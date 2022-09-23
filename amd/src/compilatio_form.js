@@ -7,11 +7,10 @@ define(['jquery'], function($) {
 
     exports.afterPercentValues = function(strSimilarityPercent, strRedTreshold) {
         $(document).ready(function() {
-            var txtGreen = $("<span>", {"class": "compilatio-after-input"}).text(strSimilarityPercent);
-            var txtOrange = $("<span>", {"class": "compilatio-after-input"})
-                .text(strSimilarityPercent + ", " + strRedTreshold + ".");
-            $("#green_threshold").after(txtGreen);
-            $("#orange_threshold").after(txtOrange);
+            var txtGreen = $("<span>", {"class": "cmp-ml-10"}).text(strSimilarityPercent);
+            var txtOrange = $("<span>", {"class": "cmp-ml-10"}).text(strSimilarityPercent + ", " + strRedTreshold + ".");
+            $("#warningthreshold").after(txtGreen);
+            $("#criticalthreshold").after(txtOrange);
         });
     };
 
