@@ -47,13 +47,21 @@ $string['formdelete'] = "Delete";
 $string['disable_ssl_verification'] = "Ignore SSL certificate verification.";
 $string['disable_ssl_verification_help'] = "Enable this option if you have problems verifying SSL certificates or if you experience errors when sending files to Compilatio.";
 
+
 $string['migration_title'] = "Migration v4 to v5";
 $string['migration_info'] = "Compilatio is implementing a new v5 technical platform for all its customers.<br>
     When prompted by the technical team, you will need to perform an action to complete this migration.";
 $string['migration_apikey'] = "Enter the new v5 API key";
 $string['migration_btn'] = "Initiate the update of the data stored in Moodle";
+$string['migration_restart_btn'] = "Restart update";
+$string['migration_state'] = 'Update progress (API key {$a})';
+$string['migration_stop'] = 'Pause the update';
+$string['migration_state_info'] = 'You can exit this page during the update';
+$string['migration_completed'] = 'Update completed:';
+$string['migration_stopped'] = 'The update has been paused';
+$string['migration_success_doc'] = 'documents have been updated';
+$string['migration_waiting'] = "The update will start soon";
 $string['migration_inprogress'] = "Update in progress, please wait";
-$string['migration_success_doc'] = "documents have been updated";
 $string['migration_form_title'] = "Launch the update of the data stored in Moodle, to complete the migration from v4 to v5.";
 $string['migration_support'] = "
     <p>If all documents have not been updated correctly, please contact the Compilatio support team at support@compilatio.net and specify:</p>
@@ -330,6 +338,7 @@ $string['get_scores'] = "Retrieve plagiarism scores from Compilatio.net";
 $string['send_files'] = "Upload files to Compilatio.net for plagiarism detection";
 $string['update_meta'] = "Perform Compilatio.net's scheduled operations";
 $string['trigger_analyses'] = "Trigger analyses";
+$string['migration'] = "Update documents from v4 to v5";
 // Indexing state.
 $string['indexing_state'] = "Add documents into the Document Database";
 $string['indexing_state_help'] = "Yes: Add documents in the document database. These documents will be used as comparison material for future analysis.

@@ -131,7 +131,6 @@ define(['jquery'], function($) {
                     "<div class='compilatio-alert compilatio-alert-info'><strong>" + title
                     + "</strong><br/>" + message + "</div>"
                 );
-
                 $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_reset_failed_document.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
@@ -140,36 +139,22 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.startMigration = function(basepath) {
+    exports.migrationState = function(basepath) {
         $(document).ready(function() {
+            $.get(basepath + '/plagiarism/compilatio/ajax/migrationstate.php', function(data) {
+                $("#compi-migration-state").html(data);
+            });
+            setInterval(function() {
+                $.get(basepath + '/plagiarism/compilatio/ajax/migrationstate.php', function(data) {
+                    $("#compi-migration-state").html(data);
+                });
+            }, 3000);
+
             var startMigration = $("#compilatio-startmigration-btn");
-            startMigration.click(async function() {
+            startMigration.click(function() {
                 startMigration.attr("disabled", "disabled");
-                var message = $('#compilatio-startmigration-info')
-                message.show();
                 var apikey = $('#apikey').val();
-                var i = 0;
-
-                do {
-                    var res = await $.post(basepath + '/plagiarism/compilatio/ajax/migration.php', {'apikey': apikey, 'i': i}).promise();
-                    if (i == 0 && res == true) {
-                        $.get({url: "https://app.compilatio.net/api/private/document/count", headers: {'X-Auth-Token': apikey}}, function(response) {
-                            $("#migration-progress").html("<progress id='migration-update-progress' value='0' max='" + (response.data.count / 500) + "'></progress>");
-                        });
-                    } else {
-                        $("#migration-update-progress").val(i);
-                    }
-                    i++;
-                }
-                while (res == true);
-
-                message.removeClass("alert-info");
-                if (res.match("^Error")) {
-                    message.addClass("alert-danger");
-                } else {
-                    message.addClass("alert-success");
-                }
-                message.html(res)
+                $.post(basepath + '/plagiarism/compilatio/ajax/migrationstate.php', {'apikey': apikey}, function() {});
             });
         });
     };

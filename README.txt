@@ -10,6 +10,7 @@ CHANGES
 - Add admin setting to ignore SSL certificate verification for API calls to Compilatio.
 - Replace restart failed analyses feature to reset all types of document in error.
 - Update default API URL in admin settings.
+- Processing the document update from v4 to v5 by a scheduled task with saving of the progress.
 
 FIXES
 - Fix documents deletion in assigns when the submission is in draft status.
