@@ -36,6 +36,17 @@ require_capability('moodle/site:config', $context, $USER->id, true, "nopermissio
 
 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'migrationState', array($CFG->httpswwwroot));
 
+$apikey = optional_param('apikey', null, PARAM_RAW);
+if (!empty($apikey)) {
+    $DB->delete_records_select("plagiarism_compilatio_data", "name LIKE 'migration_%'");
+    
+    $item = new stdClass();
+    $item->name = "migration_apikey";
+    $item->value = $apikey;
+    $DB->insert_record('plagiarism_compilatio_data', $item);
+    redirect('migrate.php');
+}
+
 $restart = optional_param('restart', null, PARAM_RAW);
 if ($restart == '1') {
     $DB->delete_records_select("plagiarism_compilatio_data", "name = 'migration_message'");
@@ -49,23 +60,18 @@ if ($stop == '1') {
     redirect('migrate.php');
 }
 
+$cancel = optional_param('cancel', null, PARAM_RAW);
+if ($cancel == '1') {
+    $DB->delete_records_select("plagiarism_compilatio_data", "name LIKE 'migration_%'");
+    redirect('migrate.php');
+}
+
 echo $OUTPUT->header();
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 $currenttab = 'compilatiomigrate';
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 echo "<h3>" . get_string('migration_title', 'plagiarism_compilatio') . "</h3>";
 echo "<p>" . get_string('migration_info', 'plagiarism_compilatio') . "</p>";
-
-$apikey = $DB->get_record('plagiarism_compilatio_data', array('name' => 'migration_apikey'));
-$message = $DB->get_record('plagiarism_compilatio_data', array('name' => 'migration_message'));
-if (empty($apikey) || ($message->value ?? '') == "stopped") {
-    echo "<h5 class='compi-migration'>" . get_string('migration_form_title', 'plagiarism_compilatio') . "</h5>";
-    echo "<div class='form-inline'>
-            <label>" . get_string('migration_apikey', 'plagiarism_compilatio') . " : </label>
-            <input class='form-control m-2' type='text' id='apikey' name='apikey' required>
-            <button id='compilatio-startmigration-btn' class='btn btn-primary'>" . get_string('migration_btn', 'plagiarism_compilatio') . "</button>
-        </div>";
-}
 
 echo "<div id='compi-migration-state'></div>";
 

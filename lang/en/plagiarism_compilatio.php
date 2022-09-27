@@ -53,13 +53,15 @@ $string['migration_info'] = "Compilatio is implementing a new v5 technical platf
     When prompted by the technical team, you will need to perform an action to complete this migration.";
 $string['migration_apikey'] = "Enter the new v5 API key";
 $string['migration_btn'] = "Initiate the update of the data stored in Moodle";
-$string['migration_restart_btn'] = "Restart update";
+$string['migration_restart_btn'] = "Resume update";
 $string['migration_state'] = 'Update progress (API key {$a})';
 $string['migration_stop'] = 'Pause the update';
+$string['migration_cancel'] = 'Abort the update ';
 $string['migration_state_info'] = 'You can exit this page during the update';
 $string['migration_completed'] = 'Update completed:';
 $string['migration_stopped'] = 'The update has been paused';
 $string['migration_success_doc'] = 'documents have been updated';
+$string['migration_success_info'] = 'Fill in the API key again in the form above to restart the update.';
 $string['migration_waiting'] = "The update will start soon";
 $string['migration_inprogress'] = "Update in progress, please wait";
 $string['migration_form_title'] = "Launch the update of the data stored in Moodle, to complete the migration from v4 to v5.";

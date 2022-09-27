@@ -148,14 +148,7 @@ define(['jquery'], function($) {
                 $.get(basepath + '/plagiarism/compilatio/ajax/migrationstate.php', function(data) {
                     $("#compi-migration-state").html(data);
                 });
-            }, 3000);
-
-            var startMigration = $("#compilatio-startmigration-btn");
-            startMigration.click(function() {
-                startMigration.attr("disabled", "disabled");
-                var apikey = $('#apikey').val();
-                $.post(basepath + '/plagiarism/compilatio/ajax/migrationstate.php', {'apikey': apikey}, function() {});
-            });
+            }, 10000);
         });
     };
 

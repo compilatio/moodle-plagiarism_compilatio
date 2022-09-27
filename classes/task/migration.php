@@ -127,6 +127,8 @@ class migration extends \core\task\scheduled_task {
 
                     if (isset($response->data->documents)) {
                         if (!empty($response->data->documents)) {
+                            $success = 0;
+
                             foreach ($response->data->documents as $doc) {
                                 if (isset($doc->old_prod_id)) {
                                     $v4file = $DB->get_record("plagiarism_compilatio_files", array("externalid" => $doc->old_prod_id));
@@ -134,20 +136,22 @@ class migration extends \core\task\scheduled_task {
                                         $v4file->externalid = $doc->id;
                                         $v4file->apiconfigid = $_SESSION["apiconfigid"];
                                         if ($DB->update_record("plagiarism_compilatio_files", $v4file)) {
-                                            $countsuccess = $DB->get_record('plagiarism_compilatio_data', array('name' => 'migration_countsuccess'));
-
-                                            if (empty($countsuccess)) {
-                                                $item = new \stdClass();
-                                                $item->name = "migration_countsuccess";
-                                                $item->value = 0;
-                                                $DB->insert_record('plagiarism_compilatio_data', $item);
-                                            } else {
-                                                $countsuccess->value = intval($countsuccess->value) + 1;
-                                                $DB->update_record('plagiarism_compilatio_data', $countsuccess);
-                                            }
+                                            $success += 1;
                                         }
                                     }
                                 }
+                            }
+
+                            $countsuccess = $DB->get_record('plagiarism_compilatio_data', array('name' => 'migration_countsuccess'));
+
+                            if (empty($countsuccess)) {
+                                $item = new \stdClass();
+                                $item->name = "migration_countsuccess";
+                                $item->value = 0;
+                                $DB->insert_record('plagiarism_compilatio_data', $item);
+                            } else {
+                                $countsuccess->value = intval($countsuccess->value) + $success;
+                                $DB->update_record('plagiarism_compilatio_data', $countsuccess);
                             }
 
                             $progress = $DB->get_record('plagiarism_compilatio_data', array('name' => 'migration_progress'));
@@ -165,19 +169,17 @@ class migration extends \core\task\scheduled_task {
                             $continue = true;
                         } else {
                             $apiconfigid = $DB->get_record('plagiarism_compilatio_data', array('name' => 'migration_apiconfigid'));
-                            $countsuccess = $DB->get_record('plagiarism_compilatio_data', array('name' => 'migration_countsuccess'));
 
                             $sql = "SELECT COUNT(files.id) FROM {plagiarism_compilatio_files} files
                                 JOIN {plagiarism_compilatio_apicon} apicon ON files.apiconfigid = apicon.id
                                 WHERE externalid IS NOT NULL AND apiconfigid != ? AND api_key LIKE 'mo7-%'";
                             $countV4files = $DB->count_records_sql($sql, [$apiconfigid->value]);
 
+                            $DB->delete_records_select("plagiarism_compilatio_data", "name = 'migration_count_v4'");
+                            $DB->insert_record('plagiarism_compilatio_data', (object) ['name' => 'migration_count_v4', 'value' => $countV4files]);
+
                             $DB->delete_records_select("plagiarism_compilatio_data", "name = 'migration_message'");
-                            $item = new \stdClass();
-                            $item->name = "migration_message";
-                            $item->value = get_string('migration_completed', 'plagiarism_compilatio') . " " . $countsuccess->value . " / " . ($countsuccess->value + $countV4files)
-                                . " " . get_string('migration_success_doc', 'plagiarism_compilatio');
-                            $DB->insert_record('plagiarism_compilatio_data', $item);
+                            $DB->insert_record('plagiarism_compilatio_data', (object) ['name' => 'migration_message', 'value' => "success"]);
 
                             $DB->set_field("plagiarism_compilatio_files", "apiconfigid", $apiconfigid->value);
                             $DB->delete_records_select("plagiarism_compilatio_apicon", "id != ?", array($apiconfigid->value));
@@ -195,7 +197,8 @@ class migration extends \core\task\scheduled_task {
 
                 $i += 1;
 
-                if (!empty($message) {
+                $message = $DB->get_record('plagiarism_compilatio_data', array('name' => 'migration_message'));
+                if (!empty($message)) {
                     $continue = false;
                 }
             } while ($continue);
