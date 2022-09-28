@@ -61,25 +61,10 @@ $string['migration_state_info'] = 'You can exit this page during the update';
 $string['migration_completed'] = 'Update completed:';
 $string['migration_stopped'] = 'The update has been paused';
 $string['migration_success_doc'] = 'documents have been updated';
-$string['migration_success_info'] = 'Fill in the API key again in the form above to restart the update.';
+$string['migration_success_info'] = 'If you want to restart the update, enter the API key again in the form above.';
 $string['migration_waiting'] = "The update will start soon";
 $string['migration_inprogress'] = "Update in progress, please wait";
 $string['migration_form_title'] = "Launch the update of the data stored in Moodle, to complete the migration from v4 to v5.";
-$string['migration_support'] = "
-    <p>If all documents have not been updated correctly, please contact the Compilatio support team at support@compilatio.net and specify:</p>
-    <p><<
-        <br>
-        <ul>
-            <li>The following error message appeared: [message]</li>
-            <li>[school_name]</li>
-            <li>[Moodle instance name, if multiple instances used]</li>
-            <li>Your API v4 key number: [____]</li>
-            <li>API v5 key number: [____]</li>
-            <li>Name of the contact person at the institution:</li>
-            <li>Contact person's email:</li>
-            <li>Contact person's phone:</li>
-        </ul>
-    >><p>";
 
 $string['use_compilatio'] = 'Allow similarity detection with Compilatio';
 $string['activate_compilatio'] = 'Enable Compilatio';

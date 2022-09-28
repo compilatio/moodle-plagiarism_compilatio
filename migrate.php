@@ -75,7 +75,5 @@ echo "<p>" . get_string('migration_info', 'plagiarism_compilatio') . "</p>";
 
 echo "<div id='compi-migration-state'></div>";
 
-echo "<div class='compi-migration'>" . get_string('migration_support', 'plagiarism_compilatio') . "</div>";
-
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();

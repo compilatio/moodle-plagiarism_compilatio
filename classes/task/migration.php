@@ -125,6 +125,8 @@ class migration extends \core\task\scheduled_task {
                     $t = curl_exec($ch);
                     $response = json_decode($t);
 
+                    $apiconfigid = $DB->get_record('plagiarism_compilatio_data', array('name' => 'migration_apiconfigid'));
+
                     if (isset($response->data->documents)) {
                         if (!empty($response->data->documents)) {
                             $success = 0;
@@ -134,7 +136,7 @@ class migration extends \core\task\scheduled_task {
                                     $v4file = $DB->get_record("plagiarism_compilatio_files", array("externalid" => $doc->old_prod_id));
                                     if (!empty($v4file)) {
                                         $v4file->externalid = $doc->id;
-                                        $v4file->apiconfigid = $_SESSION["apiconfigid"];
+                                        $v4file->apiconfigid = $apiconfigid->value;
                                         if ($DB->update_record("plagiarism_compilatio_files", $v4file)) {
                                             $success += 1;
                                         }
