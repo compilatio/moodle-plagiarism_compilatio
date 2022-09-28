@@ -117,7 +117,7 @@ class compilatioservice {
                         $param = array(
                             'trace' => false,
                             'soap_version' => SOAP_1_2,
-                            'exceptions' => true
+                            'exceptions' => true,
                         );
 
                         if (get_config('plagiarism_compilatio', 'disable_ssl_verification') == 1) {
@@ -255,7 +255,6 @@ class compilatioservice {
         curl_setopt_array($ch, $curloptions);
         $t = curl_exec($ch);
         $response = json_decode($t);
-
         curl_close($ch);
 
         unlink($filepath);

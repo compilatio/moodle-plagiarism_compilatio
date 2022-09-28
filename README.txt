@@ -7,14 +7,7 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Add admin setting to ignore SSL certificate verification for API calls to Compilatio.
-- Replace restart failed analyses feature to reset all types of document in error.
-- Update default API URL in admin settings.
-
-FIXES
-- Fix documents deletion in assigns when the submission is in draft status.
-- Fix subscription end date which is not displayed or not up to date (with v5).
-- Improve files sending process.
+- Processing the document update from v4 to v5 by a scheduled task with saving of the progress.
 
 QUICK INSTALL
 ================

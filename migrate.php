@@ -34,7 +34,37 @@ admin_externalpage_setup('plagiarismcompilatio');
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
-$PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startMigration', array($CFG->httpswwwroot));
+$PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'migrationState', array($CFG->httpswwwroot));
+
+$apikey = optional_param('apikey', null, PARAM_RAW);
+if (!empty($apikey)) {
+    $DB->delete_records_select("plagiarism_compilatio_data", "name LIKE 'migration_%'");
+    
+    $item = new stdClass();
+    $item->name = "migration_apikey";
+    $item->value = $apikey;
+    $DB->insert_record('plagiarism_compilatio_data', $item);
+    redirect('migrate.php');
+}
+
+$restart = optional_param('restart', null, PARAM_RAW);
+if ($restart == '1') {
+    $DB->delete_records_select("plagiarism_compilatio_data", "name = 'migration_message'");
+    redirect('migrate.php');
+}
+
+$stop = optional_param('stop', null, PARAM_RAW);
+if ($stop == '1') {
+    $DB->delete_records_select("plagiarism_compilatio_data", "name = 'migration_message'");
+    $DB->insert_record('plagiarism_compilatio_data', (object) ['name' => 'migration_message', 'value' => "stopped"]);
+    redirect('migrate.php');
+}
+
+$cancel = optional_param('cancel', null, PARAM_RAW);
+if ($cancel == '1') {
+    $DB->delete_records_select("plagiarism_compilatio_data", "name LIKE 'migration_%'");
+    redirect('migrate.php');
+}
 
 echo $OUTPUT->header();
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
@@ -43,20 +73,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 echo "<h3>" . get_string('migration_title', 'plagiarism_compilatio') . "</h3>";
 echo "<p>" . get_string('migration_info', 'plagiarism_compilatio') . "</p>";
 
-echo "<h5 class='compi-migration'>" . get_string('migration_form_title', 'plagiarism_compilatio') . "</h5>";
-echo "<div class='form-inline'>
-        <label>" . get_string('migration_apikey', 'plagiarism_compilatio') . " : </label>
-        <input class='form-control m-2' type='text' id='apikey' name='apikey' required>
-        <button id='compilatio-startmigration-btn' class='btn btn-primary'>" . get_string('migration_btn', 'plagiarism_compilatio') . "</button>
-    </div>";
-
-echo "<div style='display:none' id='compilatio-startmigration-info' class='alert alert-info alert-block fade in' role='alert' data-aria-autofocus='true'>
-        " . get_string('migration_inprogress', 'plagiarism_compilatio') . " <i class='fa fa-spinner fa-spin fa-circle-notch'></i>
-        <div id='migration-progress'>
-        </div>
-    </div>";
-
-echo "<div class='compi-migration'>" . get_string('migration_support', 'plagiarism_compilatio') . "</div>";
+echo "<div id='compi-migration-state'></div>";
 
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();

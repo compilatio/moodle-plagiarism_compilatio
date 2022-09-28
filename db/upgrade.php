@@ -213,9 +213,9 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022022800, 'plagiarism', 'compilatio');
     }
 
-    if ($oldversion < 2022080900) {
-        $table = new xmldb_table('plagiarism_compilatio_files');
-        $index = new xmldb_index('mdl_cmp_files_extid', false, array('externalid'));
+    $table = new xmldb_table('plagiarism_compilatio_files');
+    $index = new xmldb_index('mdl_cmp_files_extid', false, array('externalid'));
+    if (!$dbman->index_exists($table, $index)) {
         $dbman->add_index($table, $index);
     }
 

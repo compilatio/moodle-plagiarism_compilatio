@@ -52,24 +52,18 @@ $string['migration_info'] = "Compilatio met en place une nouvelle plateforme tec
     Lorsque vous y serez invités par l'équipe technique, vous devrez exécuter les actions ci-dessous pour finaliser cette migration.";
 $string['migration_apikey'] = "Saisir la nouvelle clé API v5";
 $string['migration_btn'] = "Lancer la mise à jour des données enregistrées dans Moodle";
+$string['migration_restart_btn'] = "Reprendre la mise à jour";
+$string['migration_state'] = 'Progression de la mise à jour (clé API {$a})';
+$string['migration_stop'] = 'Mettre la mise à jour en pause';
+$string['migration_cancel'] = 'Abandonner la mise à jour';
+$string['migration_stopped'] = 'La mise à jour à été mise en pause';
+$string['migration_state_info'] = 'Vous pouvez quitter cette page pendant la mise à jour';
+$string['migration_waiting'] = "La mise à jour va bientôt démarrer";
 $string['migration_inprogress'] = "Mise à jour en cours, veuillez patienter";
-$string['migration_success_doc'] = "documents ont été mis à jour";
+$string['migration_completed'] = 'Mise à jour terminée :';
+$string['migration_success_doc'] = 'documents ont été mis à jour';
+$string['migration_success_info'] = 'Si vous souhaitez relancer la mise à jour, renseignez à nouveau la clé API dans le formulaire ci-dessus.';
 $string['migration_form_title'] = "Lancer la mise à jour des données enregistrées dans Moodle, pour finaliser la migration de v4 vers v5.";
-$string['migration_support'] = "
-    <p>Si tous les documents n'ont pas été correctement mis à jour, merci de prendre contact avec l'équipe support de Compilatio en écrivant à support@compilatio.net et en précisant :</p>
-    <p><<
-        <br>
-        <ul>
-            <li>Le message d’erreur suivant est apparu : [message]</li>
-            <li>[nom_de_l_etablissement]</li>
-            <li>[nom de l’instance Moodle, si plusieurs instances utilisées]</li>
-            <li>N° de votre clé API v4 : [____]</li>
-            <li>N° de clé API v5 : [____]</li>
-            <li>Nom de la personne à contacter dans l’établissement :</li>
-            <li>Email de la personne à contacter :</li>
-            <li>Téléphone de la personne à contacter :</li>
-        </ul>
-    >><p>";
 
 $string['use_compilatio'] = 'Détecter des similitudes avec Compilatio';
 $string['activate_compilatio'] = 'Activer le plug-in Compilatio';
@@ -325,6 +319,7 @@ $string['get_scores'] = "Récupère les taux de similitudes depuis Compilatio.ne
 $string['send_files'] = "Envoie les fichiers à Compilatio.net pour détection de plagiat";
 $string['update_meta'] = "Exécute les tâches planifiées par Compilatio.net";
 $string['trigger_analyses'] = "Déclenche les analyses";
+$string['migration'] = "Met à jour les documents de v4 vers v5";
 // Indexing state.
 $string['indexing_state'] = "Ajouter les documents à la bibliothèque de références";
 $string['indexing_state_help'] = "Oui: Ajoute les documents dans la bibliothèque de références. Ces documents seront utilisés comme matériel de comparaison pour vos analyses.
