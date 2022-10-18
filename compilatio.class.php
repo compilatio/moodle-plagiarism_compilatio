@@ -104,7 +104,7 @@ class compilatioservice {
         $this->apiconfigid = null;
 
         try {
-            $apiconfig = $DB->get_record('plagiarism_compilatio_apicon', array('id' => $apiconfigid));
+        $apiconfig = $DB->get_record('plagiarism_compilatio_apicon', array('id' => $apiconfigid));
 
             if ($apiconfig) {
                 $this->apiconfigid = $apiconfigid;

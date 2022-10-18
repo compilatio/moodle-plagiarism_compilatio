@@ -153,6 +153,11 @@ class compilatio_setup_form extends moodleform {
         $mform->setDefault('allow_search_tab', 0);
         $mform->addHelpButton('allow_search_tab', 'allow_search_tab', 'plagiarism_compilatio');
 
+        $mform->addElement('html', get_string('document_deleting', 'plagiarism_compilatio'));
+        $mform->addElement('checkbox', 'keep_docs_indexed', get_string("keep_docs_indexed", "plagiarism_compilatio"));
+        $mform->setDefault('keep_docs_indexed', 1);
+        $mform->addHelpButton('keep_docs_indexed', 'keep_docs_indexed', 'plagiarism_compilatio');
+
         $radioarray = array();
         $radioarray[] = $mform->createElement('radio',
             'owner_file', '', get_string('owner_file_school', 'plagiarism_compilatio'), 1);

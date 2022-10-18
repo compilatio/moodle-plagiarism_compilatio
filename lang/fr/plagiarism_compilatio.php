@@ -50,26 +50,16 @@ $string['disable_ssl_verification_help'] = "Activez cette option si vous rencont
 $string['migration_title'] = "Migration v4 vers v5";
 $string['migration_info'] = "Compilatio met en place une nouvelle plateforme technique v5 pour l'ensemble de ses clients.<br>
     Lorsque vous y serez invités par l'équipe technique, vous devrez exécuter les actions ci-dessous pour finaliser cette migration.";
+$string['migration_np'] = "Vous pouvez utiliser le plugin Compilatio même si la migration n'est pas terminée.";
 $string['migration_apikey'] = "Saisir la nouvelle clé API v5";
 $string['migration_btn'] = "Lancer la mise à jour des données enregistrées dans Moodle";
-$string['migration_inprogress'] = "Mise à jour en cours, veuillez patienter";
-$string['migration_success_doc'] = "documents ont été mis à jour";
+$string['migration_completed'] = 'Mise à jour terminée :';
+$string['migration_success_doc'] = 'documents ont été mis à jour';
+$string['migration_failed_doc'] = "document n'ont pas pu être mis à jour, vous pouvez réessayer de mettre à jour ces documents.";
+$string['migration_restart'] = "Relancer";
+$string['migration_inprogress'] = "Mise à jour en cours, cela peut prendre plusieurs heures <small>(vous pouvez quitter cette page pendant la mise à jour)</small>";
 $string['migration_form_title'] = "Lancer la mise à jour des données enregistrées dans Moodle, pour finaliser la migration de v4 vers v5.";
-$string['migration_support'] = "
-    <p>Si tous les documents n'ont pas été correctement mis à jour, merci de prendre contact avec l'équipe support de Compilatio en écrivant à support@compilatio.net et en précisant :</p>
-    <p><<
-        <br>
-        <ul>
-            <li>Le message d’erreur suivant est apparu : [message]</li>
-            <li>[nom_de_l_etablissement]</li>
-            <li>[nom de l’instance Moodle, si plusieurs instances utilisées]</li>
-            <li>N° de votre clé API v4 : [____]</li>
-            <li>N° de clé API v5 : [____]</li>
-            <li>Nom de la personne à contacter dans l’établissement :</li>
-            <li>Email de la personne à contacter :</li>
-            <li>Téléphone de la personne à contacter :</li>
-        </ul>
-    >><p>";
+$string['errormigration'] = "";
 
 $string['use_compilatio'] = 'Détecter des similitudes avec Compilatio';
 $string['activate_compilatio'] = 'Activer le plug-in Compilatio';
@@ -120,6 +110,7 @@ $string['enabledandworking'] = 'Le plugin Compilatio est actif et fonctionnel.';
 $string['subscription_state'] = '<strong>Votre abonnement Compilatio est valable jusqu\'à la fin du mois de {$a->end_date}.</strong>';
 $string['startanalysis'] = 'Démarrer l\'analyse';
 $string['failedanalysis'] = 'Compilatio n\'a pas réussi à analyser votre document : ';
+$string['extraction_in_progress'] = 'extraction du document en cours, veuillez réessayer plus tard';
 $string['unextractablefile'] = 'Le texte de votre document n’a pas pu être extrait correctement.';
 $string['quiz_help'] = 'Seules les questions de type composition dont la réponse contient au moins {$a} mots seront analysés.';
 $string['allow_analyses_auto'] = 'Possibilité de lancer immédiatement les analyses';
@@ -130,6 +121,9 @@ Notez que dans ce cas :
     <li>Les documents des premiers déposants ne seront pas comparés avec les documents des derniers déposants.</li>
 </ul>
 Pour que tous les documents d'un devoir soient comparés entre eux, il est nécessaire d'utiliser l'analyse “programmée”, en choisissant une date postérieure à la date de fin de rendu des devoirs.</p>";
+$string['keep_docs_indexed'] = "Conserver les documents en bibliothèque de référence";
+$string['keep_docs_indexed_help'] = "Lors de la suppression d'un cours, de la réinitialisation d'un cours ou de la suppression d'une activité, vous pouvez choisir de supprimer définitivement les documents envoyés à Compilatio ou de les conserver en bibliothèque de référence (seul le texte sera conservé et sera utilisé comme matériel de comparaison lors de vos prochaines analyses)";
+$string['document_deleting'] = "Suppression des documents";
 
 // Auto diagnostic.
 $string["auto_diagnosis_title"] = "Auto-diagnostic";
@@ -218,6 +212,7 @@ $string["analysis_started"] = '{$a} analyse(s) démandée(s).';
 $string["start_analysis_title"] = 'Démarrage manuel des analyses';
 $string["start_analysis_in_progress"] = 'Lancement des analyses en cours';
 $string["not_analyzed"] = "Les documents suivants n'ont pas pu être analysés :";
+$string["not_analyzed_extracting"] = "Les documents suivants n'ont pas pu être analysés car ils sont en cours d'extraction, veuillez réessayez plus tard";
 $string["account_expire_soon_title"] = "Votre abonnement Compilatio.net expire bientôt";
 $string["admin_account_expire_content"] = "Votre abonnement actuel se terminera à la fin du mois en cours. Si votre contrat n'expire pas à la fin du mois, un nouvel abonnement sera automatiquement mis en place par nos services. Lorsque cela sera fait, ce message disparaitra. Pour plus d'informations, vous pouvez contacter notre service commercial ou notre support à l'adresse support@compilatio.net.";
 $string["news_update"] = "Mise à jour Compilatio.net";
@@ -325,6 +320,7 @@ $string['get_scores'] = "Récupère les taux de similitudes depuis Compilatio.ne
 $string['send_files'] = "Envoie les fichiers à Compilatio.net pour détection de plagiat";
 $string['update_meta'] = "Exécute les tâches planifiées par Compilatio.net";
 $string['trigger_analyses'] = "Déclenche les analyses";
+$string['migration_task'] = "Met à jour les documents de v4 vers v5";
 // Indexing state.
 $string['indexing_state'] = "Ajouter les documents à la bibliothèque de références";
 $string['indexing_state_help'] = "Oui: Ajoute les documents dans la bibliothèque de références. Ces documents seront utilisés comme matériel de comparaison pour vos analyses.

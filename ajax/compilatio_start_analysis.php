@@ -40,11 +40,18 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
 
-global $DB;
+global $DB, $SESSION;
 
 $docid = required_param('docId', PARAM_RAW);
 
 $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('id' => $docid));
-$analyse = compilatio_startanalyse($plagiarismfile);
+$res = compilatio_startanalyse($plagiarismfile);
+
+if (is_string($res)) {
+    $SESSION->cmp_doc_alert = array(
+        "docid" => $docid,
+        "content" => "<p style='color: #b94a48;'>" . get_string('failedanalysis', 'plagiarism_compilatio') . $res . "</p>"
+    );
+}
 
 
