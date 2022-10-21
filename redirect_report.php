@@ -26,25 +26,41 @@
  * @return  string
  */
 
-require_once(dirname(dirname(__FILE__)) . '/../../config.php');
+require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 
 // Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/helper/output_helper.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
 
-$docid = required_param('docId', PARAM_RAW);
+global $OUTPUT;
+
+$docid = required_param('docid', PARAM_RAW);
 
 $compilatio = compilatio_get_compilatio_service(get_config('plagiarism_compilatio', 'apiconfigid'));
 $jwt = $compilatio->get_report_token($docid);
 
 if ($jwt === false) {
-    echo false;
+    echo $OUTPUT->header();
+
+    $ln = current_language();
+
+    if (!in_array($ln, array("fr", "en", "it", "es"))) {
+        $language = "en";
+    } else {
+        $language = $ln;
+    }
+
+    echo "<p><img src='" . $OUTPUT->image_url('compilatio-logo-' . $language, 'plagiarism_compilatio') . "' alt='Compilatio' width='250'></p>";
+
+    echo "<div class='compilatio-alert compilatio-alert-danger'>" . get_string("redirect_report_failed", "plagiarism_compilatio") . "</div>";
+    echo $OUTPUT->footer();
 } else {
-    echo COMPILATIO_API_URL . "/reports/redirect/" . $jwt;
+    header("location: " . COMPILATIO_API_URL . "/reports/redirect/" . $jwt);
 }

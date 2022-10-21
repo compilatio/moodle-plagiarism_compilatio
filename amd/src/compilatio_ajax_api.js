@@ -139,25 +139,6 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.redirectReport = function(basepath, eltId, docId, errorString) {
-        $(document).ready(function() {
-            setTimeout(function() {
-                $(".compi-" + eltId + " > div:last-child").click(function() {
-                    $("#cmp-report-err").remove();
-
-                    $.post(basepath + '/plagiarism/compilatio/ajax/redirect_report.php',
-                    {'docId': docId}, function(url) {
-                        if (url == false) {
-                            $(".compi-" + eltId).after("<p id='cmp-report-err' style='color: #b94a48;'>" + errorString + "</p>");
-                        } else {
-                            window.open(url, "_blank");
-                        }
-                    });
-                });
-            }, 300);
-        });
-    };
-
     exports.compilatioTabs = function(basepath, alertsCount, idcourt, notifIcon, notifTitle) {
         $(document).ready(function() {
             $.post(basepath + '/plagiarism/compilatio/ajax/get_waiting_time.php', {}, function(message) {

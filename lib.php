@@ -2023,7 +2023,7 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
             $plagiarismfile->similarityscore = round($docstatus->documentStatus->indice);
             $plagiarismfile->idcourt = $docstatus->documentProperties->Shortcut;
 
-            if (strlen($plagiarismfile->externalid) == 40) {
+            if (preg_match('/^[a-f0-9]{40}$/', $plagiarismfile->externalid)) {
                 $plagiarismfile->reporturl = $plagiarismfile->externalid;
             } else {
                 $plagiarismfile->reporturl = $compilatio->get_report_url($plagiarismfile->externalid);

@@ -142,7 +142,7 @@ In order to compare all the documents of an assignement, it is necessary to use 
 $string['keep_docs_indexed'] = "Keep documents in reference library";
 $string['keep_docs_indexed_help'] = "When deleting a course, resetting a course or deleting an activity, you can choose to permanently delete the documents sent to Compilatio or to keep them in the reference library (only the text will be kept and will be used as comparison material in your next analyses)";
 $string['document_deleting'] = "Documents deletion";
-$string['redirect_report_failed'] = "An error occurred while retrieving the report";
+$string['redirect_report_failed'] = "An error occurred while retrieving the analysis report. Please try again later or contact support (support@compilatio.net) if the problem persists.";
 
 // Auto diagnostic.
 $string["auto_diagnosis_title"] = "Auto-diagnosis";
