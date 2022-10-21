@@ -134,10 +134,14 @@ class output_helper {
             }
 
             if (preg_match('/^[a-f0-9]{40}$/', $url["url"])) {
-                $html .= "<a target='" . $target . "' class='compilatio-plagiarismreport-link' href='" . $CFG->httpswwwroot . "/plagiarism/compilatio/redirect_report.php?docid=" . $url["url"] . "'>";  
+                $html .= "<a
+                        target='" . $target . "'
+                        class='compilatio-plagiarismreport-link'
+                        href='" . $CFG->httpswwwroot . "/plagiarism/compilatio/redirect_report.php?docid=" . $url["url"]
+                    . "'>";
             } else {
                 // Var $url contain & that must not be escaped.
-                $html .= "<a target='" . $target . "' class='compilatio-plagiarismreport-link' href='" . $url["url"] . "'>";  
+                $html .= "<a target='" . $target . "' class='compilatio-plagiarismreport-link' href='" . $url["url"] . "'>";
             }
         }
 

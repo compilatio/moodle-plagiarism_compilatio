@@ -49,8 +49,19 @@ if ($mform->is_cancelled()) {
 $incorrectconfig = false;
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
-    $elements = ["enabled", "enable_mod_assign", "enable_mod_forum", "enable_mod_workshop", "enable_mod_quiz", "allow_teachers_to_show_reports",
-        "allow_search_tab", "allow_student_analyses", "allow_analyses_auto", "disable_ssl_verification", "keep_docs_indexed"];
+    $elements = [
+        "enabled",
+        "enable_mod_assign",
+        "enable_mod_forum",
+        "enable_mod_workshop",
+        "enable_mod_quiz",
+        "allow_teachers_to_show_reports",
+        "allow_search_tab",
+        "allow_student_analyses",
+        "allow_analyses_auto",
+        "disable_ssl_verification",
+        "keep_docs_indexed"
+    ];
     foreach ($elements as $elem) {
         if (!isset($data->$elem)) {
             $data->$elem = 0;

@@ -57,9 +57,13 @@ if ($jwt === false) {
         $language = $ln;
     }
 
-    echo "<p><img src='" . $OUTPUT->image_url('compilatio-logo-' . $language, 'plagiarism_compilatio') . "' alt='Compilatio' width='250'></p>";
+    echo "<p><img src='"
+            . $OUTPUT->image_url('compilatio-logo-' . $language, 'plagiarism_compilatio') .
+        "' alt='Compilatio' width='250'></p>";
 
-    echo "<div class='compilatio-alert compilatio-alert-danger'>" . get_string("redirect_report_failed", "plagiarism_compilatio") . "</div>";
+    echo "<div class='compilatio-alert compilatio-alert-danger'>"
+            . get_string("redirect_report_failed", "plagiarism_compilatio") .
+        "</div>";
     echo $OUTPUT->footer();
 } else {
     header("location: " . COMPILATIO_API_URL . "/reports/redirect/" . $jwt);

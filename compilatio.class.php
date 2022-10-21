@@ -15,13 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * compilatio.class.php - Contains compilatioservice class.
+ *
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
+
+/**
  * compilatioservice class
  * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
-
 class compilatioservice {
 
     /**
@@ -283,6 +293,12 @@ class compilatioservice {
         }
     }
 
+    /**
+     * Set proxy settings in curl options
+     *
+     * @param  array $curloptions Curl options
+     * @return array Return curl options
+     */
     private function set_proxy_settings($curloptions) {
         global $CFG;
 

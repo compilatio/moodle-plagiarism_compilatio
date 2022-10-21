@@ -130,7 +130,9 @@ $v4files = $DB->count_records_select("plagiarism_compilatio_files", "CHAR_LENGTH
 $migrationrunning = $DB->get_record('plagiarism_compilatio_data', array('name' => 'start_migration'));
 
 if ($v4files > 0 && !empty($migrationrunning)) {
-    echo "<div class='compilatio-alert compilatio-alert-info'><b>" . get_string('migration_np', 'plagiarism_compilatio') . "</b></div>";
+    echo "<div class='compilatio-alert compilatio-alert-info'>
+            <b>" . get_string('migration_np', 'plagiarism_compilatio') . "</b>
+        </div>";
 
     echo "<div class='compilatio-alert compilatio-alert-info'>" . get_string('migration_inprogress', 'plagiarism_compilatio')
         . "<br>" . $v4files . " " . get_string('migration_toupdate_doc', 'plagiarism_compilatio') . "</div>";
