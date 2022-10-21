@@ -15,15 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * ws_helper.php - Contains Plagiarism plugin helper methods for communicate with the web service.
+ * compilatio.class.php - Contains compilatioservice class.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
  * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2020 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 /**
  * compilatioservice class
@@ -193,15 +195,22 @@ class compilatioservice {
         }
     }
 
+    /**
+     * Load a document on Compilatio account
+     *
+     * @param  string $title         Title
+     * @param  string $filename      Filename
+     * @param  string $content       Content
+     * @param  string $indexingstate Indexing state
+     * @return string              Return the document ID if succeed, an error otherwise
+     */
     public function send_doc_v5($title, $filename, $content, $indexingstate) {
-        global $CFG;
-
         if (!check_dir_exists($CFG->dataroot . "/temp/compilatio", true, true)) {
             return "Failed to create compilatio temp directory";
         }
 
         $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H-i-s') . ".txt";
-        
+
         $handle = fopen($filepath, "wb");
         if ($handle == false) {
             return "Failed to open file";
@@ -222,14 +231,77 @@ class compilatioservice {
         $ch = curl_init();
 
         $curloptions = [
-            CURLOPT_URL => "https://app.compilatio.net/api/private/document/",
+            CURLOPT_URL => COMPILATIO_API_URL . "/document/",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => array('X-Auth-Token: ' . $this->key),
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $params
         ];
 
-        // Proxy settings.
+        $this->set_proxy_settings($curloptions);
+
+        curl_setopt_array($ch, $curloptions);
+        $t = curl_exec($ch);
+        $response = json_decode($t);
+
+        unlink($filepath);
+
+        if (!isset($response->status->code, $response->status->message)) {
+            return "Error in function send_doc_v5 : request response's status not found / cURL params : "
+                . var_export($curloptions, true) . " / cURL Error : "
+                . curl_error($ch) . " / cURL response : " . var_export($t, true);
+        }
+
+        if ($response->status->code == 201) {
+            return $response->data->document->id;
+        } else {
+            return "Error in function send_doc_v5 : cURL params : "
+                . var_export($curloptions, true) . " / cURL Error : "
+                . curl_error($ch) . " / cURL response : " . var_export($t, true);
+        }
+    }
+
+    /**
+     * Get JWT to access a document report.
+     *
+     * @param  string $docid Docid
+     * @return string Return a JWT if succeed, an error otherwise
+     */
+    public function get_report_token($docid) {
+        $ch = curl_init();
+
+        $curloptions = [
+            CURLOPT_URL => COMPILATIO_API_URL . "/documents/" . $docid . "/report/jwt",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => array('X-Auth-Token: ' . $this->key),
+            CURLOPT_POST => true
+        ];
+
+        $this->set_proxy_settings($curloptions);
+
+        curl_setopt_array($ch, $curloptions);
+        $response = json_decode(curl_exec($ch));
+
+        if (!isset($response->status->code, $response->status->message)) {
+            return false;
+        }
+
+        if ($response->status->code == 201) {
+            return $response->data->jwt;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Set proxy settings in curl options
+     *
+     * @param  array $curloptions Curl options
+     * @return array Return curl options
+     */
+    private function set_proxy_settings($curloptions) {
+        global $CFG;
+
         if (!empty($CFG->proxyhost)) {
             $curloptions[CURLOPT_PROXY] = $CFG->proxyhost;
 
@@ -252,24 +324,7 @@ class compilatioservice {
             $curloptions[CURLOPT_SSL_VERIFYPEER] = false;
         }
 
-        curl_setopt_array($ch, $curloptions);
-        $t = curl_exec($ch);
-        $response = json_decode($t);
-        curl_close($ch);
-
-        unlink($filepath);
-
-        if (!isset($response->status->code, $response->status->message)) {
-            return "Error in function send_doc_v5 : request response's status not found / cURL params : "
-                . var_export($curloptions, true) . " / cURL Error : " . curl_error($ch) . " / cURL response : " . var_export($t, true);
-        }
-
-        if ($response->status->code == 201) {
-            return $response->data->document->id;
-        } else {
-            return "Error in function send_doc_v5 : cURL params : "
-                . var_export($curloptions, true) . " / cURL Error : ". curl_error($ch) . " / cURL response : " . var_export($t, true);
-        }
+        return $curloptions;
     }
 
     /**

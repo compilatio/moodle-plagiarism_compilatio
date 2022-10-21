@@ -27,6 +27,8 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
+define('COMPILATIO_API_URL', 'https://app.compilatio.net/api/private');
+
 define('COMPILATIO_MAX_SUBMISSION_ATTEMPTS', 6); // Max num to try and send a submission to Compilatio.
 define('COMPILATIO_MAX_SUBMISSION_DELAY', 60);   // Max time to wait between submissions (defined in minutes).
 define('COMPILATIO_SUBMISSION_DELAY', 15);       // Initial wait time, doubled each time until max_submission_delay is met.

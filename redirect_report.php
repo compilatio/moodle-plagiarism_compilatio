@@ -15,43 +15,56 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Start a document analysis via Compilatio SOAP API
+ * Get JWT to redirect user to report
  *
  * This script is called by amd/build/ajax_api.js
  *
- * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @param string $_POST['id']
- * @param string $_POST['cmid']
+ * @param   string $_POST['idDoc']
+ * @return  string
  */
 
-require_once(dirname(dirname(__FILE__)) . '/../../config.php');
+require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 
 // Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/helper/output_helper.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-
-// Get constants.
 require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
 
-global $DB, $SESSION;
+global $OUTPUT;
 
-$docid = required_param('docId', PARAM_RAW);
+$docid = required_param('docid', PARAM_RAW);
 
-$plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('id' => $docid));
-$res = compilatio_startanalyse($plagiarismfile);
+$compilatio = compilatio_get_compilatio_service(get_config('plagiarism_compilatio', 'apiconfigid'));
+$jwt = $compilatio->get_report_token($docid);
 
-if (is_string($res)) {
-    $SESSION->cmp_doc_alert = array(
-        "docid" => $docid,
-        "content" => "<p style='color: #b94a48;'>" . get_string('failedanalysis', 'plagiarism_compilatio') . $res . "</p>"
-    );
+if ($jwt === false) {
+    echo $OUTPUT->header();
+
+    $ln = current_language();
+
+    if (!in_array($ln, array("fr", "en", "it", "es"))) {
+        $language = "en";
+    } else {
+        $language = $ln;
+    }
+
+    echo "<p><img src='"
+            . $OUTPUT->image_url('compilatio-logo-' . $language, 'plagiarism_compilatio') .
+        "' alt='Compilatio' width='250'></p>";
+
+    echo "<div class='compilatio-alert compilatio-alert-danger'>"
+            . get_string("redirect_report_failed", "plagiarism_compilatio") .
+        "</div>";
+    echo $OUTPUT->footer();
+} else {
+    header("location: " . COMPILATIO_API_URL . "/reports/redirect/" . $jwt);
 }
-
-

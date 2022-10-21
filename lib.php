@@ -158,7 +158,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         $modulecontext = context_module::instance($linkarray['cmid']);
         $teacher = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
 
-        global $DB, $CFG, $PAGE;
+        global $DB, $CFG, $PAGE, $SESSION;
         $output = '';
 
         $studentanalyse = compilatio_student_analysis($plugincm['compi_student_analyses'],
@@ -440,6 +440,11 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             $output .= "</div>";
         }
 
+        if (isset($SESSION->cmp_doc_alert) && $SESSION->cmp_doc_alert["docid"] == $results["pid"]) {
+            $output .= $SESSION->cmp_doc_alert["content"];
+            unset($SESSION->cmp_doc_alert);
+        }
+
         return $output;
     }
 
@@ -675,7 +680,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     // Compilatio not enabled, return.
 
     if ($activecompilatio === false) {
-        // Plagiarism settings have not been saved :.
+        // Plagiarism settings have not been saved.
         $plagiarismdefaults = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => 0), '', 'name, value');
 
         $plugin = new plagiarism_plugin_compilatio();
@@ -1450,7 +1455,7 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename = '
             $mform->addElement('select', 'compi_student_analyses',
                 get_string("compi_student_analyses", "plagiarism_compilatio"), $ynoptions);
             $mform->addHelpButton('compi_student_analyses', 'compi_student_analyses', 'plagiarism_compilatio');
-        
+
             $mform->disabledif('compi_student_analyses', 'submissiondrafts', 'eq', '0');
 
             if ($CFG->version >= 2017111300) { // Method hideIf is available since moodle 3.4.
@@ -1538,9 +1543,10 @@ function compilatio_get_form_elements($mform, $defaults = false, $modulename = '
  *
  * @param array    $duplicates
  * @param bool     $deletefilesmoodledb
+ * @param bool     $keepfilesindexed keep the files in reference library
  * @return boolean true if all documents have been processed, false otherwise
  */
-function compilatio_remove_duplicates($duplicates, $deletefilesmoodledb = true) {
+function compilatio_remove_duplicates($duplicates, $deletefilesmoodledb = true, $keepfilesindexed = false) {
 
     if (is_array($duplicates)) {
 
@@ -1555,7 +1561,7 @@ function compilatio_remove_duplicates($duplicates, $deletefilesmoodledb = true) 
             } else {
                 $compilatio = compilatio_get_compilatio_service($doc->apiconfigid);
                 // Deindex document.
-                if ($compilatio->set_indexing_state($doc->externalid, 0)) {
+                if ($keepfilesindexed || $compilatio->set_indexing_state($doc->externalid, 0)) {
                     // Delete document.
                     $compilatio->del_doc($doc->externalid);
                     // Delete DB record.
@@ -1776,6 +1782,7 @@ function compilatio_check_attempt_timeout($plagiarismfile, $hasmaxattempt = fals
  * @param  object $plagiarismfile    File
  * @param  array  $plagiarismsettings Settings
  * @param  object $file               File
+ * @param  bool   $indexingstate      Indexing state
  * @return mixed                      Return the document ID if succeed, false otherwise
  */
 function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsettings, $file, $indexingstate = false) {
@@ -1809,11 +1816,9 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
 
     $filecontents = (!empty($file->filepath)) ? file_get_contents($file->filepath) : $file->get_content();
 
-    // v5 Doc sending
-    if (strlen($compilatio->key) == 40) {
+    if (strlen($compilatio->key) == 40) { // V5 Doc sending.
         $idcompi = $compilatio->send_doc_v5($name, $filename, $filecontents, $indexingstate);
-    // v4 Doc sending
-    } else {
+    } else { // V4 Doc sending.
         $idcompi = $compilatio->send_doc($name, $name, $filename, $mimetype, $filecontents);
         ws_helper::set_indexing_state($idcompi, $indexingstate, $plagiarismfile->apiconfigid);
     }
@@ -1932,47 +1937,51 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_IN_QUEUE;
         $plagiarismfile->timesubmitted = time();
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
-    } else {
+        return true;
+    } else if (isset($analyse->code)) {
         // VP SOAP Faults.
         if ($analyse->code == 'INVALID_ID_DOCUMENT') {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_NOT_FOUND;
             $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
-            return $analyse;
+
         } else if ($analyse->code == 'NOT_ENOUGH_WORDS') {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_SHORT;
             $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
             preg_match('~least (\d+)~', $analyse->string, $nbmotsmin);
             set_config('nb_mots_min', $nbmotsmin[1], 'plagiarism_compilatio');
-            return $analyse;
 
         // Elastisafe SOAP Faults.
         } else if ($analyse->code == 'startDocumentAnalyse error') {
             if ($analyse->string == 'Invalid document id') {
                 $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_NOT_FOUND;
                 $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
-                return $analyse;
 
             } else if (strpos($analyse->string, 'max file size') !== false) {
                 $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_LONG;
                 $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
                 preg_match('~of (\d+)~', $analyse->string, $nbmotsmax);
                 set_config('nb_mots_max', $nbmotsmax[1], 'plagiarism_compilatio');
-                return $analyse;
+
             } else if (strpos($analyse->string, 'min file size') !== false) {
                 $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_SHORT;
                 $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
                 preg_match('~: (\d+)~', $analyse->string, $nbmotsmin);
                 set_config('nb_mots_min', $nbmotsmin[1], 'plagiarism_compilatio');
-                return $analyse;
+
+            } else if ($analyse->string == "Document extraction in progress") {
+                return get_string('extraction_in_progress', 'plagiarism_compilatio');
+
+            } else if ($analyse->string == "Document extraction error") {
+                $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_UNEXTRACTABLE;
+                $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
             }
 
         } else {
-            echo $OUTPUT->notification(get_string('failedanalysis', 'plagiarism_compilatio') . $analyse->string);
-            return $analyse;
+            return $analyse->string;
         }
+        return false;
     }
-
-    return true;
+    return false;
 }
 
 /**
@@ -2011,8 +2020,13 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_COMPLETE;
             $plagiarismfile->similarityscore = round($docstatus->documentStatus->indice);
             $plagiarismfile->idcourt = $docstatus->documentProperties->Shortcut;
-            // Now get report url.
-            $plagiarismfile->reporturl = $compilatio->get_report_url($plagiarismfile->externalid);
+
+            if (preg_match('/^[a-f0-9]{40}$/', $plagiarismfile->externalid)) {
+                $plagiarismfile->reporturl = $plagiarismfile->externalid;
+            } else {
+                $plagiarismfile->reporturl = $compilatio->get_report_url($plagiarismfile->externalid);
+            }
+
             $emailstudents = $DB->get_field('plagiarism_compilatio_config',
                 'value',
                 array('cm' => $plagiarismfile->cm, 'name' => 'compilatio_studentemail'));
@@ -3012,7 +3026,9 @@ function compilatio_course_delete($courseid, $modulename = null) {
 
     foreach ($coursemodules as $coursemodule) {
         $duplicates = $DB->get_records('plagiarism_compilatio_files', array('cm' => $coursemodule->cm));
-        compilatio_remove_duplicates($duplicates);
+
+        $keepfileindexed = boolval(get_config('plagiarism_compilatio', 'keep_docs_indexed'));
+        compilatio_remove_duplicates($duplicates, true, $keepfileindexed);
     }
 }
 
@@ -3058,6 +3074,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
 
     // Deletion events.
     if ($eventdata['crud'] == 'd') {
+        $keepfileindexed = false;
         // In forums.
         if ($eventdata['objecttable'] == 'forum_posts') {
             if (!isset($SESSION->compilatio_bin_created)) {
@@ -3095,6 +3112,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
                     $SESSION->compilatio_bin_created, array('cm' => $cmid));
                 unset($SESSION->compilatio_bin_created);
             } else {
+                $keepfileindexed = boolval(get_config('plagiarism_compilatio', 'keep_docs_indexed'));
                 $duplicates = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid));
             }
         }
@@ -3102,6 +3120,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
         // Recycle_bin item deleted.
         if ($eventdata['objecttable'] == 'tool_recyclebin_course' ||
             $eventdata['objecttable'] == 'tool_recyclebin_category') {
+            $keepfileindexed = boolval(get_config('plagiarism_compilatio', 'keep_docs_indexed'));
             $duplicates = $DB->get_records('plagiarism_compilatio_files', array('recyclebinid' => $eventdata['objectid']));
         }
 
@@ -3127,7 +3146,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
                 }
             }
         }
-        compilatio_remove_duplicates($duplicates);
+        compilatio_remove_duplicates($duplicates, true, $keepfileindexed);
     }
 
     // Update events.
@@ -3193,7 +3212,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
             $fs = get_file_storage();
             $submissionfiles = $fs->get_area_files($eventdata["contextid"], "assignsubmission_file",
                 'submission_files', $eventdata["objectid"]);
-            
+
             // If the documents have been deleted in the mdl_files table, we also delete them on our side.
             if (empty($submissionfiles)) {
                 $duplicates = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
