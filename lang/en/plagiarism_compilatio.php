@@ -51,20 +51,17 @@ $string['disable_ssl_verification_help'] = "Enable this option if you have probl
 $string['migration_title'] = "Migration v4 to v5";
 $string['migration_info'] = "Compilatio is implementing a new v5 technical platform for all its customers.<br>
     When prompted by the technical team, you will need to perform an action to complete this migration.";
+$string['migration_np'] = "You can use the Compilatio plugin even if the migration is not finished.";
 $string['migration_apikey'] = "Enter the new v5 API key";
 $string['migration_btn'] = "Initiate the update of the data stored in Moodle";
-$string['migration_restart_btn'] = "Resume update";
-$string['migration_state'] = 'Update progress (API key {$a})';
-$string['migration_stop'] = 'Pause the update';
-$string['migration_cancel'] = 'Abort the update ';
-$string['migration_state_info'] = 'You can exit this page during the update';
 $string['migration_completed'] = 'Update completed:';
-$string['migration_stopped'] = 'The update has been paused';
+$string['migration_toupdate_doc'] = 'documents to update';
 $string['migration_success_doc'] = 'documents have been updated';
-$string['migration_success_info'] = 'If you want to restart the update, enter the API key again in the form above.';
-$string['migration_waiting'] = "The update will start soon";
-$string['migration_inprogress'] = "Update in progress, please wait";
+$string['migration_failed_doc'] = "document couldn't be updated, you can try again to update of these documents at the end of the update";
+$string['migration_restart'] = "Retry";
+$string['migration_inprogress'] = "Update in progress, it can take several hours <small>(you can exit this page during the update)</small>";
 $string['migration_form_title'] = "Launch the update of the data stored in Moodle, to complete the migration from v4 to v5.";
+$string['errormigration'] = "";
 
 $string['use_compilatio'] = 'Allow similarity detection with Compilatio';
 $string['activate_compilatio'] = 'Enable Compilatio';
@@ -122,6 +119,7 @@ $string['subscription_state'] = '<strong>Your Compilatio subscription will expir
 $string['startanalysis'] = 'Start analysis';
 $string['compilatioenableplugin'] = 'Enable Compilatio for {$a}';
 $string['failedanalysis'] = 'Compilatio failed to analyse your document: ';
+$string['extraction_in_progress'] = 'document extraction in progress, please try again later';
 $string['waitingforanalysis'] = 'This file will be processed on {$a}';
 $string['updatecompilatioresults'] = 'Refresh the informations';
 $string["update_in_progress"] = "Updating informations";
@@ -141,6 +139,9 @@ Note that in this case :
     <li>The documents of the first submitters are not compared with the documents of the last depositors.</li>
 </ul>
 In order to compare all the documents of an assignement, it is necessary to use the “scheduled” analysis, by choosing a date after the submission deadline.";
+$string['keep_docs_indexed'] = "Keep documents in reference library";
+$string['keep_docs_indexed_help'] = "When deleting a course, resetting a course or deleting an activity, you can choose to permanently delete the documents sent to Compilatio or to keep them in the reference library (only the text will be kept and will be used as comparison material in your next analyses)";
+$string['document_deleting'] = "Documents deletion";
 
 // Auto diagnostic.
 $string["auto_diagnosis_title"] = "Auto-diagnosis";
@@ -222,6 +223,7 @@ $string["analysis_started"] = '{$a} analysis have been requested.';
 $string["start_analysis_title"] = 'Analysis start';
 $string["start_analysis_in_progress"] = 'Launching of the analyses in progress';
 $string["not_analyzed"] = "The following documents can't be analyzed :";
+$string["not_analyzed_extracting"] = "The following documents can't be analyzed because they are being extracted, please try again later";
 $string["account_expire_soon_title"] = "Your Compilatio.net account expires soon";
 $string["admin_account_expire_content"] = "Your current subscription will end at the end of the current month. If your contract does not expire at the end of the month, a new subscription will automatically be set up by our services. When this is done, this message will disappear. For more information, you can contact our sales or support department at support@compilatio.net.";
 $string["news_update"] = "Compilatio.net update";
@@ -325,7 +327,7 @@ $string['get_scores'] = "Retrieve plagiarism scores from Compilatio.net";
 $string['send_files'] = "Upload files to Compilatio.net for plagiarism detection";
 $string['update_meta'] = "Perform Compilatio.net's scheduled operations";
 $string['trigger_analyses'] = "Trigger analyses";
-$string['migration'] = "Update documents from v4 to v5";
+$string['migration_task'] = "Update documents from v4 to v5";
 // Indexing state.
 $string['indexing_state'] = "Add documents into the Document Database";
 $string['indexing_state_help'] = "Yes: Add documents in the document database. These documents will be used as comparison material for future analysis.

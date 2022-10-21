@@ -139,16 +139,16 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.migrationState = function(basepath) {
+    exports.redirectReport = function(basepath, eltId, docId) {
         $(document).ready(function() {
-            $.get(basepath + '/plagiarism/compilatio/ajax/migrationstate.php', function(data) {
-                $("#compi-migration-state").html(data);
-            });
-            setInterval(function() {
-                $.get(basepath + '/plagiarism/compilatio/ajax/migrationstate.php', function(data) {
-                    $("#compi-migration-state").html(data);
+            setTimeout(function() {
+                $(".compi-" + eltId + " > div:last-child").click(function() {
+                    $.post(basepath + '/plagiarism/compilatio/ajax/redirect_report.php',
+                    {'docId': docId}, function(url) {
+                        window.open(url, "_blank");
+                    });
                 });
-            }, 10000);
+            }, 300);
         });
     };
 

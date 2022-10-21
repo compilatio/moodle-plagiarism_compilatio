@@ -113,7 +113,7 @@ class output_helper {
             return '';
         }
 
-        global $OUTPUT;
+        global $OUTPUT, $CFG, $PAGE;
 
         $html = html_writer::empty_tag('br');
         $html .= html_writer::div("", 'compilatio-clear');
@@ -132,8 +132,13 @@ class output_helper {
             } else {
                 $target = '_self';
             }
-            // Var $url contain & that must not be escaped.
-            $html .= "<a target='" . $target . "' class='compilatio-plagiarismreport-link' href='" . $url["url"] . "'>";
+
+            if (strlen($url["url"]) == 40) {
+                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'redirectReport', array($CFG->httpswwwroot, $compid, $url["url"]));
+            } else {
+                // Var $url contain & that must not be escaped.
+                $html .= "<a target='" . $target . "' class='compilatio-plagiarismreport-link' href='" . $url["url"] . "'>";  
+            }
         }
 
         $compisquare = new moodle_url("/plagiarism/compilatio/pix/logo_compilatio_carre.png");
