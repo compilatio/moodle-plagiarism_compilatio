@@ -41,7 +41,7 @@ class CompilatioService {
 
     public function __construct($apikey, $userid = null) {
         $this->apikey = null;
-        $this->urlrest = "https://benoit.corboss.compilatio.net";
+        $this->urlrest = "https://app.compilatio.net";
         $this->userid = $userid;
 
         if (!empty($apikey)) {
@@ -334,17 +334,18 @@ class CompilatioService {
     }
 
     /**
-     * Get back the URL of a report document
+     * Get JWT to access a document report.
      *
-     * @param  string $iddoc    Document ID
-     * @return string           Return the URL if succeed, an error message otherwise
+     * @param  string $iddoc Document ID
+     * @return string Return a JWT if succeed, an error otherwise
      */
-    public function get_report_url($iddoc) {
-        $endpoint = "/api/private/document/" . $iddoc . "/report-url";
-        $response = json_decode($this->call_api($endpoint));
+    public function get_report_token($iddoc) {
+        $endpoint = "/api/private/documents/" . $iddoc . "/report/jwt";
 
-        if ($this->get_error_response($response, 200) === false) {
-            return $response->data->url;
+        $response = json_decode($this->call_api($endpoint, "post"));
+        error_log(var_export($response,true));
+        if ($this->get_error_response($response, 201) === false) {
+            return $response->data->jwt;
         }
         return false;
     }
@@ -525,7 +526,6 @@ class CompilatioService {
         if ($this->get_error_response($response, 200) === false) {
             $groupid = $response->data->user->current_bundle->group_id;
         }
-        error_log($groupid);
 
         $endpoint = '/api/private/subscription/last-subscription/' . $groupid . '?id_type=owner_id&bundle_name=magister-standard';
 

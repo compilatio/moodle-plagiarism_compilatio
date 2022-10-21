@@ -94,7 +94,6 @@ class provider implements
             'timesubmitted'     => 'privacy:metadata:plagiarism_compilatio_files:timesubmitted',
             'status'            => 'privacy:metadata:plagiarism_compilatio_files:status',
             'externalid'        => 'privacy:metadata:plagiarism_compilatio_files:externalid',
-            'reporturl'         => 'privacy:metadata:plagiarism_compilatio_files:reporturl',
             'similarityscore'   => 'privacy:metadata:plagiarism_compilatio_files:similarityscore',
             'attempt'           => 'privacy:metadata:plagiarism_compilatio_files:attempt',
             'indexed'           => 'privacy:metadata:plagiarism_compilatio_files:indexed',

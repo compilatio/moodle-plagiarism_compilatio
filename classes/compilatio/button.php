@@ -174,7 +174,7 @@ class CompilatioButton {
 
             $report = '';
             if ($viewreport) {
-                $button = "<a href='" . $cmpfile->reporturl . "' target='_blank' class='cmp-btn cmp-btn-primary cursor-pointer'>
+                $button = "<a href='" . $CFG->httpswwwroot . "/plagiarism/compilatio/redirect_report.php?docid=" . $cmpfile->externalid . "&cmid=" . $cmpfile->cm . "' target='_blank' class='cmp-btn cmp-btn-primary cursor-pointer'>
                     <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 67' width='20' class='cmp-mr-10 icon-inline'>
                         <path fill='#fff' d='M71.61,34.39h0A3.6,3.6,0,1,1,68,30.79,3.59,3.59,0,0,1,71.61,34.39ZM91.14.15a9,9,0,0,0-7.91,13.34L72,26.31a8.91,8.91,0,0,0-4-.94,9,9,0,0,0-8.44,5.83L43.11,27.9a9,9,0,1,0-16.64,6.59L13.18,49.44a8.88,8.88,0,0,0-4-.95,9,9,0,1,0,7.92,4.71l13.29-15a8.92,8.92,0,0,0,4,1,9,9,0,0,0,8.43-5.83l16.47,3.3A9,9,0,0,0,77,34.39a8.93,8.93,0,0,0-1.11-4.33L87.14,17.24a9,9,0,1,0,4-17.09Zm-82,61a3.6,3.6,0,1,1,3.6-3.59A3.59,3.59,0,0,1,9.16,61.1ZM34.39,33.78A3.6,3.6,0,1,1,38,30.18,3.6,3.6,0,0,1,34.39,33.78Zm56.74-21a3.6,3.6,0,1,1,3.6-3.6A3.6,3.6,0,0,1,91.13,12.76Z'></path>
                     </svg>"

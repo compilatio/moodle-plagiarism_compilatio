@@ -632,8 +632,10 @@ function compilatio_delete_modules($modules) {
 
         foreach ($modules as $module) {
             $files = $DB->get_records('plagiarism_compilatio_files', array('cm' => $module->cmid));
-            compilatio_delete_files($files);
-    
+
+            $keepfileindexed = boolval(get_config('plagiarism_compilatio', 'keep_docs_indexed'));
+            compilatio_delete_files($files, true, $keepfileindexed);
+
             $compilatio->set_user_id($module->userid);
             $compilatio->delete_folder($module->folderid);
             $DB->delete_records('plagiarism_compilatio_module', array('id' => $module->id));
@@ -650,7 +652,7 @@ function compilatio_delete_modules($modules) {
  * @param array    $files
  * @param bool     $deletefilesmoodledb
  */
-function compilatio_delete_files($files, $deletefilesmoodledb = true) {
+function compilatio_delete_files($files, $deletefilesmoodledb = true, $keepfilesindexed = false) {
     if (is_array($files)) {
         global $DB;
         $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
@@ -664,7 +666,7 @@ function compilatio_delete_files($files, $deletefilesmoodledb = true) {
                 $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $doc->cm));
                 $compilatio->set_user_id($userid);
                 
-                if ($compilatio->set_indexing_state($doc->externalid, 0)) {
+                if ($keepfilesindexed || $compilatio->set_indexing_state($doc->externalid, 0)) {
                     $compilatio->delete_document($doc->externalid);
                     if ($deletefilesmoodledb) {
                         $DB->delete_records('plagiarism_compilatio_files', array('id' => $doc->id));
@@ -725,7 +727,6 @@ function compilatio_valid_md5($hash) {
  * @return string Return formated date
  */
 function compilatio_format_date($date) {
-
     $lang = substr(current_language(), 0, 2);
 
     $fmt = new IntlDateFormatter(
@@ -733,6 +734,6 @@ function compilatio_format_date($date) {
         IntlDateFormatter::LONG,
         IntlDateFormatter::NONE,
     );
-    
-    return $fmt->format(make_timestamp($date));
+
+    return $fmt->format(strtotime($date));
 }

@@ -118,7 +118,8 @@ class CompilatioEventHandler {
 
                 $files = $DB->get_records_sql($sql, array($event['courseid'], $modulename));
 
-                compilatio_delete_files($files);
+                $keepfileindexed = boolval(get_config('plagiarism_compilatio', 'keep_docs_indexed'));
+                compilatio_delete_files($files, true, $keepfileindexed);
             }
         }
     }
@@ -219,7 +220,6 @@ class CompilatioEventHandler {
                 $compilatio->delete_analyse($file->externalid);
                 $compilatio->set_indexing_state($file->externalid, $plugincm->defaultindexing);
 
-                $file->reporturl = null;
                 $file->status = 'sent';
                 $file->similarityscore = 0;
                 $file->attempt = 0;

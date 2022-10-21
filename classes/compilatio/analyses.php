@@ -63,10 +63,12 @@ class CompilatioAnalyses {
 
         } else if (strpos($analyse, 'is not extracted, wait few seconds and retry.') !== false) {
             // Do nothing, wait for document extraction.
+            // TODO afficher message document en cours d'extraction.
             return;
         } else if ($analyse == 'Error need terms of service validation') {
             return;
         } else {
+            // TODO update this and handle extraction_error.
             echo $OUTPUT->notification(get_string('failedanalysis', 'plagiarism_compilatio') . $analyse);
             return $analyse;
         }
@@ -105,7 +107,6 @@ class CompilatioAnalyses {
 
                 $cmpfile->status = "scored";
                 $cmpfile->similarityscore = $scores->similarity_percent ?? 0;
-                $cmpfile->reporturl = $compilatio->get_report_url($cmpfile->externalid);
 
                 $emailstudents = $DB->get_field('plagiarism_compilatio_module', 'studentemail', array('cmid' => $cmpfile->cm));
                 if (!empty($emailstudents)) {

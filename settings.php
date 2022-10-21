@@ -45,8 +45,8 @@ if ($mform->is_cancelled()) {
 }
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
-    $elements = ["enabled", "enable_mod_assign", "enable_mod_forum", "enable_mod_workshop", "enable_mod_quiz",
-        "enable_show_reports", "enable_search_tab", "enable_student_analyses", "enable_analyses_auto", "disable_ssl_verification"];
+    $elements = ["enabled", "enable_mod_assign", "enable_mod_forum", "enable_mod_workshop", "enable_mod_quiz", "enable_show_reports",
+        "enable_search_tab", "enable_student_analyses", "enable_analyses_auto", "disable_ssl_verification", "keep_docs_indexed"];
     foreach ($elements as $elem) {
         if (!isset($data->$elem)) {
             $data->$elem = 0;
@@ -106,8 +106,9 @@ if (!empty($plagiarismsettings['enabled'])) {
 
         $subscription = $compilatio->get_subscription_info();
 
+	$subscriptioninfos = "";
         $subscriptioninfos .= "<li>" . get_string('subscription_start', 'plagiarism_compilatio') . " "
-             compilatio_format_date($subscription->validity_period->start) . "</li>";
+            . compilatio_format_date($subscription->validity_period->start) . "</li>";
         $subscriptioninfos .= "<li>" . get_string('subscription_end', 'plagiarism_compilatio') . " "
             . compilatio_format_date($subscription->validity_period->end) . "</li>";
 

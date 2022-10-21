@@ -76,7 +76,7 @@ class get_scores extends \core\task\scheduled_task {
                         continue;
                     }
                     mtrace("getting score for file " . $plagiarismfile->id);
-                    \CompilatioAnalyses::check_analysis($plagiarismfile); // Get status and set reporturl/status if required.
+                    \CompilatioAnalyses::check_analysis($plagiarismfile); // Get status and set status if required.
                 }
             }
         }*/
