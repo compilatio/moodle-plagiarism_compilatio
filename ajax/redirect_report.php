@@ -34,6 +34,7 @@ require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
 
@@ -45,5 +46,5 @@ $jwt = $compilatio->get_report_token($docid);
 if ($jwt === false) {
     echo false;
 } else {
-    echo "https://app.compilatio.net/api/private/reports/redirect/" . $jwt;
+    echo COMPILATIO_API_URL . "/reports/redirect/" . $jwt;
 }

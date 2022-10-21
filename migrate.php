@@ -15,11 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * plagiarism.php - allows the admin to configure plagiarism stuff
+ * migrate.php
  *
  * @package   plagiarism_compilatio
- * @author    Dan Marsden <dan@danmarsden.com>
- * @copyright 2012 Dan Marsden http://danmarsden.com
+ * @copyright 2022 Compilatio
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
@@ -27,32 +26,13 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
 
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
-
-$PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'migrationState', array($CFG->httpswwwroot));
-
-echo $OUTPUT->header();
-echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
-$currenttab = 'compilatiomigrate';
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
-echo "<h3>" . get_string('migration_title', 'plagiarism_compilatio') . "</h3>";
-echo "<p>" . get_string('migration_info', 'plagiarism_compilatio') . "</p>";
-
-echo "<h5 class='compi-migration'>" . get_string('migration_form_title', 'plagiarism_compilatio') . "</h5>";
-echo "<div class='form-inline'>
-        <label>" . get_string('migration_apikey', 'plagiarism_compilatio') . " : </label>
-        <form>
-            <input class='form-control m-2' type='text' id='apikey' name='apikey' required>
-            <button id='compilatio-startmigration-btn' class='btn btn-primary'>"
-                . get_string('migration_btn', 'plagiarism_compilatio') .
-            "</button>
-        </form>
-    </div>";
 
 $restart = optional_param('restart', null, PARAM_RAW);
 if ($restart == '1') {
@@ -75,7 +55,7 @@ if (!empty($apikey)) {
     $params = [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HTTPHEADER => array('X-Auth-Token: ' . $apikey, 'Content-Type: application/json'),
-        CURLOPT_URL => "https://app.compilatio.net/api/private/authentication/check-api-key"
+        CURLOPT_URL => COMPILATIO_API_URL . "/authentication/check-api-key"
     ];
 
     // Proxy settings.
@@ -110,7 +90,7 @@ if (!empty($apikey)) {
 
         $apiconfig = new stdClass();
         $apiconfig->startdate = 0;
-        $apiconfig->url = "https://app.compilatio.net/api/private/soap/wsdl";
+        $apiconfig->url = COMPILATIO_API_URL . "/soap/wsdl";
         $apiconfig->api_key = $apikey;
 
         $apiconfigid = $DB->insert_record('plagiarism_compilatio_apicon', $apiconfig);
@@ -127,6 +107,24 @@ if (!empty($apikey)) {
 
     redirect('migrate.php');
 }
+
+echo $OUTPUT->header();
+echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
+$currenttab = 'compilatiomigrate';
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
+echo "<h3>" . get_string('migration_title', 'plagiarism_compilatio') . "</h3>";
+echo "<p>" . get_string('migration_info', 'plagiarism_compilatio') . "</p>";
+
+echo "<h5 class='compi-migration'>" . get_string('migration_form_title', 'plagiarism_compilatio') . "</h5>";
+echo "<div class='form-inline'>
+        <label>" . get_string('migration_apikey', 'plagiarism_compilatio') . " : </label>
+        <form>
+            <input class='form-control m-2' type='text' id='apikey' name='apikey' required>
+            <button id='compilatio-startmigration-btn' class='btn btn-primary'>"
+                . get_string('migration_btn', 'plagiarism_compilatio') .
+            "</button>
+        </form>
+    </div>";
 
 $v4files = $DB->count_records_select("plagiarism_compilatio_files", "CHAR_LENGTH(externalid) = 32 && migrationstatus IS NULL");
 $migrationrunning = $DB->get_record('plagiarism_compilatio_data', array('name' => 'start_migration'));

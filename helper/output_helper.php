@@ -134,7 +134,11 @@ class output_helper {
             }
 
             if (strlen($url["url"]) == 40) {
-                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'redirectReport', array($CFG->httpswwwroot, $compid, $url["url"]));
+                $PAGE->requires->js_call_amd(
+                    'plagiarism_compilatio/compilatio_ajax_api',
+                    'redirectReport',
+                    array($CFG->httpswwwroot, $compid, $url["url"], get_string("redirect_report_failed", "plagiarism_compilatio"))
+                );
             } else {
                 // Var $url contain & that must not be escaped.
                 $html .= "<a target='" . $target . "' class='compilatio-plagiarismreport-link' href='" . $url["url"] . "'>";  

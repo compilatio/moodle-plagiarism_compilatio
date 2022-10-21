@@ -125,6 +125,7 @@ Pour que tous les documents d'un devoir soient comparés entre eux, il est néce
 $string['keep_docs_indexed'] = "Conserver les documents en bibliothèque de référence";
 $string['keep_docs_indexed_help'] = "Lors de la suppression d'un cours, de la réinitialisation d'un cours ou de la suppression d'une activité, vous pouvez choisir de supprimer définitivement les documents envoyés à Compilatio ou de les conserver en bibliothèque de référence (seul le texte sera conservé et sera utilisé comme matériel de comparaison lors de vos prochaines analyses)";
 $string['document_deleting'] = "Suppression des documents";
+$string['redirect_report_failed'] = "Une erreur s'est produite lors de la récupération du rapport";
 
 // Auto diagnostic.
 $string["auto_diagnosis_title"] = "Auto-diagnostic";

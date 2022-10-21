@@ -15,21 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * ws_helper.php - Contains Plagiarism plugin helper methods for communicate with the web service.
- *
- * @since 2.0
- * @package    plagiarism_compilatio
- * @subpackage plagiarism
- * @author     Compilatio <support@compilatio.net>
- * @copyright  2020 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-/**
  * compilatioservice class
  * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
+
 class compilatioservice {
 
     /**
@@ -229,7 +221,7 @@ class compilatioservice {
         $ch = curl_init();
 
         $curloptions = [
-            CURLOPT_URL => "https://app.compilatio.net/api/private/document/",
+            CURLOPT_URL => COMPILATIO_API_URL . "/document/",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => array('X-Auth-Token: ' . $this->key),
             CURLOPT_POST => true,
@@ -269,7 +261,7 @@ class compilatioservice {
         $ch = curl_init();
 
         $curloptions = [
-            CURLOPT_URL => "https://app.compilatio.net/api/private/documents/" . $docid . "/report/jwt",
+            CURLOPT_URL => COMPILATIO_API_URL . "/documents/" . $docid . "/report/jwt",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => array('X-Auth-Token: ' . $this->key),
             CURLOPT_POST => true
@@ -278,8 +270,7 @@ class compilatioservice {
         $this->set_proxy_settings($curloptions);
 
         curl_setopt_array($ch, $curloptions);
-        $t = curl_exec($ch);
-        $response = json_decode($t);
+        $response = json_decode(curl_exec($ch));
 
         if (!isset($response->status->code, $response->status->message)) {
             return false;
