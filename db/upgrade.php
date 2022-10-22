@@ -220,8 +220,6 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022102100) {
-        $DB->execute("UPDATE {plagiarism_compilatio_files} SET reporturl = externalid WHERE CHAR_LENGTH(externalid) = 40");
-
         $table = new xmldb_table('plagiarism_compilatio_files');
         $field = new xmldb_field('migrationstatus', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $dbman->add_field($table, $field);
