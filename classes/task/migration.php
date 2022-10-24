@@ -24,10 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 namespace plagiarism_compilatio\task;
-require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 /**
  * Task class
@@ -81,7 +78,7 @@ class migration extends \core\task\scheduled_task {
             $params = [
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_HTTPHEADER => array('X-Auth-Token: ' . $apiconfig->api_key, 'Content-Type: application/json'),
-                CURLOPT_URL => COMPILATIO_API_URL . "/composite",
+                CURLOPT_URL => "https://app.compilatio.net/api/private/composite",
                 CURLOPT_POST => true,
                 CURLOPT_POSTFIELDS => json_encode($requests)
             ];
