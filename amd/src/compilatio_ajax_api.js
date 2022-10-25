@@ -65,6 +65,8 @@ define(['jquery'], function($) {
                         $(this).removeClass("disabled");
                     });
                 }
+                $(".comp-restart-btn").removeAttr("disabled");
+                $(".comp-restart-btn").removeClass("disabled");
             } else {
                 refreshButton.click(function() {
                     disableCompilatioButtons();
