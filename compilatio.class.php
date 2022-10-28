@@ -205,6 +205,8 @@ class compilatioservice {
      * @return string              Return the document ID if succeed, an error otherwise
      */
     public function send_doc_v5($title, $filename, $content, $indexingstate) {
+        global $CFG;
+
         if (!check_dir_exists($CFG->dataroot . "/temp/compilatio", true, true)) {
             return "Failed to create compilatio temp directory";
         }
