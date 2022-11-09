@@ -9,6 +9,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 CHANGES
 - Fix error in Moodle 4.0
 - Fix [Reset documents in error] button behavior
+- Fix blocked migration
 
 QUICK INSTALL
 ================

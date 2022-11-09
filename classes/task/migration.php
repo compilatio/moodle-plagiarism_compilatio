@@ -54,7 +54,7 @@ class migration extends \core\task\scheduled_task {
 
         for ($i = 0; $i < 40; $i++) {
             $v4files = $DB->get_records_select("plagiarism_compilatio_files",
-                "CHAR_LENGTH(externalid) = 32 && migrationstatus IS NULL", null, '', '*', 0, 25);
+                "CHAR_LENGTH(externalid) = 32 AND migrationstatus IS NULL", null, '', '*', 0, 25);
 
             if (empty($v4files) && is_array($v4files)) {
                 $DB->delete_records('plagiarism_compilatio_data', array('name' => 'start_migration'));
@@ -124,9 +124,11 @@ class migration extends \core\task\scheduled_task {
                     }
                 } else if ($response->status->code !== 503) {
                     $docid = end(explode('/', $response->request->path));
-                    $file = $DB->get_record("plagiarism_compilatio_files", array("externalid" => $docid));
-                    $file->migrationstatus = $response->status->code;
-                    $DB->update_record("plagiarism_compilatio_files", $file);
+                    $files = $DB->get_records("plagiarism_compilatio_files", array("externalid" => $docid));
+                    foreach ($files as $file) {
+                        $file->migrationstatus = $response->status->code;
+                        $DB->update_record("plagiarism_compilatio_files", $file);
+                    }
                 }
             }
         }
