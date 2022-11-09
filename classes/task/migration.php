@@ -116,9 +116,9 @@ class migration extends \core\task\scheduled_task {
                 return;
             }
 
+            $continue = false;
+            
             foreach ($result->data->responses as $response) {
-                $continue = false;
-
                 if (isset($response->data->document)) {
                     $file = $DB->get_record(
                         "plagiarism_compilatio_files",
@@ -139,11 +139,11 @@ class migration extends \core\task\scheduled_task {
                     }
                     $continue = true;
                 }
+            }
 
-                if (!$continue) {
-                    mtrace("Get documents call APIs error");
-                    return;
-                }
+            if (!$continue) {
+                mtrace("Get documents call APIs error");
+                return;
             }
         }
     }
