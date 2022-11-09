@@ -107,10 +107,17 @@ class migration extends \core\task\scheduled_task {
             }
 
             curl_setopt_array($ch, $params);
-            $result = json_decode(curl_exec($ch));
+            $t = curl_exec($ch);
+            $result = json_decode($t);
             curl_close($ch);
 
+            if (!isset($result->data->responses)) {
+                mtrace("API call error / cURL Error : " . curl_error($ch) . " / cURL response : " . var_export($t, true));
+                return;
+            }
+
             foreach ($result->data->responses as $response) {
+                $continue = false;
 
                 if (isset($response->data->document)) {
                     $file = $DB->get_record(
@@ -122,6 +129,7 @@ class migration extends \core\task\scheduled_task {
                         $file->migrationstatus = 200;
                         $DB->update_record("plagiarism_compilatio_files", $file);
                     }
+                    $continue = true;
                 } else if ($response->status->code !== 503) {
                     $docid = end(explode('/', $response->request->path));
                     $files = $DB->get_records("plagiarism_compilatio_files", array("externalid" => $docid));
@@ -129,6 +137,12 @@ class migration extends \core\task\scheduled_task {
                         $file->migrationstatus = $response->status->code;
                         $DB->update_record("plagiarism_compilatio_files", $file);
                     }
+                    $continue = true;
+                }
+
+                if (!$continue) {
+                    mtrace("Get documents call APIs error");
+                    return;
                 }
             }
         }
