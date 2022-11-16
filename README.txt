@@ -7,9 +7,7 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Fix error in Moodle 4.0
-- Fix [Reset documents in error] button behavior
-- Fix blocked migration
+- Fix access to reports
 
 QUICK INSTALL
 ================

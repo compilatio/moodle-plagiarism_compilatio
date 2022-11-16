@@ -276,22 +276,21 @@ class compilatioservice {
             CURLOPT_URL => COMPILATIO_API_URL . "/documents/" . $docid . "/report/jwt",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => array('X-Auth-Token: ' . $this->key),
-            CURLOPT_POST => true
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => []
         ];
 
         $this->set_proxy_settings($curloptions);
 
         curl_setopt_array($ch, $curloptions);
-        $response = json_decode(curl_exec($ch));
+        $t = curl_exec($ch);
+        $response = json_decode($t);
 
-        if (!isset($response->status->code, $response->status->message)) {
-            return false;
-        }
-
-        if ($response->status->code == 201) {
+        if (($response->status->code ?? null) == 201) {
             return $response->data->jwt;
         } else {
-            return false;
+            return "Error in function get_report_token : cURL Error : "
+                . curl_error($ch) . " / cURL response : " . var_export($t, true);
         }
     }
 

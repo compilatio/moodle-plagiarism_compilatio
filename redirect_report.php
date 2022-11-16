@@ -46,7 +46,7 @@ $docid = required_param('docid', PARAM_RAW);
 $compilatio = compilatio_get_compilatio_service(get_config('plagiarism_compilatio', 'apiconfigid'));
 $jwt = $compilatio->get_report_token($docid);
 
-if ($jwt === false) {
+if (strpos($jwt, 'Error') === 0) {
     echo $OUTPUT->header();
 
     $ln = current_language();
@@ -64,7 +64,11 @@ if ($jwt === false) {
     echo "<div class='compilatio-alert compilatio-alert-danger'>"
             . get_string("redirect_report_failed", "plagiarism_compilatio") .
         "</div>";
+    echo "<div class='compilatio-alert compilatio-alert-danger'>"
+        . $jwt .
+    "</div>";
     echo $OUTPUT->footer();
 } else {
     header("location: " . COMPILATIO_API_URL . "/reports/redirect/" . $jwt);
 }
+
