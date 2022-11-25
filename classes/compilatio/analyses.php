@@ -106,7 +106,7 @@ class CompilatioAnalyses {
                 $scores = $doc->light_reports->anasim->scores;
 
                 $cmpfile->status = "scored";
-                $cmpfile->similarityscore = $scores->similarity_percent ?? 0;
+                $cmpfile->similarityscore = $scores->displayed_similarity_percent ?? 0;
 
                 $emailstudents = $DB->get_field('plagiarism_compilatio_module', 'studentemail', array('cmid' => $cmpfile->cm));
                 if (!empty($emailstudents)) {
