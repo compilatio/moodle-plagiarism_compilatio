@@ -240,7 +240,7 @@ class compilatioservice {
             CURLOPT_POSTFIELDS => $params
         ];
 
-        $this->set_proxy_settings($curloptions);
+        $curloptions = $this->set_proxy_settings($curloptions);
 
         curl_setopt_array($ch, $curloptions);
         $t = curl_exec($ch);
