@@ -2742,10 +2742,10 @@ function compilatio_get_global_statistics($html = true) {
         JOIN {course_modules} course_modules
             ON plagiarism_compilatio_files.cm = course_modules.id
         JOIN {modules} modules ON modules.id = course_modules.module
-        LEFT JOIN {assign} assign ON course_modules.instance = assign.id AND course_modules.module = 1
-        LEFT JOIN {forum} forum ON course_modules.instance = forum.id AND course_modules.module = 9
-        LEFT JOIN {workshop} workshop ON course_modules.instance = workshop.id AND course_modules.module = 23
-        LEFT JOIN {quiz} quiz ON course_modules.instance = quiz.id AND course_modules.module = 17
+        LEFT JOIN {assign} assign ON course_modules.instance = assign.id AND modules.name = \'assign\'
+        LEFT JOIN {forum} forum ON course_modules.instance = forum.id AND modules.name = \'forum\'
+        LEFT JOIN {workshop} workshop ON course_modules.instance = workshop.id AND modules.name = \'workshop\'
+        LEFT JOIN {quiz} quiz ON course_modules.instance = quiz.id AND modules.name = \'quiz\'
         JOIN {course} course ON course_modules.course= course.id
         WHERE statuscode=\'Analyzed\'
         GROUP BY cm,
