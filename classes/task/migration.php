@@ -120,9 +120,15 @@ class migration extends \core\task\scheduled_task {
             
             foreach ($result->data->responses as $response) {
                 if (isset($response->data->document)) {
+                    // Document migrated from v4.
+                    if (isset($response->data->document->old_prod_id)) {
+                        $docid = $response->data->document->old_prod_id;
+                    } else { // Document v5 loaded with SOAP API wrapper.
+                        $docid = $response->data->document->id;
+                    }
                     $file = $DB->get_record(
                         "plagiarism_compilatio_files",
-                        array("externalid" => $response->data->document->old_prod_id)
+                        array("externalid" => $docid)
                     );
                     if (!empty($file)) {
                         $file->externalid = $response->data->document->id;
@@ -139,12 +145,15 @@ class migration extends \core\task\scheduled_task {
                     }
                     $continue = true;
                 }
+
             }
 
             if (!$continue) {
                 mtrace("Get documents call APIs error");
                 return;
             }
+
+            if (count($requests) < 25) break;
         }
     }
 }
