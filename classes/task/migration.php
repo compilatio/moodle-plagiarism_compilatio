@@ -117,7 +117,7 @@ class migration extends \core\task\scheduled_task {
             }
 
             $continue = false;
-            
+
             foreach ($result->data->responses as $response) {
                 if (isset($response->data->document)) {
                     // Document migrated from v4.
@@ -145,7 +145,6 @@ class migration extends \core\task\scheduled_task {
                     }
                     $continue = true;
                 }
-
             }
 
             if (!$continue) {
@@ -153,7 +152,9 @@ class migration extends \core\task\scheduled_task {
                 return;
             }
 
-            if (count($requests) < 25) break;
+            if (count($requests) < 25) {
+                break;
+            }
         }
     }
 }

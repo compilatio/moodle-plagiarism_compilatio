@@ -1939,8 +1939,7 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
         return true;
     } else if (isset($analyse->code)) {
-        // VP SOAP Faults.
-        if ($analyse->code == 'INVALID_ID_DOCUMENT') {
+        if ($analyse->code == 'INVALID_ID_DOCUMENT') { // SOAP v4 Faults.
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_NOT_FOUND;
             $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
 
@@ -1950,8 +1949,7 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
             preg_match('~least (\d+)~', $analyse->string, $nbmotsmin);
             set_config('nb_mots_min', $nbmotsmin[1], 'plagiarism_compilatio');
 
-        // Elastisafe SOAP Faults.
-        } else if ($analyse->code == 'startDocumentAnalyse error') {
+        } else if ($analyse->code == 'startDocumentAnalyse error') { // SOAP v5 Faults.
             if ($analyse->string == 'Invalid document id') {
                 $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_NOT_FOUND;
                 $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
