@@ -55,10 +55,10 @@ class CompilatioStatistics {
             JOIN {course_modules} course_modules
                 ON plagiarism_compilatio_files.cm = course_modules.id
             JOIN {modules} modules ON modules.id = course_modules.module
-            LEFT JOIN {assign} assign ON course_modules.instance = assign.id AND course_modules.module = 1
-            LEFT JOIN {forum} forum ON course_modules.instance = forum.id AND course_modules.module = 9
-            LEFT JOIN {workshop} workshop ON course_modules.instance = workshop.id AND course_modules.module = 23
-            LEFT JOIN {quiz} quiz ON course_modules.instance = quiz.id AND course_modules.module = 17
+            LEFT JOIN {assign} assign ON course_modules.instance = assign.id AND modules.name = \'assign\'
+            LEFT JOIN {forum} forum ON course_modules.instance = forum.id AND modules.name = \'forum\'
+            LEFT JOIN {workshop} workshop ON course_modules.instance = workshop.id AND modules.name = \'workshop\'
+            LEFT JOIN {quiz} quiz ON course_modules.instance = quiz.id AND modules.name = \'quiz\'
             JOIN {course} course ON course_modules.course= course.id
             WHERE status=\'scored\'
             GROUP BY cm,
@@ -251,9 +251,17 @@ class CompilatioStatistics {
         $errors = "";
         foreach ($countbystatus as $status => $stat) {
             if (strpos($status, "error") === 0) {
+                if ($status == "error_too_large") {
+                    $stringvariable = (get_config('plagiarism_compilatio', 'max_size') / 1024 / 1024);
+                } else if ($status == "error_too_long") {
+                    $stringvariable = get_config('plagiarism_compilatio', 'max_word');
+                } else if ($status == "error_too_short") {
+                    $stringvariable = get_config('plagiarism_compilatio', 'min_word');
+                }
+
                 $errors .= "<div class='position-relative cmp-box mx-2 my-3 p-3'>
                         <h5 class='cmp-color-red'>" . $stat->count . " " . (get_string("short_" . $status, "plagiarism_compilatio") ?? get_string("stats_error_unknown", "plagiarism_compilatio")) . "</h5>
-                        <small>" . (get_string("detailed_" . $status, "plagiarism_compilatio") ?? "") . "</small>
+                        <small>" . (get_string("detailed_" . $status, "plagiarism_compilatio", $stringvariable ?? null) ?? "") . "</small>
                     </div>";
             }
         }

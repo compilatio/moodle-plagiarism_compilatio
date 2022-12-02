@@ -132,7 +132,7 @@ class CompilatioButton {
                 $fileid = $linkarray["file"]->get_id();
                 if ($trigger == $fileid && !defined("CMP_MANUAL_SEND")) {
                     CompilatioSendFile::send_unsent_files(array($linkarray['file']), $linkarray['cmid']);
-                    return $output . $this->get_links($linkarray);
+                    return self::get_button($linkarray);
                 }
 
                 $cmpfile = new stdClass();
@@ -141,9 +141,7 @@ class CompilatioButton {
                                 "sendfile" => $fileid,
                                 "action" => "grading",
                                 'page' => optional_param('page', null, PARAM_INT));
-                $moodleurl = new moodle_url("/mod/assign/view.php", $urlparams);
-                $url = array("url" => $moodleurl, "target-blank" => false);
-
+                $url = new moodle_url("/mod/assign/view.php", $urlparams);
             } else {
                 return '';
             }
@@ -187,20 +185,24 @@ class CompilatioButton {
                     </span>";
 
         } else if ($status == 'sent') {
-            //TODO DELETE OR
-            if (($config->analysistype ?? null) == 'planned' || $cmpfile->id == '24') {
+            if (($config->analysistype ?? null) == 'planned') {
                 $button = "<div title='" . get_string('title_planned', "plagiarism_compilatio", userdate($config->analysistime)) . "' class='cmp-btn cmp-btn-secondary'>"
                         . get_string('btn_planned', "plagiarism_compilatio") .
                         "<i class='cmp-icon-lg cmp-ml-10 fa fa-clock-o'></i>
                     </div>";
                 $bgcolor = 'secondary';
             } else if ($cantriggeranalysis || ($studentanalyse && !$teacher)) {
-                $button = "<div title='" . get_string('title_sent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-primary cursor-pointer'>"
+                if (null == $url) {
+                    $button = "<div " . $href . " title='" . get_string('title_sent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-primary cursor-pointer'>"
                         . get_string('btn_sent', "plagiarism_compilatio") . 
                         "<i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
                     </div>";
-                if (null == $url) {
                     $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysis', array($CFG->httpswwwroot, $domid, $cmpfile->id));
+                } else {
+                    $button = "<a href='" . $url . "' target='_self' title='" . get_string('title_sent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-primary cursor-pointer'>"
+                        . get_string('btn_sent', "plagiarism_compilatio") . 
+                        "<i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
+                    </a>";
                 }
             } else if ($studentanalyse && $teacher) {
                 $button = '';
@@ -253,7 +255,7 @@ class CompilatioButton {
             <div class='cmp-clear'></div>";
 
         // Now check for differing filename and display info related to it.
-        if (isset($filename) && $filename !== $cmpfile->filename) {
+        if (isset($filename, $cmpfile->filename) && $filename !== $cmpfile->filename) {
             $output .= '<span class="cmp-prevsubmitted">(' . get_string('previouslysubmitted', 'plagiarism_compilatio') . ': ' . $cmpfile->filename . ')</span>';
         }
 

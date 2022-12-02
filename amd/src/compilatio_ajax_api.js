@@ -20,31 +20,32 @@ define(['jquery'], function($) {
     exports.toggleIndexingState = function(basepath, eltId, docId) {
         $(document).ready(function() {
             setTimeout(function() {
-                var btn = $(".cmp-" + eltId + " > div:first-child > i");
+                var btn = $(".cmp-" + eltId + " .cmp-library");
                 btn.click(function() {
-                    if (btn.is('.cmp-library-in')) {
+                    el = btn.find("i");
+                    if (el.is('.cmp-library-in')) {
                         var indexingState = 0;
                     }
-                    if (btn.is('.cmp-library-out')) {
+                    if (el.is('.cmp-library-out')) {
                         var indexingState = 1;
                     }
                     $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php', {'idDoc': docId, 'indexingState': indexingState}, function(res) {
                         if (res == 'true') {
                             if (indexingState == 0) {
-                                btn.removeClass('cmp-library-in');
-                                btn.addClass('cmp-library-out');
-                                btn.removeClass('fa-check-circle');
-                                btn.addClass('fa-times-circle');
+                                el.removeClass('cmp-library-in');
+                                el.addClass('cmp-library-out');
+                                el.removeClass('fa-check-circle');
+                                el.addClass('fa-times-circle');
                             } else {
-                                btn.removeClass('cmp-library-out');
-                                btn.addClass('cmp-library-in');
-                                btn.removeClass('fa-times-circle');
-                                btn.addClass('fa-check-circle');
+                                el.removeClass('cmp-library-out');
+                                el.addClass('cmp-library-in');
+                                el.removeClass('fa-times-circle');
+                                el.addClass('fa-check-circle');
                             }
                         }
                     });
                 });
-            }, 300);
+            }, 3000);
         });
     };
 
@@ -142,6 +143,16 @@ define(['jquery'], function($) {
                 {'userid': userid}, function() {
                     window.location.reload();
                 });
+            });
+        });
+    };
+
+    exports.displayButton = function(basepath, linkarray) {
+        $(document).ready(function() {
+            console.log(linkarray);
+            $.post(basepath + '/plagiarism/compilatio/ajax/display_button.php',
+            {'linkarray': JSON.stringify(linkarray)}, function(button) {
+                el.append(button);
             });
         });
     };

@@ -62,17 +62,15 @@ foreach ($files as $file) {
 }
 
 if (count($docsfailed) === 0) {
-    $SESSION->compilatio_alert = array(
+    $SESSION->compilatio_alert = [
         "class" => "info",
-        "title" => get_string("restart_failed_analysis_title", "plagiarism_compilatio"),
-        "content" => get_string("analysis_started", "plagiarism_compilatio", $countsuccess),
-    );
+        "content" => get_string("restart_failed_analysis_title", "plagiarism_compilatio") . get_string("analysis_started", "plagiarism_compilatio", $countsuccess),
+    ];
 } else {
-    $SESSION->compilatio_alert = array(
+    $SESSION->compilatio_alert = [
         "class" => "danger",
-        "title" => get_string("not_analyzed", "plagiarism_compilatio"),
-        "content" => "<ul><li>" . implode("</li><li>", $docsfailed) . "</li></ul>",
-    );
+        "content" => get_string("not_analyzed", "plagiarism_compilatio") . "<ul><li>" . implode("</li><li>", $docsfailed) . "</li></ul>",
+    ];
 }
 
 // Send sending failed files.

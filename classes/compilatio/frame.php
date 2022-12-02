@@ -92,7 +92,6 @@ class CompilatioFrame {
         if (null === $mod->folderid) {
             $alerts[] = array(
                 "class" => "danger",
-                "title" => "Erreur",
                 "content" => "Une erreur s'est produite lors de la création de l'activité.
                 Les analyses automatiques et programmées ne fonctionnent pas. Vous pouvez lancer les analyses manuellement."
             );
@@ -130,8 +129,7 @@ class CompilatioFrame {
         if ($webservicestatus != null && $webservicestatus === '0') {
             $alerts[] = array(
                 "class" => "danger",
-                "title" => get_string("webservice_unreachable_title", "plagiarism_compilatio"),
-                "content" => get_string("webservice_unreachable_content", "plagiarism_compilatio"));
+                "content" => get_string("webservice_unreachable", "plagiarism_compilatio"));
         }
 
         // Display restart analysis button if necesseary.
@@ -148,8 +146,7 @@ class CompilatioFrame {
             if ($countunsend !== 0) {
                 $alerts[] = array(
                     "class" => "danger",
-                    "title" => get_string("unsent_documents", "plagiarism_compilatio"),
-                    "content" => get_string("unsent_documents_content", "plagiarism_compilatio"),
+                    "content" => get_string("unsent_documents", "plagiarism_compilatio")
                 );
                 $startallanalysis = $restartfailedanalysis = true;
             }
@@ -176,24 +173,6 @@ class CompilatioFrame {
                 );
             }
         }
-
-        //TODO DELETE
-        $alerts[] = array(
-            "class" => "info",
-            "content" => "Coucou je suis une alerte",
-        );
-        $alerts[] = array(
-            "class" => "success",
-            "content" => "Coucou je suis une alerte",
-        );
-        $alerts[] = array(
-            "class" => "danger",
-            "content" => "Coucou je suis une alerte",
-        );
-        $alerts[] = array(
-            "class" => "warning",
-            "content" => "Coucou je suis une alerte",
-        );
 
         $user = $DB->get_record('plagiarism_compilatio_user', array("userid" => $USER->id));
 
@@ -321,14 +300,10 @@ class CompilatioFrame {
                             $icon = "fa-check-circle";
                             break;
                     }
-                    if (!empty($alert["title"])){
-                        //TODO strong useless
-                        $title = "<strong>" . $alert["title"] . "</strong><br/>";
-                    }
 
                     $output .= "
                         <div class='cmp-alert cmp-alert-" . $alert["class"] . "'>
-                        <i class='cmp-alert-icon fa-lg fa " . $icon . "'></i>" . $title . $alert["content"] .
+                        <i class='cmp-alert-icon fa-lg fa " . $icon . "'></i>" . $alert["content"] .
                         "</div>";
                 } else {
                     $output .= $alert;

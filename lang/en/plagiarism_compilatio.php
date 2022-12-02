@@ -171,8 +171,7 @@ $string['similarities_disclaimer'] = "You can analyze similarities in this activ
     Be careful: similarities measured during analysis do not necessarily mean plagiarism. The analysis report helps you to identify if the similarities matched to suitable quotation or to plagiarism.";
 $string['programmed_analysis_future'] = 'Documents will be analyzed by Compilatio on {$a}.';
 $string['programmed_analysis_past'] = 'Documents have been submitted for analysis to Compilatio on {$a}.';
-$string['webservice_unreachable_title'] = "Compilatio.net is unavailable.";
-$string['webservice_unreachable_content'] = "Compilatio.net is currently unavailable. We apologize for the inconvenience.";
+$string['webservice_unreachable'] = "Compilatio.net is currently unavailable. We apologize for the inconvenience.";
 $string['startallcompilatioanalysis'] = "Analyze all documents";
 $string['updatecompilatioresults'] = 'Refresh the informations';
 $string['restart_failed_analysis'] = 'Restart interrupted analysis';
@@ -203,13 +202,12 @@ $string["display_notifications"] = "Display notifications";
 $string['max_attempts_reach_files'] = 'Analysis has been interrupted for the following files. Analyses were sent too many times, you cannot restart them anymore :';
 $string['no_document_available_for_analysis'] = 'No documents were available for analysis';
 $string["analysis_started"] = '{$a} analysis have been requested.';
-$string["start_analysis_title"] = 'Analysis start';
+$string["start_analysis"] = 'Analysis start: ';
 $string["start_analysis_in_progress"] = 'Launching of the analyses in progress';
-$string["not_analyzed"] = "The following documents can't be analyzed :";
+$string["not_analyzed"] = "The following documents can't be analyzed: ";
 $string["update_in_progress"] = "Updating informations";
-$string["unsent_documents"] = 'Document(s) not sent';
-$string["unsent_documents_content"] = 'This activity contains document(s) not submitted to Compilatio.';
-$string['restart_failed_analysis_title'] = 'Restart interrupted analysis :';
+$string["unsent_documents"] = 'This activity contains documents not submitted to Compilatio.';
+$string['restart_failed_analysis_title'] = 'Restart interrupted analysis: ';
 $string['restart_failed_analysis_in_progress'] = 'Restart interrupted analyses in progress';
 
 // Search author tab.
