@@ -153,7 +153,7 @@ $string['title_error_too_long'] = 'This document contain too many words to be an
 $string['title_error_not_found'] = "This document was not found. Please contact your moodle administrator. Error : document not found for this API key.";
 
 $string['previouslysubmitted'] = 'Previously submitted as';
-$string['students_analyze'] = "The analysis can be started by the student";
+$string['student_analyze'] = "The analysis can be started by the student";
 $string['student_help'] = "You can analyze your draft with Compilatio Magister, to measure similarities in the text of your files.<br/>
     The contents of your draft will not be used by Compilatio as comparison material for future analyses.<br/>
     Your teacher will, however, have access to this analysis report.";
@@ -173,7 +173,6 @@ $string['programmed_analysis_future'] = 'Documents will be analyzed by Compilati
 $string['programmed_analysis_past'] = 'Documents have been submitted for analysis to Compilatio on {$a}.';
 $string['webservice_unreachable'] = "Compilatio.net is currently unavailable. We apologize for the inconvenience.";
 $string['startallcompilatioanalysis'] = "Analyze all documents";
-$string['updatecompilatioresults'] = 'Refresh the informations';
 $string['restart_failed_analysis'] = 'Restart interrupted analysis';
 $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
 $string['hide_area'] = 'Hide Compilatio informations';
@@ -202,12 +201,9 @@ $string["display_notifications"] = "Display notifications";
 $string['max_attempts_reach_files'] = 'Analysis has been interrupted for the following files. Analyses were sent too many times, you cannot restart them anymore :';
 $string['no_document_available_for_analysis'] = 'No documents were available for analysis';
 $string["analysis_started"] = '{$a} analysis have been requested.';
-$string["start_analysis"] = 'Analysis start: ';
 $string["start_analysis_in_progress"] = 'Launching of the analyses in progress';
 $string["not_analyzed"] = "The following documents can't be analyzed: ";
-$string["update_in_progress"] = "Updating informations";
 $string["unsent_documents"] = 'This activity contains documents not submitted to Compilatio.';
-$string['restart_failed_analysis_title'] = 'Restart interrupted analysis: ';
 $string['restart_failed_analysis_in_progress'] = 'Restart interrupted analyses in progress';
 
 // Search author tab.

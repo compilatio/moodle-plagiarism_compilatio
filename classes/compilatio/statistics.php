@@ -208,7 +208,7 @@ class CompilatioStatistics {
         $yes = "";
         $elements = ["min", "avg", "max"];
         foreach ($elements as $elem) {
-            if ($scorestat->$elem <= $warningthreshold) {
+            if ($scorestats->$elem <= $warningthreshold) {
                 $color = "green";
             } else if ($scorestats->$elem <= $criticalthreshold) {
                 $color = "orange";

@@ -22,7 +22,7 @@
  * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @param array $_POST['linkarray']
+ * @param array $_POST['params']
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
@@ -36,6 +36,22 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 require_login();
 global $DB;
-$linkarray = required_param('linkarray', '', PARAM_RAW);
+$cantriggeranalysis = required_param('cantriggeranalysis', PARAM_BOOL);
+$isstudentanalyse = required_param('isstudentanalyse', PARAM_BOOL);
+$cmpfileid = required_param('cmpfileid', PARAM_RAW);
+$canviewreport = required_param('canviewreport', PARAM_BOOL);
+$isteacher = required_param('isteacher', PARAM_BOOL);
+$url = required_param('url', PARAM_RAW);
+$filename = required_param('filename', PARAM_RAW);
+$domid = required_param('domid', PARAM_INT);
 
-echo CompilatioButton::get_button($linkarray);
+echo CompilatioButton::display_button(
+    $cantriggeranalysis,
+    $isstudentanalyse,
+    $cmpfileid,
+    $canviewreport,
+    $isteacher,
+    $url,
+    $filename,
+    $domid
+);

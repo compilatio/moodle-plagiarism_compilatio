@@ -236,7 +236,7 @@ class CompilatioFrame {
 
         $output .= "</div>";
 
-        $output .= "<div class='cmp-tabs-separator'></div>";
+        $output .= "<div id='cmp-tabs-separator'></div>";
 
         // Home tab.
         $output .= "<div id='cmp-home' class='cmp-tabs-content'>
@@ -354,23 +354,13 @@ class CompilatioFrame {
         if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
             $output .= "<div id='cmp-btn-container'>";
 
-            $output .= "
-                <button class='cmp-btn-lg cmp-btn-primary'>
-                    <i class='cmp-icon-lg cmp-mr-10 fa fa-refresh'></i>
-                    " . get_string('updatecompilatioresults', 'plagiarism_compilatio') . "
-                </button>";
-            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'refreshButton',
-                array($CFG->httpswwwroot, $filesids, $countunsend,
-                get_string('update_in_progress', 'plagiarism_compilatio')));
-
             if ($startallanalysis) {
                 $output .= "<button class='cmp-btn-lg cmp-btn-primary cmp-start-btn' >
                         " . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "
                         <i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
                     </button>";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
-                    array($CFG->httpswwwroot, $cmid, get_string("start_analysis_title", "plagiarism_compilatio"),
-                    get_string("start_analysis_in_progress", "plagiarism_compilatio")));
+                    array($CFG->httpswwwroot, $cmid, get_string("start_analysis_in_progress", "plagiarism_compilatio")));
             }
 
             if ($restartfailedanalysis) {
@@ -379,21 +369,13 @@ class CompilatioFrame {
                         <i class='cmp-ml-10 fa fa-play-circle'></i>
                     </button>";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'restartFailedAnalysis',
-                    array($CFG->httpswwwroot, $cmid, get_string("restart_failed_analysis_title", "plagiarism_compilatio"),
-                    get_string("restart_failed_analysis_in_progress", "plagiarism_compilatio")));
+                    array($CFG->httpswwwroot, $cmid, get_string("restart_failed_analysis_in_progress", "plagiarism_compilatio")));
             }
 
             $output .= "</div>";
         }
 
-        $params = array($CFG->httpswwwroot, count($alerts), $docid,
-            "<div id='cmp-show-notifications' title='" . get_string("display_notifications", "plagiarism_compilatio")
-                . "' class='cmp-icon active'><i class='fa fa-bell fa-2x'></i><span id='cmp-count-alerts'>1</span></div>",
-            "<div id='cmp-notifications'><h5 id='cmp-notif-title'>" .
-                get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>"
-        );
-
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', $params);
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', [count($alerts), $docid]);
 
         return $output;
     }

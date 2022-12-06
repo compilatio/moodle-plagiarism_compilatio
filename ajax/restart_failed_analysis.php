@@ -64,7 +64,7 @@ foreach ($files as $file) {
 if (count($docsfailed) === 0) {
     $SESSION->compilatio_alert = [
         "class" => "info",
-        "content" => get_string("restart_failed_analysis_title", "plagiarism_compilatio") . get_string("analysis_started", "plagiarism_compilatio", $countsuccess),
+        "content" => get_string("analysis_started", "plagiarism_compilatio", $countsuccess),
     ];
 } else {
     $SESSION->compilatio_alert = [

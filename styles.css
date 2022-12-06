@@ -76,7 +76,7 @@ Compilatio frame area
     color: #202121;
 }
 
-.cmp-tabs-separator {
+#cmp-tabs-separator {
   margin: 1rem 0;
   border-bottom: 2px solid #e3e3e3;
 }

@@ -205,7 +205,7 @@ class CompilatioEventHandler {
             // If the documents have been deleted in the mdl_files table, we also delete them on our side.
             if (empty($submissionfiles)) {
                 $duplicates = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
-                compilatio_remove_duplicates($duplicates);
+                compilatio_delete_files($duplicates);
             }
         }
 

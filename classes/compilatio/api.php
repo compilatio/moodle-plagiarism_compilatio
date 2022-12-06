@@ -156,12 +156,7 @@ class CompilatioService {
      * @param   string  $folderid       Document's folder ID
      * @return  string                  Return the document's ID, an error message otherwise
      */
-    public function set_document($filename, $folderid, $filepath, $indexed/*, $depositor, $author*/) {
-
-        // TODO Add depositor and author. 
-        //$depositor = explode(' ', $depositor, 2);
-        //$author = explode(' ', $author, 2);
-
+    public function set_document($filename, $folderid, $filepath, $indexed, $user) {
         $endpoint = "/api/private/document/";
         $params = array(
             'file' => new \CURLFile($filepath),
@@ -170,16 +165,18 @@ class CompilatioService {
             'folder_id' => $folderid,
             'indexed' => $indexed,
             'origin' => "moodle",
-            //'depositor' => [
-            //    'firstname' => $depositor[0],
-            //    'lastname' => $depositor[1] ?? "",
-            //],
-            //'authors' => [
-            //    [
-            //        'firstname' => $author[0],
-            //        'lastname' => $author[1] ?? "",
-            //    ]
-            //],
+            'depositor' => [
+                'firstname' => $user->firstname,
+                'lastname' => $user->lastname,
+                'email_address' => $user->email
+            ],
+            'authors' => [
+                [
+                    'firstname' => $user->firstname,
+                    'lastname' => $user->lastname,
+                    'email_address' => $user->email
+                ]
+            ],
         );
 
         $response = json_decode($this->call_api($endpoint, "upload", $params));

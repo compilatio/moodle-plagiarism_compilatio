@@ -96,23 +96,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
      * @return string  HTML or blank.
      */
     public function get_links($linkarray) {
-        /*// DOM Compilatio index for ajax callback.
-        static $domid = 0;
-        $domid++;
-
-        $output .= "
-            <div class='cmp-clear'></div>
-            " . $info . "
-            <div class='cmp-area cmp-bg-" . $bgcolor . " cmp-" . $domid . "'>
-                <div class='cmp-area-in'>
-                    <img class='cmp-small-logo' src='" . new moodle_url("/plagiarism/compilatio/pix/c-net.svg") . "'>
-                    " . self::get_indexing_state($indexed) . $score . "
-                </div>
-                " . $button . "
-            </div>
-            <div class='cmp-clear'></div>";
-
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'displayButton', array($CFG->httpswwwroot, $linkarray, $domid));*/
         return CompilatioButton::get_button($linkarray);
     }
 

@@ -49,53 +49,13 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.refreshButton = function(basepath, fileIds, docNotUploaded, infoStr) {
-        $(document).ready(function() {
-            var n = fileIds.length;
-            var i = 0;
-            var refreshButton = $("i.fa-refresh").parent("button");
-            if (n == 0) {
-                disableCompilatioButtons();
-                if (docNotUploaded > 0) {
-                    $(".cmp-start-btn").each(function() {
-                        $(this).removeAttr("disabled");
-                        $(this).removeClass("disabled");
-                    });
-                }
-            } else {
-                refreshButton.click(function() {
-                    disableCompilatioButtons();
-                    // Display progress bar.
-                    $("#cmp-home").html("<p>" + infoStr + "<progress id='cmp-update-progress' value='"
-                        + i + "' max='" + n + "'></progress></p>");
-                    $("#cmp-logo").click();
-                    // Launch ajax requests.
-                    fileIds.forEach(function(id) {
-                        $.post(basepath + '/plagiarism/compilatio/ajax/check_analysis.php',
-                        {'id': id}, function() {
-                            i++;
-                            $("#cmp-update-progress").val(i);
-                            if (i == n) {
-                                window.location.reload();
-                            }
-                        });
-                    });
-                });
-            }
-        });
-    };
-
-    exports.startAllAnalysis = function(basepath, cmid, title, message) {
+    exports.startAllAnalysis = function(basepath, cmid, message) {
         $(document).ready(function() {
             var startAllAnalysis = $("button.cmp-start-btn");
             startAllAnalysis.click(function() {
                 disableCompilatioButtons();
-                $('#cmp-notifications').show();
-                $('#cmp-stats, #cmp-help, #cmp-home, #cmp-search').hide();
-                $("#cmp-notif-title").after(
-                    "<div class='cmp-alert cmp-alert-info'><strong>" + title
-                    + "</strong><br/>" + message + "</div>"
-                );
+                $('#cmp-stats, #cmp-help, #cmp-home, #cmp-search, #cmp-notifications').hide();
+                $("#cmp-tabs-separator").after("<div class='cmp-alert cmp-alert-info'>" + message + "</div>");
                 $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
@@ -107,7 +67,7 @@ define(['jquery'], function($) {
     exports.startAnalysis = function(basepath, eltId, docId) {
         $(document).ready(function() {
             setTimeout(function() {
-                $(".cmp-" + eltId + " > div:last-child").click(function() {
+                $(".cmp-" + eltId + " .cmp-btn").click(function() {
                     $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis.php',
                     {'docId': docId}, function() {
                         window.location.reload();
@@ -117,17 +77,13 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.restartFailedAnalysis = function(basepath, cmid, title, message) {
+    exports.restartFailedAnalysis = function(basepath, cmid, message) {
         $(document).ready(function() {
             var restartFailedAnalysis = $("button.cmp-restart-btn");
             restartFailedAnalysis.click(function() {
                 disableCompilatioButtons();
-                $('#cmp-notifications').show();
-                $('#cmp-stats, #cmp-help, #cmp-home, #cmp-search').hide();
-                $("#cmp-notif-title").after(
-                    "<div class='cmp-alert cmp-alert-info'><strong>" + title
-                    + "</strong><br/>" + message + "</div>"
-                );
+                $('#cmp-stats, #cmp-help, #cmp-home, #cmp-search, #cmp-notifications').hide();
+                $("#cmp-tabs-separator").after("<div class='cmp-alert cmp-alert-info'>" + message + "</div>");
                 $.post(basepath + '/plagiarism/compilatio/ajax/restart_failed_analysis.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
@@ -147,22 +103,28 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.displayButton = function(basepath, linkarray) {
+    exports.displayButton = function(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid) {
         $(document).ready(function() {
-            console.log(linkarray);
-            $.post(basepath + '/plagiarism/compilatio/ajax/display_button.php',
-            {'linkarray': JSON.stringify(linkarray)}, function(button) {
+            $.post(basepath + '/plagiarism/compilatio/ajax/display_button.php', {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid}, function(button) {
+                let el = $('#cmp-' + domid);
                 el.append(button);
             });
+            setInterval(function() {
+                $.post(basepath + '/plagiarism/compilatio/ajax/display_button.php', {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid}, function(button) {
+                    let el = $('#cmp-' + domid);
+                    el.empty();
+                    el.append(button);
+                });
+            }, 1 * 60000);
         });
     };
 
-    exports.compilatioTabs = function(basepath, alertsCount, idcourt, notifIcon, notifTitle) {
+    exports.compilatioTabs = function(alertsCount, docid) {
         $(document).ready(function() {
             $('#cmp-tabs').show();
 
             var selectedElement = '';
-            if (idcourt) {
+            if (docid) {
                 selectedElement = '#cmp-search';
             } else if (alertsCount > 0) {
                 selectedElement = '#cmp-notifications';
@@ -204,7 +166,7 @@ define(['jquery'], function($) {
 
                     tabClicked.toggleClass('active');
                     $('#cmp-hide-area').fadeIn();
-                    $('.cmp-tabs-separator').show();
+                    $('#cmp-tabs-separator').show();
                 }
             }
 
@@ -214,13 +176,13 @@ define(['jquery'], function($) {
                 elements.not(elementClicked).hide();
                 tabs.removeClass('active');
                 $('#cmp-hide-area').fadeIn();
-                $('.cmp-tabs-separator').show();
+                $('#cmp-tabs-separator').show();
             });
             $('#cmp-hide-area').on('click', function() {
                 elements.hide();
                 $(this).fadeOut();
                 tabs.removeClass('active');
-                $('.cmp-tabs-separator').hide();
+                $('#cmp-tabs-separator').hide();
             });
         });
     };

@@ -173,7 +173,6 @@ $string['programmed_analysis_future'] = 'Les documents seront analysés par Comp
 $string['programmed_analysis_past'] = 'Les documents ont été soumis pour analyse à Compilatio le {$a}.';
 $string['webservice_unreachable'] = "Le service Compilatio.net est actuellement indisponible. Veuillez nous excuser pour la gêne occasionnée.";
 $string['startallcompilatioanalysis'] = "Analyser tous les documents";
-$string["updatecompilatioresults"] = "Rafraîchir les informations";
 $string['restart_failed_analysis'] = 'Relancer les analyses échouées';
 $string["compilatio_help_assign"] = "Obtenir de l&#39aide sur le plugin Compilatio";
 $string['hide_area'] = 'Masquer les informations Compilatio';
@@ -202,12 +201,9 @@ $string["display_notifications"] = "Afficher les notifications";
 $string['max_attempts_reach_files'] = "Ces documents n'ont pas pu être analysés par Compilatio. La limite de relance d'analyses a été atteinte.";
 $string['no_document_available_for_analysis'] = "Aucun document n'était disponible pour analyse.";
 $string["analysis_started"] = '{$a} analyse(s) démandée(s).';
-$string["start_analysis"] = 'Démarrage manuel des analyses : ';
 $string["start_analysis_in_progress"] = 'Lancement des analyses en cours';
 $string["not_analyzed"] = "Les documents suivants n'ont pas pu être analysés : ";
-$string["update_in_progress"] = "Mise à jour des informations en cours";
 $string["unsent_documents"] = 'Attention, cette activité contient des documents non soumis à Compilatio.';
-$string['restart_failed_analysis_title'] = 'Relance des analyses échouées :';
 $string['restart_failed_analysis_in_progress'] = 'Relance des analyses échouées en cours';
 
 // Search author tab.

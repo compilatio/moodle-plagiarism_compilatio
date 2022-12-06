@@ -101,16 +101,18 @@ class CompilatioSendFile {
                 error_log("Error when sending the file to compilatio : failed to create compilatio temp directory");
             }
 
-            $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H:i:s') . ".txt";
+            $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H-i-s') . ".txt";
             $handle = fopen($filepath, "wb");
             fwrite($handle, $content);
             fclose($handle);
+
+            $user = $DB->get_record("user", ["id" => $userid], 'firstname, lastname, email');
 
             $cmconfig = $DB->get_record("plagiarism_compilatio_module", array("cmid" => $cmid));
 
             $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $cmconfig->userid);
 
-            $docid = $compilatio->set_document($cmpfile->filename, $cmconfig->folderid, $filepath, $cmpfile->indexed, /*$depositor, $author*/);
+            $docid = $compilatio->set_document($cmpfile->filename, $cmconfig->folderid, $filepath, $cmpfile->indexed, $user);
 
             unlink($filepath);
 

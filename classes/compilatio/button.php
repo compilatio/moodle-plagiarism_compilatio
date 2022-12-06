@@ -37,7 +37,7 @@ class CompilatioButton {
      * @return string Return the HTML formatted string.
      */
     public static function get_button($linkarray) {
-        
+
         // Quiz management - Only essay question are supported for the moment.
         if (!empty($linkarray['component']) && $linkarray['component'] == 'qtype_essay') {
             $linkarray = self::manage_quiz($linkarray);
@@ -77,14 +77,14 @@ class CompilatioButton {
 
         // Don't show Compilatio if not allowed.
         $modulecontext = context_module::instance($linkarray['cmid']);
-        $teacher = $viewscore = $viewreport = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
+        $isteacher = $canviewscore = $canviewreport = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
         $cantriggeranalysis = has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext);
-        $studentanalyse = compilatio_student_analysis($plugincm->studentanalyses, $linkarray['cmid'], $userid);
+        $isstudentanalyse = compilatio_student_analysis($plugincm->studentanalyses, $linkarray['cmid'], $userid);
 
         if ($USER->id == $userid) {
-            if ($studentanalyse) {
-                $viewreport = true;
-                $viewscore = true;
+            if ($isstudentanalyse) {
+                $canviewreport = true;
+                $canviewscore = true;
             }
 
             $assignclosed = false;
@@ -95,15 +95,15 @@ class CompilatioButton {
             $allowed = get_config("plagiarism_compilatio", "enable_show_reports");
             $showreport = $plugincm->showstudentreport ?? null;
             if ($allowed === '1' && ($showreport == 'immediately' || ($showreport == 'closed' && $assignclosed))) {
-                $viewreport = true;
+                $canviewreport = true;
             }
 
             $showscore = $plugincm->showstudentscore ?? null;
             if ($showscore == 'immediately' || ($showscore == 'closed' && $assignclosed)) {
-                $viewscore = true;
+                $canviewscore = true;
             }
         }
-        if (!$viewscore) {
+        if (!$canviewscore) {
             return '';
         }
 
@@ -147,13 +147,54 @@ class CompilatioButton {
             }
         }
 
+        $output .= "<div id='cmp-" . $domid . "'></div>";
+
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'displayButton', [
+            $CFG->httpswwwroot,
+            $cantriggeranalysis,
+            $isstudentanalyse,
+            $cmpfile->id,
+            $canviewreport,
+            $isteacher,
+            $url,
+            $filename,
+            $domid
+        ]);
+
+        return $output;
+    }
+
+    /**
+     * Display plagiarism document area
+     * @param string  $linkarray
+     * @return string Return the HTML formatted string.
+     */
+    public static function display_button(
+        $cantriggeranalysis,
+        $isstudentanalyse,
+        $cmpfileid,
+        $canviewreport,
+        $isteacher,
+        $url,
+        $filename,
+        $domid
+    ) {
+
+        global $DB, $CFG, $PAGE;
+
+        $cmpfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $cmpfileid]);
+        /*$userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $cmpfile->cm));
+        $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $userid);
+
+        $doc = $compilatio->get_document($cmpfile->externalid);*/
+
         $status = $cmpfile->status;
 
         $config = $DB->get_record('plagiarism_compilatio_module', array('cmid' => $cmpfile->cm ?? null));
 
         // Add de/indexing feature for teachers.
         $indexed = null;
-        if (!empty($cmpfile->externalid) && $cantriggeranalysis && !$studentanalyse) {
+        if (!empty($cmpfile->externalid) && $cantriggeranalysis && !$isstudentanalyse) {
             $indexed = $cmpfile->indexed ? true : false;
             $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'toggleIndexingState',
                 array($CFG->httpswwwroot, $domid, $cmpfile->externalid));
@@ -171,7 +212,7 @@ class CompilatioButton {
             }
 
             $report = '';
-            if ($viewreport) {
+            if ($canviewreport) {
                 $button = "<a href='" . $CFG->httpswwwroot . "/plagiarism/compilatio/redirect_report.php?docid=" . $cmpfile->externalid . "&cmid=" . $cmpfile->cm . "' target='_blank' class='cmp-btn cmp-btn-primary cursor-pointer'>
                     <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 67' width='20' class='cmp-mr-10 icon-inline'>
                         <path fill='#fff' d='M71.61,34.39h0A3.6,3.6,0,1,1,68,30.79,3.59,3.59,0,0,1,71.61,34.39ZM91.14.15a9,9,0,0,0-7.91,13.34L72,26.31a8.91,8.91,0,0,0-4-.94,9,9,0,0,0-8.44,5.83L43.11,27.9a9,9,0,1,0-16.64,6.59L13.18,49.44a8.88,8.88,0,0,0-4-.95,9,9,0,1,0,7.92,4.71l13.29-15a8.92,8.92,0,0,0,4,1,9,9,0,0,0,8.43-5.83l16.47,3.3A9,9,0,0,0,77,34.39a8.93,8.93,0,0,0-1.11-4.33L87.14,17.24a9,9,0,1,0,4-17.09Zm-82,61a3.6,3.6,0,1,1,3.6-3.59A3.59,3.59,0,0,1,9.16,61.1ZM34.39,33.78A3.6,3.6,0,1,1,38,30.18,3.6,3.6,0,0,1,34.39,33.78Zm56.74-21a3.6,3.6,0,1,1,3.6-3.6A3.6,3.6,0,0,1,91.13,12.76Z'></path>
@@ -191,9 +232,9 @@ class CompilatioButton {
                         "<i class='cmp-icon-lg cmp-ml-10 fa fa-clock-o'></i>
                     </div>";
                 $bgcolor = 'secondary';
-            } else if ($cantriggeranalysis || ($studentanalyse && !$teacher)) {
+            } else if ($cantriggeranalysis || ($isstudentanalyse && !$isteacher)) {
                 if (null == $url) {
-                    $button = "<div " . $href . " title='" . get_string('title_sent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-primary cursor-pointer'>"
+                    $button = "<div title='" . get_string('title_sent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-primary cursor-pointer'>"
                         . get_string('btn_sent', "plagiarism_compilatio") . 
                         "<i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
                     </div>";
@@ -204,7 +245,7 @@ class CompilatioButton {
                         "<i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
                     </a>";
                 }
-            } else if ($studentanalyse && $teacher) {
+            } else if ($isstudentanalyse && $isteacher) {
                 $button = '';
             } else {
                 return '';
@@ -225,7 +266,7 @@ class CompilatioButton {
                 $value = get_config('plagiarism_compilatio', 'min_word');
             }
 
-            $button = "<div title='" . get_string("title_" . $status, "plagiarism_compilatio", $value) . "' class='cmp-btn cmp-btn-error'>
+            $button = "<div title='" . get_string("title_" . $status, "plagiarism_compilatio", $value ?? null) . "' class='cmp-btn cmp-btn-error'>
                     <i class='cmp-mr-10 fa fa-exclamation-triangle'></i>" . get_string('btn_error', "plagiarism_compilatio") . 
                 "</div>";
             $bgcolor = 'error';
@@ -234,25 +275,22 @@ class CompilatioButton {
         }
 
         $info = '';
-        if ($studentanalyse) {
-            if ($teacher) {
+        if ($isstudentanalyse) {
+            if ($isteacher) {
                 $info = "<div>" . get_string("student_analyze", "plagiarism_compilatio") . "</div>";
             } else {
                 $info = "<div>" . get_string("student_help", "plagiarism_compilatio") . "</div>";
             }
         }
 
-        $output .= "
-            <div class='cmp-clear'></div>
-            " . $info . "
+        $output = $info . "
             <div class='cmp-area cmp-bg-" . $bgcolor . " cmp-" . $domid . "'>
                 <div class='cmp-area-in'>
                     <img class='cmp-small-logo' src='" . new moodle_url("/plagiarism/compilatio/pix/c-net.svg") . "'>
                     " . self::get_indexing_state($indexed) . $score . "
                 </div>
                 " . $button . "
-            </div>
-            <div class='cmp-clear'></div>";
+            </div>";
 
         // Now check for differing filename and display info related to it.
         if (isset($filename, $cmpfile->filename) && $filename !== $cmpfile->filename) {

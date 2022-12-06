@@ -82,12 +82,12 @@ $counterrors = count($docsfailed);
 if ($counttotal === 0) {
     $SESSION->compilatio_alert = [
         "class" => "info",
-        "content" => get_string("start_analysis", "plagiarism_compilatio") . get_string("no_document_available_for_analysis", "plagiarism_compilatio"),
+        "content" => get_string("no_document_available_for_analysis", "plagiarism_compilatio"),
     ];
 } else if ($counterrors === 0) {
     $SESSION->compilatio_alert = [
         "class" => "info",
-        "content" => get_string("start_analysis", "plagiarism_compilatio") . get_string("analysis_started", "plagiarism_compilatio", $countsuccess),
+        "content" => get_string("analysis_started", "plagiarism_compilatio", $countsuccess),
     ];
 } else {
     $SESSION->compilatio_alert = [
