@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Restart all the failed analyses for documents of the course module
+ * Reset failed analyses and unsent documents of the course module
  *
  * This script is called by amd/build/ajax_api.js
  *
- * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param string $_POST['cmid']

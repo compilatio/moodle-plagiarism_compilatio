@@ -45,8 +45,7 @@ $plugincm = compilatio_cm_use($cmid);
 
 // Counter incremented on success.
 $countsuccess = 0;
-$plagiarismfiles = array();
-$docsfailed = array();
+$plagiarismfiles = $docsfailed = $docsinextraction = [];
 
 if ($plugincm->analysistype == 'manual') {
 
@@ -59,10 +58,14 @@ if ($plugincm->analysistype == 'manual') {
             continue;
         }
 
-        if (CompilatioAnalyses::start_analysis($file)) {
+        $status = CompilatioAnalyses::start_analysis($file);
+
+        if ($status == "queue") {
             $countsuccess++;
+        } else if ($status == get_string('extraction_in_progress', 'plagiarism_compilatio')) {
+            $docsinextraction[] = $file->filename;
         } else {
-            $docsfailed[] = $file["filename"];
+            $docsfailed[] = $file->filename;
         }
     }
 }
@@ -77,21 +80,31 @@ if ($countbegin != 0) {
 }
 
 $counttotal = count($plagiarismfiles) + $countbegin;
-$counterrors = count($docsfailed);
 
 if ($counttotal === 0) {
     $SESSION->compilatio_alert = [
         "class" => "info",
         "content" => get_string("no_document_available_for_analysis", "plagiarism_compilatio"),
     ];
-} else if ($counterrors === 0) {
-    $SESSION->compilatio_alert = [
-        "class" => "info",
-        "content" => get_string("analysis_started", "plagiarism_compilatio", $countsuccess),
-    ];
-} else {
-    $SESSION->compilatio_alert = [
-        "class" => "danger",
-        "content" => get_string("not_analyzed", "plagiarism_compilatio") . "<ul><li>" . implode("</li><li>", $docsfailed) . "</li></ul>",
-    ];
+} else  {
+    if ($countsuccess > 0) {
+        $SESSION->compilatio_alert = [
+            "class" => "info",
+            "content" => get_string("analysis_started", "plagiarism_compilatio", $countsuccess)
+        ];
+    }
+
+    if (count($docsfailed) > 0) {
+        $SESSION->compilatio_alert = [
+            "class" => "danger",
+            "content" => "<div>" . get_string("not_analyzed", "plagiarism_compilatio") . "<ul><li>" . implode("</li><li>", $docsfailed) . "</li></ul></div>",
+        ];
+    }
+
+    if (count($docsinextraction) > 0) {
+        $SESSION->compilatio_alert = array(
+            "class" => "danger",
+            "content" => "<div>" . get_string("not_analyzed_extracting", "plagiarism_compilatio") . "<ul><li>" . implode("</li><li>", $docsinextraction) . "</li></ul></div>",
+        );
+    }
 }

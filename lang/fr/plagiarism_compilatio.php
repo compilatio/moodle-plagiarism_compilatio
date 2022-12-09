@@ -141,7 +141,6 @@ $string['btn_queue'] = 'Attente';
 $string['title_queue'] = "Le document est en attente d'analyse et va bientôt être traité par Compilatio";
 $string['btn_analyzing'] = 'Analyse';
 $string['title_analyzing'] = "Le fichier est en cours d'analyse par Compilatio.";
-$string['btn_error_analysis_failed'] = 'Relancer';
 $string['title_error_analysis_failed'] = "L'analyse de ce document n'a pas fonctionné correctement.";
 $string['btn_error_sending_failed'] = 'Renvoyer';
 $string['title_error_sending_failed'] = "Une erreur s'est produite lors de l'envoi du fichier à Compilatio";
@@ -160,6 +159,7 @@ $string['student_help'] = "Vous pouvez analyser votre brouillon avec Compilatio 
 $string['failedanalysis'] = "Compilatio n'a pas réussi à analyser votre document : ";
 $string['indexed_document'] = "Document ajouté à la bibliothèque de références de votre établissement. Son contenu pourra être utilisé pour détecter des similitudes avec d’autres documents.";
 $string['not_indexed_document'] = "Document non ajouté à la bibliothèque de références de votre établissement. Son contenu ne sera pas utilisé pour détecter des similitudes avec d’autres documents.";
+$string['extraction_in_progress'] = 'extraction du document en cours, veuillez réessayer plus tard';
 
 // Student email.
 $string['studentemailsubject'] = 'Le fichier a été traité par Compilatio';
@@ -173,7 +173,7 @@ $string['programmed_analysis_future'] = 'Les documents seront analysés par Comp
 $string['programmed_analysis_past'] = 'Les documents ont été soumis pour analyse à Compilatio le {$a}.';
 $string['webservice_unreachable'] = "Le service Compilatio.net est actuellement indisponible. Veuillez nous excuser pour la gêne occasionnée.";
 $string['startallcompilatioanalysis'] = "Analyser tous les documents";
-$string['restart_failed_analysis'] = 'Relancer les analyses échouées';
+$string['reset_docs_in_error'] = 'Réinitialiser les documents en erreur';
 $string["compilatio_help_assign"] = "Obtenir de l&#39aide sur le plugin Compilatio";
 $string['hide_area'] = 'Masquer les informations Compilatio';
 
@@ -183,7 +183,7 @@ $string['detailed_error_sending_failed'] = "Ces documents n'ont pas pu être env
 $string['detailed_error_too_short'] = 'Ces documents n\'ont pas pu être analysés par Compilatio car ils ne contenaient pas assez de mots (Taille minimale : {$a} mots).';
 $string['detailed_error_too_long'] = 'Ces documents n\'ont pas pu être analysés par Compilatio car ils contenaient trop de mots (Taille maximale : {$a} mots).';
 $string['detailed_error_too_large'] = 'Ces documents n\'ont pas pu être analysés par Compilatio car ils sont trop volumineux (Taille maximale : {$a} Mo).';
-$string['detailed_error_analysis_failed'] = "L'analyse de ces documents n'a pas fonctionné correctement. Vous pouvez relancer ces analyses.";
+$string['detailed_error_analysis_failed'] = "L'analyse de ces documents n'a pas fonctionné correctement. Vous pouvez réinitialiser ces documents.";
 $string['detailed_error_not_found'] = "Ces document n'ont pas été trouvés. Veuillez contacter votre administrateur de moodle. Erreur : document non trouvé pour cette clé API.";
 
 // Short error status.
@@ -198,13 +198,13 @@ $string["short_error_too_large"] = 'documents trop volumineux';
 // Notifications tab.
 $string['tabs_title_notifications'] = 'Notifications';
 $string["display_notifications"] = "Afficher les notifications";
-$string['max_attempts_reach_files'] = "Ces documents n'ont pas pu être analysés par Compilatio. La limite de relance d'analyses a été atteinte.";
 $string['no_document_available_for_analysis'] = "Aucun document n'était disponible pour analyse.";
 $string["analysis_started"] = '{$a} analyse(s) démandée(s).';
 $string["start_analysis_in_progress"] = 'Lancement des analyses en cours';
 $string["not_analyzed"] = "Les documents suivants n'ont pas pu être analysés : ";
+$string["not_analyzed_extracting"] = "Les documents suivants n'ont pas pu être analysés car ils sont en cours d'extraction, veuillez réessayez plus tard";
 $string["unsent_documents"] = 'Attention, cette activité contient des documents non soumis à Compilatio.';
-$string['restart_failed_analysis_in_progress'] = 'Relance des analyses échouées en cours';
+$string['reset_docs_in_error_in_progress'] = 'Réinitialisation des documents en erreur en cours';
 
 // Search author tab.
 $string["compilatio_search_tab"] = "Rechercher le déposant d&#39un document.";

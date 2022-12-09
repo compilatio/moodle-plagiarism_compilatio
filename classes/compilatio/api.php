@@ -183,6 +183,9 @@ class CompilatioService {
 
         $error = $this->get_error_response($response, 201);
         if ($error === false) {
+            if (in_array('extraction_error', $response->data->document->tags)) {
+                //TODO handle extraction error.
+            }
             return $response->data->document->id;
         }
         return $error;
@@ -340,7 +343,7 @@ class CompilatioService {
         $endpoint = "/api/private/documents/" . $iddoc . "/report/jwt";
 
         $response = json_decode($this->call_api($endpoint, "post"));
-        error_log(var_export($response,true));
+
         if ($this->get_error_response($response, 201) === false) {
             return $response->data->jwt;
         }

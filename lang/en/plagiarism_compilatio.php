@@ -141,7 +141,6 @@ $string['btn_queue'] = 'Queue';
 $string['title_queue'] = "The document is now in queue and it is going to be analyzed soon by Compilatio";
 $string['btn_analyzing'] = 'Analyzing';
 $string['title_analyzing'] = "Compilatio is analyzing this file.";
-$string['btn_error_analysis_failed'] = 'Restart';
 $string['title_error_analysis_failed'] = "The analysis of this document did not work correctly.";
 $string['btn_error_sending_failed'] = 'Resend';
 $string['title_error_sending_failed'] = "An error occurred trying to send this file to Compilatio";
@@ -160,6 +159,7 @@ $string['student_help'] = "You can analyze your draft with Compilatio Magister, 
 $string['failedanalysis'] = 'Compilatio failed to analyse your document: ';
 $string['indexed_document'] = "Document added to your institution's document database. Its content may be used to detect similarities with other documents.";
 $string['not_indexed_document'] = "Document not added to your institution's document database. Its content will not be used to detect similarities with other documents.";
+$string['extraction_in_progress'] = 'document extraction in progress, please try again later';
 
 // Student email.
 $string['studentemailsubject'] = 'File processed by Compilatio';
@@ -173,7 +173,7 @@ $string['programmed_analysis_future'] = 'Documents will be analyzed by Compilati
 $string['programmed_analysis_past'] = 'Documents have been submitted for analysis to Compilatio on {$a}.';
 $string['webservice_unreachable'] = "Compilatio.net is currently unavailable. We apologize for the inconvenience.";
 $string['startallcompilatioanalysis'] = "Analyze all documents";
-$string['restart_failed_analysis'] = 'Restart interrupted analysis';
+$string['reset_docs_in_error'] = 'Reset documents in error';
 $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
 $string['hide_area'] = 'Hide Compilatio informations';
 
@@ -183,7 +183,7 @@ $string['detailed_error_sending_failed'] = "Ces documents n'ont pas pu être env
 $string['detailed_error_too_short'] = 'These documents could not be analyzed by Compilatio because they didn\'t contain enough words (Minimum size: {$a} words).';
 $string['detailed_error_too_long'] = 'These documents could not be analyzed by Compilatio because they contained too many words (Maximum size: {$a} words).';
 $string['detailed_error_too_large'] = 'These documents could not be analyzed by Compilatio because they are too large (Maximum size: {$a} MB).';
-$string['detailed_error_analysis_failed'] = "The analysis of these documents didn't work correctly. You can restart these analyses.";
+$string['detailed_error_analysis_failed'] = "The analysis of these documents didn't work correctly. You can reset these documents.";
 $string['detailed_error_not_found'] = "These documents were not found. Please contact your Moodle administrator. Error : document not found for this API key.";
 
 // Short error status.
@@ -198,13 +198,13 @@ $string["short_error_too_large"] = 'documents too large.';
 // Notifications tab.
 $string['tabs_title_notifications'] = 'Notifications';
 $string["display_notifications"] = "Display notifications";
-$string['max_attempts_reach_files'] = 'Analysis has been interrupted for the following files. Analyses were sent too many times, you cannot restart them anymore :';
 $string['no_document_available_for_analysis'] = 'No documents were available for analysis';
 $string["analysis_started"] = '{$a} analysis have been requested.';
 $string["start_analysis_in_progress"] = 'Launching of the analyses in progress';
 $string["not_analyzed"] = "The following documents can't be analyzed: ";
+$string["not_analyzed_extracting"] = "The following documents can't be analyzed because they are being extracted, please try again later";
 $string["unsent_documents"] = 'This activity contains documents not submitted to Compilatio.';
-$string['restart_failed_analysis_in_progress'] = 'Restart interrupted analyses in progress';
+$string['reset_docs_in_error_in_progress'] = 'Reset of documents in error in progress';
 
 // Search author tab.
 $string["compilatio_search_tab"] = "Find the depositor of a document.";

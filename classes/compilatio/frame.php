@@ -106,7 +106,7 @@ class CompilatioFrame {
             unset($SESSION->compilatio_alert_max_attempts);
         }
 
-        $startallanalysis = $restartfailedanalysis = false;
+        $startallanalysis = $resetdocsinerror = false;
 
         $analysistype = $DB->get_field('plagiarism_compilatio_module', "analysistype", array("cmid" => $cmid));
 
@@ -132,11 +132,11 @@ class CompilatioFrame {
                 "content" => get_string("webservice_unreachable", "plagiarism_compilatio"));
         }
 
-        // Display restart analysis button if necesseary.
+        // Display reset docs in error button if necesseary.
         $sql = "SELECT COUNT(DISTINCT pcf.id) FROM {plagiarism_compilatio_files} pcf 
             WHERE pcf.cm=? AND (status = 'error_analysis_failed' OR status = 'error_sending_failed')";
         if ($DB->count_records_sql($sql, array($cmid)) !== 0) {
-            $restartfailedanalysis = true;
+            $resetdocsinerror = true;
         }
 
         // Check for unsend documents
@@ -148,7 +148,7 @@ class CompilatioFrame {
                     "class" => "danger",
                     "content" => get_string("unsent_documents", "plagiarism_compilatio")
                 );
-                $startallanalysis = $restartfailedanalysis = true;
+                $startallanalysis = $resetdocsinerror = true;
             }
         } else {
             $countunsend = 0;
@@ -233,6 +233,27 @@ class CompilatioFrame {
         get_string("hide_area", "plagiarism_compilatio") . "'>
                 <i class='fa fa-chevron-up fa-2x'></i>
             </div>";
+
+        // Display buttons
+        if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
+            if ($startallanalysis) {
+                $output .= "<button class='cmp-btn-lg cmp-btn-primary cmp-start-btn' >
+                        " . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "
+                        <i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
+                    </button>";
+                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
+                    array($CFG->httpswwwroot, $cmid, get_string("start_analysis_in_progress", "plagiarism_compilatio")));
+            }
+
+            if ($resetdocsinerror) {
+                $output .= "<button class='cmp-btn-lg cmp-btn-primary cmp-reset-btn' >
+                        " . get_string('reset_docs_in_error', 'plagiarism_compilatio') . "
+                        <i class='cmp-icon-lg cmp-ml-10 fa fa-rotate-right'></i>
+                    </button>";
+                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'resetDocsInError',
+                    array($CFG->httpswwwroot, $cmid, get_string("reset_docs_in_error_in_progress", "plagiarism_compilatio")));
+            }
+        }
 
         $output .= "</div>";
 
@@ -345,35 +366,10 @@ class CompilatioFrame {
 
         // Display timed analysis date.
         if (isset($analysisdate)) {
-            $output .= "<p id='cmp-planned-analyses'>$analysisdate</p>";
+            $output .= "<span id='cmp-planned-analyses'>$analysisdate</span>";
         }
 
         $output .= "</div>";
-
-        // Display buttons
-        if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
-            $output .= "<div id='cmp-btn-container'>";
-
-            if ($startallanalysis) {
-                $output .= "<button class='cmp-btn-lg cmp-btn-primary cmp-start-btn' >
-                        " . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "
-                        <i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
-                    </button>";
-                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
-                    array($CFG->httpswwwroot, $cmid, get_string("start_analysis_in_progress", "plagiarism_compilatio")));
-            }
-
-            if ($restartfailedanalysis) {
-                $output .= "<button class='cmp-btn-lg cmp-btn-primary cmp-restart-btn' >
-                        " . get_string('restart_failed_analysis', 'plagiarism_compilatio') . "
-                        <i class='cmp-ml-10 fa fa-play-circle'></i>
-                    </button>";
-                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'restartFailedAnalysis',
-                    array($CFG->httpswwwroot, $cmid, get_string("restart_failed_analysis_in_progress", "plagiarism_compilatio")));
-            }
-
-            $output .= "</div>";
-        }
 
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', [count($alerts), $docid]);
 

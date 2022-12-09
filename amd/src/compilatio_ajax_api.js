@@ -17,38 +17,6 @@ define(['jquery'], function($) {
 
     var exports = {};
 
-    exports.toggleIndexingState = function(basepath, eltId, docId) {
-        $(document).ready(function() {
-            setTimeout(function() {
-                var btn = $(".cmp-" + eltId + " .cmp-library");
-                btn.click(function() {
-                    el = btn.find("i");
-                    if (el.is('.cmp-library-in')) {
-                        var indexingState = 0;
-                    }
-                    if (el.is('.cmp-library-out')) {
-                        var indexingState = 1;
-                    }
-                    $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php', {'idDoc': docId, 'indexingState': indexingState}, function(res) {
-                        if (res == 'true') {
-                            if (indexingState == 0) {
-                                el.removeClass('cmp-library-in');
-                                el.addClass('cmp-library-out');
-                                el.removeClass('fa-check-circle');
-                                el.addClass('fa-times-circle');
-                            } else {
-                                el.removeClass('cmp-library-out');
-                                el.addClass('cmp-library-in');
-                                el.removeClass('fa-times-circle');
-                                el.addClass('fa-check-circle');
-                            }
-                        }
-                    });
-                });
-            }, 3000);
-        });
-    };
-
     exports.startAllAnalysis = function(basepath, cmid, message) {
         $(document).ready(function() {
             var startAllAnalysis = $("button.cmp-start-btn");
@@ -64,27 +32,14 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.startAnalysis = function(basepath, eltId, docId) {
+    exports.resetDocsInError = function(basepath, cmid, message) {
         $(document).ready(function() {
-            setTimeout(function() {
-                $(".cmp-" + eltId + " .cmp-btn").click(function() {
-                    $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis.php',
-                    {'docId': docId}, function() {
-                        window.location.reload();
-                    });
-                });
-            }, 300);
-        });
-    };
-
-    exports.restartFailedAnalysis = function(basepath, cmid, message) {
-        $(document).ready(function() {
-            var restartFailedAnalysis = $("button.cmp-restart-btn");
-            restartFailedAnalysis.click(function() {
+            var resetDocsInError = $("button.cmp-reset-btn");
+            resetDocsInError.click(function() {
                 disableCompilatioButtons();
                 $('#cmp-stats, #cmp-help, #cmp-home, #cmp-search, #cmp-notifications').hide();
                 $("#cmp-tabs-separator").after("<div class='cmp-alert cmp-alert-info'>" + message + "</div>");
-                $.post(basepath + '/plagiarism/compilatio/ajax/restart_failed_analysis.php',
+                $.post(basepath + '/plagiarism/compilatio/ajax/reset_docs_in_error.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
                 });
@@ -103,18 +58,59 @@ define(['jquery'], function($) {
         });
     };
 
+    function displayButton2(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid) {
+        $.post(basepath + '/plagiarism/compilatio/ajax/display_button.php', {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid}, function(button) {
+            let el = $('#cmp-' + domid);
+            el.empty().append(button);
+
+            var toogleIndexingStateBtn = $("#cmp-" + domid + " .cmp-library");
+            toogleIndexingStateBtn.click(function() {
+                i = toogleIndexingStateBtn.find("i");
+                if (i.is('.cmp-library-in')) {
+                    var indexingState = 0;
+                }
+                if (i.is('.cmp-library-out')) {
+                    var indexingState = 1;
+                }
+                i.removeClass();
+                $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php', {'docId': cmpfileid, 'indexingState': indexingState}, function(res) {
+                    if (res == 'true') {
+                        if (indexingState == 0) {
+                            i.addClass('cmp-library-out fa-times-circle fa');
+                        } else {
+                            i.addClass('cmp-library-in fa-check-circle fa');
+                        }
+                    }
+                });
+            });
+
+            var startAnalysisBtn = $("#cmp-" + domid + " .cmp-btn");
+            startAnalysisBtn.click(function() {
+                startAnalysisBtn.find("i").removeClass('fa-play-circle').addClass("fa-spinner fa-spin");
+
+                $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis.php',
+                {'docId': cmpfileid}, function(res) {
+                    res = JSON.parse(res);
+
+                    if ('error' in res) {
+                        $("#cmp-" + domid + " p").remove();
+                        $("#cmp-" + domid).append("<p class='cmp-color-red'>" + res.error + "</p>");
+                        startAnalysisBtn.find("i").removeClass('fa-spinner fa-spin').addClass("fa-play-circle");
+                    } else {
+                        $("#cmp-" + domid + " .cmp-area").removeClass("cmp-bg-primary").addClass("cmp-bg-" + res.bgcolor);
+                        startAnalysisBtn.replaceWith(res.button);
+                    }
+                });
+            });
+        });
+    }
+
     exports.displayButton = function(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid) {
         $(document).ready(function() {
-            $.post(basepath + '/plagiarism/compilatio/ajax/display_button.php', {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid}, function(button) {
-                let el = $('#cmp-' + domid);
-                el.append(button);
-            });
+            displayButton2(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid);
+
             setInterval(function() {
-                $.post(basepath + '/plagiarism/compilatio/ajax/display_button.php', {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid}, function(button) {
-                    let el = $('#cmp-' + domid);
-                    el.empty();
-                    el.append(button);
-                });
+                displayButton2(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid);
             }, 1 * 60000);
         });
     };

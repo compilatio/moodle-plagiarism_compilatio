@@ -199,8 +199,8 @@ class CompilatioEventHandler {
         if ($event['target'] == 'submission_status') {
             // The event is triggered when a submission is deleted and when the submission is passed to draft.
             $fs = get_file_storage();
-            $submissionfiles = $fs->get_area_files($eventdata["contextid"], "assignsubmission_file",
-                'submission_files', $eventdata["objectid"]);
+            $submissionfiles = $fs->get_area_files($event["contextid"], "assignsubmission_file",
+                'submission_files', $event["objectid"]);
             
             // If the documents have been deleted in the mdl_files table, we also delete them on our side.
             if (empty($submissionfiles)) {

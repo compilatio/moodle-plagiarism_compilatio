@@ -22,7 +22,6 @@
  * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @param array $_POST['params']
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
@@ -35,7 +34,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/button.p
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 require_login();
-global $DB;
+
 $cantriggeranalysis = required_param('cantriggeranalysis', PARAM_BOOL);
 $isstudentanalyse = required_param('isstudentanalyse', PARAM_BOOL);
 $cmpfileid = required_param('cmpfileid', PARAM_RAW);

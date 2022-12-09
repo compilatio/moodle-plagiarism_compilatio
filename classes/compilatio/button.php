@@ -135,13 +135,12 @@ class CompilatioButton {
                     return self::get_button($linkarray);
                 }
 
-                $cmpfile = new stdClass();
-                $cmpfile->status = "sent";
                 $urlparams = array("id" => $linkarray['cmid'],
                                 "sendfile" => $fileid,
                                 "action" => "grading",
                                 'page' => optional_param('page', null, PARAM_INT));
                 $url = new moodle_url("/mod/assign/view.php", $urlparams);
+                $url = $url->__toString();
             } else {
                 return '';
             }
@@ -153,7 +152,7 @@ class CompilatioButton {
             $CFG->httpswwwroot,
             $cantriggeranalysis,
             $isstudentanalyse,
-            $cmpfile->id,
+            $cmpfile->id ?? null,
             $canviewreport,
             $isteacher,
             $url,
@@ -180,25 +179,13 @@ class CompilatioButton {
         $domid
     ) {
 
-        global $DB, $CFG, $PAGE;
+        global $DB, $CFG;
 
         $cmpfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $cmpfileid]);
-        /*$userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $cmpfile->cm));
-        $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $userid);
 
-        $doc = $compilatio->get_document($cmpfile->externalid);*/
-
-        $status = $cmpfile->status;
+        $status = $cmpfile->status ?? null;
 
         $config = $DB->get_record('plagiarism_compilatio_module', array('cmid' => $cmpfile->cm ?? null));
-
-        // Add de/indexing feature for teachers.
-        $indexed = null;
-        if (!empty($cmpfile->externalid) && $cantriggeranalysis && !$isstudentanalyse) {
-            $indexed = $cmpfile->indexed ? true : false;
-            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'toggleIndexingState',
-                array($CFG->httpswwwroot, $domid, $cmpfile->externalid));
-        }
 
         $button = $score = '';
         $bgcolor = 'primary';
@@ -233,18 +220,10 @@ class CompilatioButton {
                     </div>";
                 $bgcolor = 'secondary';
             } else if ($cantriggeranalysis || ($isstudentanalyse && !$isteacher)) {
-                if (null == $url) {
-                    $button = "<div title='" . get_string('title_sent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-primary cursor-pointer'>"
+                $button = "<div title='" . get_string('title_sent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-primary cursor-pointer'>"
                         . get_string('btn_sent', "plagiarism_compilatio") . 
                         "<i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
                     </div>";
-                    $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysis', array($CFG->httpswwwroot, $domid, $cmpfile->id));
-                } else {
-                    $button = "<a href='" . $url . "' target='_self' title='" . get_string('title_sent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-primary cursor-pointer'>"
-                        . get_string('btn_sent', "plagiarism_compilatio") . 
-                        "<i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
-                    </a>";
-                }
             } else if ($isstudentanalyse && $isteacher) {
                 $button = '';
             } else {
@@ -270,6 +249,11 @@ class CompilatioButton {
                     <i class='cmp-mr-10 fa fa-exclamation-triangle'></i>" . get_string('btn_error', "plagiarism_compilatio") . 
                 "</div>";
             $bgcolor = 'error';
+        } else if (isset($url) && ($cantriggeranalysis || ($isstudentanalyse && !$isteacher))) {
+            $button = "<a href='" . $url . "' target='_self' title='" . get_string('title_sent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-primary cursor-pointer'>"
+                    . get_string('btn_sent', "plagiarism_compilatio") . 
+                    "<i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
+                </a>";
         } else {
             return '';
         }
@@ -283,8 +267,14 @@ class CompilatioButton {
             }
         }
 
+        // Add de/indexing feature for teachers.
+        $indexed = null;
+        if (!empty($cmpfile->externalid) && $cantriggeranalysis && !$isstudentanalyse) {
+            $indexed = $cmpfile->indexed ? true : false;
+        }
+
         $output = $info . "
-            <div class='cmp-area cmp-bg-" . $bgcolor . " cmp-" . $domid . "'>
+            <div class='cmp-area cmp-bg-" . $bgcolor . "'>
                 <div class='cmp-area-in'>
                     <img class='cmp-small-logo' src='" . new moodle_url("/plagiarism/compilatio/pix/c-net.svg") . "'>
                     " . self::get_indexing_state($indexed) . $score . "

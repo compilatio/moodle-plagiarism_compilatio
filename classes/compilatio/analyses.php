@@ -62,19 +62,15 @@ class CompilatioAnalyses {
             $cmpfile->status = "error_too_long";
 
         } else if (strpos($analyse, 'is not extracted, wait few seconds and retry.') !== false) {
-            // Do nothing, wait for document extraction.
-            // TODO afficher message document en cours d'extraction.
-            return;
+            return get_string('extraction_in_progress', 'plagiarism_compilatio');
         } else if ($analyse == 'Error need terms of service validation') {
             return;
         } else {
-            // TODO update this and handle extraction_error.
-            echo $OUTPUT->notification(get_string('failedanalysis', 'plagiarism_compilatio') . $analyse);
             return $analyse;
         }
         $DB->update_record('plagiarism_compilatio_files', $cmpfile);
 
-        return $analyse;
+        return $cmpfile->status;
     }
 
     /**
@@ -106,7 +102,7 @@ class CompilatioAnalyses {
                 $scores = $doc->light_reports->anasim->scores;
 
                 $cmpfile->status = "scored";
-                $cmpfile->similarityscore = $scores->similarity_percent ?? 0;
+                $cmpfile->similarityscore = $scores->displayed_similarity_percent ?? 0;
 
                 $emailstudents = $DB->get_field('plagiarism_compilatio_module', 'studentemail', array('cmid' => $cmpfile->cm));
                 if (!empty($emailstudents)) {

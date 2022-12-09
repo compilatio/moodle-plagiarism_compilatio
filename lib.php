@@ -229,7 +229,7 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
 
             $compilatio = new CompilatioService(get_config("plagiarism_compilatio", "apikey"), $user->compilatioid);
 
-            if (isset($user->id) && $data->termsofservice ?? false) {
+            if (isset($user->id) && ($data->termsofservice ?? false)) {
                 $user->validatedtermsofservice = true;
                 $DB->update_record('plagiarism_compilatio_user', $user);
 
@@ -549,6 +549,7 @@ function compilatio_get_unsent_documents($cmid) {
 
         foreach ($files as $file) {
             if ($file->get_filename() != '.') {
+                // TODO get_record sur champ pas unique identifier => logs  
                 $compifile = $DB->get_record('plagiarism_compilatio_files',
                     array('identifier' => $file->get_contenthash(), 'cm' => $cmid));
 

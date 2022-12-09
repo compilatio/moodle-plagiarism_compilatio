@@ -156,6 +156,7 @@ class CompilatioSendFile {
             $file = self::send_file($cmid, $userid, $file);
 
             if ($analysistype == 'manual' || ($analysistype == 'planned' && time() >= $analysistime)) {
+                // TODO doc isn't extrated yet.
                 CompilatioAnalyses::start_analysis($file);
             }
         }

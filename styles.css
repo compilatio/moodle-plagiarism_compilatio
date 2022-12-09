@@ -49,15 +49,6 @@
 /*
 Compilatio frame area
 */
-
-#cmp-btn-container {
-    display: flex;
-    justify-content: center;
-    margin: 0px 5% 0px 5%;
-}
-#cmp-hide-area {
-    float: right;
-}
 #cmp-logo {
     width: 250px;
     float: left;
@@ -135,8 +126,8 @@ Compilatio frame area
     border-top: 2px solid #e3e3e3;
     text-align: center;
     font-style: italic;
-    margin-top: -3px;
-    padding-top: 2px;
+    margin-top: 7px;
+    padding-top: 5px;
 }
 
 .cmp-alert {
@@ -221,11 +212,11 @@ Compilatio button area
 /* Indexing state button */
 .cmp-library-in {
     background-color: white;
-    color: rgb(110, 231, 183);
+    color: rgb(110, 231, 183) !important;
 }
 .cmp-library-out {
     background-color: white;
-    color: rgb(248, 113, 113);
+    color: rgb(248, 113, 113) !important;
 }
 .cmp-library {
     cursor: pointer;
@@ -238,6 +229,7 @@ Compilatio button area
     top: 11px;
     left: 18px;
     font-size: 18px;
+    color: lightgrey;
 }
 
 /* Compilatio buttons */
@@ -255,8 +247,8 @@ Compilatio button area
 }
 
 .cmp-btn-lg {
-    width: 30%;
-    margin: 0 2%;
+    float: right;
+    margin: 0 0.5rem;
     padding: 0.35rem 1rem;
 }
 .cmp-btn-lg.disabled {
