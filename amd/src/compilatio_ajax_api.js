@@ -58,7 +58,7 @@ define(['jquery'], function($) {
         });
     };
 
-    function displayButton2(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid) {
+    function displayBtn(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid) {
         $.post(basepath + '/plagiarism/compilatio/ajax/display_button.php', {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid}, function(button) {
             let el = $('#cmp-' + domid);
             el.empty().append(button);
@@ -107,10 +107,10 @@ define(['jquery'], function($) {
 
     exports.displayButton = function(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid) {
         $(document).ready(function() {
-            displayButton2(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid);
+            displayBtn(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid);
 
             setInterval(function() {
-                displayButton2(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid);
+                displayBtn(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid);
             }, 1 * 60000);
         });
     };
