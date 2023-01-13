@@ -43,7 +43,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 
-$compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+$compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'));
 $validapikey = $compilatio->check_apikey();
 
 if ($validapikey === true) {

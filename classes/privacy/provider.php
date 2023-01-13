@@ -95,7 +95,6 @@ class provider implements
             'status'            => 'privacy:metadata:plagiarism_compilatio_files:status',
             'externalid'        => 'privacy:metadata:plagiarism_compilatio_files:externalid',
             'similarityscore'   => 'privacy:metadata:plagiarism_compilatio_files:similarityscore',
-            'attempt'           => 'privacy:metadata:plagiarism_compilatio_files:attempt',
             'indexed'           => 'privacy:metadata:plagiarism_compilatio_files:indexed',
         ], 'privacy:metadata:plagiarism_compilatio_files');
 

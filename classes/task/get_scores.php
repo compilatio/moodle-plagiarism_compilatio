@@ -47,7 +47,7 @@ class get_scores extends \core\task\scheduled_task {
      * @return void
      */
     public function execute() {
-
+        exit;
         global $DB, $CFG;
 
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
@@ -70,47 +70,10 @@ class get_scores extends \core\task\scheduled_task {
             $files = $DB->get_records_select('plagiarism_compilatio_files', $sql);
             if (!empty($files)) {
                 foreach ($files as $plagiarismfile) {
-                    // Check if we need to delay this submission.
-                    $attemptallowed = self::compilatio_check_delay($plagiarismfile);
-                    if (!$attemptallowed) {
-                        continue;
-                    }
                     mtrace("getting score for file " . $plagiarismfile->id);
                     \CompilatioAnalyses::check_analysis($plagiarismfile); // Get status and set status if required.
                 }
             }
-        }
-    }
-
-    /**
-     * Function to check timesubmitted and attempt to see if we need to delay an API check
-     *
-     * @param  array $plagiarismfile    A row of plagiarism_compilatio_files in database
-     * @return bool                     Return true if succeed, false otherwise
-     */
-    public static function compilatio_check_delay($plagiarismfile) {
-        // Initial wait time - this is doubled each time a check is made until the max delay is met.
-        $submissiondelay = 5;
-        // Maximum time to wait between checks.
-        $maxsubmissiondelay = 120;
-
-        $i = 0;
-        $wait = 0;
-        while ($i < $plagiarismfile->attempt) {
-            $time = $submissiondelay * ($plagiarismfile->attempt - $i);
-            if ($time > $maxsubmissiondelay) {
-                $time = $maxsubmissiondelay;
-            }
-            $wait += $time;
-            $i++;
-        }
-        $wait = (int) $wait * 60;
-        $timetocheck = (int) ($plagiarismfile->timesubmitted + $wait);
-
-        if ($timetocheck < time()) {
-            return true;
-        } else {
-            return false;
         }
     }
 }

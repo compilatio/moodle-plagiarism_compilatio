@@ -214,7 +214,7 @@ class CompilatioEventHandler {
         if ($event['target'] == 'assessable' && $plugincm->studentanalyses === '1') {
 
             $files = $DB->get_records('plagiarism_compilatio_files', array('cm' => $cmid, 'userid' => $userid));
-            $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $plugincm->userid);
+            $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'), $plugincm->userid);
 
             foreach ($files as $file) {
                 $compilatio->delete_analyse($file->externalid);

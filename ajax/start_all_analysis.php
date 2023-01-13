@@ -19,7 +19,7 @@
  *
  * This script is called by amd/build/ajax_api.js
  *
- * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param string $_POST['cmid']
@@ -70,18 +70,7 @@ if ($plugincm->analysistype == 'manual') {
     }
 }
 
-// Handle not sent documents :.
-$files = compilatio_get_unsent_documents($cmid);
-$countbegin = count($files);
-
-if ($countbegin != 0) {
-    CompilatioSendFile::send_unsent_files($files, $cmid);
-    $countsuccess += $countbegin - count(compilatio_get_unsent_documents($cmid));
-}
-
-$counttotal = count($plagiarismfiles) + $countbegin;
-
-if ($counttotal === 0) {
+if (count($plagiarismfiles) === 0) {
     $SESSION->compilatio_alert = [
         "class" => "info",
         "content" => get_string("no_document_available_for_analysis", "plagiarism_compilatio"),

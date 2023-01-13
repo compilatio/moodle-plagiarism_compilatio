@@ -89,7 +89,7 @@ class compilatio_setup_form extends moodleform {
 
         $apikey = get_config('plagiarism_compilatio', 'apikey');
         if (!empty($apikey)) {
-            $compilatio = new CompilatioService($apikey);
+            $compilatio = new CompilatioAPI($apikey);
 
             if ($compilatio->check_allow_student_analyses()) {
                 $mform->addElement('checkbox', 'enable_student_analyses',

@@ -15,34 +15,42 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Start a document analysis via Compilatio SOAP API
+ * Get Compilatio document frame
  *
  * This script is called by amd/build/ajax_api.js
  *
- * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @param string $_POST['userid']
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
+
+// Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/documentFrame.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 require_login();
 
-global $DB;
+$cantriggeranalysis = required_param('cantriggeranalysis', PARAM_BOOL);
+$isstudentanalyse = required_param('isstudentanalyse', PARAM_BOOL);
+$cmpfileid = required_param('cmpfileid', PARAM_RAW);
+$canviewreport = required_param('canviewreport', PARAM_BOOL);
+$isteacher = required_param('isteacher', PARAM_BOOL);
+$url = required_param('url', PARAM_RAW);
+$filename = required_param('filename', PARAM_RAW);
+$domid = required_param('domid', PARAM_INT);
 
-$userid = required_param('userid', PARAM_RAW);
-
-$user = $DB->get_record("plagiarism_compilatio_user", array("compilatioid" => $userid));
-$user->validatedtermsofservice = true;
-$DB->update_record('plagiarism_compilatio_user', $user);
-
-$compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'), $userid);
-$compilatio->validate_terms_of_service();
-
-
+echo CompilatioDocumentFrame::display_document_frame(
+    $cantriggeranalysis,
+    $isstudentanalyse,
+    $cmpfileid,
+    $canviewreport,
+    $isteacher,
+    $url,
+    $filename,
+    $domid
+);

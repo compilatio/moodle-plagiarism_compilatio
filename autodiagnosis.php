@@ -47,7 +47,7 @@ if (isset($plagiarismsettings["enabled"])) {
 }
 
 // Connection test.
-$compilatio = new CompilatioService("test");
+$compilatio = new CompilatioAPI("test");
 if ($compilatio->check_apikey() == "Forbidden ! Your api key is invalid") {
     $connectionsuccess = true;
 } else {
@@ -83,7 +83,7 @@ if (isset($plagiarismsettings["enable_mod_quiz"])) {
 }
 
 // API key test.
-$compilatio = new CompilatioService($plagiarismsettings["apikey"]);
+$compilatio = new CompilatioAPI($plagiarismsettings["apikey"]);
 if ($compilatio->check_apikey()) {
     $apikeysuccess = true;
 } else {

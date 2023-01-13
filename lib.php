@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/frame.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/csv.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/button.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/documentFrame.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
 
 /**
@@ -96,7 +96,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
      * @return string  HTML or blank.
      */
     public function get_links($linkarray) {
-        return CompilatioButton::get_button($linkarray);
+        return CompilatioDocumentFrame::get_document_frame($linkarray);
     }
 
     /**
@@ -205,7 +205,7 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
             $user = $DB->get_record('plagiarism_compilatio_user', array("userid" => $USER->id));
 
             if (empty($user)) {
-                $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+                $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'));
 
                 // Check if user already exists in Compilatio.
                 $compilatioid = $compilatio->get_user($USER->email);
@@ -227,7 +227,7 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
 
             $cmconfig->userid = $user->compilatioid;
 
-            $compilatio = new CompilatioService(get_config("plagiarism_compilatio", "apikey"), $user->compilatioid);
+            $compilatio = new CompilatioAPI(get_config("plagiarism_compilatio", "apikey"), $user->compilatioid);
 
             if (isset($user->id) && ($data->termsofservice ?? false)) {
                 $user->validatedtermsofservice = true;
@@ -629,7 +629,7 @@ function plagiarism_compilatio_pre_course_delete($course) {
 function compilatio_delete_modules($modules) {
     if (is_array($modules)) {
         global $DB;
-        $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+        $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'));
 
         foreach ($modules as $module) {
             $files = $DB->get_records('plagiarism_compilatio_files', array('cm' => $module->cmid));
@@ -656,7 +656,7 @@ function compilatio_delete_modules($modules) {
 function compilatio_delete_files($files, $deletefilesmoodledb = true, $keepfilesindexed = false) {
     if (is_array($files)) {
         global $DB;
-        $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+        $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'));
 
         foreach ($files as $doc) {
             if (is_null($doc->externalid)) {

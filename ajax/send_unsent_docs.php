@@ -15,42 +15,41 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Get Compilatio Button
+ * Start analysis for all document in course module
  *
  * This script is called by amd/build/ajax_api.js
  *
  * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
+ * @param string $_POST['cmid']
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 
-// Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/button.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 require_login();
 
-$cantriggeranalysis = required_param('cantriggeranalysis', PARAM_BOOL);
-$isstudentanalyse = required_param('isstudentanalyse', PARAM_BOOL);
-$cmpfileid = required_param('cmpfileid', PARAM_RAW);
-$canviewreport = required_param('canviewreport', PARAM_BOOL);
-$isteacher = required_param('isteacher', PARAM_BOOL);
-$url = required_param('url', PARAM_RAW);
-$filename = required_param('filename', PARAM_RAW);
-$domid = required_param('domid', PARAM_INT);
+global $SESSION;
 
-echo CompilatioButton::display_button(
-    $cantriggeranalysis,
-    $isstudentanalyse,
-    $cmpfileid,
-    $canviewreport,
-    $isteacher,
-    $url,
-    $filename,
-    $domid
-);
+$cmid = required_param('cmid', PARAM_TEXT);
+
+// Handle not sent documents :.
+$files = compilatio_get_unsent_documents($cmid);
+
+if (count($files) != 0) {
+    CompilatioSendFile::send_unsent_files($files, $cmid);
+    $countsuccess = count($files) - count(compilatio_get_unsent_documents($cmid));
+}
+
+if ($countsuccess > 0) {
+    $SESSION->compilatio_alert = [
+        "class" => "info",
+        "content" => get_string("document_sent", "plagiarism_compilatio", $countsuccess)
+    ];
+}

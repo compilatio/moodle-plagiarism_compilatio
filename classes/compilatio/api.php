@@ -25,11 +25,11 @@
  */
 
 /**
- * compilatioservice class
+ * CompilatioAPI class
  * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class CompilatioService {
+class CompilatioAPI {
 
     private $apikey;
     private $urlrest;

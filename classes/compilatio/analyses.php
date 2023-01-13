@@ -44,7 +44,7 @@ class CompilatioAnalyses {
         global $DB, $OUTPUT;
 
         $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $cmpfile->cm));
-        $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $userid);
+        $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'), $userid);
 
         $analyse = $compilatio->start_analyse($cmpfile->externalid);
 
@@ -80,12 +80,12 @@ class CompilatioAnalyses {
      * @param  bool   $manuallytriggered Manually triggered
      * @return void
      */
-    public static function check_analysis($cmpfile, $manuallytriggered = false) {
+    public static function check_analysis($cmpfile) {
 
         global $DB;
 
         $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $cmpfile->cm));
-        $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $userid);
+        $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'), $userid);
 
         $doc = $compilatio->get_document($cmpfile->externalid);
 
@@ -113,10 +113,6 @@ class CompilatioAnalyses {
             } else if ($state == 'crashed' || $state == 'aborted' || $state == 'canceled') {
                 $cmpfile->status = "error_analysis_failed";
             }
-        }
-
-        if (!$manuallytriggered) {
-            $cmpfile->attempt = $cmpfile->attempt + 1;
         }
 
         $DB->update_record('plagiarism_compilatio_files', $cmpfile);

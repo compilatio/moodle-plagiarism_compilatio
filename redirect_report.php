@@ -40,7 +40,7 @@ $docid = required_param('docid', PARAM_RAW);
 $cmid = required_param('cmid', PARAM_RAW);
 
 $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $cmid));
-$compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $userid);
+$compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'), $userid);
 $jwt = $compilatio->get_report_token($docid);
 
 if ($jwt === false) {

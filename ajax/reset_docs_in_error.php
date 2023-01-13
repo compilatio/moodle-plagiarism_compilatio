@@ -40,7 +40,7 @@ global $DB, $PAGE;
 
 $cmid = required_param('cmid', PARAM_TEXT);
 
-$compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+$compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'));
 
 // Restart failed analyses.
 $files = $DB->get_records("plagiarism_compilatio_files", array("cm" => $cmid, "status" => "error_analysis_failed"));

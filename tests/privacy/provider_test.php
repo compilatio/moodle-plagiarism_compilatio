@@ -75,7 +75,6 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->assertArrayHasKey('externalid', $privacyfields);
         $this->assertArrayHasKey('status', $privacyfields);
         $this->assertArrayHasKey('similarityscore', $privacyfields);
-        $this->assertArrayHasKey('attempt', $privacyfields);
         $this->assertArrayHasKey('timesubmitted', $privacyfields);
         $this->assertArrayHasKey('indexed', $privacyfields);
 

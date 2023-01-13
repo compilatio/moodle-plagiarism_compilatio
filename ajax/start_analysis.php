@@ -48,11 +48,11 @@ $status = CompilatioAnalyses::start_analysis($plagiarismfile);
 $res = new StdClass();
 
 if ($status == "queue") {
-    $res->button = "<div title='" . get_string('title_' . $status, "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-secondary'>"
+    $res->documentFrame = "<div title='" . get_string('title_' . $status, "plagiarism_compilatio") . "' class='cmp-btn-secondary'>
+            <i class='cmp-icon-lg cmp-mr-10 fa fa-spinner fa-spin'></i>"
             . get_string('btn_' . $status, "plagiarism_compilatio") .
-            "<i class='cmp-icon-lg cmp-ml-10 fa fa-spinner fa-spin'></i>
-        </div>";
-    $res->bgcolor = 'secondary';
+        "</div>";
+    $res->bgcolor = 'primary';
 } else if (strpos($status, "error") === 0) {
     if ($status == "error_too_long") {
         $value = get_config('plagiarism_compilatio', 'max_word');
@@ -60,7 +60,7 @@ if ($status == "queue") {
         $value = get_config('plagiarism_compilatio', 'min_word');
     }
 
-    $res->button = "<div title='" . get_string("title_" . $status, "plagiarism_compilatio", $value ?? null) . "' class='cmp-btn cmp-btn-error'>
+    $res->documentFrame = "<div title='" . get_string("title_" . $status, "plagiarism_compilatio", $value ?? null) . "' class='cmp-btn cmp-btn-error'>
             <i class='cmp-mr-10 fa fa-exclamation-triangle'></i>" . get_string('btn_error', "plagiarism_compilatio") . 
         "</div>";
     $res->bgcolor = 'error';

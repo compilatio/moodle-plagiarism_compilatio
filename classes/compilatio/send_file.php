@@ -110,7 +110,7 @@ class CompilatioSendFile {
 
             $cmconfig = $DB->get_record("plagiarism_compilatio_module", array("cmid" => $cmid));
 
-            $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $cmconfig->userid);
+            $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'), $cmconfig->userid);
 
             $docid = $compilatio->set_document($cmpfile->filename, $cmconfig->folderid, $filepath, $cmpfile->indexed, $user);
 
@@ -145,20 +145,20 @@ class CompilatioSendFile {
 
         global $DB;
 
-        $compilatio = new plagiarism_plugin_compilatio();
+        //$compilatio = new plagiarism_plugin_compilatio();
 
-        $analysistype = $DB->get_field('plagiarism_compilatio_module', 'analysistype', array('cmid' => $cmid));
-        $analysistime = $DB->get_field('plagiarism_compilatio_module', 'analysistime', array('cmid' => $cmid));
+        /*$analysistype = $DB->get_field('plagiarism_compilatio_module', 'analysistype', array('cmid' => $cmid));
+        $analysistime = $DB->get_field('plagiarism_compilatio_module', 'analysistime', array('cmid' => $cmid));*/
 
         foreach ($files as $file) {
             $userid = $DB->get_field('assign_submission', 'userid', array('id' => $file->get_itemid()));
 
             $file = self::send_file($cmid, $userid, $file);
 
-            if ($analysistype == 'manual' || ($analysistype == 'planned' && time() >= $analysistime)) {
+            /*if ($analysistype == 'manual' || ($analysistype == 'planned' && time() >= $analysistime)) {
                 // TODO doc isn't extrated yet.
                 CompilatioAnalyses::start_analysis($file);
-            }
+            }*/
         }
     }
 

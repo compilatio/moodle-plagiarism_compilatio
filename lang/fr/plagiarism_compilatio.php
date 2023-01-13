@@ -131,24 +131,32 @@ $string['compilatiodefaults'] = "Valeurs par défaut pour Compilatio";
 $string['defaultupdated'] = "Les valeurs par défaut ont été mises à jour";
 $string['defaults_desc'] = "Les paramètres suivants sont utilisés comme valeurs par défaut dans les activités de Moodle intégrant Compilatio.";
 
-// Compilatio button.
+// Compilatio document frame.
 //$string["title_scored"] = 'Analyse terminée: {$a}% de similitudes.';
+$string['btn_unsent'] = 'Envoyer';
+$string['title_unsent'] = "Envoyer le document à Compilatio";
 $string['btn_sent'] = 'Analyser';
 $string['title_sent'] = "Démarrer l'analyse";
-$string['btn_planned'] = "Planifié";
+$string['btn_planned'] = "Analyse planifiée";
 $string['title_planned'] = 'Ce fichier sera traité le {$a}';
-$string['btn_queue'] = 'Attente';
+$string['btn_queue'] = "Dans la file d'attente";
 $string['title_queue'] = "Le document est en attente d'analyse et va bientôt être traité par Compilatio";
-$string['btn_analyzing'] = 'Analyse';
+$string['btn_analyzing'] = 'Analyse en cours';
 $string['title_analyzing'] = "Le fichier est en cours d'analyse par Compilatio.";
+$string['btn_error_analysis_failed'] = 'Erreur analyse échouée';
 $string['title_error_analysis_failed'] = "L'analyse de ce document n'a pas fonctionné correctement.";
-$string['btn_error_sending_failed'] = 'Renvoyer';
+//$string['btn_error_sending_failed'] = 'Renvoyer';
+$string['btn_error_sending_failed'] = 'Erreur envoi échoué';
 $string['title_error_sending_failed'] = "Une erreur s'est produite lors de l'envoi du fichier à Compilatio";
-$string['btn_error'] = 'Erreur';
+$string['btn_error_unsupported'] = 'Erreur non supporté';
 $string['title_error_unsupported'] = "Ce type de fichier n'est pas supporté par Compilatio";
+$string['btn_error_too_large'] = 'Erreur trop volumineux';
 $string['title_error_too_large'] = 'Le fichier est trop volumineux pour être traité par Compilatio. Taille maximale : {$a} Mo';
+$string['btn_error_too_short'] = 'Erreur trop court';
 $string['title_error_too_short'] = 'Ce document ne contient pas assez de mots pour être traité par Compilatio. Taille minimale : {$a} mots';
+$string['btn_error_too_long'] = 'Erreur trop long';
 $string['title_error_too_long'] = 'Ce document contient trop de mots pour être analysé. Taille maximale : {$a} mots';
+$string['btn_error_not_found'] = 'Erreur non trouvé';
 $string['title_error_not_found'] = "Ce document n'a pas été trouvé. Veuillez contacter votre administrateur de moodle. Erreur : document non trouvé pour cette clé API.";
 
 $string['previouslysubmitted'] = "Auparavant soumis comme";
@@ -172,7 +180,8 @@ $string['similarities_disclaimer'] = "Vous pouvez analyser les similitudes prés
 $string['programmed_analysis_future'] = 'Les documents seront analysés par Compilatio le {$a}.';
 $string['programmed_analysis_past'] = 'Les documents ont été soumis pour analyse à Compilatio le {$a}.';
 $string['webservice_unreachable'] = "Le service Compilatio.net est actuellement indisponible. Veuillez nous excuser pour la gêne occasionnée.";
-$string['startallcompilatioanalysis'] = "Analyser tous les documents";
+$string['start_all_analysis'] = "Analyser tous les documents";
+$string['send_all_documents'] = "Envoyer tous les documents";
 $string['reset_docs_in_error'] = 'Réinitialiser les documents en erreur';
 $string["compilatio_help_assign"] = "Obtenir de l&#39aide sur le plugin Compilatio";
 $string['hide_area'] = 'Masquer les informations Compilatio';
@@ -196,11 +205,12 @@ $string["short_error_too_long"] = 'documents trop longs.';
 $string["short_error_too_large"] = 'documents trop volumineux';
 
 // Notifications tab.
-$string['tabs_title_notifications'] = 'Notifications';
 $string["display_notifications"] = "Afficher les notifications";
 $string['no_document_available_for_analysis'] = "Aucun document n'était disponible pour analyse.";
-$string["analysis_started"] = '{$a} analyse(s) démandée(s).';
+$string["analysis_started"] = '{$a} analyses démandées.';
 $string["start_analysis_in_progress"] = 'Lancement des analyses en cours';
+$string["document_sent"] = '{$a} documents envoyés.';
+$string["send_documents_in_progress"] = 'Envoi des documents en cours';
 $string["not_analyzed"] = "Les documents suivants n'ont pas pu être analysés : ";
 $string["not_analyzed_extracting"] = "Les documents suivants n'ont pas pu être analysés car ils sont en cours d'extraction, veuillez réessayez plus tard";
 $string["unsent_documents"] = 'Attention, cette activité contient des documents non soumis à Compilatio.';
@@ -308,7 +318,6 @@ $string['privacy:metadata:plagiarism_compilatio_files:timesubmitted'] = 'L\'heur
 $string['privacy:metadata:plagiarism_compilatio_files:externalid'] = 'L\'identifiant de la soumission dans la base de données de Compilatio';
 $string['privacy:metadata:plagiarism_compilatio_files:status'] = 'L\'état de l\'analyse la soumission (Analysé, En attente, Temps dépassé...)';
 $string['privacy:metadata:plagiarism_compilatio_files:similarityscore'] = 'Le pourcentage de similitudes trouvées pour cette soumission';
-$string['privacy:metadata:plagiarism_compilatio_files:attempt'] = 'Le nombre de fois qu\'un utilisateur a essayé de lancer l\'analyse d\'une soumission';
 $string['privacy:metadata:plagiarism_compilatio_files:indexed'] = "L'état d'indexation en bibliothèque de référence du fichier.";
 
 $string['privacy:metadata:external_compilatio_document'] = 'Informations à propos des documents dans la base de données de Compilatio';

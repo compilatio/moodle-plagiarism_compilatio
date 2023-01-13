@@ -101,17 +101,13 @@ class CompilatioFrame {
             $alerts[] = $SESSION->compilatio_alert;
             unset($SESSION->compilatio_alert);
         }
-        if (isset($SESSION->compilatio_alert_max_attempts)) {
-            $alerts[] = $SESSION->compilatio_alert_max_attempts;
-            unset($SESSION->compilatio_alert_max_attempts);
-        }
 
-        $startallanalysis = $resetdocsinerror = false;
+        $startallanalyses = $sendalldocs = $resetdocsinerror = false;
 
         $analysistype = $DB->get_field('plagiarism_compilatio_module', "analysistype", array("cmid" => $cmid));
 
-        if ($analysistype == 'manual') {
-            $startallanalysis = true;
+        if ($analysistype == 'manual' && $DB->count_records("plagiarism_compilatio_files", ["status" => "sent", "cm" => $cmid]) !== 0) {
+            $startallanalyses = true;
 
         } else if ($analysistype == 'planned') { // Display the date of analysis if its type is set on 'Planned'.
             $analysistime = $DB->get_field('plagiarism_compilatio_module', "analysistime", array("cmid" => $cmid));
@@ -148,13 +144,13 @@ class CompilatioFrame {
                     "class" => "danger",
                     "content" => get_string("unsent_documents", "plagiarism_compilatio")
                 );
-                $startallanalysis = $resetdocsinerror = true;
+                $sendalldocs = true;
             }
         } else {
             $countunsend = 0;
         }
 
-        $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+        $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'));
 
         foreach ($compilatio->get_alerts() as $alert) {
             $language = substr(current_language(), 0, 2);
@@ -234,15 +230,25 @@ class CompilatioFrame {
                 <i class='fa fa-chevron-up fa-2x'></i>
             </div>";
 
+        // TODO factoriser cette merde.
         // Display buttons
         if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
-            if ($startallanalysis) {
+            if ($startallanalyses) {
                 $output .= "<button class='cmp-btn-lg cmp-btn-primary cmp-start-btn' >
-                        " . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "
+                        " . get_string('start_all_analysis', 'plagiarism_compilatio') . "
                         <i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
                     </button>";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
                     array($CFG->httpswwwroot, $cmid, get_string("start_analysis_in_progress", "plagiarism_compilatio")));
+            }
+
+            if ($sendalldocs) {
+                $output .= "<button class='cmp-btn-lg cmp-btn-primary cmp-send-btn' >
+                        " . get_string('send_all_documents', 'plagiarism_compilatio') . "
+                        <i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
+                    </button>";
+                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'sendUnsentDocs',
+                    array($CFG->httpswwwroot, $cmid, get_string("send_documents_in_progress", "plagiarism_compilatio")));
             }
 
             if ($resetdocsinerror) {
@@ -303,7 +309,6 @@ class CompilatioFrame {
         // Alerts tab.
         if (count($alerts) !== 0) {
             $output .= "<div id='cmp-notifications' class='cmp-tabs-content'>";
-            $output .= "<h5 id='cmp-notif-title'>" . get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>";
 
             foreach ($alerts as $alert) {
                 if (isset($alert["content"])) {

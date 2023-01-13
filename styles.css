@@ -36,10 +36,13 @@
 
 /* Icon Spacing and Sizing */
 .cmp-ml-10 {
-  margin-left: 10px;
+    margin-left: 10px;
+}
+.cmp-ml-5 {
+    margin-left: 5px;
 }
 .cmp-mr-10 {
-  margin-right: 10px;
+    margin-right: 10px;
 }
 .cmp-icon-lg {
   font-size: 1.2em !important;
@@ -69,7 +72,7 @@ Compilatio frame area
 
 #cmp-tabs-separator {
   margin: 1rem 0;
-  border-bottom: 2px solid #e3e3e3;
+  border-bottom: 2px solid #EBEBF0;
 }
 .cmp-tabs-content {
     display: none;
@@ -115,15 +118,15 @@ Compilatio frame area
     overflow: hidden;
     min-width: 565px;
     padding: 15px;
-    background-color: #f5f5f5;
-    border: 1px solid #e3e3e3;
+    background-color: #F5F6F8;
+    border: 1px solid #EBEBF0;
     border-radius: 4px;
     margin: 70px 5% 10px 5%;
     color: #444;
 }
 
 #cmp-planned-analyses {
-    border-top: 2px solid #e3e3e3;
+    border-top: 2px solid #EBEBF0;
     text-align: center;
     font-style: italic;
     margin-top: 7px;
@@ -134,12 +137,10 @@ Compilatio frame area
   display: flex;
   font-weight: bold;
   padding: 0.75rem;
-  margin: 0.75rem;
+  margin: 0.5rem;
   background-color: #fff;
   border-left: 6px solid #7f7f84;
-  -webkit-box-shadow: 0 0 35px 0 rgb(130 130 130 / 20%);
-     -moz-box-shadow: 0 0 35px 0 rgb(130 130 130 / 20%);
-          box-shadow: 0 0 35px 0 rgb(130 130 130 / 20%);
+  border-radius: 5px;
 }
 .cmp-alert-success {
   border-color: #38ba7d;
@@ -172,7 +173,7 @@ Compilatio frame area
 }
 
 /*
-Compilatio button area 
+Compilatio document frame area 
 */
 .cmp-area {
     display: flex;
@@ -180,24 +181,30 @@ Compilatio button area
     -ms-align-items: center;
     align-items: center;
     margin-top: 10px;
-    border-radius: 0.3rem;
+    border: solid 2px;
+    border-radius: 0.6rem;
+    min-width: 275px;
 }
 
-.cmp-area-in {
-    margin: 2px;
-    background-color: white;
-    display: flex;
-    border-radius: 0.2rem;
-}
-
-.cmp-bg-primary {
-    background-color: #006fbf;
-}
 .cmp-bg-error {
     background-color: #dc3545;
 }
-.cmp-bg-secondary {
+.cmp-bg-primary {
     background-color: #ced4da;
+}
+
+.cmp-border-error {
+    border-color: #dc3545;
+}
+.cmp-border-primary {
+    border-color: #ced4da;
+}
+
+.cmp-btn-error {
+    color: #dc3545;
+}
+.cmp-btn-secondary {
+    color: #494c4e;
 }
 
 .cmp-prevsubmitted {
@@ -226,9 +233,9 @@ Compilatio button area
 }
 .cmp-library > i {
     position: absolute;
-    top: 11px;
-    left: 18px;
-    font-size: 18px;
+    top: 8px;
+    left: 14px;
+    font-size: 16px;
     color: lightgrey;
 }
 
@@ -242,8 +249,14 @@ Compilatio button area
     padding: 0.25rem 1rem;
     font-size: .925rem;
     text-decoration: none;
-    border-radius: 0.3rem;
+    border-radius: 0.4rem;
     border: none;
+}
+
+.cmp-btn-doc {
+    height: 30px;
+    margin-right: 2px;
+    width: 120px;
 }
 
 .cmp-btn-lg {
@@ -252,31 +265,19 @@ Compilatio button area
     padding: 0.35rem 1rem;
 }
 .cmp-btn-lg.disabled {
-    opacity: 0.3;
+    opacity: 0.5;
     cursor: default;
 }
 
 a.cmp-btn-primary:hover {
   text-decoration: none;
-  color: #fff;
-}
-.cmp-btn-primary {
-    background-color: #006fbf;
-    color: #fff;
-    cursor: pointer;
-}
-.cmp-btn-error {
-    background-color: #dc3545;
-    color: #fff;
-}
-
-a.cmp-btn-secondary:hover {
-  text-decoration: none;
   color: #494c4e;
 }
-.cmp-btn-secondary {
+.cmp-btn-primary {
     background-color: #ced4da;
     color: #494c4e;
+    cursor: pointer;
+    margin-left: auto;
 }
 
 /* Similarities */
@@ -296,10 +297,11 @@ a.cmp-btn-secondary:hover {
     text-align: center;
     font-weight: bold;
     font-size: medium;
+    white-space: nowrap;
 }
 
 /* Compilatio small logo */
 .cmp-small-logo {
     height: 22px;
-    margin: 5px;
+    margin: 6px;
 }

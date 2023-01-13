@@ -59,7 +59,7 @@ if (count($rows) === 0) {
     echo html_writer::tag('a', get_string("export_raw_csv", "plagiarism_compilatio"), array(
         'href' => $url,
         'style' => 'margin-bottom:20px;',
-        'class' => 'cmp-btn cmp-btn-secondary'
+        'class' => 'cmp-btn cmp-btn-primary'
     ));
     echo html_writer::tag('legend', get_string("activities_statistics", "plagiarism_compilatio"), array(
         'class' => 'cmp-legend'
@@ -130,7 +130,7 @@ if (count($rows) === 0) {
     echo html_writer::tag('a', get_string("export_global_csv", "plagiarism_compilatio"), array(
         'href' => $url,
         'style' => 'margin-bottom:20px;',
-        'class' => 'cmp-btn cmp-btn-secondary'
+        'class' => 'cmp-btn cmp-btn-primary'
     ));
 }
 echo $OUTPUT->box_end();

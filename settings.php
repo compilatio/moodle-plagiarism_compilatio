@@ -97,7 +97,7 @@ $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $mform->set_data($plagiarismsettings);
 
 if (!empty($plagiarismsettings['enabled'])) {
-    $compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'));
+    $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'));
     $validapikey = $compilatio->check_apikey();
     if ($validapikey === true) {
         if (!$compilatio->check_allow_student_analyses()) {

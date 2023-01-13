@@ -41,7 +41,7 @@ if (in_array($page, $availpages) === false) {
     $page = 'teacher';
 }
 
-$compilatio = new CompilatioService(get_config('plagiarism_compilatio', 'apikey'), $userid);
+$compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'), $userid);
 $token = $compilatio->get_zendesk_jwt();
 
 $helpcenterpage = get_config('plagiarism_compilatio', 'helpcenter_' . $page);
