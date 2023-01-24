@@ -156,28 +156,34 @@ class CompilatioAPI {
      * @param   string  $folderid       Document's folder ID
      * @return  string                  Return the document's ID, an error message otherwise
      */
-    public function set_document($filename, $folderid, $filepath, $indexed, $user) {
+    public function set_document($filename, $folderid, $filepath, $indexed, $depositor, $authors) {
         $endpoint = "/api/private/document/";
-        $params = array(
+        $params = [
             'file' => new \CURLFile($filepath),
             'filename' => $filename,
             'title' => $filename,
             'folder_id' => $folderid,
             'indexed' => $indexed,
-            'origin' => "moodle",
-            'depositor' => [
-                'firstname' => $user->firstname,
-                'lastname' => $user->lastname,
-                'email_address' => $user->email
-            ],
-            'authors' => [
-                [
-                    'firstname' => $user->firstname,
-                    'lastname' => $user->lastname,
-                    'email_address' => $user->email
-                ]
-            ],
-        );
+            'origin' => "moodle"
+        ];
+
+        if (isset($depositor->firstname, $depositor->lastname, $depositor->email)) {
+            $params['depositor'] = [
+                'firstname' => $depositor->firstname,
+                'lastname' => $depositor->lastname,
+                'email_address' => $depositor->email
+            ];
+        }
+
+        foreach ($authors as $author) {
+            if (isset($author->firstname, $author->lastname, $author->email)) {
+                $params['authors'][] = [
+                    'firstname' => $author->firstname,
+                    'lastname' => $author->lastname,
+                    'email_address' => $author->email
+                ];
+            }
+        }
 
         $response = json_decode($this->call_api($endpoint, "upload", $params));
 

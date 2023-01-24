@@ -106,13 +106,42 @@ class CompilatioSendFile {
             fwrite($handle, $content);
             fclose($handle);
 
-            $user = $DB->get_record("user", ["id" => $userid], 'firstname, lastname, email');
-
             $cmconfig = $DB->get_record("plagiarism_compilatio_module", array("cmid" => $cmid));
 
             $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'), $cmconfig->userid);
 
-            $docid = $compilatio->set_document($cmpfile->filename, $cmconfig->folderid, $filepath, $cmpfile->indexed, $user);
+            $depositor = $DB->get_record("user", ["id" => $userid], 'firstname, lastname, email');
+            $authors = [$depositor];
+
+            if ($module->modname == 'assign') {
+                $isgroupsubmission = $DB->get_field_sql(
+                    'SELECT teamsubmission FROM {course_modules} course_modules
+                        JOIN {assign} assign ON course_modules.instance = assign.id
+                        WHERE course_modules.id = ?',
+                    ['id' => $plagiarismfile->cm]
+                );
+
+                if ($isgroupsubmission === '1') {
+                    $groupid = $DB->get_fieldset_sql(
+                        'SELECT groupid FROM {groups_members} gm
+                            JOIN {groups} g ON g.id = gm.groupid 
+                            WHERE courseid = ? AND userid = ?',
+                        [$module->course, $plagiarismfile->userid]
+                    );
+        
+                    if (count($groupid) == 1) {
+                        $authors = $DB->get_records_sql(
+                            'SELECT firstname, lastname, email FROM {groups} g
+                                JOIN {groups_members} gm ON g.id = gm.groupid
+                                JOIN {user} user ON user.id = gm.userid
+                                WHERE courseid = ? AND g.id = ?',
+                            [$module->course, $groupid[0]]
+                        );
+                    }
+                }
+            }
+
+            $docid = $compilatio->set_document($cmpfile->filename, $cmconfig->folderid, $filepath, $cmpfile->indexed, $depositor, $authors);
 
             unlink($filepath);
 
