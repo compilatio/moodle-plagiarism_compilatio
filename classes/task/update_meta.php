@@ -52,9 +52,9 @@ class update_meta extends \core\task\scheduled_task {
         global $DB, $CFG;
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-        // Update the "Compilatio unavailable" marker in the database.
-        $compilatio = new \CompilatioAPI("test");
-        if ($compilatio->check_apikey() == "Forbidden ! Your api key is invalid") {
+        // Update the 'Compilatio unavailable' marker in the database.
+        $compilatio = new \CompilatioAPI('test');
+        if ($compilatio->check_apikey() == 'Forbidden ! Your api key is invalid') {
             set_config('connection_webservice', 1, 'plagiarism_compilatio');
         } else {
             set_config('connection_webservice', 0, 'plagiarism_compilatio');

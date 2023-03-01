@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php'
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
 $context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
+require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
 $plagiarismplugin = new plagiarism_plugin_compilatio();
 
 echo $OUTPUT->header();

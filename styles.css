@@ -279,6 +279,9 @@ a.cmp-btn-primary:hover {
     cursor: pointer;
     margin-left: auto;
 }
+.cmp-btn-primary:hover {
+    background-color: #b8c1ca;
+}
 
 /* Similarities */
 .cmp-similarity-green {

@@ -43,12 +43,12 @@ $cmid = required_param('cmid', PARAM_TEXT);
 $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'));
 
 // Restart failed analyses.
-$files = $DB->get_records("plagiarism_compilatio_files", array("cm" => $cmid, "status" => "error_analysis_failed"));
+$files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'error_analysis_failed']);
 
 $countsuccess = 0;
-$docsfailed = array();
+$docsfailed = [];
 foreach ($files as $file) {
-    $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $file->cm));
+    $userid = $DB->get_field('plagiarism_compilatio_module', 'userid', ['cmid' => $file->cm]);
     $compilatio->set_user_id($userid);
 
     if ($compilatio->delete_analyse($file->externalid) && $compilatio->start_analyse($file->externalid)) {
@@ -63,18 +63,19 @@ foreach ($files as $file) {
 
 if (count($docsfailed) === 0) {
     $SESSION->compilatio_alert = [
-        "class" => "info",
-        "content" => get_string("analysis_started", "plagiarism_compilatio", $countsuccess),
+        'class' => 'info',
+        'content' => get_string('analysis_started', 'plagiarism_compilatio', $countsuccess),
     ];
 } else {
     $SESSION->compilatio_alert = [
-        "class" => "danger",
-        "content" => get_string("not_analyzed", "plagiarism_compilatio") . "<ul><li>" . implode("</li><li>", $docsfailed) . "</li></ul>",
+        'class' => 'danger',
+        'content' => get_string('not_analyzed', 'plagiarism_compilatio')
+            . '<ul><li>' . implode('</li><li>', $docsfailed) . '</li></ul>',
     ];
 }
 
 // Send sending failed files.
-$files = $DB->get_records("plagiarism_compilatio_files", array("cm" => $cmid, "status" => "error_sending_failed"));
+$files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'error_sending_failed']);
 
 // TODO resend text content.
 
@@ -85,14 +86,14 @@ foreach ($files as $cmpfile) {
 
     $modulecontext = context_module::instance($cmpfile->cm);
     $contextid = $modulecontext->id;
-    $sql = "SELECT * FROM {files} f WHERE f.contenthash= ? AND contextid = ?";
-    $f = $DB->get_record_sql($sql, array($cmpfile->identifier, $contextid));
+    $sql = 'SELECT * FROM {files} f WHERE f.contenthash= ? AND contextid = ?';
+    $f = $DB->get_record_sql($sql, [$cmpfile->identifier, $contextid]);
     if (empty($f)) {
         continue;
     }
     $file = $fs->get_file_by_id($f->id);
 
-    $DB->delete_records('plagiarism_compilatio_files', array('id' => $cmpfile->id));
+    $DB->delete_records('plagiarism_compilatio_files', ['id' => $cmpfile->id]);
 
     CompilatioSendFile::send_file($cmpfile->cm, $cmpfile->userid, $file);
 }

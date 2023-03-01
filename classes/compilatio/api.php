@@ -41,18 +41,18 @@ class CompilatioAPI {
 
     public function __construct($apikey, $userid = null) {
         $this->apikey = null;
-        $this->urlrest = "https://app.compilatio.net";
+        $this->urlrest = 'https://app.compilatio.net';
         $this->userid = $userid;
 
         if (!empty($apikey)) {
             $this->apikey = $apikey;
         } else {
-            return "API key not available";
+            return 'API key not available';
         }
     }
 
     public function get_config() {
-        $endpoint = "/api/public/config/config";
+        $endpoint = '/api/public/config/config';
         $response = json_decode($this->call_api($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
@@ -67,7 +67,7 @@ class CompilatioAPI {
      * @return boolean Return true if valid, an error message otherwise
      */
     public function check_apikey() {
-        $endpoint = "/api/private/user/lms/23a3a6980c0f49d98c5dc1ec03478e9161ad5d352cb4651b14865d21d0e81be";
+        $endpoint = '/api/private/user/lms/23a3a6980c0f49d98c5dc1ec03478e9161ad5d352cb4651b14865d21d0e81be';
 
         $response = json_decode($this->call_api($endpoint));
 
@@ -84,7 +84,7 @@ class CompilatioAPI {
      * @return bool return true if api key has access to student analyses, false otherwise.
      */
     public function check_allow_student_analyses() {
-        $endpoint = "/api/private/authentication/check-api-key";
+        $endpoint = '/api/private/authentication/check-api-key';
 
         $response = json_decode($this->call_api($endpoint));
 
@@ -111,18 +111,19 @@ class CompilatioAPI {
      * @return  string                  Return the user's ID, an error message otherwise
      */
     public function set_user($firstname, $lastname, $email, $lang) {
-        $endpoint = "/api/private/user/create";
-        $params = array(
+        $endpoint = '/api/private/user/create';
+        $params = [
             'firstname' => $firstname,
             'lastname' => $lastname,
             'email' => $email,
             'locale' => [
-                "timezone" => date_default_timezone_get(),
-                "lang" => $lang,
+                'timezone' => date_default_timezone_get(),
+                'lang' => $lang,
             ],
-        );
+            'origin' => 'moodle'
+        ];
 
-        $response = json_decode($this->call_api($endpoint, "post", json_encode($params)));
+        $response = json_decode($this->call_api($endpoint, 'post', json_encode($params)));
 
         if ($this->get_error_response($response, 201) === false) {
             return $response->data->user->id;
@@ -137,7 +138,7 @@ class CompilatioAPI {
      * @return  string                  Return the user's ID if exist, an error message otherwise
      */
     public function get_user($email) {
-        $endpoint = "/api/private/user/lms/" . strtolower($email);
+        $endpoint = '/api/private/user/lms/' . strtolower($email);
 
         $response = json_decode($this->call_api($endpoint));
 
@@ -157,14 +158,14 @@ class CompilatioAPI {
      * @return  string                  Return the document's ID, an error message otherwise
      */
     public function set_document($filename, $folderid, $filepath, $indexed, $depositor, $authors) {
-        $endpoint = "/api/private/document/";
+        $endpoint = '/api/private/document/';
         $params = [
             'file' => new \CURLFile($filepath),
             'filename' => $filename,
             'title' => $filename,
             'folder_id' => $folderid,
             'indexed' => $indexed,
-            'origin' => "moodle"
+            'origin' => 'moodle'
         ];
 
         if (isset($depositor->firstname, $depositor->lastname, $depositor->email)) {
@@ -185,12 +186,12 @@ class CompilatioAPI {
             }
         }
 
-        $response = json_decode($this->call_api($endpoint, "upload", $params));
+        $response = json_decode($this->call_api($endpoint, 'upload', $params));
 
         $error = $this->get_error_response($response, 201);
         if ($error === false) {
             if (in_array('extraction_error', $response->data->document->tags)) {
-                //TODO handle extraction error.
+                // TODO handle extraction error.
             }
             return $response->data->document->id;
         }
@@ -204,7 +205,7 @@ class CompilatioAPI {
      * @return mixed           Return the document if succeed, an error message otherwise
      */
     public function get_document($iddoc) {
-        $endpoint = "/api/private/document/" . $iddoc;
+        $endpoint = '/api/private/document/' . $iddoc;
         $response = json_decode($this->call_api($endpoint));
 
         $error = $this->get_error_response($response, 200);
@@ -221,8 +222,8 @@ class CompilatioAPI {
      * @return boolean          Return true if succeed, an error message otherwise
      */
     public function delete_document($iddoc) {
-        $endpoint = "/api/private/document/" . $iddoc;
-        $response = json_decode($this->call_api($endpoint, "delete"));
+        $endpoint = '/api/private/document/' . $iddoc;
+        $response = json_decode($this->call_api($endpoint, 'delete'));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;
@@ -239,26 +240,27 @@ class CompilatioAPI {
     public function set_folder($name, $defaultindexing, $analysistype, $analysistime,
         $warningthreshold = 10, $criticalthreshold = 25) {
 
-        $endpoint = "/api/private/folder/create";
-        $params = array(
+        $endpoint = '/api/private/folder/create';
+        $params = [
             'name' => $name,
-            'thresholds' => array(
+            'thresholds' => [
                 'warning' => $warningthreshold,
                 'critical' => $criticalthreshold,
-            ),
-            "default_indexing" => $defaultindexing,
-            "auto_analysis" => false,
-            "scheduled_analysis_enabled" => false,
-        );
+            ],
+            'default_indexing' => $defaultindexing,
+            'auto_analysis' => false,
+            'scheduled_analysis_enabled' => false,
+            'origin' => 'moodle'
+        ];
 
-        if ($analysistype == "auto") {
-            $params["auto_analysis"] = true;
-        } else if ($analysistype == "planned") {
-            $params["scheduled_analysis_enabled"] = true;
-            $params["scheduled_analysis_date"] = $analysistime;
+        if ($analysistype == 'auto') {
+            $params['auto_analysis'] = true;
+        } else if ($analysistype == 'planned') {
+            $params['scheduled_analysis_enabled'] = true;
+            $params['scheduled_analysis_date'] = $analysistime;
         }
 
-        $response = json_decode($this->call_api($endpoint, "post", json_encode($params)));
+        $response = json_decode($this->call_api($endpoint, 'post', json_encode($params)));
 
         if ($this->get_error_response($response, 201) === false) {
             return $response->data->folder->id;
@@ -275,27 +277,27 @@ class CompilatioAPI {
     public function update_folder($folderid, $name, $defaultindexing, $analysistype, $analysistime,
         $warningthreshold = 10, $criticalthreshold = 25) {
 
-        $endpoint = "/api/private/folder/".$folderid;
+        $endpoint = '/api/private/folder/'.$folderid;
 
-        $params = array(
+        $params = [
             'name' => $name,
-            'thresholds' => array(
+            'thresholds' => [
                 'warning' => $warningthreshold,
                 'critical' => $criticalthreshold,
-            ),
-            "default_indexing" => $defaultindexing,
-            "auto_analysis" => false,
-            "scheduled_analysis_enabled" => false,
-        );
+            ],
+            'default_indexing' => $defaultindexing,
+            'auto_analysis' => false,
+            'scheduled_analysis_enabled' => false,
+        ];
 
-        if ($analysistype == "auto") {
-            $params["auto_analysis"] = true;
-        } else if ($analysistype == "planned") {
-            $params["scheduled_analysis_enabled"] = true;
-            $params["scheduled_analysis_date"] = $analysistime;
+        if ($analysistype == 'auto') {
+            $params['auto_analysis'] = true;
+        } else if ($analysistype == 'planned') {
+            $params['scheduled_analysis_enabled'] = true;
+            $params['scheduled_analysis_date'] = $analysistime;
         }
 
-        $response = json_decode($this->call_api($endpoint, "patch", json_encode($params)));
+        $response = json_decode($this->call_api($endpoint, 'patch', json_encode($params)));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;
@@ -310,8 +312,8 @@ class CompilatioAPI {
      * @return boolean            Return true if succeed, an error message otherwise
      */
     public function delete_folder($folderid) {
-        $endpoint = "/api/private/folder/".$folderid;
-        $response = json_decode($this->call_api($endpoint, "delete"));
+        $endpoint = '/api/private/folder/' . $folderid;
+        $response = json_decode($this->call_api($endpoint, 'delete'));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;
@@ -327,11 +329,9 @@ class CompilatioAPI {
      * @return  mixed               Return true if succeed, an error message otherwise
      */
     public function set_indexing_state($iddoc, $indexed) {
-        $endpoint = "/api/private/document/" . $iddoc;
-        $params = array(
-            'indexed' => $indexed
-        );
-        $response = json_decode($this->call_api($endpoint, "patch", json_encode($params)));
+        $endpoint = '/api/private/document/' . $iddoc;
+
+        $response = json_decode($this->call_api($endpoint, 'patch', json_encode(['indexed' => $indexed])));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;
@@ -346,9 +346,9 @@ class CompilatioAPI {
      * @return string Return a JWT if succeed, an error otherwise
      */
     public function get_report_token($iddoc) {
-        $endpoint = "/api/private/documents/" . $iddoc . "/report/jwt";
+        $endpoint = '/api/private/documents/' . $iddoc . '/report/jwt';
 
-        $response = json_decode($this->call_api($endpoint, "post"));
+        $response = json_decode($this->call_api($endpoint, 'post'));
 
         if ($this->get_error_response($response, 201) === false) {
             return $response->data->jwt;
@@ -364,14 +364,14 @@ class CompilatioAPI {
      * @param  string $type     Report type
      * @return string           Return the PDF if succeed, an error message otherwise
      */
-    public function get_pdf_report($idreport, $lang = 'en', $type = "certificate") {
+    public function get_pdf_report($idreport, $lang = 'en', $type = 'certificate') {
 
-        $endpoint = "/api/private/report/anasim/".$idreport."/pdf/".$lang."/".$type."/";
-        $filename = $idreport . '_' . $lang . '_' . $type . ".pdf";
+        $endpoint = '/api/private/report/anasim/' . $idreport . '/pdf/' . $lang . '/' . $type . '/';
+        $filename = $idreport . '_' . $lang . '_' . $type . '.pdf';
 
         $handle = fopen(dirname(__FILE__) . '/../../tmp/' . $filename, 'w+');
 
-        if ($this->call_api($endpoint, "download", null, $handle) == 200) {
+        if ($this->call_api($endpoint, 'download', null, $handle) == 200) {
             return $filename;
         } else {
             return false;
@@ -385,16 +385,16 @@ class CompilatioAPI {
      * @return mixed    Return true if succeed, an error message otherwise
      */
     public function start_analyse($docid) {
-        $endpoint = "/api/private/analysis/";
-        $params = array(
+        $endpoint = '/api/private/analysis/';
+        $params = [
             'doc_id' => $docid,
             'recipe_name' => 'anasim',
             'tags' => [
                 'stable'
             ]
-        );
+        ];
 
-        $response = json_decode($this->call_api($endpoint, "post", json_encode($params)));
+        $response = json_decode($this->call_api($endpoint, 'post', json_encode($params)));
 
         $error = $this->get_error_response($response, 201);
         if ($error === false) {
@@ -412,12 +412,12 @@ class CompilatioAPI {
      * @return mixed    Return true if succeed, an error message otherwise
      */
     public function delete_analyse($iddoc) {
-        $endpoint = "/api/private/analysis/get-by-doc/" . $iddoc;
+        $endpoint = '/api/private/analysis/get-by-doc/' . $iddoc;
         $response = json_decode($this->call_api($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
-            $endpoint = "/api/private/analysis/" . $response->data->analysis->id;
-            $response = json_decode($this->call_api($endpoint, "delete"));
+            $endpoint = '/api/private/analysis/' . $response->data->analysis->id;
+            $response = json_decode($this->call_api($endpoint, 'delete'));
 
             if ($this->get_error_response($response, 200) === false) {
                 return true;
@@ -432,7 +432,7 @@ class CompilatioAPI {
      * @return  array   Return an array of the different allowed file types
      */
     public function get_allowed_file_types() {
-        $endpoint = "/api/public/file/allowed-extensions";
+        $endpoint = '/api/public/file/allowed-extensions';
 
         $response = json_decode($this->call_api($endpoint));
 
@@ -454,16 +454,16 @@ class CompilatioAPI {
      */
     public function set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency) {
 
-        $endpoint = "/api/private/moodle-configuration/add";
-        $params = array(
+        $endpoint = '/api/private/moodle-configuration/add';
+        $params = [
             'php_version' => $releasephp,
             'moodle_version' => $releasemoodle,
             'compilatio_plugin_version' => $releaseplugin,
             'language' => $language,
             'cron_frequency' => $cronfrequency
-        );
+        ];
 
-        $response = json_decode($this->call_api($endpoint, "post", json_encode($params)));
+        $response = json_decode($this->call_api($endpoint, 'post', json_encode($params)));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;
@@ -477,7 +477,7 @@ class CompilatioAPI {
      * @return boolean Return true if terms of service has been validated, false otherwise
      */
     public function validate_terms_of_service() {
-        $endpoint = "/api/private/terms-of-service/validate";
+        $endpoint = '/api/private/terms-of-service/validate';
 
         $response = json_decode($this->call_api($endpoint));
 
@@ -493,7 +493,7 @@ class CompilatioAPI {
      * @return boolean Return jwt if succeed, false otherwise
      */
     public function get_zendesk_jwt() {
-        $endpoint = "/api/private/user/zendesk/jwt";
+        $endpoint = '/api/private/user/zendesk/jwt';
 
         $response = json_decode($this->call_api($endpoint));
 
@@ -509,7 +509,7 @@ class CompilatioAPI {
      * @return  array   Return an array of alerts
      */
     public function get_alerts() {
-        $endpoint = "/api/private/alert/list/moodle";
+        $endpoint = '/api/private/alert/list/moodle';
 
         $response = json_decode($this->call_api($endpoint));
 
@@ -525,7 +525,7 @@ class CompilatioAPI {
      * @return  array   Return an array of alerts
      */
     public function get_subscription_info() {
-        $endpoint = "/api/private/authentication/check-api-key";
+        $endpoint = '/api/private/authentication/check-api-key';
 
         $response = json_decode($this->call_api($endpoint));
 
@@ -550,7 +550,7 @@ class CompilatioAPI {
      * @return string  Return the translation string
      */
     public function get_translation($lang, $key) {
-        $endpoint = "/api/public/translation/last-version/" . $lang . "/key/" . $key;
+        $endpoint = '/api/public/translation/last-version/' . $lang . '/key/' . $key;
 
         $response = json_decode($this->call_api($endpoint));
 
@@ -566,7 +566,7 @@ class CompilatioAPI {
 
     private function get_error_response($response, $expectedstatuscode) {
         if (!isset($response->status->code, $response->status->message)) {
-            return "Error response status not found";
+            return 'Error response status not found';
 
         } else if ($response->status->code == $expectedstatuscode) {
             return false;
@@ -574,7 +574,7 @@ class CompilatioAPI {
         } else if (isset($response->errors->key) && $response->errors->key == 'need_terms_of_service_validation') {
             if (!empty($this->userid)) {
                 global $DB;
-                $user = $DB->get_record("plagiarism_compilatio_user", array("compilatioid" => $this->userid));
+                $user = $DB->get_record('plagiarism_compilatio_user', ['compilatioid' => $this->userid]);
                 $user->validatedtermsofservice = false;
                 $DB->update_record('plagiarism_compilatio_user', $user);
             }
@@ -592,11 +592,11 @@ class CompilatioAPI {
             CURLOPT_RETURNTRANSFER => true,
         ];
 
-        $header = array(
+        $header = [
             'X-Auth-Token: ' . $this->apikey,
             'X-LMS-USER-ID: ' . $this->userid
-        );
-        if ($method !== "upload") {
+        ];
+        if ($method !== 'upload') {
             $header[] = 'Content-Type: application/json';
         }
         $params[CURLOPT_HTTPHEADER] = $header;
@@ -626,22 +626,22 @@ class CompilatioAPI {
         }
 
         switch ($method){
-            case "post":
+            case 'post':
                 $params[CURLOPT_POST] = true;
                 $params[CURLOPT_POSTFIELDS] = $data;
                 break;
-            case "upload":
+            case 'upload':
                 $params[CURLOPT_POST] = true;
                 $params[CURLOPT_POSTFIELDS] = $this->build_post_fields($data);
                 break;
-            case "patch":
-                $params[CURLOPT_CUSTOMREQUEST] = "PATCH";
+            case 'patch':
+                $params[CURLOPT_CUSTOMREQUEST] = 'PATCH';
                 $params[CURLOPT_POSTFIELDS] = $data;
                 break;
-            case "delete":
-                $params[CURLOPT_CUSTOMREQUEST] = "DELETE";
+            case 'delete':
+                $params[CURLOPT_CUSTOMREQUEST] = 'DELETE';
                 break;
-            case "download":
+            case 'download':
                 $params[CURLOPT_FILE] = $handle;
                 $params[CURLOPT_TIMEOUT] = 20;
                 $params[CURLOPT_FOLLOWLOCATION] = true;
@@ -652,7 +652,7 @@ class CompilatioAPI {
 
         $result = curl_exec($ch);
 
-        if ($method == "download") {
+        if ($method == 'download') {
             $result = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         }
         curl_close($ch);

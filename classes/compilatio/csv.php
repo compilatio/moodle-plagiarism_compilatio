@@ -76,9 +76,9 @@ class CompilatioCsv {
             JOIN {user} usr ON pcf.userid= usr.id
             WHERE pcf.cm=?";
 
-        $files = $DB->get_records_sql($sql, array($cmid));
+        $files = $DB->get_records_sql($sql, [$cmid]);
 
-        $cmpcm = $DB->get_record('plagiarism_compilatio_module', array('cmid' => $cmid));
+        $cmpcm = $DB->get_record('plagiarism_compilatio_module', ['cmid' => $cmid]);
         $analysistype = $cmpcm["analysistype"];
 
         // Get the name of the activity in order to generate header line and the filename.
@@ -90,7 +90,7 @@ class CompilatioCsv {
             WHERE cm.id =?";
 
         $name = "";
-        $record = $DB->get_record_sql($sql, array($cmid));
+        $record = $DB->get_record_sql($sql, [$cmid]);
         if ($record != null) {
             $name = $record->name;
         }
@@ -109,7 +109,7 @@ class CompilatioCsv {
 
         foreach ($files as $file) {
 
-            $line = array();
+            $line = [];
             $line["lastname"]      = $file->lastname;
             $line["firstname"]     = $file->firstname;
             $line["filename"]      = $file->filename;

@@ -27,8 +27,8 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-$tasks = array(
-    array(
+$tasks = [
+    [
         'classname' => 'plagiarism_compilatio\task\get_scores',
         'blocking' => 0,
         'minute' => '*/5',
@@ -36,8 +36,8 @@ $tasks = array(
         'day' => '*',
         'dayofweek' => '*',
         'month' => '*'
-    ),
-    array(
+    ],
+    [
         'classname' => 'plagiarism_compilatio\task\update_meta',
         'blocking' => 0,
         'minute' => '0',
@@ -45,5 +45,5 @@ $tasks = array(
         'day' => '*',
         'dayofweek' => '*',
         'month' => '*'
-    )
-);
+    ]
+];

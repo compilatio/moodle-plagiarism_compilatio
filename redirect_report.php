@@ -39,7 +39,7 @@ global $OUTPUT;
 $docid = required_param('docid', PARAM_RAW);
 $cmid = required_param('cmid', PARAM_RAW);
 
-$userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $cmid));
+$userid = $DB->get_field('plagiarism_compilatio_module', 'userid', ['cmid' => $cmid]);
 $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'), $userid);
 $jwt = $compilatio->get_report_token($docid);
 
@@ -48,8 +48,8 @@ if ($jwt === false) {
 
     $ln = current_language();
 
-    if (!in_array($ln, array("fr", "en", "it", "es"))) {
-        $language = "en";
+    if (!in_array($ln, ['fr', 'en', 'it', 'es'])) {
+        $language = 'en';
     } else {
         $language = $ln;
     }
@@ -59,9 +59,9 @@ if ($jwt === false) {
         "' alt='Compilatio' width='250'></p>";
 
     echo "<div class='compilatio-alert compilatio-alert-danger'>"
-            . get_string("redirect_report_failed", "plagiarism_compilatio") .
-        "</div>";
+            . get_string('redirect_report_failed', 'plagiarism_compilatio') .
+        '</div>';
     echo $OUTPUT->footer();
 } else {
-    header("location: https://app.compilatio.net/api/private/reports/redirect/" . $jwt);
+    header('location: https://app.compilatio.net/api/private/reports/redirect/' . $jwt);
 }

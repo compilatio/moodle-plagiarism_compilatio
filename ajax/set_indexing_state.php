@@ -44,9 +44,9 @@ $indexingstatepost = optional_param('indexingState', '', PARAM_TEXT);
 
 if (isset($docid) && isset($indexingstatepost)) {
     $indexingstate = (int) ((boolean) $indexingstatepost);
-    $file = $DB->get_record('plagiarism_compilatio_files', array('id' => $docid));
+    $file = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 
-    $userid = $DB->get_field("plagiarism_compilatio_module", "userid", array("cmid" => $file->cm));
+    $userid = $DB->get_field('plagiarism_compilatio_module', 'userid', ['cmid' => $file->cm]);
     $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'), $userid);
 
     if ($compilatio->set_indexing_state($file->externalid, $indexingstate) === true) {

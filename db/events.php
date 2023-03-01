@@ -27,81 +27,81 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-$observers = array(
-    array(
+$observers = [
+    [
         'eventname' => '\assignsubmission_file\event\assessable_uploaded',
         'callback' => 'plagiarism_compilatio_observer::assignsubmission_file_uploaded'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\mod_workshop\event\assessable_uploaded',
         'callback' => 'plagiarism_compilatio_observer::workshop_file_uploaded'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\mod_forum\event\assessable_uploaded',
         'callback' => 'plagiarism_compilatio_observer::forum_file_uploaded'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\assignsubmission_onlinetext\event\assessable_uploaded',
         'callback' => 'plagiarism_compilatio_observer::assignsubmission_onlinetext_uploaded'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\mod_quiz\event\attempt_submitted',
         'callback' => 'plagiarism_compilatio_observer::quiz_submitted'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\mod_quiz\event\attempt_deleted',
         'callback' => 'plagiarism_compilatio_observer::quiz_attempt_deleted'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\mod_forum\event\post_deleted',
         'callback' => 'plagiarism_compilatio_observer::forum_post_deleted'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\mod_workshop\event\submission_deleted',
         'callback' => 'plagiarism_compilatio_observer::workshop_submission_deleted'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\core\event\course_module_deleted',
         'callback' => 'plagiarism_compilatio_observer::core_course_module_deleted'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\core\event\user_deleted',
         'callback' => 'plagiarism_compilatio_observer::core_user_deleted'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\core\event\course_reset_started',
         'callback' => 'plagiarism_compilatio_observer::core_course_reset_started'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\mod_assign\event\submission_status_updated',
         'callback' => 'plagiarism_compilatio_observer::assign_submission_status_updated'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\tool_recyclebin\event\course_bin_item_restored',
         'callback' => 'plagiarism_compilatio_observer::recyclebin_course_item_restored'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\tool_recyclebin\event\course_bin_item_deleted',
         'callback' => 'plagiarism_compilatio_observer::recyclebin_course_item_deleted'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\tool_recyclebin\event\course_bin_item_created',
         'callback' => 'plagiarism_compilatio_observer::recyclebin_course_item_created'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\tool_recyclebin\event\category_bin_item_restored',
         'callback' => 'plagiarism_compilatio_observer::recyclebin_category_item_restored'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\tool_recyclebin\event\category_bin_item_deleted',
         'callback' => 'plagiarism_compilatio_observer::recyclebin_category_item_deleted'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\tool_recyclebin\event\category_bin_item_created',
         'callback' => 'plagiarism_compilatio_observer::recyclebin_category_item_created'
-    ),
-    array(
+    ],
+    [
         'eventname' => '\mod_assign\event\assessable_submitted',
         'callback' => 'plagiarism_compilatio_observer::assign_assessable_submitted'
-    ),
-);
+    ]
+];

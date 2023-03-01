@@ -61,16 +61,16 @@ class get_scores extends \core\task\scheduled_task {
             $frequency = round((time() - $lastcron) / 60);
             set_config('cron_frequency', $frequency, 'plagiarism_compilatio');
         }
-        set_config('last_cron', strtotime("now"), 'plagiarism_compilatio');
+        set_config('last_cron', strtotime('now'), 'plagiarism_compilatio');
 
         if ($plagiarismsettings = $compilatio->get_settings()) {
-            mtrace("getting Compilatio similarity scores");
+            mtrace('getting Compilatio similarity scores');
             // Get all files set that have been submitted.
             $sql = "status = 'analyzing' OR status = 'queue'";
             $files = $DB->get_records_select('plagiarism_compilatio_files', $sql);
             if (!empty($files)) {
                 foreach ($files as $plagiarismfile) {
-                    mtrace("getting score for file " . $plagiarismfile->id);
+                    mtrace('getting score for file ' . $plagiarismfile->id);
                     \CompilatioAnalyses::check_analysis($plagiarismfile); // Get status and set status if required.
                 }
             }

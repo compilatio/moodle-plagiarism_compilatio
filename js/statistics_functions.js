@@ -5,7 +5,7 @@
  * @return {string} pourcentage.
  */
 function compilatioPercentage(v) {
-    return v + "%";
+    return v + '%';
 }
 
 /**
@@ -18,13 +18,13 @@ function compilatioPercentage(v) {
 function compilatioUrlSorter(a, b) {
 
     // Strip tags to compare their content.
-    a = a.replace(/(<([^>]+)>)/ig, "");
-    b = b.replace(/(<([^>]+)>)/ig, "");
+    a = a.replace(/(<([^>]+)>)/ig, '');
+    b = b.replace(/(<([^>]+)>)/ig, '');
     return a.localeCompare(b);
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("cmp-table-no-js").style.display = "none";
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('cmp-table-no-js').style.display = 'none';
 
     document.querySelectorAll('#cmp-table-js thead tr th').forEach(function(el, index) {
         switch (index) {

@@ -39,7 +39,7 @@ echo "<img id='cmp-logo' style='margin-bottom: 15px;' src='" . new moodle_url("/
 echo '<div style="clear:both"></div>';
 
 // Create tabs.
-$tabs = array();
+$tabs = [];
 $tabs[] = new tabobject('compilatiosettings', 'settings.php', $strplagiarism, $strplagiarism, false);
 $tabs[] = new tabobject('compilatiodefaults', 'compilatio_defaults.php', $strplagiarismdefaults, $strplagiarismdefaults, false);
 $tabs[] = new tabobject('compilatioautodiagnosis', 'autodiagnosis.php', $strautodiagnosis, $strautodiagnosis, false);
@@ -47,4 +47,4 @@ $tabs[] = new tabobject('compilatiostatistics', 'statistics.php', $strstatistics
 $tabs[] = new tabobject('compilatiohelp', 'help.php', $strhelp, $strhelp, false);
 
 // Display tabs.
-print_tabs(array($tabs), $currenttab);
+print_tabs([$tabs], $currenttab);

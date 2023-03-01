@@ -149,7 +149,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $context = context_module::instance($coursemodule->id);
 
         // On vérifie que, à l'exportation des données, il y a bien quelque chose à visualiser pour l'utilisateur.
-        provider::export_plagiarism_user_data($student->id, $context, array(), array());
+        provider::export_plagiarism_user_data($student->id, $context, [], []);
         $writer = writer::with_context($context);
 
         $this->assertTrue($writer->has_any_data());
@@ -290,7 +290,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->assertEquals(15, $nbplagiarismfiles);
 
         // On crée la liste d'IDs avec les étudiants 1 et 2.
-        $userids = array($student1->id, $student2->id);
+        $userids = [$student1->id, $student2->id];
 
         // On supprime les plagiarismfiles pour ces deux étudiants.
         $context = context_module::instance($coursemodule->id);
@@ -367,9 +367,9 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
 
         global $DB;
 
-        $ownerfile = (object) array('plugin' => 'plagiarism_compilatio', 'name' => 'owner_file', 'value' => $owner);
-        $apiconfig = (object) array('plugin' => 'plagiarism_compilatio', 'name' => 'apikey', 'value' => "abcdef");
-        $DB->insert_records('config_plugins', array($ownerfile, $apiconfig));
+        $ownerfile = (object) ['plugin' => 'plagiarism_compilatio', 'name' => 'owner_file', 'value' => $owner];
+        $apiconfig = (object) ['plugin' => 'plagiarism_compilatio', 'name' => 'apikey', 'value' => "abcdef"];
+        $DB->insert_records('config_plugins', [$ownerfile, $apiconfig]);
     }
 }
 

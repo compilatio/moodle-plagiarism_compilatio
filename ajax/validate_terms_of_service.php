@@ -38,7 +38,7 @@ global $DB;
 
 $userid = required_param('userid', PARAM_RAW);
 
-$user = $DB->get_record("plagiarism_compilatio_user", array("compilatioid" => $userid));
+$user = $DB->get_record('plagiarism_compilatio_user', ['compilatioid' => $userid]);
 $user->validatedtermsofservice = true;
 $DB->update_record('plagiarism_compilatio_user', $user);
 

@@ -27,30 +27,30 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-$capabilities = array(
-    'plagiarism/compilatio:enable' => array(
+$capabilities = [
+    'plagiarism/compilatio:enable' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-         'legacy' => array(
+         'legacy' => [
          'editingteacher' => CAP_ALLOW,
          'manager' => CAP_ALLOW
-        )
-    ),
-    'plagiarism/compilatio:triggeranalysis' => array(
+        ]
+    ],
+    'plagiarism/compilatio:triggeranalysis' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'legacy' => array(
+        'legacy' => [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
-        )
-    ),
-    'plagiarism/compilatio:viewreport' => array(
+        ]
+    ],
+    'plagiarism/compilatio:viewreport' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-         'legacy' => array(
+         'legacy' => [
          'editingteacher' => CAP_ALLOW,
          'teacher' => CAP_ALLOW,
          'manager' => CAP_ALLOW
-        )
-    ),
-);
+        ]
+    ],
+];

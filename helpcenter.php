@@ -46,5 +46,5 @@ $token = $compilatio->get_zendesk_jwt();
 
 $helpcenterpage = get_config('plagiarism_compilatio', 'helpcenter_' . $page);
 
-header('Location: https://compilatio.zendesk.com/access/jwt?jwt=' . $token . "&return_to=" . urlencode($helpcenterpage));
+header('Location: https://compilatio.zendesk.com/access/jwt?jwt=' . $token . '&return_to=' . urlencode($helpcenterpage));
 exit;

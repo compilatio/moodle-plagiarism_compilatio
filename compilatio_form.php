@@ -112,7 +112,7 @@ class compilatio_setup_form extends moodleform {
         $mform->setDefault('keep_docs_indexed', 1);
         $mform->addHelpButton('keep_docs_indexed', 'keep_docs_indexed', 'plagiarism_compilatio');
 
-        $radioarray = array();
+        $radioarray = [];
         $radioarray[] = $mform->createElement('radio',
             'owner_file', '', get_string('owner_file_school', 'plagiarism_compilatio'), 1);
         $radioarray[] = $mform->createElement('html',
@@ -124,7 +124,7 @@ class compilatio_setup_form extends moodleform {
             '<p style="font-size: 12px;font-style: italic;">'
             . get_string("owner_file_student_details", "plagiarism_compilatio") . '</p>');
 
-        $mform->addGroup($radioarray, 'owner_file', get_string('owner_file', 'plagiarism_compilatio'), array(''), false);
+        $mform->addGroup($radioarray, 'owner_file', get_string('owner_file', 'plagiarism_compilatio'), [''], false);
         $mform->setDefault('owner_file', 1);
 
         $this->add_action_buttons(true);

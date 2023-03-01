@@ -37,7 +37,7 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
      * @return  void
      */
     protected function define_course_plugin_structure() {
-        $paths = array();
+        $paths = [];
 
         // Add own format stuff.
         $elename = 'compilatioconfig';
@@ -66,7 +66,7 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
      * @return  array Paths
      */
     protected function define_module_plugin_structure() {
-        $paths = array();
+        $paths = [];
 
         // Add own format stuff.
         $elename = 'compilatiomodule';

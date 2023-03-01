@@ -24,7 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- /**
+/**
  * CompilatioStatistics class
  * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -40,27 +40,26 @@ class CompilatioStatistics {
 
         global $DB;
 
-        $sql = '
-            SELECT cm,
+        $sql = "SELECT cm,
                 course.id,
-                course.fullname "course",
-                modules.name "module_type",
-                CONCAT(COALESCE(assign.name, \'\'), COALESCE(forum.name, \'\'), COALESCE(workshop.name, \'\'),
-                COALESCE(quiz.name, \'\')) "module_name",
-                AVG(similarityscore) "avg",
-                MIN(similarityscore) "min",
-                MAX(similarityscore) "max",
-                COUNT(DISTINCT plagiarism_compilatio_files.id) "count"
+                course.fullname 'course',
+                modules.name 'module_type',
+                CONCAT(COALESCE(assign.name, ''), COALESCE(forum.name, ''), COALESCE(workshop.name, ''),
+                COALESCE(quiz.name, '')) 'module_name',
+                AVG(similarityscore) 'avg',
+                MIN(similarityscore) 'min',
+                MAX(similarityscore) 'max',
+                COUNT(DISTINCT plagiarism_compilatio_files.id) 'count'
             FROM {plagiarism_compilatio_files} plagiarism_compilatio_files
             JOIN {course_modules} course_modules
                 ON plagiarism_compilatio_files.cm = course_modules.id
             JOIN {modules} modules ON modules.id = course_modules.module
-            LEFT JOIN {assign} assign ON course_modules.instance = assign.id AND modules.name = \'assign\'
-            LEFT JOIN {forum} forum ON course_modules.instance = forum.id AND modules.name = \'forum\'
-            LEFT JOIN {workshop} workshop ON course_modules.instance = workshop.id AND modules.name = \'workshop\'
-            LEFT JOIN {quiz} quiz ON course_modules.instance = quiz.id AND modules.name = \'quiz\'
+            LEFT JOIN {assign} assign ON course_modules.instance = assign.id AND modules.name = 'assign'
+            LEFT JOIN {forum} forum ON course_modules.instance = forum.id AND modules.name = 'forum'
+            LEFT JOIN {workshop} workshop ON course_modules.instance = workshop.id AND modules.name = 'workshop'
+            LEFT JOIN {quiz} quiz ON course_modules.instance = quiz.id AND modules.name = 'quiz'
             JOIN {course} course ON course_modules.course= course.id
-            WHERE status=\'scored\'
+            WHERE status='scored'
             GROUP BY cm,
                 course.id,
                 course.fullname,
@@ -69,56 +68,51 @@ class CompilatioStatistics {
                 quiz.name,
                 workshop.name,
                 modules.name
-            ORDER BY course.fullname, assign.name';
+            ORDER BY course.fullname, assign.name";
 
         $rows = $DB->get_records_sql($sql);
 
-        $results = array();
+        $results = [];
         foreach ($rows as $row) {
-            $query = '
-                SELECT usr.id "userid",
-                    usr.firstname "firstname",
-                    usr.lastname "lastname"
+            $query = "SELECT usr.id 'userid', usr.firstname 'firstname', usr.lastname 'lastname'
                 FROM {course} course
                 JOIN {context} context ON context.instanceid= course.id
                 JOIN {role_assignments} role_assignments ON role_assignments.contextid= context.id
                 JOIN {user} usr ON role_assignments.userid= usr.id
-                WHERE context.contextlevel=50
-                    AND role_assignments.roleid=3
-                    AND course.id='. $row->id;
+                WHERE context.contextlevel=50 AND role_assignments.roleid=3 AND course.id=" . $row->id;
 
             $teachers = $DB->get_records_sql($query);
-            $courseurl = new moodle_url('/course/view.php', array('id' => $row->id));
-            $assignurl = new moodle_url('/mod/' . $row->module_type . '/view.php', array('id' => $row->cm, 'action' => "grading"));
+            $courseurl = new moodle_url('/course/view.php', ['id' => $row->id]);
+            $assignurl = new moodle_url('/mod/' . $row->module_type . '/view.php', ['id' => $row->cm, 'action' => 'grading']);
 
-            $result = array();
+            $result = [];
             if ($html) {
-                $result["course"] = "<a href='$courseurl'>$row->course</a>";
-                $result["assign"] = "<a href='$assignurl'>$row->module_name</a>";
+                $result['course'] = "<a href='$courseurl'>$row->course</a>";
+                $result['assign'] = "<a href='$assignurl'>$row->module_name</a>";
 
             } else {
-                $result["courseid"] = $row->id;
-                $result["course"] = $row->course;
-                $result["assignid"] = $row->cm;
-                $result["assign"] = $row->module_name;
+                $result['courseid'] = $row->id;
+                $result['course'] = $row->course;
+                $result['assignid'] = $row->cm;
+                $result['assign'] = $row->module_name;
             }
 
-            $result["analyzed_documents_count"] = $row->count;
-            $result["minimum_rate"] = $row->min;
-            $result["maximum_rate"] = $row->max;
-            $result["average_rate"] = round($row->avg, 2);
+            $result['analyzed_documents_count'] = $row->count;
+            $result['minimum_rate'] = $row->min;
+            $result['maximum_rate'] = $row->max;
+            $result['average_rate'] = round($row->avg, 2);
 
-            $result["teacher"] = "";
+            $result['teacher'] = '';
             $teacherid = [];
             $teachername = [];
             foreach ($teachers as $teacher) {
-                $userurl = new moodle_url('/user/view.php', array('id' => $teacher->userid));
+                $userurl = new moodle_url('/user/view.php', ['id' => $teacher->userid]);
                 if ($html) {
-                    $result["teacher"] .= "- <a href='$userurl'>$teacher->lastname $teacher->firstname</a></br>";
+                    $result['teacher'] .= "- <a href='$userurl'>$teacher->lastname $teacher->firstname</a></br>";
 
                 } else {
                     array_push($teacherid, $teacher->userid);
-                    array_push($teachername, $teacher->lastname . " " . $teacher->firstname);
+                    array_push($teachername, $teacher->lastname . ' ' . $teacher->firstname);
                 }
             }
             if (!$html) {
@@ -131,12 +125,12 @@ class CompilatioStatistics {
                 WHERE cm = ? AND status LIKE 'error%'
                 GROUP BY status";
 
-            $countstatus = $DB->get_records_sql($sql, array($row->cm));
+            $countstatus = $DB->get_records_sql($sql, [$row->cm]);
 
             if ($html) {
-                $result["errors"] = "";
+                $result['errors'] = '';
                 foreach ($countstatus as $stat) {
-                    $result["errors"] .= "- {$stat->count} " . get_string("short_{$stat->status}", "plagiarism_compilatio").'</br>';
+                    $result['errors'] .= "- {$stat->count} " . get_string("short_{$stat->status}", 'plagiarism_compilatio').'</br>';
                 }
             } else {
                 foreach ($countstatus as $stat) {
@@ -161,76 +155,76 @@ class CompilatioStatistics {
 
         global $DB, $PAGE;
 
-        $plagiarismvalues = $DB->get_record('plagiarism_compilatio_module', array('cmid' => $cmid));
+        $plagiarismvalues = $DB->get_record('plagiarism_compilatio_module', ['cmid' => $cmid]);
         $warningthreshold = $plagiarismvalues->warningthreshold ?? 10;
         $criticalthreshold = $plagiarismvalues->criticalthreshold ?? 25;
 
         $from = "SELECT COUNT(DISTINCT pcf.id) FROM {plagiarism_compilatio_files} pcf WHERE pcf.cm=?";
 
-        $documentscount = $DB->count_records_sql($from, array($cmid));
+        $documentscount = $DB->count_records_sql($from, [$cmid]);
 
-        $countgreen = $DB->count_records_sql($from . " AND status = 'scored' AND similarityscore <= $warningthreshold", array($cmid));
-        $countorange = $DB->count_records_sql($from . " AND status = 'scored' AND similarityscore > $warningthreshold AND similarityscore <= $criticalthreshold", array($cmid));
-        $countred = $DB->count_records_sql($from . " AND status = 'scored' AND similarityscore > $criticalthreshold", array($cmid));
+        $countgreen = $DB->count_records_sql($from . " AND status = 'scored' AND similarityscore <= $warningthreshold", [$cmid]);
+        $countorange = $DB->count_records_sql($from . " AND status = 'scored' AND similarityscore > $warningthreshold AND similarityscore <= $criticalthreshold", [$cmid]);
+        $countred = $DB->count_records_sql($from . " AND status = 'scored' AND similarityscore > $criticalthreshold", [$cmid]);
 
         $scorestats = $DB->get_record_sql(
-            "SELECT ROUND(AVG(similarityscore)) avg, MIN(similarityscore) min, MAX(similarityscore) max 
-                FROM {plagiarism_compilatio_files} pcf 
+            "SELECT ROUND(AVG(similarityscore)) avg, MIN(similarityscore) min, MAX(similarityscore) max
+                FROM {plagiarism_compilatio_files} pcf
                 WHERE pcf.cm=? AND status='scored'",
-            array($cmid)
+            [$cmid]
         );
 
         $sql = "SELECT status, COUNT(DISTINCT id) AS count FROM {plagiarism_compilatio_files}  WHERE cm = ? GROUP BY status";
-        $countbystatus = $DB->get_records_sql($sql, array($cmid));
+        $countbystatus = $DB->get_records_sql($sql, [$cmid]);
 
         $output = "
             <div class='col'>
-                <h4 class='cmp-color-primary'>" . get_string("progress", "plagiarism_compilatio") . "</h4>
+                <h4 class='cmp-color-primary'>" . get_string('progress', 'plagiarism_compilatio') . "</h4>
                 <div class='position-relative cmp-box mx-2 my-3 p-3'>
                     <h5 class='fw-bold cmp-color-green'>"
-                      . get_string("documents_analyzed", "plagiarism_compilatio", $countbystatus["scored"]->count ?? 0) .
+                      . get_string('documents_analyzed', 'plagiarism_compilatio', $countbystatus['scored']->count ?? 0) .
                     "</h5>
                 </div>
 
                 <div class='cmp-box mx-2 my-3'>
                     <h5 class='p-3 cmp-color-primary'>"
-                      . get_string("documents_analyzing", "plagiarism_compilatio", $countbystatus["analyzing"]->count ?? 0) .
+                      . get_string('documents_analyzing', 'plagiarism_compilatio', $countbystatus['analyzing']->count ?? 0) .
                     "</h5>
                 </div>
 
                 <div class='cmp-box mx-2 my-3'>
                     <h5 class='p-3 cmp-color-primary'>"
-                      . get_string("documents_in_queue", "plagiarism_compilatio", $countbystatus["queue"]->count ?? 0) .
+                      . get_string('documents_in_queue', 'plagiarism_compilatio', $countbystatus['queue']->count ?? 0) .
                     "</h5>
                 </div>
             </div>";
 
-        $yes = "";
-        $elements = ["min", "avg", "max"];
+        $yes = '';
+        $elements = ['min', 'avg', 'max'];
         foreach ($elements as $elem) {
             if ($scorestats->$elem <= $warningthreshold) {
-                $color = "green";
+                $color = 'green';
             } else if ($scorestats->$elem <= $criticalthreshold) {
-                $color = "orange";
+                $color = 'orange';
             } else {
-                $color = "red";
+                $color = 'red';
             }
             $yes .= "<div class='col-4'>
-                    <div class='pt-1 pb-2 fw-bold cmp-color-secondary'>" . get_string("stats_" . $elem, "plagiarism_compilatio") . "</div>
+                    <div class='pt-1 pb-2 fw-bold cmp-color-secondary'>" . get_string('stats_' . $elem, 'plagiarism_compilatio') . "</div>
                     <h3 class='cmp-color-" . $color . "'>" . $scorestats->$elem . " %</h3>
                 </div>";
         }
-    
+
         $output .= "
             <div class='col'>
-                <h4 class='cmp-color-primary'>" . get_string("results", "plagiarism_compilatio") . "</h4>
+                <h4 class='cmp-color-primary'>" . get_string('results', 'plagiarism_compilatio') . "</h4>
                 <div class='cmp-box mx-2 my-3 px-3 pt-3 pb-2'>
-                    <h5 class='cmp-color-primary'>" . get_string("stats_score", "plagiarism_compilatio") . "</h5>
+                    <h5 class='cmp-color-primary'>" . get_string('stats_score', 'plagiarism_compilatio') . "</h5>
                     <div class='row'>{$yes}</div>
                 </div>
 
                 <div class='cmp-box mx-2 my-3 p-3'>
-                    <h5 class='cmp-color-primary'>" . get_string("stats_threshold", "plagiarism_compilatio") . "</h5>
+                    <h5 class='cmp-color-primary'>" . get_string('stats_threshold', 'plagiarism_compilatio') . "</h5>
                     <div class='row mt-3 fw-bold cmp-color-secondary'>
                         <div class='col-4'>
                             <h3 class='fw-bold cmp-color-green'>" . $countgreen . "</h3>
@@ -248,37 +242,38 @@ class CompilatioStatistics {
                 </div>
             </div>";
 
-        $errors = "";
+        $errors = '';
         foreach ($countbystatus as $status => $stat) {
-            if (strpos($status, "error") === 0) {
-                if ($status == "error_too_large") {
+            if (strpos($status, 'error') === 0) {
+                if ($status == 'error_too_large') {
                     $stringvariable = (get_config('plagiarism_compilatio', 'max_size') / 1024 / 1024);
-                } else if ($status == "error_too_long") {
+                } else if ($status == 'error_too_long') {
                     $stringvariable = get_config('plagiarism_compilatio', 'max_word');
-                } else if ($status == "error_too_short") {
+                } else if ($status == 'error_too_short') {
                     $stringvariable = get_config('plagiarism_compilatio', 'min_word');
                 }
 
                 $errors .= "<div class='position-relative cmp-box mx-2 my-3 p-3'>
-                        <h5 class='cmp-color-red'>" . $stat->count . " " . (get_string("short_" . $status, "plagiarism_compilatio") ?? get_string("stats_error_unknown", "plagiarism_compilatio")) . "</h5>
-                        <small>" . (get_string("detailed_" . $status, "plagiarism_compilatio", $stringvariable ?? null) ?? "") . "</small>
+                        <h5 class='cmp-color-red'>" . $stat->count . ' ' . (get_string('short_' . $status, 'plagiarism_compilatio') ?? get_string('stats_error_unknown', 'plagiarism_compilatio')) . "</h5>
+                        <small>" . (get_string('detailed_' . $status, 'plagiarism_compilatio', $stringvariable ?? null) ?? '') . "</small>
                     </div>";
             }
         }
         if (empty($errors)) {
             $errors = "<div class='cmp-box mx-2 my-3 p-3'>
-                    <h5 class='cmp-color-green'>" . get_string("stats_error_empty", "plagiarism_compilatio") . "</h5>
+                    <h5 class='cmp-color-green'>" . get_string('stats_error_empty', 'plagiarism_compilatio') . "</h5>
                 </div>";
         }
-    
+
         $output .= "
             <div class='col'>
-                <h4 class='cmp-color-primary'>" . get_string("errors", "plagiarism_compilatio") . "</h4>
+                <h4 class='cmp-color-primary'>" . get_string('errors', 'plagiarism_compilatio') . "</h4>
                 {$errors}
             </div>";
-        
+
         return $output;
 
+        // TODO.
         /*if ($documentscount === 0) {
             $result = "<span>" . get_string("no_documents_available", "plagiarism_compilatio") . "</span>";
         } else {
@@ -353,7 +348,7 @@ class CompilatioStatistics {
 
         $string = "<ul>";
         foreach ($listitems as $listitem) {
-            $string .= "<li>" . get_string($listitem[0], "plagiarism_compilatio", $listitem[1]) . "</li>";
+            $string .= "<li>" . get_string($listitem[0], 'plagiarism_compilatio', $listitem[1]) . "</li>";
         }
         $string .= "</ul>";
         return $string;
@@ -374,7 +369,7 @@ class CompilatioStatistics {
             FROM {plagiarism_compilatio_files} pcf
             WHERE pcf.cm=? AND status = ?";
 
-        $files = $DB->get_records_sql($sql, array($cmid, $status));
+        $files = $DB->get_records_sql($sql, [$cmid, $status]);
 
         if (!empty($files)) {
             // Don't display user name for anonymous assign.
@@ -386,28 +381,28 @@ class CompilatioStatistics {
             if (!empty($anonymousassign) && $anonymousassign->blindmarking) {
                 foreach ($files as $file) {
                     $anonymousid = $DB->get_field('assign_user_mapping', 'id',
-                        array("assignment" => $anonymousassign->id, "userid" => $file->userid));
-                    $file->user = get_string('hiddenuser', 'assign') . " " . $anonymousid;
+                        ['assignment' => $anonymousassign->id, 'userid' => $file->userid]);
+                    $file->user = get_string('hiddenuser', 'assign') . ' ' . $anonymousid;
                 }
 
                 return array_map(
                     function ($file) {
-                        return $file->user . " : " . $file->filename;
+                        return $file->user . ' : ' . $file->filename;
                     }, $files);
             } else {
                 foreach ($files as $file) {
-                    $user = $DB->get_record('user', array("id" => $file->userid));
+                    $user = $DB->get_record('user', ['id' => $file->userid]);
                     $file->lastname = $user->lastname;
                     $file->firstname = $user->firstname;
                 }
 
                 return array_map(
                     function ($file) {
-                        return $file->lastname . " " . $file->firstname . " : " . $file->filename;
+                        return $file->lastname . ' ' . $file->firstname . ' : ' . $file->filename;
                     }, $files);
             }
         } else {
-            return array();
+            return [];
         }
     }
 }

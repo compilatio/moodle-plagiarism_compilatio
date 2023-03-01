@@ -30,6 +30,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
@@ -87,18 +89,18 @@ class CompilatioSendFile {
         }
 
         // Check if file has already been sent.
-        $params = array(
+        $params = [
             "cm" => $cmid,
             "userid" => $userid,
             "identifier" => $cmpfile->identifier
-        );
+        ];
         if (!empty($DB->get_record("plagiarism_compilatio_files", $params))) {
             return false;
         }
 
         if ($send) {
             if (!check_dir_exists($CFG->dataroot . "/temp/compilatio", true, true)) {
-                error_log("Error when sending the file to compilatio : failed to create compilatio temp directory");
+                debugging("Error when sending the file to compilatio : failed to create compilatio temp directory");
             }
 
             $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H-i-s') . ".txt";
@@ -106,7 +108,7 @@ class CompilatioSendFile {
             fwrite($handle, $content);
             fclose($handle);
 
-            $cmconfig = $DB->get_record("plagiarism_compilatio_module", array("cmid" => $cmid));
+            $cmconfig = $DB->get_record("plagiarism_compilatio_module", ["cmid" => $cmid]);
 
             $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'), $cmconfig->userid);
 
@@ -124,7 +126,7 @@ class CompilatioSendFile {
                 if ($isgroupsubmission === '1') {
                     $groupid = $DB->get_fieldset_sql(
                         'SELECT groupid FROM {groups_members} gm
-                            JOIN {groups} g ON g.id = gm.groupid 
+                            JOIN {groups} g ON g.id = gm.groupid
                             WHERE courseid = ? AND userid = ?',
                         [$module->course, $plagiarismfile->userid]
                     );
@@ -174,13 +176,14 @@ class CompilatioSendFile {
 
         global $DB;
 
+        // TODO delete coms
         //$compilatio = new plagiarism_plugin_compilatio();
 
-        /*$analysistype = $DB->get_field('plagiarism_compilatio_module', 'analysistype', array('cmid' => $cmid));
-        $analysistime = $DB->get_field('plagiarism_compilatio_module', 'analysistime', array('cmid' => $cmid));*/
+        /*$analysistype = $DB->get_field('plagiarism_compilatio_module', 'analysistype', ['cmid' => $cmid]);
+        $analysistime = $DB->get_field('plagiarism_compilatio_module', 'analysistime', ['cmid' => $cmid]);*/
 
         foreach ($files as $file) {
-            $userid = $DB->get_field('assign_submission', 'userid', array('id' => $file->get_itemid()));
+            $userid = $DB->get_field('assign_submission', 'userid', ['id' => $file->get_itemid()]);
 
             $file = self::send_file($cmid, $userid, $file);
 

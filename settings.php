@@ -35,7 +35,7 @@ require_login();
 admin_externalpage_setup('plagiarismcompilatio');
 
 $context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
+require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
 
 $mform = new compilatio_setup_form();
 $plagiarismplugin = new plagiarism_plugin_compilatio();
@@ -45,8 +45,20 @@ if ($mform->is_cancelled()) {
 }
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
-    $elements = ["enabled", "enable_mod_assign", "enable_mod_forum", "enable_mod_workshop", "enable_mod_quiz", "enable_show_reports",
-        "enable_search_tab", "enable_student_analyses", "enable_analyses_auto", "disable_ssl_verification", "keep_docs_indexed"];
+    $elements = [
+        'enabled',
+        'enable_mod_assign',
+        'enable_mod_forum',
+        'enable_mod_workshop',
+        'enable_mod_quiz', 
+        'enable_show_reports',
+        'enable_search_tab',
+        'enable_student_analyses',
+        'enable_analyses_auto', 
+        'disable_ssl_verification',
+        'keep_docs_indexed'
+    ];
+
     foreach ($elements as $elem) {
         if (!isset($data->$elem)) {
             $data->$elem = 0;
@@ -66,7 +78,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     }
 
     // Set the default config for course modules if not set.
-    $plagiarismdefaults = $DB->get_record('plagiarism_compilatio_module', array('cmid' => 0));
+    $plagiarismdefaults = $DB->get_record('plagiarism_compilatio_module', ['cmid' => 0]);
     if (empty($plagiarismdefaults)) {
         $defaultconfig = new stdClass();
         $defaultconfig->cmid = 0;
@@ -82,7 +94,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         $DB->insert_record('plagiarism_compilatio_module', $defaultconfig);
     }
 
-    cache_helper::invalidate_by_definition('core', 'config', array(), 'plagiarism_compilatio');
+    cache_helper::invalidate_by_definition('core', 'config', [], 'plagiarism_compilatio');
     $updatemeta = new update_meta();
     $updatemeta->execute();
 
@@ -106,25 +118,25 @@ if (!empty($plagiarismsettings['enabled'])) {
 
         $subscription = $compilatio->get_subscription_info();
 
-	$subscriptioninfos = "";
-        $subscriptioninfos .= "<li>" . get_string('subscription_start', 'plagiarism_compilatio') . " "
-            . compilatio_format_date($subscription->validity_period->start) . "</li>";
-        $subscriptioninfos .= "<li>" . get_string('subscription_end', 'plagiarism_compilatio') . " "
-            . compilatio_format_date($subscription->validity_period->end) . "</li>";
+	    $subscriptioninfos = '';
+        $subscriptioninfos .= '<li>' . get_string('subscription_start', 'plagiarism_compilatio') . ' '
+            . compilatio_format_date($subscription->validity_period->start) . '</li>';
+        $subscriptioninfos .= '<li>' . get_string('subscription_end', 'plagiarism_compilatio') . ' '
+            . compilatio_format_date($subscription->validity_period->end) . '</li>';
 
         if (isset($subscription->quotas)) {
-            foreach($subscription->quotas as $quota) {
+            foreach ($subscription->quotas as $quota) {
                 if (($quota->blocking === false && $quota->resource === 'analysis_count') ||
                     ($quota->blocking === true && $quota->resource === 'analysis_page_count')) {
 
-                    $subscriptioninfos .= "<li>" . get_string('subscription_' . $quota->resource, 'plagiarism_compilatio', $quota) . "</li>";
+                    $subscriptioninfos .= '<li>' . get_string('subscription_' . $quota->resource, 'plagiarism_compilatio', $quota) . '</li>';
                 }
             }
         }
 
         echo $OUTPUT->notification(
-            "<p>" . get_string('enabledandworking', 'plagiarism_compilatio') . "</p>" 
-            . get_string('subscription', 'plagiarism_compilatio') . "<ul style='margin: 0;'>" . $subscriptioninfos . "</ul>",
+            '<p>' . get_string('enabledandworking', 'plagiarism_compilatio') . '</p>'
+            . get_string('subscription', 'plagiarism_compilatio') . "<ul style='margin: 0;'>" . $subscriptioninfos . '</ul>',
             'notifysuccess'
         );
     } else {
@@ -133,7 +145,7 @@ if (!empty($plagiarismsettings['enabled'])) {
         if ($CFG->version < 2020061500) {
             set_config('compilatio_use', 0, 'plagiarism');
         }
-        echo $OUTPUT->notification(get_string("saved_config_failed", "plagiarism_compilatio") . " " . $validapikey);
+        echo $OUTPUT->notification(get_string('saved_config_failed', 'plagiarism_compilatio') . ' ' . $validapikey);
     }
 }
 

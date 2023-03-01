@@ -7,17 +7,17 @@ define(['jquery'], function($) {
 
     exports.afterPercentValues = function(strSimilarityPercent, strRedTreshold) {
         $(document).ready(function() {
-            var txtGreen = $("<span>", {"class": "cmp-ml-10"}).text(strSimilarityPercent);
-            var txtOrange = $("<span>", {"class": "cmp-ml-10"}).text(strSimilarityPercent + ", " + strRedTreshold + ".");
-            $("#warningthreshold").after(txtGreen);
-            $("#criticalthreshold").after(txtOrange);
+            var txtGreen = $('<span>', {'class': 'cmp-ml-10'}).text(strSimilarityPercent);
+            var txtOrange = $('<span>', {'class': 'cmp-ml-10'}).text(strSimilarityPercent + ', ' + strRedTreshold + '.');
+            $('#warningthreshold').after(txtGreen);
+            $('#criticalthreshold').after(txtOrange);
         });
     };
 
     exports.requiredTermsOfService = function() {
         $(document).ready(function() {
-            let activated = $("#id_activated");
-            let tos = $("#id_termsofservice");
+            let activated = $('#id_activated');
+            let tos = $('#id_termsofservice');
 
             if (activated.val() == 0) {
                 tos.prop('checked', true);

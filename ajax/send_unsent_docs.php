@@ -49,7 +49,7 @@ if (count($files) != 0) {
 
 if ($countsuccess > 0) {
     $SESSION->compilatio_alert = [
-        "class" => "info",
-        "content" => get_string("document_sent", "plagiarism_compilatio", $countsuccess)
+        'class' => 'info',
+        'content' => get_string('document_sent', 'plagiarism_compilatio', $countsuccess)
     ];
 }
