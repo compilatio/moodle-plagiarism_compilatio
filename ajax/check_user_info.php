@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Validate user's terms of service
+ * Get Compilatio user and update his info if necessary
  *
  * This script is called by amd/build/ajax_api.js
  *
@@ -34,13 +35,20 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php'
 
 require_login();
 
-global $DB;
+global $DB, $USER;
 
 $userid = required_param('userid', PARAM_RAW);
 
-$user = $DB->get_record('plagiarism_compilatio_user', ['compilatioid' => $userid]);
-$user->validatedtermsofservice = true;
-$DB->update_record('plagiarism_compilatio_user', $user);
+$compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'));
+$cmpuser = $compilatio->get_user($userid);
 
-$compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'), $userid);
-$compilatio->validate_terms_of_service();
+if (
+    $cmpuser->origin == 'LMS-Moodle' 
+    && (
+        $cmpuser->firstname !== $USER->firstname
+        || $cmpuser->lastname !== $USER->lastname
+        || strtolower($cmpuser->email) !== strtolower($USER->email)
+    )
+) {
+  $compilatio->update_user($userid, $USER->firstname, $USER->lastname, $USER->email);
+}

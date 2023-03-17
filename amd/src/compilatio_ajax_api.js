@@ -74,6 +74,12 @@ define(['jquery'], function($) {
         });
     };
 
+    exports.checkUserInfo = function(basepath, userid) {
+        $(document).ready(function() {
+            $.post(basepath + '/plagiarism/compilatio/ajax/check_user_info.php', {'userid': userid});
+        });
+    };
+
     function displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid) {
         $.post(basepath + '/plagiarism/compilatio/ajax/display_document_frame.php', {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid}, function(button) {
             let el = $('#cmp-' + domid);

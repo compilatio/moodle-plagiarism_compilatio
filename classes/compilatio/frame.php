@@ -89,16 +89,6 @@ class CompilatioFrame {
 
         $alerts = [];
 
-        // TODO Manage folder not created ?
-        /*$mod = $DB->get_record('plagiarism_compilatio_module', ['cmid' => $cmid]);
-        if (null === $mod->folderid) {
-            $alerts[] = [
-                'class' => 'danger',
-                'content' => "Une erreur s'est produite lors de la création de l'activité.
-                Les analyses automatiques et programmées ne fonctionnent pas. Vous pouvez lancer les analyses manuellement."
-            ];
-        }*/
-
         if (isset($SESSION->compilatio_alert)) {
             $alerts[] = $SESSION->compilatio_alert;
             unset($SESSION->compilatio_alert);
@@ -176,6 +166,8 @@ class CompilatioFrame {
         $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => $USER->id]);
 
         if (!empty($user)) {
+            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'checkUserInfo', [$CFG->httpswwwroot, $user->compilatioid]);
+
             if ($user->validatedtermsofservice == 0) {
                 $lang = substr(current_language(), 0, 2);
 
@@ -195,8 +187,6 @@ class CompilatioFrame {
                         [$CFG->httpswwwroot, $user->compilatioid]
                     );
             }
-        } else {
-            //TODO Manage user not created ?
         }
 
         $output = '';
