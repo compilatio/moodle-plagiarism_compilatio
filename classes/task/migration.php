@@ -54,7 +54,7 @@ class migration extends \core\task\scheduled_task {
 
         for ($i = 0; $i < 40; $i++) {
             $v4files = $DB->get_records_select("plagiarism_compilatio_files",
-                "CHAR_LENGTH(externalid) = 32 && migrationstatus IS NULL", null, '', '*', 0, 25);
+                "CHAR_LENGTH(externalid) = 32 AND migrationstatus IS NULL", null, '', '*', 0, 25);
 
             if (empty($v4files) && is_array($v4files)) {
                 $DB->delete_records('plagiarism_compilatio_data', array('name' => 'start_migration'));
@@ -107,27 +107,53 @@ class migration extends \core\task\scheduled_task {
             }
 
             curl_setopt_array($ch, $params);
-            $result = json_decode(curl_exec($ch));
+            $t = curl_exec($ch);
+            $result = json_decode($t);
             curl_close($ch);
 
-            foreach ($result->data->responses as $response) {
+            if (!isset($result->data->responses)) {
+                mtrace("API call error / cURL Error : " . curl_error($ch) . " / cURL response : " . var_export($t, true));
+                return;
+            }
 
+            $continue = false;
+
+            foreach ($result->data->responses as $response) {
                 if (isset($response->data->document)) {
+                    // Document migrated from v4.
+                    if (isset($response->data->document->old_prod_id)) {
+                        $docid = $response->data->document->old_prod_id;
+                    } else { // Document v5 loaded with SOAP API wrapper.
+                        $docid = $response->data->document->id;
+                    }
                     $file = $DB->get_record(
                         "plagiarism_compilatio_files",
-                        array("externalid" => $response->data->document->old_prod_id)
+                        array("externalid" => $docid)
                     );
                     if (!empty($file)) {
                         $file->externalid = $response->data->document->id;
                         $file->migrationstatus = 200;
                         $DB->update_record("plagiarism_compilatio_files", $file);
                     }
+                    $continue = true;
                 } else if ($response->status->code !== 503) {
                     $docid = end(explode('/', $response->request->path));
-                    $file = $DB->get_record("plagiarism_compilatio_files", array("externalid" => $docid));
-                    $file->migrationstatus = $response->status->code;
-                    $DB->update_record("plagiarism_compilatio_files", $file);
+                    $files = $DB->get_records("plagiarism_compilatio_files", array("externalid" => $docid));
+                    foreach ($files as $file) {
+                        $file->migrationstatus = $response->status->code;
+                        $DB->update_record("plagiarism_compilatio_files", $file);
+                    }
+                    $continue = true;
                 }
+            }
+
+            if (!$continue) {
+                mtrace("Get documents call APIs error");
+                return;
+            }
+
+            if (count($requests) < 25) {
+                break;
             }
         }
     }

@@ -116,7 +116,7 @@ $string['unextractablefile'] = 'Le texte de votre document n’a pas pu être ex
 $string['quiz_help'] = 'Seules les questions de type composition dont la réponse contient au moins {$a} mots seront analysés.';
 $string['allow_analyses_auto'] = 'Possibilité de lancer immédiatement les analyses';
 $string["allow_analyses_auto_help"] = "<p>Cette option permettra aux enseignants d'activer sur une activité le lancement automatique de l'analyse des documents (i.e. immédiatement après leur dépôt).<br>
-Notez que dans ce cas : 
+Notez que dans ce cas :
 <ul>
     <li>Le nombre d'analyses effectuées par votre établissement peut être significativement plus important.</li>
     <li>Les documents des premiers déposants ne seront pas comparés avec les documents des derniers déposants.</li>

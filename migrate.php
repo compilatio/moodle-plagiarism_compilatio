@@ -36,7 +36,7 @@ require_capability('moodle/site:config', $context, $USER->id, true, "nopermissio
 
 $restart = optional_param('restart', null, PARAM_RAW);
 if ($restart == '1') {
-    $files = $DB->get_records_select("plagiarism_compilatio_files", "CHAR_LENGTH(externalid) = 32 && migrationstatus != 200");
+    $files = $DB->get_records_select("plagiarism_compilatio_files", "CHAR_LENGTH(externalid) = 32 AND migrationstatus != 200");
 
     foreach ($files as $file) {
         $file->migrationstatus = null;
@@ -126,7 +126,7 @@ echo "<div class='form-inline'>
         </form>
     </div>";
 
-$v4files = $DB->count_records_select("plagiarism_compilatio_files", "CHAR_LENGTH(externalid) = 32 && migrationstatus IS NULL");
+$v4files = $DB->count_records_select("plagiarism_compilatio_files", "CHAR_LENGTH(externalid) = 32 AND migrationstatus IS NULL");
 $migrationrunning = $DB->get_record('plagiarism_compilatio_data', array('name' => 'start_migration'));
 
 if ($v4files > 0 && !empty($migrationrunning)) {

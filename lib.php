@@ -1817,7 +1817,38 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
     $filecontents = (!empty($file->filepath)) ? file_get_contents($file->filepath) : $file->get_content();
 
     if (strlen($compilatio->key) == 40) { // V5 Doc sending.
-        $idcompi = $compilatio->send_doc_v5($name, $filename, $filecontents, $indexingstate);
+        $depositor = $DB->get_record("user", ["id" => $plagiarismfile->userid], 'firstname, lastname, email');
+        $authors = [$depositor];
+
+        if ($module->modname == 'assign') {
+            $isgroupsubmission = $DB->get_field_sql(
+                'SELECT teamsubmission FROM {course_modules} course_modules
+                    JOIN {assign} assign ON course_modules.instance = assign.id
+                    WHERE course_modules.id = ?',
+                ['id' => $plagiarismfile->cm]
+            );
+    
+            if ($isgroupsubmission === '1') {
+                $groupid = $DB->get_fieldset_sql(
+                    'SELECT groupid FROM {groups_members} gm
+                        JOIN {groups} g ON g.id = gm.groupid 
+                        WHERE courseid = ? AND userid = ?',
+                    [$module->course, $plagiarismfile->userid]
+                );
+    
+                if (count($groupid) == 1) {
+                    $authors = $DB->get_records_sql(
+                        'SELECT firstname, lastname, email FROM {groups} g
+                            JOIN {groups_members} gm ON g.id = gm.groupid
+                            JOIN {user} user ON user.id = gm.userid
+                            WHERE courseid = ? AND g.id = ?',
+                        [$module->course, $groupid[0]]
+                    );
+                }
+            }
+        }
+
+        $idcompi = $compilatio->send_doc_v5($name, $filename, $filecontents, $indexingstate, $depositor, $authors);
     } else { // V4 Doc sending.
         $idcompi = $compilatio->send_doc($name, $name, $filename, $mimetype, $filecontents);
         ws_helper::set_indexing_state($idcompi, $indexingstate, $plagiarismfile->apiconfigid);
@@ -1939,8 +1970,7 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
         return true;
     } else if (isset($analyse->code)) {
-        // VP SOAP Faults.
-        if ($analyse->code == 'INVALID_ID_DOCUMENT') {
+        if ($analyse->code == 'INVALID_ID_DOCUMENT') { // SOAP v4 Faults.
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_NOT_FOUND;
             $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
 
@@ -1950,8 +1980,7 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
             preg_match('~least (\d+)~', $analyse->string, $nbmotsmin);
             set_config('nb_mots_min', $nbmotsmin[1], 'plagiarism_compilatio');
 
-        // Elastisafe SOAP Faults.
-        } else if ($analyse->code == 'startDocumentAnalyse error') {
+        } else if ($analyse->code == 'startDocumentAnalyse error') { // SOAP v5 Faults.
             if ($analyse->string == 'Invalid document id') {
                 $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_NOT_FOUND;
                 $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
@@ -2742,10 +2771,10 @@ function compilatio_get_global_statistics($html = true) {
         JOIN {course_modules} course_modules
             ON plagiarism_compilatio_files.cm = course_modules.id
         JOIN {modules} modules ON modules.id = course_modules.module
-        LEFT JOIN {assign} assign ON course_modules.instance = assign.id AND course_modules.module = 1
-        LEFT JOIN {forum} forum ON course_modules.instance = forum.id AND course_modules.module = 9
-        LEFT JOIN {workshop} workshop ON course_modules.instance = workshop.id AND course_modules.module = 23
-        LEFT JOIN {quiz} quiz ON course_modules.instance = quiz.id AND course_modules.module = 17
+        LEFT JOIN {assign} assign ON course_modules.instance = assign.id AND modules.name = \'assign\'
+        LEFT JOIN {forum} forum ON course_modules.instance = forum.id AND modules.name = \'forum\'
+        LEFT JOIN {workshop} workshop ON course_modules.instance = workshop.id AND modules.name = \'workshop\'
+        LEFT JOIN {quiz} quiz ON course_modules.instance = quiz.id AND modules.name = \'quiz\'
         JOIN {course} course ON course_modules.course= course.id
         WHERE statuscode=\'Analyzed\'
         GROUP BY cm,
@@ -3040,7 +3069,6 @@ function compilatio_course_delete($courseid, $modulename = null) {
  * @return mixed             Return null if plugin is not enabled, void otherwise
  */
 function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = true) {
-
     $cmid = $eventdata["contextinstanceid"];
 
     if ($eventdata['objecttable'] == 'quiz_attempts' && $eventdata['action'] == 'submitted') {

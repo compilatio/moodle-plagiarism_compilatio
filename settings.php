@@ -128,7 +128,8 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         }
         $incorrectconfig = true;
         if ($quotas["error"] == null) {
-            $error = "Invalid API configuration. If you are using a v5 API key please check that you set the API URL field to https://app.compilatio.net/api/private/soap/wsdl";
+            $error = "Invalid API configuration. If you are using a v5 API key, set the API URL field to ";
+            $error .= "https://app.compilatio.net/api/private/soap/wsdl";
         } else {
             $error = $quotas["error"];
         }

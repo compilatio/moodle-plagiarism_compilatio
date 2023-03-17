@@ -133,7 +133,7 @@ $string['immediately'] = "Immediately";
 $string['quiz_help'] = 'Only essay questions whose answer contain at least {$a} words will be analyzed.';
 $string["allow_analyses_auto"] = "Possibility to start the analyses directly";
 $string["allow_analyses_auto_help"] = "This option will allow teachers to activate the automatic launch of documents analysis on an activity (i.e. immediately after they have been submitted).<br>
-Note that in this case : 
+Note that in this case:
 <ul>
     <li>The number of scans performed by your institution may be significantly higher.</li>
     <li>The documents of the first submitters are not compared with the documents of the last depositors.</li>

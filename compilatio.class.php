@@ -204,14 +204,14 @@ class compilatioservice {
      * @param  string $indexingstate Indexing state
      * @return string              Return the document ID if succeed, an error otherwise
      */
-    public function send_doc_v5($title, $filename, $content, $indexingstate) {
+    public function send_doc_v5($title, $filename, $content, $indexingstate, $depositor, $authors) {
         global $CFG;
 
         if (!check_dir_exists($CFG->dataroot . "/temp/compilatio", true, true)) {
             return "Failed to create compilatio temp directory";
         }
 
-        $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H-i-s') . ".txt";
+        $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H-i-s') . uniqid() . ".txt";
 
         $handle = fopen($filepath, "wb");
         if ($handle == false) {
@@ -222,13 +222,31 @@ class compilatioservice {
 
         fclose($handle);
 
-        $params = array(
+        $params = [
             'file' => new \CURLFile($filepath),
             'filename' => $filename,
             'title' => $title,
             'indexed' => boolval($indexingstate),
             'origin' => 'moodle'
-        );
+        ];
+
+        if (isset($depositor->firstname, $depositor->lastname, $depositor->email)) {
+            $params['depositor'] = [
+                'firstname' => $depositor->firstname,
+                'lastname' => $depositor->lastname,
+                'email_address' => $depositor->email
+            ];
+        }
+
+        foreach ($authors as $author) {
+            if (isset($author->firstname, $author->lastname, $author->email)) {
+                $params['authors'][] = [
+                    'firstname' => $author->firstname,
+                    'lastname' => $author->lastname,
+                    'email_address' => $author->email
+                ];
+            }
+        }
 
         $ch = curl_init();
 
@@ -237,10 +255,10 @@ class compilatioservice {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => array('X-Auth-Token: ' . $this->key),
             CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $params
+            CURLOPT_POSTFIELDS => $this->build_post_fields($params)
         ];
 
-        $this->set_proxy_settings($curloptions);
+        $curloptions = $this->set_proxy_settings($curloptions);
 
         curl_setopt_array($ch, $curloptions);
         $t = curl_exec($ch);
@@ -263,6 +281,18 @@ class compilatioservice {
         }
     }
 
+    private function build_post_fields($data, $existingkeys = '', &$returnarray = []) {
+        if (($data instanceof \CURLFile) || !(is_array($data) || is_object($data))) {
+            $returnarray[$existingkeys] = $data;
+            return $returnarray;
+        } else {
+            foreach ($data as $key => $item) {
+                $this->build_post_fields($item, $existingkeys ? $existingkeys . "[$key]" : $key, $returnarray);
+            }
+            return $returnarray;
+        }
+    }
+
     /**
      * Get JWT to access a document report.
      *
@@ -276,22 +306,21 @@ class compilatioservice {
             CURLOPT_URL => COMPILATIO_API_URL . "/documents/" . $docid . "/report/jwt",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => array('X-Auth-Token: ' . $this->key),
-            CURLOPT_POST => true
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => []
         ];
 
-        $this->set_proxy_settings($curloptions);
+        $curloptions = $this->set_proxy_settings($curloptions);
 
         curl_setopt_array($ch, $curloptions);
-        $response = json_decode(curl_exec($ch));
+        $t = curl_exec($ch);
+        $response = json_decode($t);
 
-        if (!isset($response->status->code, $response->status->message)) {
-            return false;
-        }
-
-        if ($response->status->code == 201) {
+        if (($response->status->code ?? null) == 201) {
             return $response->data->jwt;
         } else {
-            return false;
+            return "Error in function get_report_token : cURL Error : "
+                . curl_error($ch) . " / cURL response : " . var_export($t, true);
         }
     }
 
