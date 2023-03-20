@@ -386,11 +386,8 @@ class CompilatioEventHandler {
                 // Online text content.
                 $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
                 if (str_word_count(utf8_decode(strip_tags($content))) >= $nbmotsmin) {
-
-                    $courseid = $attempt->get_courseid();
                     $question = "Q" . $answer->get_question_id();
-
-                    $filename = "quiz-{$courseid}-{$cmid}-{$attemptid}-{$question}.htm";
+                    $filename = "quiz-{$attemptid}-{$question}.htm";
 
                     CompilatioSendFile::send_file($cmid, $userid, null, $filename, $content);
                 }

@@ -74,14 +74,54 @@ if (count($docsfailed) === 0) {
     ];
 }
 
-// Send sending failed files.
+// Send failed files.
 $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'error_sending_failed']);
-
-// TODO resend text content.
 
 $fs = get_file_storage();
 
 foreach ($files as $cmpfile) {
+
+    // Text contents.
+    if (preg_match('~.htm$~', $cmpfile->filename)) {
+
+        $objectid = explode(".", explode("-", $cmpfile->filename)[1])[0];
+
+        $sql = "SELECT m.name FROM {course_modules} cm
+            JOIN {modules} m ON m.id = cm.module
+            WHERE cm.id = ?";
+        $modulename = $DB->get_field_sql($sql, array($cmid));
+    
+        switch ($modulename) {
+            case 'assign':
+                $content = $DB->get_field('assignsubmission_onlinetext', 'onlinetext', array('submission' => $objectid));
+                break;
+            case 'workshop':
+                $content = $DB->get_field('workshop_submissions', 'content', array('id' => $objectid));
+                break;
+            case 'forum':
+                $content = $DB->get_field('forum_posts', 'message', array('id' => $objectid));
+                break;
+            case 'quiz':
+                $questionid = substr(explode('.', $cmpfile->filename)[0], strpos($cmpfile->filename, "Q") + 1);
+
+                $sql = "SELECT responsesummary
+                    FROM {quiz_attempts} quiz
+                    JOIN {question_attempts} qa ON quiz.uniqueid = qa.questionusageid
+                    WHERE quiz.id = ? AND qa.questionid = ?";
+                $content = $DB->get_field_sql($sql, array($objectid, $questionid));
+                break;
+        }
+    
+        if (!empty($content)) {
+            $DB->delete_records('plagiarism_compilatio_files', ['id' => $cmpfile->id]);
+
+            CompilatioSendFile::send_file($cmid, $cmpfile->userid, null, $cmpfile->filename, $content);
+        }
+
+        continue;
+    }
+
+    // Files.
     $module = get_coursemodule_from_id(null, $cmpfile->cm);
 
     $modulecontext = context_module::instance($cmpfile->cm);
