@@ -1313,17 +1313,13 @@ function compilatio_send_pending_files($plagiarismsettings) {
                             $content = $DB->get_field('forum_posts', 'message', array('id' => $plagiarismfile->objectid));
                             break;
                         case 'quiz':
+                            $questionid = substr(explode('.', $plagiarismfile->filename)[0], strpos($plagiarismfile->filename, "Q") + 1);
+
                             $sql = "SELECT responsesummary
                                 FROM {quiz_attempts} quiz
                                 JOIN {question_attempts} qa ON quiz.uniqueid = qa.questionusageid
-                                WHERE quiz.id = ?";
-                            $attempt = $DB->get_records_sql($sql, array($plagiarismfile->objectid));
-
-                            foreach ($attempt as $question) {
-                                if ($plagiarismfile->identifier == sha1($question->responsesummary)) {
-                                    $content = $question->responsesummary;
-                                }
-                            }
+                                WHERE quiz.id = ? AND qa.questionid = ?";
+                            $content = $DB->get_field_sql($sql, array($plagiarismfile->objectid, $questionid));
                             break;
                     }
 
