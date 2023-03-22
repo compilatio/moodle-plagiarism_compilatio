@@ -1295,49 +1295,48 @@ function compilatio_send_pending_files($plagiarismsettings) {
             if ($tmpfile !== false) {
                 $compid = compilatio_send_file_to_compilatio($plagiarismfile, $plagiarismsettings, $tmpfile, $indexingstate);
                 unlink($tmpfile->filepath);
-            } else {
-                if (isset($plagiarismfile->objectid)) {
-                    $sql = "SELECT m.name FROM {course_modules} cm
-                        JOIN {modules} m ON m.id = cm.module
-                        WHERE cm.id = ?";
-                    $modulename = $DB->get_field_sql($sql, array($plagiarismfile->cm));
+            } else if (isset($plagiarismfile->objectid)) {
+                $sql = "SELECT m.name FROM {course_modules} cm
+                    JOIN {modules} m ON m.id = cm.module
+                    WHERE cm.id = ?";
+                $modulename = $DB->get_field_sql($sql, array($plagiarismfile->cm));
 
-                    switch ($modulename) {
-                        case 'assign':
-                            $content = $DB->get_field('assignsubmission_onlinetext', 'onlinetext', array('submission' => $plagiarismfile->objectid));
-                            break;
-                        case 'workshop':
-                            $content = $DB->get_field('workshop_submissions', 'content', array('id' => $plagiarismfile->objectid));
-                            break;
-                        case 'forum':
-                            $content = $DB->get_field('forum_posts', 'message', array('id' => $plagiarismfile->objectid));
-                            break;
-                        case 'quiz':
-                            $questionid = substr(explode('.', $plagiarismfile->filename)[0], strpos($plagiarismfile->filename, "Q") + 1);
+                switch ($modulename) {
+                    case 'assign':
+                        $content = $DB->get_field('assignsubmission_onlinetext', 'onlinetext', array('submission' => $plagiarismfile->objectid));
+                        break;
+                    case 'workshop':
+                        $content = $DB->get_field('workshop_submissions', 'content', array('id' => $plagiarismfile->objectid));
+                        break;
+                    case 'forum':
+                        $content = $DB->get_field('forum_posts', 'message', array('id' => $plagiarismfile->objectid));
+                        break;
+                    case 'quiz':
+                        $questionid = substr(explode('.', $plagiarismfile->filename)[0], strpos($plagiarismfile->filename, "Q") + 1);
 
-                            $sql = "SELECT responsesummary
-                                FROM {quiz_attempts} quiz
-                                JOIN {question_attempts} qa ON quiz.uniqueid = qa.questionusageid
-                                WHERE quiz.id = ? AND qa.questionid = ?";
-                            $content = $DB->get_field_sql($sql, array($plagiarismfile->objectid, $questionid));
-                            break;
-                    }
-
-                    if (!empty($content)) {
-                        $data = new stdClass();
-                        $data->content = $content;
-    
-                        $file = compilatio_create_temp_file($plagiarismfile->cm, $data, $plagiarismfile->filename);
-                        compilatio_send_file_to_compilatio($plagiarismfile, $plagiarismsettings, $file, $indexingstate);
-                    }
+                        $sql = "SELECT responsesummary
+                            FROM {quiz_attempts} quiz
+                            JOIN {question_attempts} qa ON quiz.uniqueid = qa.questionusageid
+                            WHERE quiz.id = ? AND qa.questionid = ?";
+                        $content = $DB->get_field_sql($sql, array($plagiarismfile->objectid, $questionid));
+                        break;
                 }
 
+                if (!empty($content)) {
+                    $data = new stdClass();
+                    $data->content = $content;
+
+                    $file = compilatio_create_temp_file($plagiarismfile->cm, $data, $plagiarismfile->filename);
+                    compilatio_send_file_to_compilatio($plagiarismfile, $plagiarismsettings, $file, $indexingstate);
+                }
+            } else {
                 // Not a temporary file.
                 $modulecontext = context_module::instance($plagiarismfile->cm);
                 $contextid = $modulecontext->id;
                 $sql = "SELECT * FROM {files} f WHERE f.contenthash= ? AND contextid = ?";
                 $f = $DB->get_record_sql($sql, array($plagiarismfile->identifier, $contextid));
                 if (empty($f)) {
+                    $DB->delete_records('plagiarism_compilatio_files', array('id' => $plagiarismfile->id));
                     continue;
                 }
                 $file = $fs->get_file_by_id($f->id);
@@ -1357,10 +1356,17 @@ function compilatio_send_pending_files($plagiarismsettings) {
 function compilatio_get_temp_file($filename) {
 
     global $CFG;
+
+    if (empty($filename)) {
+        return false;
+    }
+
     $filepath = $CFG->dataroot . "/temp/compilatio/" . $filename;
+
     if (!file_exists($filepath)) {
         return false;
     }
+
     $file = new stdclass();
     $file->type = "tempcompilatio";
     $file->filename = $filename;
