@@ -272,69 +272,6 @@ class CompilatioStatistics {
             </div>";
 
         return $output;
-
-        // TODO.
-        /*if ($documentscount === 0) {
-            $result = "<span>" . get_string("no_documents_available", "plagiarism_compilatio") . "</span>";
-        } else {
-            $items = array();
-            $errors = '';
-
-            $items[] = array("documents_analyzed", $analysisstats);
-
-            foreach ($countstatus as $stat) {
-                if ($stat == "queue") {
-                    $items[] = array("documents_in_queue", $stat->count);
-                } else if ($stat == "analyzing") {
-                    $items[] = array("documents_analyzing", $stat->count);
-                }
-
-                if (strpos($stat->status, "error") === 0) {
-                    if ($stat->status == "error_too_large") {
-                        $stringvariable = (get_config('plagiarism_compilatio', 'max_size') / 1024 / 1024);
-                    } else if ($stat->status == "error_too_long") {
-                        $stringvariable = get_config('plagiarism_compilatio', 'max_word');
-                    } else if ($stat->status == "error_too_short") {
-                        $stringvariable = get_config('plagiarism_compilatio', 'min_word');
-                    }
-
-                    $files = self::get_files_by_status_code($cmid, $stat->status);
-
-                    $errors .= "<h5>{$stat->count} " . get_string("short_" . $stat->status, "plagiarism_compilatio") . "</h5>"
-                        . "<ul><li>" . implode("</li><li>", $files) . "</li></ul>"
-                        . "<p>" . get_string("detailed_" . $stat->status, "plagiarism_compilatio", $stringvariable ?? null) . "<p>";
-                }
-            }
-
-            $result = "<span>" . get_string("progress", "plagiarism_compilatio") . "</span>";
-            $result .= self::display_list_stats($items);
-        }
-
-        $items = array();
-
-        if ($countanalyzed != 0) {
-            $items[] = array("average_similarities", round($avg));
-            $items[] = array("documents_analyzed_lower_green", $statsthresholds);
-            $items[] = array("documents_analyzed_between_thresholds", $statsthresholds);
-            $items[] = array("documents_analyzed_higher_red", $statsthresholds);
-        }
-
-        if (count($items) !== 0) {
-            $result .= "<span>" . get_string("results", "plagiarism_compilatio") . "</span>";
-            $result .= self::display_list_stats($items);
-
-            if (!empty($errors)) {
-                $result .= "<span>" . get_string("errors", "plagiarism_compilatio") . "</span>";
-                $result .= $errors;
-            }
-
-            $url = $PAGE->url;
-            $url->param('compilatio_export', true);
-            $result .= "<a title='" .
-            get_string("export_csv", "plagiarism_compilatio") .
-                "' class='cmp-icon' href='$url'><i class='fa fa-download fa-2x'></i></a>";
-        }
-        return $output;*/
     }
 
     /**

@@ -227,7 +227,6 @@ class CompilatioFrame {
                 <i class='fa fa-chevron-up fa-2x'></i>
             </div>";
 
-        // TODO factoriser cette merde.
         // Display buttons.
         if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
             if ($startallanalyses) {

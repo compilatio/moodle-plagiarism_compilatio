@@ -17,7 +17,6 @@ define(['jquery'], function($) {
 
     var exports = {};
 
-    // TODO Factoriser.
     exports.startAllAnalysis = function(basepath, cmid, message) {
         $(document).ready(function() {
             var startAllAnalysis = $('button.cmp-start-btn');
@@ -81,11 +80,11 @@ define(['jquery'], function($) {
     };
 
     function displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid) {
-        $.post(basepath + '/plagiarism/compilatio/ajax/display_document_frame.php', {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid}, function(button) {
+        $.post(basepath + '/plagiarism/compilatio/ajax/display_document_frame.php', {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename}, function(button) {
             let el = $('#cmp-' + domid);
             el.empty().append(button);
 
-            //setTimeout(e => { // TODO
+            setTimeout(e => {
                 var toogleIndexingStateBtn = $('#cmp-' + domid + ' .cmp-library');
                 toogleIndexingStateBtn.click(function() {
                     i = toogleIndexingStateBtn.find('i');
@@ -106,26 +105,25 @@ define(['jquery'], function($) {
                         }
                     });
                 });
-            //}, 1000);
 
-            var startAnalysisBtn = $('#cmp-' + domid + ' .cmp-btn');
-            startAnalysisBtn.click(function() {
-                startAnalysisBtn.find('i').removeClass('fa-play-circle').addClass('fa-spinner fa-spin');
+                var startAnalysisBtn = $('#cmp-' + domid + ' .cmp-start-btn');
+                startAnalysisBtn.click(function() {
+                    startAnalysisBtn.find('i').removeClass('fa-play-circle').addClass('fa-spinner fa-spin');
 
-                $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis.php',
-                {'docId': cmpfileid}, function(res) {
-                    res = JSON.parse(res);
+                    $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis.php',
+                    {'docId': cmpfileid}, function(res) {
+                        res = JSON.parse(res);
 
-                    if ('error' in res) {
-                        $('#cmp-' + domid + ' p').remove();
-                        $('#cmp-' + domid).append("<p class='cmp-color-red'>" + res.error + "</p>");
-                        startAnalysisBtn.find('i').removeClass('fa-spinner fa-spin').addClass('fa-play-circle');
-                    } else {
-                        $('#cmp-' + domid + ' .cmp-area').removeClass('cmp-bg-primary').addClass('cmp-bg-' + res.bgcolor);
-                        startAnalysisBtn.replaceWith(res.documentFrame);
-                    }
+                        if ('error' in res) {
+                            $('#cmp-' + domid + ' p').remove();
+                            $('#cmp-' + domid).append("<p class='cmp-color-red'>" + res.error + "</p>");
+                            startAnalysisBtn.find('i').removeClass('fa-spinner fa-spin').addClass('fa-play-circle');
+                        } else {
+                            startAnalysisBtn.replaceWith(res.documentFrame);
+                        }
+                    });
                 });
-            });
+            }, 250);
         });
     }
 

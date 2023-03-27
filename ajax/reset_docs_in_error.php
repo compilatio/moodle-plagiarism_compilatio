@@ -45,35 +45,38 @@ $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'));
 // Restart failed analyses.
 $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'error_analysis_failed']);
 
-$countsuccess = 0;
-$docsfailed = [];
-foreach ($files as $file) {
-    $userid = $DB->get_field('plagiarism_compilatio_module', 'userid', ['cmid' => $file->cm]);
-    $compilatio->set_user_id($userid);
+if (!empty($files)) {
+    $countsuccess = 0;
+    $docsfailed = [];
+    foreach ($files as $file) {
+        $userid = $DB->get_field('plagiarism_compilatio_module', 'userid', ['cmid' => $file->cm]);
+        $compilatio->set_user_id($userid);
 
-    if ($compilatio->delete_analyse($file->externalid) && $compilatio->start_analyse($file->externalid)) {
-        $countsuccess++;
-    } else {
-        $docsfailed[] = $file->filename;
+        if ($compilatio->delete_analyse($file->externalid) && $compilatio->start_analyse($file->externalid)) {
+            $countsuccess++;
+        } else {
+            $docsfailed[] = $file->filename;
+        }
+
+        $file->status = 'queue';
+        $DB->update_record('plagiarism_compilatio_files', $file);
     }
 
-    $file->status = 'queue';
-    $DB->update_record('plagiarism_compilatio_files', $file);
+    if (count($docsfailed) === 0) {
+        $SESSION->compilatio_alert = [
+            'class' => 'info',
+            'content' => get_string('analysis_started', 'plagiarism_compilatio', $countsuccess),
+        ];
+    } else {
+        $SESSION->compilatio_alert = [
+            'class' => 'danger',
+            'content' => '<div>' . get_string('not_analyzed', 'plagiarism_compilatio')
+                . '<ul><li>' . implode('</li><li>', $docsfailed) . '</li></ul></div>',
+        ];
+    }
 }
 
-if (count($docsfailed) === 0) {
-    $SESSION->compilatio_alert = [
-        'class' => 'info',
-        'content' => get_string('analysis_started', 'plagiarism_compilatio', $countsuccess),
-    ];
-} else {
-    $SESSION->compilatio_alert = [
-        'class' => 'danger',
-        'content' => get_string('not_analyzed', 'plagiarism_compilatio')
-            . '<ul><li>' . implode('</li><li>', $docsfailed) . '</li></ul>',
-    ];
-}
-
+// TODO display an alert for re-sent files.
 // Send failed files.
 $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'error_sending_failed']);
 

@@ -49,7 +49,7 @@ $res = new StdClass();
 
 if ($status == 'queue') {
     $res->documentFrame = "<div title='" . get_string('title_' . $status, 'plagiarism_compilatio') . "' class='cmp-btn-secondary'>
-            <i class='cmp-icon-lg cmp-mr-10 fa fa-spinner fa-spin'></i>"
+            <i class='cmp-icon-lg cmp-mr-10 cmp-ml-5 fa fa-spinner fa-spin'></i>"
             . get_string('btn_' . $status, 'plagiarism_compilatio') .
         "</div>";
     $res->bgcolor = 'primary';
@@ -61,8 +61,8 @@ if ($status == 'queue') {
     }
 
     $res->documentFrame =
-        "<div title='" . get_string('title_' . $status, 'plagiarism_compilatio', $value ?? null) . "' class='cmp-btn cmp-btn-error'>
-            <i class='cmp-mr-10 fa fa-exclamation-triangle'></i>" . get_string('btn_error', 'plagiarism_compilatio') .
+        "<div title='" . get_string('title_' . $status, 'plagiarism_compilatio', $value ?? null) . "' class='cmp-btn-error'>
+            <i class='cmp-mr-10 cmp-ml-5 fa fa-exclamation-triangle'></i>" . get_string('btn_error', 'plagiarism_compilatio') .
         "</div>";
     $res->bgcolor = 'error';
 } else {

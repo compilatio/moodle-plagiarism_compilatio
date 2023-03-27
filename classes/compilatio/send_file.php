@@ -156,7 +156,7 @@ class CompilatioSendFile {
                 }
 
                 $DB->insert_record('plagiarism_compilatio_files', $cmpfile);
-                return $cmpfile;
+                return true;
             } else {
                 $cmpfile->status = "error_sending_failed";
             }
@@ -176,21 +176,10 @@ class CompilatioSendFile {
 
         global $DB;
 
-        // TODO delete coms
-        //$compilatio = new plagiarism_plugin_compilatio();
-
-        /*$analysistype = $DB->get_field('plagiarism_compilatio_module', 'analysistype', ['cmid' => $cmid]);
-        $analysistime = $DB->get_field('plagiarism_compilatio_module', 'analysistime', ['cmid' => $cmid]);*/
-
         foreach ($files as $file) {
             $userid = $DB->get_field('assign_submission', 'userid', ['id' => $file->get_itemid()]);
 
-            $file = self::send_file($cmid, $userid, $file);
-
-            /*if ($analysistype == 'manual' || ($analysistype == 'planned' && time() >= $analysistime)) {
-                // TODO doc isn't extrated yet.
-                CompilatioAnalyses::start_analysis($file);
-            }*/
+            self::send_file($cmid, $userid, $file);
         }
     }
 

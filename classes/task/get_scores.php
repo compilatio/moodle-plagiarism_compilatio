@@ -47,7 +47,7 @@ class get_scores extends \core\task\scheduled_task {
      * @return void
      */
     public function execute() {
-        exit;
+
         global $DB, $CFG;
 
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');

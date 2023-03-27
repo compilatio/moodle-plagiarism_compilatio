@@ -130,7 +130,7 @@ class CompilatioDocumentFrame {
                 // Catch GET 'sendfile' param.
                 $trigger = optional_param('sendfile', 0, PARAM_INT);
                 $fileid = $linkarray['file']->get_id();
-                if ($trigger == $fileid && !defined('CMP_MANUAL_SEND')) {
+                if ($trigger == $fileid) {
                     CompilatioSendFile::send_unsent_files([$linkarray['file']], $linkarray['cmid']);
                     return self::get_document_frame($linkarray);
                 }
@@ -177,8 +177,7 @@ class CompilatioDocumentFrame {
         $canviewreport,
         $isteacher,
         $url,
-        $filename,
-        $domid
+        $filename
     ) {
 
         global $DB, $CFG;
@@ -225,7 +224,7 @@ class CompilatioDocumentFrame {
                 $bgcolor = 'primary';
             } else if ($cantriggeranalysis || ($isstudentanalyse && !$isteacher)) {
                 $documentframe =
-                    "<div title='" . get_string('title_sent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-doc cmp-btn-primary cursor-pointer'>
+                    "<div title='" . get_string('title_sent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-doc cmp-btn-primary cmp-start-btn cursor-pointer'>
                         <i class='cmp-icon-lg cmp-mr-10 fa fa-play-circle'></i>"
                         . get_string('btn_sent', "plagiarism_compilatio") .
                     "</div>";
@@ -258,7 +257,6 @@ class CompilatioDocumentFrame {
                 "</div>";
             $bgcolor = 'error';
         } else if (isset($url) && ($cantriggeranalysis || ($isstudentanalyse && !$isteacher))) {
-            // TODO faire un truc propre en JS et pas une redirection de merde.
             $documentframe =
                 "<a href='" . $url . "' target='_self' title='" . get_string('title_unsent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-doc cmp-btn-primary cursor-pointer'>
                     <i class='cmp-icon-lg cmp-mr-10 fa fa-play-circle'></i>"

@@ -42,7 +42,6 @@ $canviewreport = required_param('canviewreport', PARAM_BOOL);
 $isteacher = required_param('isteacher', PARAM_BOOL);
 $url = required_param('url', PARAM_RAW);
 $filename = required_param('filename', PARAM_RAW);
-$domid = required_param('domid', PARAM_INT);
 
 echo CompilatioDocumentFrame::display_document_frame(
     $cantriggeranalysis,
@@ -51,6 +50,5 @@ echo CompilatioDocumentFrame::display_document_frame(
     $canviewreport,
     $isteacher,
     $url,
-    $filename,
-    $domid
+    $filename
 );
