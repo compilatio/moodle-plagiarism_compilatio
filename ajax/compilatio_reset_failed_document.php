@@ -47,7 +47,7 @@ $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $docsmaxattempsreached = array();
 
 $sql = "SELECT * FROM {plagiarism_compilatio_files}
-    WHERE cm=? AND (statuscode LIKE '41_' OR statuscode='timeout') AND filename NOT LIKE '%.htm'";
+    WHERE cm=? AND (statuscode LIKE '41_' OR statuscode='timeout')";
 $plagiarismfiles = $DB->get_records_sql($sql, [$cmid]);
 
 compilatio_remove_duplicates($plagiarismfiles, false);

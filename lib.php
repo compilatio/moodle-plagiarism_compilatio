@@ -827,7 +827,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     }
 
     $sql = "SELECT * FROM {plagiarism_compilatio_files}
-        WHERE cm=? AND (statuscode LIKE '41_' OR statuscode='timeout') AND filename NOT LIKE '%.htm'";
+        WHERE cm=? AND (statuscode LIKE '41_' OR statuscode='timeout')";
     $files = $DB->get_records_sql($sql, [$cmid]);
 
     if (count($files) !== 0) {
@@ -1292,16 +1292,57 @@ function compilatio_send_pending_files($plagiarismsettings) {
 
             $tmpfile = compilatio_get_temp_file($plagiarismfile->filename);
 
-            if ($tmpfile !== false) {
+            if ($tmpfile !== false) { // Text content with temporary file.
                 $compid = compilatio_send_file_to_compilatio($plagiarismfile, $plagiarismsettings, $tmpfile, $indexingstate);
                 unlink($tmpfile->filepath);
-            } else {
-                // Not a temporary file.
+            } else if (isset($plagiarismfile->objectid)) { // Text content without temporary file.
+                $sql = "SELECT m.name FROM {course_modules} cm
+                    JOIN {modules} m ON m.id = cm.module
+                    WHERE cm.id = ?";
+                $modulename = $DB->get_field_sql($sql, array($plagiarismfile->cm));
+
+                switch ($modulename) {
+                    case 'assign':
+                        $content = $DB->get_field(
+                            'assignsubmission_onlinetext',
+                            'onlinetext',
+                            array('submission' => $plagiarismfile->objectid)
+                        );
+                        break;
+                    case 'workshop':
+                        $content = $DB->get_field('workshop_submissions', 'content', array('id' => $plagiarismfile->objectid));
+                        break;
+                    case 'forum':
+                        $content = $DB->get_field('forum_posts', 'message', array('id' => $plagiarismfile->objectid));
+                        break;
+                    case 'quiz':
+                        $questionid = substr(
+                            explode('.', $plagiarismfile->filename)[0],
+                            strpos($plagiarismfile->filename, "Q") + 1
+                        );
+
+                        $sql = "SELECT responsesummary
+                            FROM {quiz_attempts} quiz
+                            JOIN {question_attempts} qa ON quiz.uniqueid = qa.questionusageid
+                            WHERE quiz.id = ? AND qa.questionid = ?";
+                        $content = $DB->get_field_sql($sql, array($plagiarismfile->objectid, $questionid));
+                        break;
+                }
+
+                if (!empty($content)) {
+                    $data = new stdClass();
+                    $data->content = $content;
+
+                    $file = compilatio_create_temp_file($plagiarismfile->cm, $data, $plagiarismfile->filename);
+                    compilatio_send_file_to_compilatio($plagiarismfile, $plagiarismsettings, $file, $indexingstate);
+                }
+            } else { // Files.
                 $modulecontext = context_module::instance($plagiarismfile->cm);
                 $contextid = $modulecontext->id;
                 $sql = "SELECT * FROM {files} f WHERE f.contenthash= ? AND contextid = ?";
                 $f = $DB->get_record_sql($sql, array($plagiarismfile->identifier, $contextid));
                 if (empty($f)) {
+                    $DB->delete_records('plagiarism_compilatio_files', array('id' => $plagiarismfile->id));
                     continue;
                 }
                 $file = $fs->get_file_by_id($f->id);
@@ -1321,10 +1362,17 @@ function compilatio_send_pending_files($plagiarismsettings) {
 function compilatio_get_temp_file($filename) {
 
     global $CFG;
+
+    if (empty($filename)) {
+        return false;
+    }
+
     $filepath = $CFG->dataroot . "/temp/compilatio/" . $filename;
+
     if (!file_exists($filepath)) {
         return false;
     }
+
     $file = new stdclass();
     $file->type = "tempcompilatio";
     $file->filename = $filename;
@@ -1338,9 +1386,10 @@ function compilatio_get_temp_file($filename) {
  *
  * @param  int    $cmid      Course module ID
  * @param  object $eventdata Event data
+ * @param  object $filename  Previously generated filename
  * @return object            Return a file object
  */
-function compilatio_create_temp_file($cmid, $eventdata) {
+function compilatio_create_temp_file($cmid, $eventdata, $filename = null) {
 
     global $CFG;
 
@@ -1348,13 +1397,15 @@ function compilatio_create_temp_file($cmid, $eventdata) {
         mkdir($CFG->dataroot . "/temp/compilatio", 0700);
     }
 
-    if (!empty($eventdata->postid)) {
-        $filename = "post-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->postid . ".htm";
-    } else if (isset($eventdata->attemptid)) {
-        $filename = "quiz-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->attemptid
-            . "-" . $eventdata->question . ".htm";
-    } else {
-        $filename = "content-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->userid . ".htm";
+    if (!isset($filename)) {
+        if (!empty($eventdata->postid)) {
+            $filename = "post-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->postid . ".htm";
+        } else if (isset($eventdata->attemptid)) {
+            $filename = "quiz-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->attemptid
+                . "-" . $eventdata->question . ".htm";
+        } else {
+            $filename = "content-" . $eventdata->courseid . "-" . $cmid . "-" . $eventdata->userid . ".htm";
+        }
     }
 
     $filepath = $CFG->dataroot . "/temp/compilatio/" . $filename;
@@ -1369,6 +1420,7 @@ function compilatio_create_temp_file($cmid, $eventdata) {
     $file->timestamp = time();
     $file->identifier = sha1_file($filepath);
     $file->filepath = $filepath;
+    $file->objectid = $eventdata->objectid ?? null;
 
     return $file;
 }
@@ -1631,6 +1683,7 @@ function compilatio_get_plagiarism_file($cmid, $userid, $file) {
         $plagiarismfile->attempt = 0;
         $plagiarismfile->timesubmitted = time();
         $plagiarismfile->apiconfigid = 0;
+        $plagiarismfile->objectid = $file->objectid ?? null;
 
         // Add new entry and get plagiarism_compilatio_file table record `id` for update_record_raw().
         if (($compid = $DB->insert_record('plagiarism_compilatio_files', $plagiarismfile, true)) === false) {
@@ -1817,7 +1870,38 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
     $filecontents = (!empty($file->filepath)) ? file_get_contents($file->filepath) : $file->get_content();
 
     if (strlen($compilatio->key) == 40) { // V5 Doc sending.
-        $idcompi = $compilatio->send_doc_v5($name, $filename, $filecontents, $indexingstate);
+        $depositor = $DB->get_record("user", ["id" => $plagiarismfile->userid], 'firstname, lastname, email');
+        $authors = [$depositor];
+
+        if ($module->modname == 'assign') {
+            $isgroupsubmission = $DB->get_field_sql(
+                'SELECT teamsubmission FROM {course_modules} course_modules
+                    JOIN {assign} assign ON course_modules.instance = assign.id
+                    WHERE course_modules.id = ?',
+                ['id' => $plagiarismfile->cm]
+            );
+
+            if ($isgroupsubmission === '1') {
+                $groupid = $DB->get_fieldset_sql(
+                    'SELECT groupid FROM {groups_members} gm
+                        JOIN {groups} g ON g.id = gm.groupid
+                        WHERE courseid = ? AND userid = ?',
+                    [$module->course, $plagiarismfile->userid]
+                );
+
+                if (count($groupid) == 1) {
+                    $authors = $DB->get_records_sql(
+                        'SELECT firstname, lastname, email FROM {groups} g
+                            JOIN {groups_members} gm ON g.id = gm.groupid
+                            JOIN {user} user ON user.id = gm.userid
+                            WHERE courseid = ? AND g.id = ?',
+                        [$module->course, $groupid[0]]
+                    );
+                }
+            }
+        }
+
+        $idcompi = $compilatio->send_doc_v5($name, $filename, $filecontents, $indexingstate, $depositor, $authors);
     } else { // V4 Doc sending.
         $idcompi = $compilatio->send_doc($name, $name, $filename, $mimetype, $filecontents);
         ws_helper::set_indexing_state($idcompi, $indexingstate, $plagiarismfile->apiconfigid);
@@ -2872,10 +2956,11 @@ function compilatio_get_global_statistics($html = true) {
  * @param  int    $userid   User ID
  * @param  int    $courseid Course ID
  * @param  int    $cmid     Course module ID
+ * @param  int    $objectid Object ID
  * @param  int    $postid Post ID
  * @return mixed            Return null if the content is empty, void otherwise
  */
-function compilatio_handle_content($content, $userid, $courseid, $cmid, $postid = null) {
+function compilatio_handle_content($content, $userid, $courseid, $cmid, $objectid, $postid = null) {
 
     if (trim($content) == "") {
         return;
@@ -2889,6 +2974,7 @@ function compilatio_handle_content($content, $userid, $courseid, $cmid, $postid 
         $data->content = $content;
         $data->userid = $userid;
         $data->postid = $postid;
+        $data->objectid = $objectid;
 
         $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
@@ -3318,14 +3404,16 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
     if ($hascontent) {
         $content = $eventdata["other"]["content"];
         $courseid = $eventdata["courseid"];
+        $objectid = $eventdata['objectid'];
+
         if ($eventdata['objecttable'] == 'forum_posts') {
-            $filename = 'post-' . $eventdata['courseid'] . '-' . $cmid . '-' . $eventdata['objectid'] . '.htm';
-            $mdltext = $DB->get_record('forum_posts', array('id' => $eventdata["objectid"]));
+            $filename = 'post-' . $courseid . '-' . $cmid . '-' . $objectid . '.htm';
+            $mdltext = $DB->get_record('forum_posts', array('id' => $objectid));
             $compifile = $DB->get_record('plagiarism_compilatio_files',
                 array('filename' => $filename, 'identifier' => sha1($mdltext->message)));
         } else if ($eventdata['objecttable'] == 'workshop_submissions') {
-            $filename = "content-" . $eventdata['courseid'] . "-" . $cmid . "-" . $userid . ".htm";
-            $mdltext = $DB->get_record('workshop_submissions', array('id' => $eventdata["objectid"]));
+            $filename = "content-" . $courseid . "-" . $cmid . "-" . $userid . ".htm";
+            $mdltext = $DB->get_record('workshop_submissions', array('id' => $objectid));
             $compifile = $DB->get_record('plagiarism_compilatio_files',
                 array('filename' => $filename, 'identifier' => sha1($mdltext->content)));
         } else if ($eventdata['objecttable'] == 'assign_submission') {
@@ -3336,7 +3424,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
         if (!$compifile) {
             $duplicates = $DB->get_records('plagiarism_compilatio_files', array('filename' => $filename));
             compilatio_remove_duplicates($duplicates);
-            compilatio_handle_content($content, $userid, $courseid, $cmid, $postid);
+            compilatio_handle_content($content, $userid, $courseid, $cmid, $objectid, $postid);
         }
     }
 }
@@ -3378,6 +3466,7 @@ function compilatio_handle_quiz_attempt($attemptid) {
                 $data->content = $answer->get_response_summary();
                 $data->userid = $userid;
                 $data->attemptid = $attemptid;
+                $data->objectid = $attemptid;
                 $data->question = "Q" . $answer->get_question_id();
                 $file = compilatio_create_temp_file($cmid, $data);
 

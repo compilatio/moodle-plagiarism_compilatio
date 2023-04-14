@@ -202,16 +202,18 @@ class compilatioservice {
      * @param  string $filename      Filename
      * @param  string $content       Content
      * @param  string $indexingstate Indexing state
+     * @param  object $depositor     Depositor
+     * @param  array  $authors       Authors
      * @return string              Return the document ID if succeed, an error otherwise
      */
-    public function send_doc_v5($title, $filename, $content, $indexingstate) {
+    public function send_doc_v5($title, $filename, $content, $indexingstate, $depositor, $authors) {
         global $CFG;
 
         if (!check_dir_exists($CFG->dataroot . "/temp/compilatio", true, true)) {
             return "Failed to create compilatio temp directory";
         }
 
-        $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H-i-s') . ".txt";
+        $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H-i-s') . uniqid() . ".txt";
 
         $handle = fopen($filepath, "wb");
         if ($handle == false) {
@@ -222,13 +224,31 @@ class compilatioservice {
 
         fclose($handle);
 
-        $params = array(
+        $params = [
             'file' => new \CURLFile($filepath),
             'filename' => $filename,
             'title' => $title,
             'indexed' => boolval($indexingstate),
             'origin' => 'moodle'
-        );
+        ];
+
+        if (isset($depositor->firstname, $depositor->lastname, $depositor->email)) {
+            $params['depositor'] = [
+                'firstname' => $depositor->firstname,
+                'lastname' => $depositor->lastname,
+                'email_address' => $depositor->email
+            ];
+        }
+
+        foreach ($authors as $author) {
+            if (isset($author->firstname, $author->lastname, $author->email)) {
+                $params['authors'][] = [
+                    'firstname' => $author->firstname,
+                    'lastname' => $author->lastname,
+                    'email_address' => $author->email
+                ];
+            }
+        }
 
         $ch = curl_init();
 
@@ -237,7 +257,7 @@ class compilatioservice {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => array('X-Auth-Token: ' . $this->key),
             CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $params
+            CURLOPT_POSTFIELDS => $this->build_post_fields($params)
         ];
 
         $curloptions = $this->set_proxy_settings($curloptions);
@@ -260,6 +280,26 @@ class compilatioservice {
             return "Error in function send_doc_v5 : cURL params : "
                 . var_export($curloptions, true) . " / cURL Error : "
                 . curl_error($ch) . " / cURL response : " . var_export($t, true);
+        }
+    }
+
+    /**
+     * Build post fields for multi array with Curl file.
+     *
+     * @param  array  $data
+     * @param  string $existingkeys
+     * @param  array  $returnarray
+     * @return array  Return array ready to be send
+     */
+    private function build_post_fields($data, $existingkeys = '', &$returnarray = []) {
+        if (($data instanceof \CURLFile) || !(is_array($data) || is_object($data))) {
+            $returnarray[$existingkeys] = $data;
+            return $returnarray;
+        } else {
+            foreach ($data as $key => $item) {
+                $this->build_post_fields($item, $existingkeys ? $existingkeys . "[$key]" : $key, $returnarray);
+            }
+            return $returnarray;
         }
     }
 

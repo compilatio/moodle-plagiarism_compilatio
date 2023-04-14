@@ -7,7 +7,13 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Fix proxy/SSL settings for report access
+- Add ability to reset text content in error
+- Add author and depositor (submitter) information when sending documents
+- Update privacy registry
+- Fix send task failed with an empty filename record
+- Fix deleted files always stay in pending state
+
+CHANGELOG : https://support.compilatio.net/hc/en-us/articles/360019664658
 
 QUICK INSTALL
 ================
