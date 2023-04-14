@@ -52,7 +52,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $itemcollection = $newcollection->get_collection();
 
         // On vérifie qu'il y a bien cinq items.
-        $this->assertCount(5, $itemcollection);
+        $this->assertCount(4, $itemcollection);
 
         // On vérifie que core_files est retourné.
         $this->assertEquals('core_files', $itemcollection[0]->get_name());
@@ -67,48 +67,17 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
 
         // On vérifie que le tableau des champs retournés possède bien les bonnes clés.
         $privacyfields = $itemcollection[2]->get_privacy_fields();
-        $this->assertArrayHasKey('id', $privacyfields);
-        $this->assertArrayHasKey('cm', $privacyfields);
         $this->assertArrayHasKey('userid', $privacyfields);
-        $this->assertArrayHasKey('identifier', $privacyfields);
         $this->assertArrayHasKey('filename', $privacyfields);
-        $this->assertArrayHasKey('externalid', $privacyfields);
-        $this->assertArrayHasKey('reporturl', $privacyfields);
-        $this->assertArrayHasKey('statuscode', $privacyfields);
-        $this->assertArrayHasKey('similarityscore', $privacyfields);
-        $this->assertArrayHasKey('attempt', $privacyfields);
-        $this->assertArrayHasKey('errorresponse', $privacyfields);
-        $this->assertArrayHasKey('timesubmitted', $privacyfields);
-        $this->assertArrayHasKey('recyclebinid', $privacyfields);
-        $this->assertArrayHasKey('apiconfigid', $privacyfields);
-        $this->assertArrayHasKey('idcourt', $privacyfields);
 
         // On vérifie que External Compilatio Document est retourné.
         $this->assertEquals('External Compilatio Document', $itemcollection[3]->get_name());
 
         // On vérifie que le tableau des champs retournés possède bien les bonnes clés.
         $privacyfields = $itemcollection[3]->get_privacy_fields();
-        $this->assertArrayHasKey('lastname', $privacyfields);
-        $this->assertArrayHasKey('firstname', $privacyfields);
-        $this->assertArrayHasKey('email_adress', $privacyfields);
-        $this->assertArrayHasKey('user_id', $privacyfields);
+        $this->assertArrayHasKey('authors', $privacyfields);
+        $this->assertArrayHasKey('depositor', $privacyfields);
         $this->assertArrayHasKey('filename', $privacyfields);
-        $this->assertArrayHasKey('upload_date', $privacyfields);
-        $this->assertArrayHasKey('id', $privacyfields);
-        $this->assertArrayHasKey('indexed', $privacyfields);
-
-        // On vérifie que External Compilatio Report est retourné.
-        $this->assertEquals('External Compilatio Report', $itemcollection[4]->get_name());
-
-        // On vérifie que le tableau des champs retournés possède bien les bonnes clés.
-        $privacyfields = $itemcollection[4]->get_privacy_fields();
-        $this->assertArrayHasKey('id', $privacyfields);
-        $this->assertArrayHasKey('doc_id', $privacyfields);
-        $this->assertArrayHasKey('user_id', $privacyfields);
-        $this->assertArrayHasKey('start', $privacyfields);
-        $this->assertArrayHasKey('end', $privacyfields);
-        $this->assertArrayHasKey('state', $privacyfields);
-        $this->assertArrayHasKey('plagiarism_percent', $privacyfields);
     }
 
     /**

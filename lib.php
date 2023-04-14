@@ -1292,10 +1292,10 @@ function compilatio_send_pending_files($plagiarismsettings) {
 
             $tmpfile = compilatio_get_temp_file($plagiarismfile->filename);
 
-            if ($tmpfile !== false) {
+            if ($tmpfile !== false) { // Text content with temporary file.
                 $compid = compilatio_send_file_to_compilatio($plagiarismfile, $plagiarismsettings, $tmpfile, $indexingstate);
                 unlink($tmpfile->filepath);
-            } else if (isset($plagiarismfile->objectid)) {
+            } else if (isset($plagiarismfile->objectid)) { // Text content without temporary file.
                 $sql = "SELECT m.name FROM {course_modules} cm
                     JOIN {modules} m ON m.id = cm.module
                     WHERE cm.id = ?";
@@ -1329,8 +1329,7 @@ function compilatio_send_pending_files($plagiarismsettings) {
                     $file = compilatio_create_temp_file($plagiarismfile->cm, $data, $plagiarismfile->filename);
                     compilatio_send_file_to_compilatio($plagiarismfile, $plagiarismsettings, $file, $indexingstate);
                 }
-            } else {
-                // Not a temporary file.
+            } else { // Files.
                 $modulecontext = context_module::instance($plagiarismfile->cm);
                 $contextid = $modulecontext->id;
                 $sql = "SELECT * FROM {files} f WHERE f.contenthash= ? AND contextid = ?";

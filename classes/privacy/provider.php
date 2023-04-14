@@ -84,43 +84,15 @@ class provider implements
         );
 
         $collection->add_database_table('plagiarism_compilatio_files', [
-            'id'                => 'privacy:metadata:plagiarism_compilatio_files:id',
-            'cm'                => 'privacy:metadata:plagiarism_compilatio_files:cm',
-            'userid'            => 'privacy:metadata:plagiarism_compilatio_files:userid',
-            'identifier'        => 'privacy:metadata:plagiarism_compilatio_files:identifier',
-            'filename'          => 'privacy:metadata:plagiarism_compilatio_files:filename',
-            'timesubmitted'     => 'privacy:metadata:plagiarism_compilatio_files:timesubmitted',
-            'statuscode'        => 'privacy:metadata:plagiarism_compilatio_files:statuscode',
-            'externalid'        => 'privacy:metadata:plagiarism_compilatio_files:externalid',
-            'reporturl'         => 'privacy:metadata:plagiarism_compilatio_files:reporturl',
-            'similarityscore'   => 'privacy:metadata:plagiarism_compilatio_files:similarityscore',
-            'attempt'           => 'privacy:metadata:plagiarism_compilatio_files:attempt',
-            'errorresponse'     => 'privacy:metadata:plagiarism_compilatio_files:errorresponse',
-            'recyclebinid'      => 'privacy:metadata:plagiarism_compilatio_files:recyclebinid',
-            'apiconfigid'       => 'privacy:metadata:plagiarism_compilatio_files:apiconfigid',
-            'idcourt'           => 'privacy:metadata:plagiarism_compilatio_files:idcourt'
+            'userid'   => 'privacy:metadata:plagiarism_compilatio_files:userid',
+            'filename' => 'privacy:metadata:plagiarism_compilatio_files:filename',
         ], 'privacy:metadata:plagiarism_compilatio_files');
 
         $collection->add_external_location_link('External Compilatio Document', [
-            'lastname'          => 'privacy:metadata:external_compilatio_document:lastname',
-            'firstname'         => 'privacy:metadata:external_compilatio_document:firstname',
-            'email_adress'      => 'privacy:metadata:external_compilatio_document:email_adress',
-            'user_id'           => 'privacy:metadata:external_compilatio_document:user_id',
-            'filename'          => 'privacy:metadata:external_compilatio_document:filename',
-            'upload_date'       => 'privacy:metadata:external_compilatio_document:upload_date',
-            'id'                => 'privacy:metadata:external_compilatio_document:id',
-            'indexed'           => 'privacy:metadata:external_compilatio_document:indexed'
+            'authors'    => 'privacy:metadata:external_compilatio_document:authors',
+            'depositor' => 'privacy:metadata:external_compilatio_document:depositor',
+            'filename'  => 'privacy:metadata:external_compilatio_document:filename'
         ], 'privacy:metadata:external_compilatio_document');
-
-        $collection->add_external_location_link('External Compilatio Report', [
-            'id'                    => 'privacy:metadata:external_compilatio_report:id',
-            'doc_id'                => 'privacy:metadata:external_compilatio_report:doc_id',
-            'user_id'               => 'privacy:metadata:external_compilatio_report:user_id',
-            'start'                 => 'privacy:metadata:external_compilatio_report:start',
-            'end'                   => 'privacy:metadata:external_compilatio_report:end',
-            'state'                 => 'privacy:metadata:external_compilatio_report:state',
-            'plagiarism_percent'    => 'privacy:metadata:external_compilatio_report:plagiarism_percent'
-        ], 'privacy:metadata:external_compilatio_report');
 
         return $collection;
     }
