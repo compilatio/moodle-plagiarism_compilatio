@@ -202,6 +202,8 @@ class compilatioservice {
      * @param  string $filename      Filename
      * @param  string $content       Content
      * @param  string $indexingstate Indexing state
+     * @param  object $depositor     Depositor
+     * @param  array  $authors       Authors
      * @return string              Return the document ID if succeed, an error otherwise
      */
     public function send_doc_v5($title, $filename, $content, $indexingstate, $depositor, $authors) {
@@ -281,6 +283,14 @@ class compilatioservice {
         }
     }
 
+    /**
+     * Build post fields for multi array with Curl file.
+     *
+     * @param  array  $data
+     * @param  string $existingkeys
+     * @param  array  $returnarray
+     * @return array  Return array ready to be send
+     */
     private function build_post_fields($data, $existingkeys = '', &$returnarray = []) {
         if (($data instanceof \CURLFile) || !(is_array($data) || is_object($data))) {
             $returnarray[$existingkeys] = $data;

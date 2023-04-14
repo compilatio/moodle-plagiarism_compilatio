@@ -1303,7 +1303,11 @@ function compilatio_send_pending_files($plagiarismsettings) {
 
                 switch ($modulename) {
                     case 'assign':
-                        $content = $DB->get_field('assignsubmission_onlinetext', 'onlinetext', array('submission' => $plagiarismfile->objectid));
+                        $content = $DB->get_field(
+                            'assignsubmission_onlinetext',
+                            'onlinetext',
+                            array('submission' => $plagiarismfile->objectid)
+                        );
                         break;
                     case 'workshop':
                         $content = $DB->get_field('workshop_submissions', 'content', array('id' => $plagiarismfile->objectid));
@@ -1312,7 +1316,10 @@ function compilatio_send_pending_files($plagiarismsettings) {
                         $content = $DB->get_field('forum_posts', 'message', array('id' => $plagiarismfile->objectid));
                         break;
                     case 'quiz':
-                        $questionid = substr(explode('.', $plagiarismfile->filename)[0], strpos($plagiarismfile->filename, "Q") + 1);
+                        $questionid = substr(
+                            explode('.', $plagiarismfile->filename)[0],
+                            strpos($plagiarismfile->filename, "Q") + 1
+                        );
 
                         $sql = "SELECT responsesummary
                             FROM {quiz_attempts} quiz
@@ -1379,6 +1386,7 @@ function compilatio_get_temp_file($filename) {
  *
  * @param  int    $cmid      Course module ID
  * @param  object $eventdata Event data
+ * @param  object $filename  Previously generated filename
  * @return object            Return a file object
  */
 function compilatio_create_temp_file($cmid, $eventdata, $filename = null) {
@@ -1872,15 +1880,15 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
                     WHERE course_modules.id = ?',
                 ['id' => $plagiarismfile->cm]
             );
-    
+
             if ($isgroupsubmission === '1') {
                 $groupid = $DB->get_fieldset_sql(
                     'SELECT groupid FROM {groups_members} gm
-                        JOIN {groups} g ON g.id = gm.groupid 
+                        JOIN {groups} g ON g.id = gm.groupid
                         WHERE courseid = ? AND userid = ?',
                     [$module->course, $plagiarismfile->userid]
                 );
-    
+
                 if (count($groupid) == 1) {
                     $authors = $DB->get_records_sql(
                         'SELECT firstname, lastname, email FROM {groups} g
