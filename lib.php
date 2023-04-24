@@ -2103,10 +2103,12 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
             $plagiarismfile->similarityscore = round($docstatus->documentStatus->indice);
             $plagiarismfile->idcourt = $docstatus->documentProperties->Shortcut;
 
-            if (preg_match('/^[a-f0-9]{40}$/', $plagiarismfile->externalid)) {
-                $plagiarismfile->reporturl = $plagiarismfile->externalid;
-            } else {
-                $plagiarismfile->reporturl = $compilatio->get_report_url($plagiarismfile->externalid);
+            if (!preg_match("~^https://www\.compilatio\.net/user/ws/reportmain/handler~", $plagiarismfile->reporturl)) {
+                if (preg_match('/^[a-f0-9]{40}$/', $plagiarismfile->externalid)) {
+                    $plagiarismfile->reporturl = $plagiarismfile->externalid;
+                } else {
+                    $plagiarismfile->reporturl = $compilatio->get_report_url($plagiarismfile->externalid);
+                }
             }
 
             $emailstudents = $DB->get_field('plagiarism_compilatio_config',

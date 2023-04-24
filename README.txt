@@ -1,4 +1,4 @@
-Compilatio.net Plagiarism plugin for Moodle 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 4.0
+Compilatio.net Plagiarism plugin for Moodle 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 4.0, 4.1
 
 Author: Compilatio <support@compilatio.net>
 Copyright 2020 Compilatio.net https://www.compilatio.net
@@ -7,11 +7,9 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Add ability to reset text content in error
-- Add author and depositor (submitter) information when sending documents
-- Update privacy registry
-- Fix send task failed with an empty filename record
-- Fix deleted files always stay in pending state
+- Fix plugin behaviour when refreshing documents informations for v4 documents
+- Improve upgrade plugin process
+- Delete language packs
 
 CHANGELOG : https://support.compilatio.net/hc/en-us/articles/360019664658
 
