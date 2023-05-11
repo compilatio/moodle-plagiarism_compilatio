@@ -34,111 +34,112 @@
  * @return bool Return true if succeed, false otherwise
  */
 function xmldb_plagiarism_compilatio_upgrade($oldversion) {
-    global $CFG, $DB;
+    global $CFG, $DB, $OUTPUT;
 
     $dbman = $DB->get_manager();
 
-    $tableschecks = [
-        'plagiarism_compilatio_news' => [
-            'field' => [
-                'change_notnull' => [
-                    ['type', XMLDB_TYPE_INTEGER, '1', null, null, null, null]
-                ],
-                'add' => [
-                    ['id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null],
-                    ['type', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null],
-                    ['message_fr', XMLDB_TYPE_TEXT, null, null, null, null, null],
-                    ['message_en', XMLDB_TYPE_TEXT, null, null, null, null, null],
-                    ['message_pt', XMLDB_TYPE_TEXT, null, null, null, null, null],
-                    ['message_es', XMLDB_TYPE_TEXT, null, null, null, null, null],
-                    ['message_de', XMLDB_TYPE_TEXT, null, null, null, null, null],
-                    ['message_it', XMLDB_TYPE_TEXT, null, null, null, null, null],
-                    ['begin_display_on', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null],
-                    ['end_display_on', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null]
-                ],
-                'drop' => [
-                    ['id_compilatio']
-                ],
-            ],
-            'index' => [
-                'drop' => [
-                    ['mdl_plagcompnews_id__uix', XMLDB_INDEX_UNIQUE, array('id_compilatio')]
-                ],
-                'add' => [
-                    ['primary', XMLDB_KEY_PRIMARY, array('id')]
-                ]
-            ],
-        ],
-        'plagiarism_compilatio_data' => [
-            'field' => [
-                'add' => [
-                    ['id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null],
-                    ['name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null],
-                    ['value', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null],
-                ]
-                ],
-            'index' => [
-                'add' => [
-                    ['primary', XMLDB_KEY_PRIMARY, array('id')],
-                    ['name-unique', XMLDB_KEY_UNIQUE, array('name')]
-                ]
-            ]
-        ],
-        'plagiarism_compilatio_files' => [
-            'field' => [
-                'add' => [
-                    ['recyclebinid', XMLDB_TYPE_INTEGER, '10', null, null, null, null],
-                    ['apiconfigid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 1],
-                    ['idcourt', XMLDB_TYPE_CHAR, '10', null, null, null, null],
-                    ['migrationstatus', XMLDB_TYPE_INTEGER, '10', null, null, null, null],
-                    ['objectid', XMLDB_TYPE_INTEGER, '10', null, null, null, null]
-                ]
-            ],
-            'index' => [
-                'add' => [
-                    ['mdl_cmp_files_extid', false, array('externalid')]
-                ]
-            ]
-        ],
-        'plagiarism_compilatio_apicon' => [
-            'field' => [
-                'add' => [
-                   ['id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null],
-                   ['url', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null],
-                   ['api_key', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null],
-                   ['startdate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0]
-                ]
-            ],
-            'index' => [
-                'add' => [
-                   ['primary', XMLDB_KEY_PRIMARY, array('id')]
-                ]
-            ]
-        ]
-    ];
+    $schema = new xmldb_structure('db');
+    $schema->setVersion($CFG->version);
+    $xmldb_file = new xmldb_file($CFG->dirroot . '/plagiarism/compilatio/db/install.xml');
+    $xmldb_file->loadXMLStructure();
+    $structure = $xmldb_file->getStructure();
+    $tables = $structure->getTables();
+    foreach ($tables as $table) {
+        $table->setPrevious(null);
+        $table->setNext(null);
+        $schema->addTable($table);
+    }
 
-    // Check tables, fields and indexes.
-    foreach ($tableschecks as $tablename => $tocheck) {
-        $table = new xmldb_table($tablename);
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
-        foreach ($tocheck as $elt => $actions) {
-            foreach ($actions as $actionname => $targets) {
-                foreach ($targets as $params) {
-                    $xmleltname = 'xmldb_' . $elt;
-                    $xmlelt = new $xmleltname(...$params);
-                    $nameparts = explode('_', $actionname);
-                    $method = (isset($nameparts[1])) ? $nameparts[0] . '_' . $elt . '_' . $nameparts[1] : $actionname . '_' . $elt;
-                    $condition = ($actionname == 'add') ? false : true;
-                    if ($dbman->{$elt . '_exists'}($table, $xmlelt) === $condition) {
-                        $dbman->$method($table, $xmlelt);
-                    }
-                }
-            }
+    $dbchecks = $dbman->check_database_schema($schema);
+    $compilatiodbchecks = [];
+    foreach ($dbchecks as $tablename => $results) {
+        if (strpos($tablename, 'compilatio')) {
+            $compilatiodbchecks[$tablename] = $results; 
         }
     }
+
+    echo $OUTPUT->box_start('generalbox boxaligncenter');
+
+    foreach ($compilatiodbchecks as $tablename => $results) {
+
+        echo("<h4>" . $tablename . "</h4><p>");
+
+        foreach ($results as $message) {
+            echo($message . " => ");
+
+            // Tables changes.
+            if (preg_match("/^table is (.*)/", $message, $matches)) {
+                if ($matches[1] == 'missing') {
+                    $table = $schema->getTable($tablename);
+                    $dbman->create_table($table);
+                    echo("create table '" . $tablename . "'");
+                }
+                if ($matches[1] == 'not expected') {
+                    $table = new xmldb_table($tablename);
+                    $dbman->drop_table($table);
+                    echo("drop table '" . $tablename . "'");
+                }
+            }
+
+            // Fields changes.
+            if (preg_match("/^column '(.*?)' (.*?)(,| '| \(|$)/", $message, $matches)) {
+                $table = new xmldb_table($tablename);
+
+                if (strpos($matches[2], 'is not expected') === 0) {
+                    $field = new xmldb_field($matches[1]);
+                    $dbman->drop_field($table, $field);
+                    echo("drop field '" . $matches[1] . "'");
+                }
+
+                $field = $schema->getTable($tablename)->getField($matches[1]);
+                if ($matches[2] == 'is missing') {
+                    $dbman->add_field($table, $field);
+                    echo("add field '" . $matches[1] . "'");
+                }
+                if ($matches[2] == 'should be NOT NULL') {
+                    $dbman->change_field_notnull($table, $field);
+                    echo("change '" . $matches[1] . "' not null");
+                }
+                if ($matches[2] == 'has default') {
+                    $dbman->change_field_default($table, $field);
+                    echo("change default value for '" . $matches[1] . "'");
+                }
+                if (in_array($matches[2], ['has unknown type', 'has incorrect type', 'has unsupported type'])) {
+                    
+                    $dbman->change_field_type($table, $field);
+                    echo("change type for '" . $matches[1] . "'");
+                }
+            }
+
+            // Indexes changes.
+            if (preg_match("/^(.*?) index '(.*?)'/", $message, $matches)) {
+                $table = new xmldb_table($tablename);
+                if ($matches[1] == 'Unexpected') {
+                    $indexes        = $DB->get_indexes($tablename);
+                    $indexname      = $matches[2];
+                    $indextype      = $indexes[$matches[2]]['unique'];
+                    $indexfields    = $indexes[$matches[2]]['columns'];
+                    $index          = new xmldb_index($indexname, $indextype, $indexfields);
+                    $dbman->drop_index($table, $index);
+                    echo("drop index '" . $matches[2] . "'");
+                }
+                if ($matches[1] == 'Missing') {
+                    if (($index = $schema->getTable($tablename)->getIndex($matches[2])) !== null) {
+                        $dbman->add_index($table, $index);
+                    } else {
+                        $index = $schema->getTable($tablename)->getKey($matches[2]);
+                        $dbman->add_key($table, $index);
+                    }
+                    echo("add index '" . $matches[2] . "'");
+                }
+            }
+
+            echo("<br />");
+        }
+        echo("</p>");
+    }
+    echo("<p>Compilatio tables structure has been checked.</p>");
+    echo $OUTPUT->box_end();
 
     if ($oldversion <= 2015081400) {
         $DB->execute("UPDATE {plagiarism_compilatio_config} SET value='1' WHERE name='compilatio_analysistype' AND cm=0");
