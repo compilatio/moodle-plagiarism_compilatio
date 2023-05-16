@@ -19,11 +19,9 @@
 /**
  * upgrade.php - Contains Plagiarism plugin class to upgrade the database between differents versions.
  *
- * @since 2.0
- * @package    plagiarism_compilatio
- * @subpackage plagiarism
+ * @package    plagiarism_cmp
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,15 +31,8 @@
  * @param  int  $oldversion Old version
  * @return bool Return true if succeed, false otherwise
  */
-function xmldb_plagiarism_compilatio_upgrade($oldversion) {
+function xmldb_plagiarism_cmp_upgrade($oldversion) {
     global $CFG, $DB;
-
-    /*$dbman = $DB->get_manager();
-
-    if ($oldversion <= version) {
-        //Upgrade
-        upgrade_plugin_savepoint(true, version, 'plagiarism', 'compilatio');
-    }*/
 
     return true;
 }

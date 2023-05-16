@@ -17,13 +17,14 @@
 /**
  * provider_test.php - Test class of the privacy provider
  *
- * @package    plagiarism_compilatio
- * @copyright  2019 Compilatio.net {@link https://www.compilatio.net}
+ * @package    plagiarism_cmp
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use core_privacy\local\metadata\collection;
-use plagiarism_compilatio\privacy\provider;
+use plagiarism_cmp\privacy\provider;
 use core_privacy\local\request\writer;
 use core_privacy\local\request\userlist;
 
@@ -32,12 +33,9 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 /**
- * Class plagiarism_compilatio_privacy_provider_testcase
- *
- * @copyright  2019 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Class plagiarism_cmp_privacy_provider_testcase
  */
-class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\tests\provider_testcase {
+class plagiarism_cmp_privacy_provider_testcase extends \core_privacy\tests\provider_testcase {
 
     /**
      * Test fonction _get_metadata
@@ -46,64 +44,40 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
 
         $this->resetAfterTest();
 
-        // On charge la liste des données personnelles que Compilatio stocke.
-        $collection = new collection('plagiarism_compilatio');
+        $collection = new collection('plagiarism_cmp');
         $newcollection = provider::get_metadata($collection);
         $itemcollection = $newcollection->get_collection();
 
-        // On vérifie qu'il y a bien cinq items.
-        $this->assertCount(5, $itemcollection);
+        $this->assertCount(6, $itemcollection);
 
-        // On vérifie que core_files est retourné.
         $this->assertEquals('core_files', $itemcollection[0]->get_name());
         $this->assertEquals('privacy:metadata:core_files', $itemcollection[0]->get_summary());
 
-        // On vérifie que core_plagiarism est retourné.
         $this->assertEquals('core_plagiarism', $itemcollection[1]->get_name());
         $this->assertEquals('privacy:metadata:core_plagiarism', $itemcollection[1]->get_summary());
 
-        // On vérifie que plagiarism_compilatio_files est retourné.
-        $this->assertEquals('plagiarism_compilatio_files', $itemcollection[2]->get_name());
-
-        // On vérifie que le tableau des champs retournés possède bien les bonnes clés.
+        $this->assertEquals('plagiarism_cmp_files', $itemcollection[2]->get_name());
         $privacyfields = $itemcollection[2]->get_privacy_fields();
-        $this->assertArrayHasKey('id', $privacyfields);
-        $this->assertArrayHasKey('cm', $privacyfields);
         $this->assertArrayHasKey('userid', $privacyfields);
-        $this->assertArrayHasKey('identifier', $privacyfields);
         $this->assertArrayHasKey('filename', $privacyfields);
-        $this->assertArrayHasKey('externalid', $privacyfields);
-        $this->assertArrayHasKey('status', $privacyfields);
-        $this->assertArrayHasKey('similarityscore', $privacyfields);
-        $this->assertArrayHasKey('timesubmitted', $privacyfields);
-        $this->assertArrayHasKey('indexed', $privacyfields);
 
-        // On vérifie que External Compilatio Document est retourné.
-        $this->assertEquals('External Compilatio Document', $itemcollection[3]->get_name());
-
-        // On vérifie que le tableau des champs retournés possède bien les bonnes clés.
+        $this->assertEquals('plagiarism_cmp_user', $itemcollection[3]->get_name());
         $privacyfields = $itemcollection[3]->get_privacy_fields();
-        $this->assertArrayHasKey('lastname', $privacyfields);
-        $this->assertArrayHasKey('firstname', $privacyfields);
-        $this->assertArrayHasKey('email_adress', $privacyfields);
-        $this->assertArrayHasKey('user_id', $privacyfields);
-        $this->assertArrayHasKey('filename', $privacyfields);
-        $this->assertArrayHasKey('upload_date', $privacyfields);
-        $this->assertArrayHasKey('id', $privacyfields);
-        $this->assertArrayHasKey('indexed', $privacyfields);
+        $this->assertArrayHasKey('userid', $privacyfields);
+        $this->assertArrayHasKey('compilatioid', $privacyfields);
 
-        // On vérifie que External Compilatio Report est retourné.
-        $this->assertEquals('External Compilatio Report', $itemcollection[4]->get_name());
-
-        // On vérifie que le tableau des champs retournés possède bien les bonnes clés.
+        $this->assertEquals('External Compilatio Document', $itemcollection[4]->get_name());
         $privacyfields = $itemcollection[4]->get_privacy_fields();
-        $this->assertArrayHasKey('id', $privacyfields);
-        $this->assertArrayHasKey('doc_id', $privacyfields);
-        $this->assertArrayHasKey('user_id', $privacyfields);
-        $this->assertArrayHasKey('start', $privacyfields);
-        $this->assertArrayHasKey('end', $privacyfields);
-        $this->assertArrayHasKey('state', $privacyfields);
-        $this->assertArrayHasKey('plagiarism_percent', $privacyfields);
+        $this->assertArrayHasKey('authors', $privacyfields);
+        $this->assertArrayHasKey('depositor', $privacyfields);
+        $this->assertArrayHasKey('filename', $privacyfields);
+
+        $this->assertEquals('External Compilatio User', $itemcollection[5]->get_name());
+        $privacyfields = $itemcollection[5]->get_privacy_fields();
+        $this->assertArrayHasKey('firstname', $privacyfields);
+        $this->assertArrayHasKey('lastname', $privacyfields);
+        $this->assertArrayHasKey('email', $privacyfields);
+        $this->assertArrayHasKey('username', $privacyfields);
     }
 
     /**
@@ -173,8 +147,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
             $this->create_partial_plagiarismfile($coursemodule->id, $student->id);
         }
 
-        // On vérifie qu'on a bien cinq plagiarismfiles dans la tablea plagiarism_compilatio_files.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
+        // On vérifie qu'on a bien cinq plagiarismfiles dans la tablea plagiarism_cmp_files.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_cmp_files');
         $this->assertEquals(5, $nbplagiarismfiles);
 
         // On supprime les plagiarismfiles dans ce contexte précis.
@@ -182,8 +156,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->create_partial_webservice();
         provider::delete_plagiarism_for_context($context);
 
-        // On vérifie qu'on a bien vidé la table plagiarism_compilatio_files.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
+        // On vérifie qu'on a bien vidé la table plagiarism_cmp_files.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_cmp_files');
         $this->assertEquals(0, $nbplagiarismfiles);
     }
 
@@ -210,8 +184,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
             $this->create_partial_plagiarismfile($coursemodule2->id, $student->id);
         }
 
-        // On vérifie qu'on a bien dix plagiarismfiles dans la table plagiarism_compilatio_files.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
+        // On vérifie qu'on a bien dix plagiarismfiles dans la table plagiarism_cmp_files.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_cmp_files');
         $this->assertEquals(10, $nbplagiarismfiles);
 
         // On lance la suppression des fichiers de l'étudiant.
@@ -219,8 +193,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->create_partial_webservice('1'); // Les fichiers appartiennent bien à l'établissement.
         provider::delete_plagiarism_for_user($student->id, $context);
 
-        // On vérifie qu'on a toujours les dix plagiarismfiles dans la table plagiarism_compilatio_files.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
+        // On vérifie qu'on a toujours les dix plagiarismfiles dans la table plagiarism_cmp_files.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_cmp_files');
         $this->assertEquals(10, $nbplagiarismfiles);
     }
 
@@ -247,8 +221,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
             $this->create_partial_plagiarismfile($coursemodule2->id, $student->id);
         }
 
-        // On vérifie qu'on a bien dix plagiarismfiles dans la table plagiarism_compilatio_files.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
+        // On vérifie qu'on a bien dix plagiarismfiles dans la table plagiarism_cmp_files.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_cmp_files');
         $this->assertEquals(10, $nbplagiarismfiles);
 
         // On lance la suppression des fichiers de l'étudiant.
@@ -256,8 +230,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->create_partial_webservice('0'); // Les fichiers appartiennent bien à l'étudiant.
         provider::delete_plagiarism_for_user($student->id, $context);
 
-        // On vérifie qu'on a bien vidé la table plagiarism_compilatio_files.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
+        // On vérifie qu'on a bien vidé la table plagiarism_cmp_files.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_cmp_files');
         $this->assertEquals(0, $nbplagiarismfiles);
     }
 
@@ -285,8 +259,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
             $this->create_partial_plagiarismfile($coursemodule->id, $student3->id);
         }
 
-        // On vérifie que la table plagiarism_compilatio_files contient bien quinze plagiarismfiles.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
+        // On vérifie que la table plagiarism_cmp_files contient bien quinze plagiarismfiles.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_cmp_files');
         $this->assertEquals(15, $nbplagiarismfiles);
 
         // On crée la liste d'IDs avec les étudiants 1 et 2.
@@ -297,8 +271,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->create_partial_webservice();
         provider::delete_plagiarism_for_users($userids, $context);
 
-        // On vérifie qu'il ne reste plus que cinq plagiarismfiles dans la table plagiarism_compilatio_files.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
+        // On vérifie qu'il ne reste plus que cinq plagiarismfiles dans la table plagiarism_cmp_files.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_cmp_files');
         $this->assertEquals(5, $nbplagiarismfiles);
     }
 
@@ -337,7 +311,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
     }
 
     /**
-     * Fonction qui insère seulement quelques champs dans la table plagiarism_compilatio_files
+     * Fonction qui insère seulement quelques champs dans la table plagiarism_cmp_files
      *
      * @param   int         $cmid               Course module's ID
      * @param   int         $userid             User's ID
@@ -351,7 +325,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $plagiarismfile->cm = $cmid;
         $plagiarismfile->userid = $userid;
         $plagiarismfile->externalid = rand(0, 100);
-        $id = $DB->insert_record('plagiarism_compilatio_files', $plagiarismfile);
+        $id = $DB->insert_record('plagiarism_cmp_files', $plagiarismfile);
         $plagiarismfile->id = $id;
 
         return $plagiarismfile;
@@ -367,8 +341,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
 
         global $DB;
 
-        $ownerfile = (object) ['plugin' => 'plagiarism_compilatio', 'name' => 'owner_file', 'value' => $owner];
-        $apiconfig = (object) ['plugin' => 'plagiarism_compilatio', 'name' => 'apikey', 'value' => "abcdef"];
+        $ownerfile = (object) ['plugin' => 'plagiarism_cmp', 'name' => 'owner_file', 'value' => $owner];
+        $apiconfig = (object) ['plugin' => 'plagiarism_cmp', 'name' => 'apikey', 'value' => "abcdef"];
         $DB->insert_records('config_plugins', [$ownerfile, $apiconfig]);
     }
 }
@@ -376,9 +350,9 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
 /*
 
     Commande pour exécuter tous les tests unitaires :
-        vendor/bin/phpunit plagiarism/compilatio/tests/privacy/provider_test.php
+        vendor/bin/phpunit plagiarism/cmp/tests/privacy/provider_test.php
 
     Commande pour exécuter un seul test unitaire :
-        vendor/bin/phpunit --filter test_get_metadata  plagiarism/compilatio/tests/privacy/provider_test.php
+        vendor/bin/phpunit --filter test_get_metadata  plagiarism/cmp/tests/privacy/provider_test.php
 
 */

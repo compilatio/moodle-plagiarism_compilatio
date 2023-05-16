@@ -17,24 +17,21 @@
 /**
  * send_file.php - Contains methods to send files.
  *
- * @package    plagiarism_compilatio
- * @subpackage plagiarism
+ * @package    plagiarism_cmp
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * CompilatioSendFile class
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/analyses.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
 
 class CompilatioSendFile {
     /**
@@ -57,10 +54,10 @@ class CompilatioSendFile {
         $cmpfile->userid = $userid;
         $cmpfile->timesubmitted = time();
 
-        $plugincm = compilatio_cm_use($cmid);
+        $plugincm = cmp_cm_use($cmid);
         $cmpfile->indexed = $plugincm->defaultindexing ?? true;
 
-        if (compilatio_student_analysis($plugincm->studentanalyses, $cmid, $userid)) {
+        if (cmp_student_analysis($plugincm->studentanalyses, $cmid, $userid)) {
             $cmpfile->indexed = false;
         }
 
@@ -82,7 +79,7 @@ class CompilatioSendFile {
                 $send = false;
             }
 
-            if ((int) $file->get_filesize() > get_config('plagiarism_compilatio', 'max_size')) {
+            if ((int) $file->get_filesize() > get_config('plagiarism_cmp', 'max_size')) {
                 $cmpfile->status = "error_too_large";
                 $send = false;
             }
@@ -94,7 +91,7 @@ class CompilatioSendFile {
             "userid" => $userid,
             "identifier" => $cmpfile->identifier
         ];
-        if (!empty($DB->get_record("plagiarism_compilatio_files", $params))) {
+        if (!empty($DB->get_record("plagiarism_cmp_files", $params))) {
             return false;
         }
 
@@ -108,19 +105,21 @@ class CompilatioSendFile {
             fwrite($handle, $content);
             fclose($handle);
 
-            $cmconfig = $DB->get_record("plagiarism_compilatio_module", ["cmid" => $cmid]);
+            $cmconfig = $DB->get_record("plagiarism_cmp_module", ["cmid" => $cmid]);
 
-            $compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'), $cmconfig->userid);
+            $compilatio = new CompilatioAPI(get_config('plagiarism_cmp', 'apikey'), $cmconfig->userid);
 
             $depositor = $DB->get_record("user", ["id" => $userid], 'firstname, lastname, email');
             $authors = [$depositor];
+
+            $module = get_coursemodule_from_id(null, $cmid);
 
             if ($module->modname == 'assign') {
                 $isgroupsubmission = $DB->get_field_sql(
                     'SELECT teamsubmission FROM {course_modules} course_modules
                         JOIN {assign} assign ON course_modules.instance = assign.id
                         WHERE course_modules.id = ?',
-                    ['id' => $plagiarismfile->cm]
+                    ['id' => $cmid]
                 );
 
                 if ($isgroupsubmission === '1') {
@@ -128,7 +127,7 @@ class CompilatioSendFile {
                         'SELECT groupid FROM {groups_members} gm
                             JOIN {groups} g ON g.id = gm.groupid
                             WHERE courseid = ? AND userid = ?',
-                        [$module->course, $plagiarismfile->userid]
+                        [$module->course, $userid]
                     );
         
                     if (count($groupid) == 1) {
@@ -147,7 +146,7 @@ class CompilatioSendFile {
 
             unlink($filepath);
 
-            if (compilatio_valid_md5($docid)) {
+            if (cmp_valid_md5($docid)) {
                 $cmpfile->externalid = $docid;
                 $cmpfile->status = "sent";
 
@@ -155,14 +154,14 @@ class CompilatioSendFile {
                     $cmpfile->status = "queue";
                 }
 
-                $DB->insert_record('plagiarism_compilatio_files', $cmpfile);
+                $DB->insert_record('plagiarism_cmp_files', $cmpfile);
                 return true;
             } else {
                 $cmpfile->status = "error_sending_failed";
             }
         }
 
-        $DB->insert_record('plagiarism_compilatio_files', $cmpfile);
+        $DB->insert_record('plagiarism_cmp_files', $cmpfile);
         return false;
     }
 
@@ -198,7 +197,7 @@ class CompilatioSendFile {
         }
         $extension = strtolower($pathinfo['extension']);
 
-        $filetypes = json_decode(get_config('plagiarism_compilatio', 'file_types'));
+        $filetypes = json_decode(get_config('plagiarism_cmp', 'file_types'));
 
         foreach ($filetypes as $type => $value) {
             if ($extension == $type) {

@@ -17,19 +17,17 @@
 /**
  * version.php - Contains Plagiarism plugin settings.
  *
- * @since      2.0
- * @package    plagiarism_compilatio
- * @subpackage plagiarism
- * @author     Dan Marsden <dan@danmarsden.com>
- * @copyright  2012 Dan Marsden http://danmarsden.com
+ * @package    plagiarism_cmp
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-$plugin->version    = 2023012300;
-$plugin->requires   = 2017042100;
+$plugin->version    = 2023050000;
+$plugin->requires   = 2022041900;
 $plugin->cron       = 300; // Only run every 5 minutes.
-$plugin->component  = 'plagiarism_compilatio';
+$plugin->component  = 'plagiarism_cmp';
 $plugin->maturity   = MATURITY_STABLE;
 $plugin->release    = '3.0.0';

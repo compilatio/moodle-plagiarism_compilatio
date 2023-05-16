@@ -17,17 +17,14 @@
 /**
  * statistics.php - Contains statistics methods.
  *
- * @package    plagiarism_compilatio
- * @subpackage plagiarism
+ * @package    plagiarism_cmp
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * CompilatioStatistics class
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioStatistics {
     /**
@@ -49,10 +46,10 @@ class CompilatioStatistics {
                 AVG(similarityscore) 'avg',
                 MIN(similarityscore) 'min',
                 MAX(similarityscore) 'max',
-                COUNT(DISTINCT plagiarism_compilatio_files.id) 'count'
-            FROM {plagiarism_compilatio_files} plagiarism_compilatio_files
+                COUNT(DISTINCT plagiarism_cmp_files.id) 'count'
+            FROM {plagiarism_cmp_files} plagiarism_cmp_files
             JOIN {course_modules} course_modules
-                ON plagiarism_compilatio_files.cm = course_modules.id
+                ON plagiarism_cmp_files.cm = course_modules.id
             JOIN {modules} modules ON modules.id = course_modules.module
             LEFT JOIN {assign} assign ON course_modules.instance = assign.id AND modules.name = 'assign'
             LEFT JOIN {forum} forum ON course_modules.instance = forum.id AND modules.name = 'forum'
@@ -121,7 +118,7 @@ class CompilatioStatistics {
             }
 
             $sql = "SELECT status, COUNT(DISTINCT id) AS count
-                FROM {plagiarism_compilatio_files}
+                FROM {plagiarism_cmp_files}
                 WHERE cm = ? AND status LIKE 'error%'
                 GROUP BY status";
 
@@ -130,7 +127,7 @@ class CompilatioStatistics {
             if ($html) {
                 $result['errors'] = '';
                 foreach ($countstatus as $stat) {
-                    $result['errors'] .= "- {$stat->count} " . get_string("short_{$stat->status}", 'plagiarism_compilatio').'</br>';
+                    $result['errors'] .= "- {$stat->count} " . get_string("short_{$stat->status}", 'plagiarism_cmp').'</br>';
                 }
             } else {
                 foreach ($countstatus as $stat) {
@@ -155,11 +152,11 @@ class CompilatioStatistics {
 
         global $DB, $PAGE;
 
-        $plagiarismvalues = $DB->get_record('plagiarism_compilatio_module', ['cmid' => $cmid]);
+        $plagiarismvalues = $DB->get_record('plagiarism_cmp_module', ['cmid' => $cmid]);
         $warningthreshold = $plagiarismvalues->warningthreshold ?? 10;
         $criticalthreshold = $plagiarismvalues->criticalthreshold ?? 25;
 
-        $from = "SELECT COUNT(DISTINCT pcf.id) FROM {plagiarism_compilatio_files} pcf WHERE pcf.cm=?";
+        $from = "SELECT COUNT(DISTINCT pcf.id) FROM {plagiarism_cmp_files} pcf WHERE pcf.cm=?";
 
         $documentscount = $DB->count_records_sql($from, [$cmid]);
 
@@ -169,32 +166,32 @@ class CompilatioStatistics {
 
         $scorestats = $DB->get_record_sql(
             "SELECT ROUND(AVG(similarityscore)) avg, MIN(similarityscore) min, MAX(similarityscore) max
-                FROM {plagiarism_compilatio_files} pcf
+                FROM {plagiarism_cmp_files} pcf
                 WHERE pcf.cm=? AND status='scored'",
             [$cmid]
         );
 
-        $sql = "SELECT status, COUNT(DISTINCT id) AS count FROM {plagiarism_compilatio_files}  WHERE cm = ? GROUP BY status";
+        $sql = "SELECT status, COUNT(DISTINCT id) AS count FROM {plagiarism_cmp_files}  WHERE cm = ? GROUP BY status";
         $countbystatus = $DB->get_records_sql($sql, [$cmid]);
 
         $output = "
             <div class='col'>
-                <h4 class='cmp-color-primary'>" . get_string('progress', 'plagiarism_compilatio') . "</h4>
+                <h4 class='cmp-color-primary'>" . get_string('progress', 'plagiarism_cmp') . "</h4>
                 <div class='position-relative cmp-box mx-2 my-3 p-3'>
                     <h5 class='fw-bold cmp-color-green'>"
-                      . get_string('documents_analyzed', 'plagiarism_compilatio', $countbystatus['scored']->count ?? 0) .
+                      . get_string('documents_analyzed', 'plagiarism_cmp', $countbystatus['scored']->count ?? 0) .
                     "</h5>
                 </div>
 
                 <div class='cmp-box mx-2 my-3'>
                     <h5 class='p-3 cmp-color-primary'>"
-                      . get_string('documents_analyzing', 'plagiarism_compilatio', $countbystatus['analyzing']->count ?? 0) .
+                      . get_string('documents_analyzing', 'plagiarism_cmp', $countbystatus['analyzing']->count ?? 0) .
                     "</h5>
                 </div>
 
                 <div class='cmp-box mx-2 my-3'>
                     <h5 class='p-3 cmp-color-primary'>"
-                      . get_string('documents_in_queue', 'plagiarism_compilatio', $countbystatus['queue']->count ?? 0) .
+                      . get_string('documents_in_queue', 'plagiarism_cmp', $countbystatus['queue']->count ?? 0) .
                     "</h5>
                 </div>
             </div>";
@@ -210,21 +207,21 @@ class CompilatioStatistics {
                 $color = 'red';
             }
             $yes .= "<div class='col-4'>
-                    <div class='pt-1 pb-2 fw-bold cmp-color-secondary'>" . get_string('stats_' . $elem, 'plagiarism_compilatio') . "</div>
+                    <div class='pt-1 pb-2 fw-bold cmp-color-secondary'>" . get_string('stats_' . $elem, 'plagiarism_cmp') . "</div>
                     <h3 class='cmp-color-" . $color . "'>" . $scorestats->$elem . " %</h3>
                 </div>";
         }
 
         $output .= "
             <div class='col'>
-                <h4 class='cmp-color-primary'>" . get_string('results', 'plagiarism_compilatio') . "</h4>
+                <h4 class='cmp-color-primary'>" . get_string('results', 'plagiarism_cmp') . "</h4>
                 <div class='cmp-box mx-2 my-3 px-3 pt-3 pb-2'>
-                    <h5 class='cmp-color-primary'>" . get_string('stats_score', 'plagiarism_compilatio') . "</h5>
+                    <h5 class='cmp-color-primary'>" . get_string('stats_score', 'plagiarism_cmp') . "</h5>
                     <div class='row'>{$yes}</div>
                 </div>
 
                 <div class='cmp-box mx-2 my-3 p-3'>
-                    <h5 class='cmp-color-primary'>" . get_string('stats_threshold', 'plagiarism_compilatio') . "</h5>
+                    <h5 class='cmp-color-primary'>" . get_string('stats_threshold', 'plagiarism_cmp') . "</h5>
                     <div class='row mt-3 fw-bold cmp-color-secondary'>
                         <div class='col-4'>
                             <h3 class='fw-bold cmp-color-green'>" . $countgreen . "</h3>
@@ -246,28 +243,28 @@ class CompilatioStatistics {
         foreach ($countbystatus as $status => $stat) {
             if (strpos($status, 'error') === 0) {
                 if ($status == 'error_too_large') {
-                    $stringvariable = (get_config('plagiarism_compilatio', 'max_size') / 1024 / 1024);
+                    $stringvariable = (get_config('plagiarism_cmp', 'max_size') / 1024 / 1024);
                 } else if ($status == 'error_too_long') {
-                    $stringvariable = get_config('plagiarism_compilatio', 'max_word');
+                    $stringvariable = get_config('plagiarism_cmp', 'max_word');
                 } else if ($status == 'error_too_short') {
-                    $stringvariable = get_config('plagiarism_compilatio', 'min_word');
+                    $stringvariable = get_config('plagiarism_cmp', 'min_word');
                 }
 
                 $errors .= "<div class='position-relative cmp-box mx-2 my-3 p-3'>
-                        <h5 class='cmp-color-red'>" . $stat->count . ' ' . (get_string('short_' . $status, 'plagiarism_compilatio') ?? get_string('stats_error_unknown', 'plagiarism_compilatio')) . "</h5>
-                        <small>" . (get_string('detailed_' . $status, 'plagiarism_compilatio', $stringvariable ?? null) ?? '') . "</small>
+                        <h5 class='cmp-color-red'>" . $stat->count . ' ' . (get_string('short_' . $status, 'plagiarism_cmp') ?? get_string('stats_error_unknown', 'plagiarism_cmp')) . "</h5>
+                        <small>" . (get_string('detailed_' . $status, 'plagiarism_cmp', $stringvariable ?? null) ?? '') . "</small>
                     </div>";
             }
         }
         if (empty($errors)) {
             $errors = "<div class='cmp-box mx-2 my-3 p-3'>
-                    <h5 class='cmp-color-green'>" . get_string('stats_error_empty', 'plagiarism_compilatio') . "</h5>
+                    <h5 class='cmp-color-green'>" . get_string('stats_error_empty', 'plagiarism_cmp') . "</h5>
                 </div>";
         }
 
         $output .= "
             <div class='col'>
-                <h4 class='cmp-color-primary'>" . get_string('errors', 'plagiarism_compilatio') . "</h4>
+                <h4 class='cmp-color-primary'>" . get_string('errors', 'plagiarism_cmp') . "</h4>
                 {$errors}
             </div>";
 
@@ -285,7 +282,7 @@ class CompilatioStatistics {
 
         $string = "<ul>";
         foreach ($listitems as $listitem) {
-            $string .= "<li>" . get_string($listitem[0], 'plagiarism_compilatio', $listitem[1]) . "</li>";
+            $string .= "<li>" . get_string($listitem[0], 'plagiarism_cmp', $listitem[1]) . "</li>";
         }
         $string .= "</ul>";
         return $string;
@@ -303,7 +300,7 @@ class CompilatioStatistics {
         global $DB;
 
         $sql = "SELECT DISTINCT pcf.id, pcf.filename, pcf.userid
-            FROM {plagiarism_compilatio_files} pcf
+            FROM {plagiarism_cmp_files} pcf
             WHERE pcf.cm=? AND status = ?";
 
         $files = $DB->get_records_sql($sql, [$cmid, $status]);

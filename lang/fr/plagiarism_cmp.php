@@ -14,17 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * plagiarism_compilatio.php - Contains french Plagiarism plugin translation.
+ * plagiarism_cmp.php - Contains french Plagiarism plugin translation.
  *
- * @since 2.0
- * @package    plagiarism_compilatio
- * @subpackage plagiarism
+ * @package    plagiarism_cmp
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 $string['pluginname'] = 'Compilatio - Plugin de détection de plagiat';
-$string['compilatio'] = 'Plugin de détection de plagiat Compilatio';
+$string['cmp'] = 'Plugin de détection de plagiat Compilatio';
 
 // Admin Compilatio settings.
 $string['activate_compilatio'] = 'Activer le plug-in Compilatio';
@@ -308,33 +306,21 @@ $string['trigger_timed_analyses'] = "Déclenche les analyses de plagiat programm
 $string['privacy:metadata:core_files'] = 'Fichiers déposés ou créés depuis un champ de saisie';
 $string['privacy:metadata:core_plagiarism'] = 'Ce plugin est appelé par le sous-système de détection de plagiat de Moodle';
 
-$string['privacy:metadata:plagiarism_compilatio_files'] = 'Informations à propos des fichiers soumis à Compilatio dans la base de données du plugin';
-$string['privacy:metadata:plagiarism_compilatio_files:id'] = 'L\'identifiant de la soumission dans la base de données de Moodle';
-$string['privacy:metadata:plagiarism_compilatio_files:cm'] = 'L\'identifiant du module de cours où se trouve la soumission';
-$string['privacy:metadata:plagiarism_compilatio_files:userid'] = 'L\'identifiant de l\'utilisateur Moodle qui a fait la soumission';
-$string['privacy:metadata:plagiarism_compilatio_files:identifier'] = 'La contenthash de la soumission';
-$string['privacy:metadata:plagiarism_compilatio_files:filename'] = 'Le nom (éventuellement auto-généré) de la soumission';
-$string['privacy:metadata:plagiarism_compilatio_files:timesubmitted'] = 'L\'heure à laquelle le fichier a été enregistré dans la base de données Moodle du plugin';
-$string['privacy:metadata:plagiarism_compilatio_files:externalid'] = 'L\'identifiant de la soumission dans la base de données de Compilatio';
-$string['privacy:metadata:plagiarism_compilatio_files:status'] = 'L\'état de l\'analyse la soumission (Analysé, En attente, Temps dépassé...)';
-$string['privacy:metadata:plagiarism_compilatio_files:similarityscore'] = 'Le pourcentage de similitudes trouvées pour cette soumission';
-$string['privacy:metadata:plagiarism_compilatio_files:indexed'] = "L'état d'indexation en bibliothèque de référence du fichier.";
+$string['privacy:metadata:plagiarism_cmp_files'] = 'Informations à propos des fichiers soumis à Compilatio';
+$string['privacy:metadata:plagiarism_cmp_files:userid'] = "L'identifiant Moodle de l'utilisateur qui a fait la soumission";
+$string['privacy:metadata:plagiarism_cmp_files:filename'] = "Nom du fichier soumis ou nom généré pour les contenus texte";
 
-$string['privacy:metadata:external_compilatio_document'] = 'Informations à propos des documents dans la base de données de Compilatio';
-$string['privacy:metadata:external_compilatio_document:lastname'] = 'Nom de l\'utilisateur Compilatio qui a soumis le fichier - attention, cet utilisateur est celui qui est lié à la clé d\'API Compilatio sur la plateforme Moodle (c\'est donc souvent l\'administrateur de la plateforme)';
-$string['privacy:metadata:external_compilatio_document:firstname'] = 'Prénom de l\'utilisateur Compilatio qui a soumis le fichier - attention, cet utilisateur est celui qui est lié à la clé d\'API Compilatio sur la plateforme Moodle (c\'est donc souvent l\'administrateur de la plateforme)';
-$string['privacy:metadata:external_compilatio_document:email_adress'] = 'Adresse email de l\'utilisateur Compilatio qui a soumis le fichier - attention, cet utilisateur est celui qui est lié à la clé d\'API Compilatio sur la plateforme Moodle (c\'est donc souvent l\'administrateur de la plateforme)';
-$string['privacy:metadata:external_compilatio_document:user_id'] = 'L\'identifiant de l\'utilisateur Compilatio qui a soumis le fichier - attention, cet utilisateur est celui qui est lié à la clé d\'API Compilatio sur la plateforme Moodle (c\'est donc souvent l\'administrateur de la plateforme)';
-$string['privacy:metadata:external_compilatio_document:filename'] = 'Le nom de la soumission';
-$string['privacy:metadata:external_compilatio_document:upload_date'] = 'L\'heure à laquelle le fichier à été enregistré dans la base de données Compilatio';
-$string['privacy:metadata:external_compilatio_document:id'] = 'L\'identifiant de la soumission dans la base de données de Compilatio';
-$string['privacy:metadata:external_compilatio_document:indexed'] = 'L\'état d\'indéxation de la soumission (si elle est utilisée comme document de référence lors des analyses)';
+$string['privacy:metadata:plagiarism_cmp_user'] = "Informations à propos de l'enseignant qui a créé un module avec Compilatio";
+$string['privacy:metadata:plagiarism_cmp_files:userid'] = "L'identifiant Moodle de l'enseignant";
+$string['privacy:metadata:plagiarism_cmp_files:compilatioid'] = "L'identifiant Compilatio de l'enseignant";
 
-$string['privacy:metadata:external_compilatio_report'] = 'Informations à propos du rapport d\'analyse dans la base de données de Compilatio (uniquement si le document a été analysé)';
-$string['privacy:metadata:external_compilatio_report:id'] = 'L\'identifiant Compilatio du rapport d\'analyse';
-$string['privacy:metadata:external_compilatio_report:doc_id'] = 'L\'identifiant Compilatio du document qui a été analysé';
-$string['privacy:metadata:external_compilatio_report:user_id'] = 'L\'identifiant de l\'utilisateur Compilatio qui a soumis le fichier - attention, cet utilisateur est celui qui est lié à la clé d\'API Compilatio sur la plateforme Moodle (c\'est donc souvent l\'administrateur de la plateforme)';
-$string['privacy:metadata:external_compilatio_report:start'] = 'La date de début de l\'analyse';
-$string['privacy:metadata:external_compilatio_report:end'] = 'La date de fin de l\'analyse';
-$string['privacy:metadata:external_compilatio_report:state'] = 'L\'état de l\'analyse de la soumission (Analysé, En attente, Temps dépassé...)';
-$string['privacy:metadata:external_compilatio_report:plagiarism_percent'] = 'Le pourcentage de similitudes trouvées pour cette soumission';
+$string['privacy:metadata:external_compilatio_document'] = 'Informations et contenu des documents dans la base de données de Compilatio';
+$string['privacy:metadata:external_compilatio_document:authors'] = "Nom, prénom et adresse mail de l'utilisateur Moodle (ou les membres du groupe) qui a soumis le fichier";
+$string['privacy:metadata:external_compilatio_document:depositor'] = "Nom, prénom et adresse mail de l'utilisateur Moodle qui a soumis le fichier";
+$string['privacy:metadata:external_compilatio_document:filename'] = "Nom du fichier soumis ou nom généré pour les contenus texte";
+
+$string['privacy:metadata:external_compilatio_user'] = "Informations à propos de l'enseignant qui a créé un module avec Compilatio";
+$string['privacy:metadata:external_compilatio_user:firstname'] = "Prénom de l'enseignant";
+$string['privacy:metadata:external_compilatio_user:lastname'] = "Nom de l'enseignant";
+$string['privacy:metadata:external_compilatio_user:email'] = "Adresse mail de l'enseignant";
+$string['privacy:metadata:external_compilatio_user:username'] = "Adresse mail de l'enseignant";

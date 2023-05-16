@@ -16,13 +16,11 @@
 
 /**
  * Start analysis for all document in course module
- *
- * This script is called by amd/build/ajax_api.js
- *
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * 
+ * @package    plagiarism_cmp
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * @param string $_POST['cmid']
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
@@ -30,10 +28,10 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/send_file.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/analyses.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
 
 require_login();
 
@@ -41,7 +39,7 @@ global $DB, $SESSION;
 
 $cmid = required_param('cmid', PARAM_TEXT);
 
-$plugincm = compilatio_cm_use($cmid);
+$plugincm = cmp_cm_use($cmid);
 
 // Counter incremented on success.
 $countsuccess = 0;
@@ -50,11 +48,11 @@ $plagiarismfiles = $docsfailed = $docsinextraction = [];
 if ($plugincm->analysistype == 'manual') {
 
     $sql = "cm = ? AND status = 'sent'";
-    $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, [$cmid]);
+    $plagiarismfiles = $DB->get_records_select('plagiarism_cmp_files', $sql, [$cmid]);
 
     foreach ($plagiarismfiles as $file) {
 
-        if (compilatio_student_analysis($plugincm->studentanalyses, $cmid, $file->userid)) {
+        if (cmp_student_analysis($plugincm->studentanalyses, $cmid, $file->userid)) {
             continue;
         }
 
@@ -62,7 +60,7 @@ if ($plugincm->analysistype == 'manual') {
 
         if ($status == 'queue') {
             $countsuccess++;
-        } else if ($status == get_string('extraction_in_progress', 'plagiarism_compilatio')) {
+        } else if ($status == get_string('extraction_in_progress', 'plagiarism_cmp')) {
             $docsinextraction[] = $file->filename;
         } else {
             $docsfailed[] = $file->filename;
@@ -73,20 +71,20 @@ if ($plugincm->analysistype == 'manual') {
 if (count($plagiarismfiles) === 0) {
     $SESSION->compilatio_alert = [
         'class' => 'info',
-        'content' => get_string('no_document_available_for_analysis', 'plagiarism_compilatio'),
+        'content' => get_string('no_document_available_for_analysis', 'plagiarism_cmp'),
     ];
 } else {
     if ($countsuccess > 0) {
         $SESSION->compilatio_alert = [
             'class' => 'info',
-            'content' => get_string('analysis_started', 'plagiarism_compilatio', $countsuccess)
+            'content' => get_string('analysis_started', 'plagiarism_cmp', $countsuccess)
         ];
     }
 
     if (count($docsfailed) > 0) {
         $SESSION->compilatio_alert = [
             'class' => 'danger',
-            'content' => '<div>' . get_string('not_analyzed', 'plagiarism_compilatio')
+            'content' => '<div>' . get_string('not_analyzed', 'plagiarism_cmp')
                 . '<ul><li>' . implode('</li><li>', $docsfailed) . '</li></ul></div>',
         ];
     }
@@ -94,7 +92,7 @@ if (count($plagiarismfiles) === 0) {
     if (count($docsinextraction) > 0) {
         $SESSION->compilatio_alert = [
             'class' => 'danger',
-            'content' => '<div>' . get_string('not_analyzed_extracting', 'plagiarism_compilatio')
+            'content' => '<div>' . get_string('not_analyzed_extracting', 'plagiarism_cmp')
                 . '<ul><li>' . implode('</li><li>', $docsinextraction) . '</li></ul></div>',
         ];
     }

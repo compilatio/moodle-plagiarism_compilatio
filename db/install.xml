@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="plagiarism/compilatio/db" VERSION="20201023" COMMENT="XMLDB file for Moodle plagiarism/compilatio plugin"
+<XMLDB PATH="plagiarism/cmp/db" VERSION="20230500" COMMENT="XMLDB file for Moodle plagiarism/cmp plugin"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="plagiarism_compilatio_files" COMMENT="info about submitted files">
+    <TABLE NAME="plagiarism_cmp_files" COMMENT="info about submitted files">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="cm" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -26,7 +26,7 @@
         <INDEX NAME="mdl_cmp_files_extid" UNIQUE="true" FIELDS="externalid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="plagiarism_compilatio_user" COMMENT="Used to store Compilatio user information">
+    <TABLE NAME="plagiarism_cmp_user" COMMENT="Used to store Compilatio user information">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -37,7 +37,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="plagiarism_compilatio_module" COMMENT="modules information and config">
+    <TABLE NAME="plagiarism_cmp_module" COMMENT="modules information and config">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -58,7 +58,7 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="cmid" TYPE="foreign" FIELDS="cmid" REFTABLE="course_modules" REFFIELDS="id"/>
-        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="plagiarism_compilatio_user" REFFIELDS="compilatioid"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="plagiarism_cmp_user" REFFIELDS="compilatioid"/>
       </KEYS>
     </TABLE>
   </TABLES>

@@ -17,12 +17,10 @@
 /**
  * Start analysis for all document in course module
  *
- * This script is called by amd/build/ajax_api.js
- *
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @package    plagiarism_cmp
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * @param string $_POST['cmid']
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
@@ -30,8 +28,8 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/send_file.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
 
 require_login();
 
@@ -40,16 +38,16 @@ global $SESSION;
 $cmid = required_param('cmid', PARAM_TEXT);
 
 // Handle not sent documents :.
-$files = compilatio_get_unsent_documents($cmid);
+$files = cmp_get_unsent_documents($cmid);
 
 if (count($files) != 0) {
     CompilatioSendFile::send_unsent_files($files, $cmid);
-    $countsuccess = count($files) - count(compilatio_get_unsent_documents($cmid));
+    $countsuccess = count($files) - count(cmp_get_unsent_documents($cmid));
 }
 
 if ($countsuccess > 0) {
     $SESSION->compilatio_alert = [
         'class' => 'info',
-        'content' => get_string('document_sent', 'plagiarism_compilatio', $countsuccess)
+        'content' => get_string('document_sent', 'plagiarism_cmp', $countsuccess)
     ];
 }

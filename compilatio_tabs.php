@@ -17,25 +17,23 @@
 /**
  * compilatio_tabs.php - Contains Plagiarism plugin script who create tab object in the plugin configuration web page.
  *
- * @since 2.0
- * @package    plagiarism_compilatio
- * @subpackage plagiarism
+ * @package    plagiarism_cmp
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 // Get tabs' title.
-$strplagiarism         = get_string('compilatio', 'plagiarism_compilatio');
-$strplagiarismdefaults = get_string('compilatiodefaults', 'plagiarism_compilatio');
-$strautodiagnosis      = get_string('auto_diagnosis_title', 'plagiarism_compilatio');
-$strstatistics         = get_string('tabs_title_stats', 'plagiarism_compilatio');
-$strhelp               = get_string('tabs_title_help', 'plagiarism_compilatio');
+$strplagiarism         = get_string('cmp', 'plagiarism_cmp');
+$strplagiarismdefaults = get_string('compilatiodefaults', 'plagiarism_cmp');
+$strautodiagnosis      = get_string('auto_diagnosis_title', 'plagiarism_cmp');
+$strstatistics         = get_string('tabs_title_stats', 'plagiarism_cmp');
+$strhelp               = get_string('tabs_title_help', 'plagiarism_cmp');
 
 // Display Compilatio logo.
-echo "<img id='cmp-logo' style='margin-bottom: 15px;' src='" . new moodle_url("/plagiarism/compilatio/pix/compilatio.png") . "'>";
+echo "<img id='cmp-logo' style='margin-bottom: 15px;' src='" . new moodle_url("/plagiarism/cmp/pix/compilatio.png") . "'>";
 echo '<div style="clear:both"></div>';
 
 // Create tabs.

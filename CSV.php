@@ -17,10 +17,10 @@
 /**
  * CSV.php - Generates a global CSV file about plagiarism in this installation
  *
- * @package   plagiarism_compilatio
- * @author    Dan Marsden <dan@danmarsden.com>
- * @copyright 2012 Dan Marsden http://danmarsden.com
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    plagiarism_cmp
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 define('MOODLE_INTERNAL', true);
@@ -32,9 +32,9 @@ global $DB;
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/compilatio_form.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/statistics.php');
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -42,7 +42,7 @@ admin_externalpage_setup('plagiarismcompilatio');
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, "nopermissions");
 
-$url = new moodle_url('/plagiarism/compilatio/CSV.php');
+$url = new moodle_url('/plagiarism/cmp/CSV.php');
 
 $PAGE->set_url($url);
 
@@ -72,7 +72,7 @@ if ($rawcsv) {
             pcf.status "file_status",
             pcf.similarityscore "file_similarityscore",
             ' . $todate . '(pcf.timesubmitted) "file_submitted_on"
-        FROM {plagiarism_compilatio_files} pcf
+        FROM {plagiarism_cmp_files} pcf
         JOIN {user} student ON pcf.userid=student.id
         JOIN {course_modules} cm ON pcf.cm = cm.id
         LEFT JOIN {assign} assign ON cm.instance= assign.id AND cm.module= 1

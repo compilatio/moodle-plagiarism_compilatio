@@ -15,22 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * restore_plagiarism_compilatio_plugin.class.php - Contains Plagiarism plugin methods to restore the plugin.
+ * restore_plagiarism_cmp_plugin.class.php - Contains Plagiarism plugin methods to restore the plugin.
  *
- * @since 2.0
- * @package    plagiarism_compilatio
- * @subpackage plagiarism
+ * @package    plagiarism_cmp
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * Restore class
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
+class restore_plagiarism_cmp_plugin extends restore_plagiarism_plugin {
 
     /**
      * Returns the paths to be handled by the plugin at question level
@@ -94,7 +90,7 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
             $oldid = $data->id;
             $data->cmid = $this->task->get_moduleid();
 
-            $DB->insert_record('plagiarism_compilatio_module', $data);
+            $DB->insert_record('plagiarism_cmp_module', $data);
         }
     }
 
@@ -112,7 +108,7 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
             $data->cm = $this->task->get_moduleid();
             $data->userid = $this->get_mappingid('user', $data->userid);
 
-            $DB->insert_record('plagiarism_compilatio_files', $data);
+            $DB->insert_record('plagiarism_cmp_files', $data);
         }
     }
 }

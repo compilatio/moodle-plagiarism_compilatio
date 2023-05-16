@@ -18,17 +18,14 @@
 /**
  * api.php - Contains methods to communicate with Compilatio REST API.
  *
- * @package    plagiarism_compilatio
- * @subpackage plagiarism
+ * @package    plagiarism_cmp
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * CompilatioAPI class
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioAPI
 {
@@ -108,6 +105,35 @@ class CompilatioAPI
         return false;
     }
 
+    public function get_or_create_user($teacher = null)
+    {
+        global $USER, $DB;
+
+        if (!isset($teacher)) {
+            $teacher = $USER;
+        }
+
+        // Check if user already exists in Compilatio.
+        $compilatioid = $this->get_user_by_email($teacher->email);
+
+        // Create the user if doesn't exists.
+        if ($compilatioid == 404) {
+            $lang = substr(current_language(), 0, 2);
+            $compilatioid = $this->set_user($teacher->firstname, $teacher->lastname, $teacher->email, $lang);
+        }
+
+        if (!preg_match('/^[a-f0-9]{40}$/', $compilatioid)) {
+            return null;
+        }
+
+        $user = new stdClass();
+        $user->compilatioid = $compilatioid;
+        $user->userid = $teacher->id;
+        $user->id = $DB->insert_record('plagiarism_cmp_user', $user);
+
+        return $user;
+    }
+
     /**
      * Create Elastisafe user
      *
@@ -116,7 +142,7 @@ class CompilatioAPI
      * @param   string  $email          User's email
      * @return  string                  Return the user's ID, an error message otherwise
      */
-    public function set_user($firstname, $lastname, $email, $lang)
+    private function set_user($firstname, $lastname, $email, $lang)
     {
         $endpoint = '/api/private/user/create';
         $params = [
@@ -163,7 +189,7 @@ class CompilatioAPI
      * @param   string  $email          Teacher's moodle email
      * @return  string                  Return the user's ID if exist, an error message otherwise
      */
-    public function get_user_by_email($email)
+    private function get_user_by_email($email)
     {
         $endpoint = '/api/private/user/lms/' . strtolower($email);
 
@@ -606,16 +632,26 @@ class CompilatioAPI
         $response = json_decode($this->call_api($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
-            $groupid = $response->data->user->current_bundle->group_id;
+            foreach ($response->data->user->current_bundle->accesses as $access) {
+                if ($access->resource == 'management') {
+                    $magisterstandardbundleid = $access->bundle_id;
+                }
+            }
         }
 
-        $endpoint = '/api/private/subscription/last-subscription/' . $groupid . '?id_type=owner_id&bundle_name=magister-standard';
+        if (!isset($magisterstandardbundleid)) {
+            return false;
+        }
+
+        $endpoint = '/api/private/subscription/bundles/' . $magisterstandardbundleid . '/last-subscription';
 
         $response = json_decode($this->call_api($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
             return $response->data->subscription;
         }
+
+        return false;
     }
 
     /**
@@ -650,9 +686,9 @@ class CompilatioAPI
         } elseif (isset($response->errors->key) && $response->errors->key == 'need_terms_of_service_validation') {
             if (!empty($this->userid)) {
                 global $DB;
-                $user = $DB->get_record('plagiarism_compilatio_user', ['compilatioid' => $this->userid]);
+                $user = $DB->get_record('plagiarism_cmp_user', ['compilatioid' => $this->userid]);
                 $user->validatedtermsofservice = false;
-                $DB->update_record('plagiarism_compilatio_user', $user);
+                $DB->update_record('plagiarism_cmp_user', $user);
             }
             return $response->errors->key;
         } else {
@@ -698,7 +734,7 @@ class CompilatioAPI
         }
 
         // SSL certificate verification.
-        if (get_config('plagiarism_compilatio', 'disable_ssl_verification') == 1) {
+        if (get_config('plagiarism_cmp', 'disable_ssl_verification') == 1) {
             $params[CURLOPT_SSL_VERIFYPEER] = false;
         }
 

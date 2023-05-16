@@ -17,12 +17,10 @@
 /**
  * Reset failed analyses and unsent documents of the course module
  *
- * This script is called by amd/build/ajax_api.js
- *
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @package    plagiarism_cmp
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * @param string $_POST['cmid']
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
@@ -30,26 +28,26 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/analyses.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/send_file.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
 
 require_login();
 global $DB, $PAGE;
 
 $cmid = required_param('cmid', PARAM_TEXT);
 
-$compilatio = new CompilatioAPI(get_config('plagiarism_compilatio', 'apikey'));
+$compilatio = new CompilatioAPI(get_config('plagiarism_cmp', 'apikey'));
 
 // Restart failed analyses.
-$files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'error_analysis_failed']);
+$files = $DB->get_records('plagiarism_cmp_files', ['cm' => $cmid, 'status' => 'error_analysis_failed']);
 
 if (!empty($files)) {
     $countsuccess = 0;
     $docsfailed = [];
     foreach ($files as $file) {
-        $userid = $DB->get_field('plagiarism_compilatio_module', 'userid', ['cmid' => $file->cm]);
+        $userid = $DB->get_field('plagiarism_cmp_module', 'userid', ['cmid' => $file->cm]);
         $compilatio->set_user_id($userid);
 
         if ($compilatio->delete_analyse($file->externalid) && $compilatio->start_analyse($file->externalid)) {
@@ -59,18 +57,18 @@ if (!empty($files)) {
         }
 
         $file->status = 'queue';
-        $DB->update_record('plagiarism_compilatio_files', $file);
+        $DB->update_record('plagiarism_cmp_files', $file);
     }
 
     if (count($docsfailed) === 0) {
         $SESSION->compilatio_alert = [
             'class' => 'info',
-            'content' => get_string('analysis_started', 'plagiarism_compilatio', $countsuccess),
+            'content' => get_string('analysis_started', 'plagiarism_cmp', $countsuccess),
         ];
     } else {
         $SESSION->compilatio_alert = [
             'class' => 'danger',
-            'content' => '<div>' . get_string('not_analyzed', 'plagiarism_compilatio')
+            'content' => '<div>' . get_string('not_analyzed', 'plagiarism_cmp')
                 . '<ul><li>' . implode('</li><li>', $docsfailed) . '</li></ul></div>',
         ];
     }
@@ -78,7 +76,7 @@ if (!empty($files)) {
 
 // TODO display an alert for re-sent files.
 // Send failed files.
-$files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'error_sending_failed']);
+$files = $DB->get_records('plagiarism_cmp_files', ['cm' => $cmid, 'status' => 'error_sending_failed']);
 
 $fs = get_file_storage();
 
@@ -116,7 +114,7 @@ foreach ($files as $cmpfile) {
         }
     
         if (!empty($content)) {
-            $DB->delete_records('plagiarism_compilatio_files', ['id' => $cmpfile->id]);
+            $DB->delete_records('plagiarism_cmp_files', ['id' => $cmpfile->id]);
 
             CompilatioSendFile::send_file($cmid, $cmpfile->userid, null, $cmpfile->filename, $content);
         }
@@ -136,7 +134,7 @@ foreach ($files as $cmpfile) {
     }
     $file = $fs->get_file_by_id($f->id);
 
-    $DB->delete_records('plagiarism_compilatio_files', ['id' => $cmpfile->id]);
+    $DB->delete_records('plagiarism_cmp_files', ['id' => $cmpfile->id]);
 
     CompilatioSendFile::send_file($cmpfile->cm, $cmpfile->userid, $file);
 }

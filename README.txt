@@ -1,17 +1,18 @@
 Compilatio.net Plagiarism plugin for Moodle 4.0, 4.1
 
 Author: Compilatio <support@compilatio.net>
-Copyright 2020 Compilatio.net https://www.compilatio.net
+Copyright 2023 Compilatio.net https://www.compilatio.net
 License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 
-Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
+Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin. 
 
-CHANGES
-- 
+CHANGELOG
+v2023050000
+- New Compilatio plugin
 
 QUICK INSTALL
 ================
-1) Place these files in a new folder in your Moodle install under /plagiarism/compilatio
+1) Place these files in a new folder in your Moodle install under /plagiarism/cmp
 2) Visit the Notifications page in Moodle to trigger the upgrade scripts
 3) Enable the Plagiarism API under admin > Advanced Features
 4) Configure the Compilatio plugin under admin > plugins > Plagiarism > Compilatio

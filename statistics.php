@@ -17,18 +17,18 @@
 /**
  * statistics.php - Display global statistics about assignments
  *
- * @package   plagiarism_compilatio
- * @author    Dan Marsden <dan@danmarsden.com>
- * @copyright 2012 Dan Marsden http://danmarsden.com
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    plagiarism_cmp
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/compilatio_form.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/statistics.php');
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
 
@@ -36,32 +36,32 @@ $PAGE->requires->jquery();
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
 
-$plagiarismplugin = new plagiarism_plugin_compilatio();
+$plagiarismplugin = new plagiarism_plugin_cmp();
 
-$plagiarismsettings = (array) get_config('plagiarism_compilatio');
+$plagiarismsettings = (array) get_config('plagiarism_cmp');
 
 echo $OUTPUT->header();
 $currenttab = 'compilatiostatistics';
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
+require_once($CFG->dirroot . '/plagiarism/cmp/compilatio_tabs.php');
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 
 $rows = CompilatioStatistics::get_global_statistics();
 
 if (count($rows) === 0) {
-    echo get_string('no_statistics_yet', 'plagiarism_compilatio');
+    echo get_string('no_statistics_yet', 'plagiarism_cmp');
 } else {
 
-    $url = new moodle_url('/plagiarism/compilatio/CSV.php');
-    echo html_writer::tag('legend', get_string('global_statistics', 'plagiarism_compilatio'), [
+    $url = new moodle_url('/plagiarism/cmp/CSV.php');
+    echo html_writer::tag('legend', get_string('global_statistics', 'plagiarism_cmp'), [
         'class' => 'cmp-legend'
     ]);
-    echo html_writer::tag('p', get_string('global_statistics_description', 'plagiarism_compilatio'));
-    echo html_writer::tag('a', get_string('export_raw_csv', 'plagiarism_compilatio'), [
+    echo html_writer::tag('p', get_string('global_statistics_description', 'plagiarism_cmp'));
+    echo html_writer::tag('a', get_string('export_raw_csv', 'plagiarism_cmp'), [
         'href' => $url,
         'style' => 'margin-bottom:20px;',
         'class' => 'cmp-btn cmp-btn-primary'
     ]);
-    echo html_writer::tag('legend', get_string('activities_statistics', 'plagiarism_compilatio'), [
+    echo html_writer::tag('legend', get_string('activities_statistics', 'plagiarism_cmp'), [
         'class' => 'cmp-legend'
     ]);
 
@@ -72,11 +72,11 @@ if (count($rows) === 0) {
     ]);
     echo html_writer::script('', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.js');
     // Scripts function.
-    echo html_writer::script('', $CFG->wwwroot . '/plagiarism/compilatio/js/statistics_functions.js');
+    echo html_writer::script('', $CFG->wwwroot . '/plagiarism/cmp/js/statistics_functions.js');
 
-    $url = new moodle_url('/plagiarism/compilatio/stats_json.php');
+    $url = new moodle_url('/plagiarism/cmp/stats_json.php');
 
-    echo html_writer::tag('h5', 'Compilatio - ' . get_string('similarities', 'plagiarism_compilatio'), ['colspan' => '4']);
+    echo html_writer::tag('h5', 'Compilatio - ' . get_string('similarities', 'plagiarism_cmp'), ['colspan' => '4']);
 
     $table = new html_table();
     $table->id = 'cmp-table-js';
@@ -85,13 +85,13 @@ if (count($rows) === 0) {
 
     $tableheadjs = [
         get_string('course'),
-        get_string('teacher', 'plagiarism_compilatio'),
+        get_string('teacher', 'plagiarism_cmp'),
         get_string('modulename', 'assign'),
-        str_replace(' ', '<br/>', get_string('documents_number', 'plagiarism_compilatio')),
-        get_string('minimum', 'plagiarism_compilatio'),
-        get_string('maximum', 'plagiarism_compilatio'),
-        get_string('average', 'plagiarism_compilatio'),
-        get_string('stats_errors', 'plagiarism_compilatio')
+        str_replace(' ', '<br/>', get_string('documents_number', 'plagiarism_cmp')),
+        get_string('minimum', 'plagiarism_cmp'),
+        get_string('maximum', 'plagiarism_cmp'),
+        get_string('average', 'plagiarism_cmp'),
+        get_string('stats_errors', 'plagiarism_cmp')
     ];
 
     $table->head  = $tableheadjs;
@@ -102,13 +102,13 @@ if (count($rows) === 0) {
     $tablenojs->attributes['class'] = 'table table-striped table-bordered table-hover';
     $tablehead = [
         get_string('course'),
-        get_string('teacher', 'plagiarism_compilatio'),
+        get_string('teacher', 'plagiarism_cmp'),
         get_string('modulename', 'assign'),
-        str_replace(' ', '<br/>', get_string('documents_number', 'plagiarism_compilatio')),
-        get_string('minimum', 'plagiarism_compilatio'),
-        get_string('maximum', 'plagiarism_compilatio'),
-        get_string('average', 'plagiarism_compilatio'),
-        get_string('stats_errors', 'plagiarism_compilatio')
+        str_replace(' ', '<br/>', get_string('documents_number', 'plagiarism_cmp')),
+        get_string('minimum', 'plagiarism_cmp'),
+        get_string('maximum', 'plagiarism_cmp'),
+        get_string('average', 'plagiarism_cmp'),
+        get_string('stats_errors', 'plagiarism_cmp')
     ];
 
     $tablenojs->head = $tablehead;
@@ -126,8 +126,8 @@ if (count($rows) === 0) {
     }
 
     echo html_writer::table($tablenojs);
-    $url = new moodle_url('/plagiarism/compilatio/CSV.php', ['raw' => 0]);
-    echo html_writer::tag('a', get_string('export_global_csv', 'plagiarism_compilatio'), [
+    $url = new moodle_url('/plagiarism/cmp/CSV.php', ['raw' => 0]);
+    echo html_writer::tag('a', get_string('export_global_csv', 'plagiarism_cmp'), [
         'href' => $url,
         'style' => 'margin-bottom:20px;',
         'class' => 'cmp-btn cmp-btn-primary'
