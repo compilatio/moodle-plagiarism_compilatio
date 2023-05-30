@@ -17,16 +17,20 @@
 /**
  * get_scores.php - Contains Plagiarism plugin get_scores task.
  *
- * @package    plagiarism_cmp
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_cmp\task;
+namespace plagiarism_compilatio\task;
 
 /**
  * Task class
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class get_scores extends \core\task\scheduled_task {
 
@@ -35,7 +39,7 @@ class get_scores extends \core\task\scheduled_task {
      * @return string Name
      */
     public function get_name() {
-        return get_string('get_scores', 'plagiarism_cmp');
+        return get_string('get_scores', 'plagiarism_compilatio');
     }
 
     /**
@@ -46,24 +50,24 @@ class get_scores extends \core\task\scheduled_task {
 
         global $DB, $CFG;
 
-        require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
-        require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/analyses.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 
-        $compilatio = new \plagiarism_plugin_cmp();
+        $compilatio = new \plagiarism_plugin_compilatio();
 
         // Keep track of the last cron execution.
-        $lastcron = get_config('plagiarism_cmp', 'last_cron');
+        $lastcron = get_config('plagiarism_compilatio', 'last_cron');
         if ($lastcron != null) {
             $frequency = round((time() - $lastcron) / 60);
-            set_config('cron_frequency', $frequency, 'plagiarism_cmp');
+            set_config('cron_frequency', $frequency, 'plagiarism_compilatio');
         }
-        set_config('last_cron', strtotime('now'), 'plagiarism_cmp');
+        set_config('last_cron', strtotime('now'), 'plagiarism_compilatio');
 
         if ($plagiarismsettings = $compilatio->get_settings()) {
             mtrace('getting Compilatio similarity scores');
             // Get all files set that have been submitted.
             $sql = "status = 'analyzing' OR status = 'queue'";
-            $files = $DB->get_records_select('plagiarism_cmp_files', $sql);
+            $files = $DB->get_records_select('plagiarism_compilatio_file', $sql);
             if (!empty($files)) {
                 foreach ($files as $plagiarismfile) {
                     mtrace('getting score for file ' . $plagiarismfile->id);

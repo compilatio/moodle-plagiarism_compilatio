@@ -17,16 +17,18 @@
 /**
  * access.php - Contains Plagiarism plugin array who contains access authorization.
  *
- * @package    plagiarism_cmp
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 $capabilities = [
-    'plagiarism/cmp:enable' => [
+    'plagiarism/compilatio:enable' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
          'legacy' => [
@@ -34,7 +36,7 @@ $capabilities = [
          'manager' => CAP_ALLOW
         ]
     ],
-    'plagiarism/cmp:triggeranalysis' => [
+    'plagiarism/compilatio:triggeranalysis' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'legacy' => [
@@ -42,7 +44,7 @@ $capabilities = [
             'manager' => CAP_ALLOW
         ]
     ],
-    'plagiarism/cmp:viewreport' => [
+    'plagiarism/compilatio:viewreport' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
          'legacy' => [

@@ -17,18 +17,18 @@
 /**
  * plagiarism.php - allows the admin to configure plagiarism stuff
  *
- * @package    plagiarism_cmp
- * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   plagiarism_compilatio
+ * @author    Dan Marsden <dan@danmarsden.com>
+ * @copyright 2012 Dan Marsden http://danmarsden.com
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/compilatio_form.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -36,8 +36,8 @@ admin_externalpage_setup('plagiarismcompilatio');
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
 
-$plagiarismplugin = new plagiarism_plugin_cmp();
-$plagiarismsettings = (array) get_config('plagiarism_cmp');
+$plagiarismplugin = new plagiarism_plugin_compilatio();
+$plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
 // Test if compilatio is enabled.
 if (isset($plagiarismsettings['enabled'])) {
@@ -47,7 +47,7 @@ if (isset($plagiarismsettings['enabled'])) {
 }
 
 // Connection test.
-$compilatio = new CompilatioAPI('test');
+$compilatio = new CompilatioAPI(null, 'test');
 if ($compilatio->check_apikey() == 'Forbidden ! Your api key is invalid') {
     $connectionsuccess = true;
 } else {
@@ -83,7 +83,7 @@ if (isset($plagiarismsettings['enable_mod_quiz'])) {
 }
 
 // API key test.
-$compilatio = new CompilatioAPI($plagiarismsettings['apikey']);
+$compilatio = new CompilatioAPI();
 if ($compilatio->check_apikey()) {
     $apikeysuccess = true;
 } else {
@@ -92,98 +92,98 @@ if ($compilatio->check_apikey()) {
 
 echo $OUTPUT->header();
 $currenttab = 'compilatioautodiagnosis';
-require_once($CFG->dirroot . '/plagiarism/cmp/compilatio_tabs.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 
 $alerts = [];
 
 if ($enabledsuccess) {
-    $alerts[] = ['success', get_string('plugin_enabled', 'plagiarism_cmp')];
+    $alerts[] = ['success', get_string('plugin_enabled', 'plagiarism_compilatio')];
 } else {
-    $alerts[] = ['danger', get_string('plugin_disabled', 'plagiarism_cmp')];
+    $alerts[] = ['danger', get_string('plugin_disabled', 'plagiarism_compilatio')];
 }
 
 if ($connectionsuccess) {
-    $alerts[] = ['success', get_string('webservice_ok', 'plagiarism_cmp')];
+    $alerts[] = ['success', get_string('webservice_ok', 'plagiarism_compilatio')];
 } else {
-    $alerts[] = ['danger', get_string('webservice_not_ok', 'plagiarism_cmp')];
+    $alerts[] = ['danger', get_string('webservice_not_ok', 'plagiarism_compilatio')];
 }
 
 if ($apikeysuccess) {
-    $alerts[] = ['success', get_string('api_key_valid', 'plagiarism_cmp')];
+    $alerts[] = ['success', get_string('api_key_valid', 'plagiarism_compilatio')];
 } else if (!$connectionsuccess) {
-    $alerts[] = ['warning', get_string('api_key_not_tested', 'plagiarism_cmp')];
+    $alerts[] = ['warning', get_string('api_key_not_tested', 'plagiarism_compilatio')];
 } else {
-    $alerts[] = ['danger', get_string('api_key_not_valid', 'plagiarism_cmp')];
+    $alerts[] = ['danger', get_string('api_key_not_valid', 'plagiarism_compilatio')];
 }
 
-$lastcron = get_config('plagiarism_cmp', 'last_cron');
+$lastcron = get_config('plagiarism_compilatio', 'last_cron');
 
 if ($lastcron == null) {
     // Cron function in lib.php has never been called.
-    $alerts[] = ['danger', get_string('cron_check_never_called', 'plagiarism_cmp')];
+    $alerts[] = ['danger', get_string('cron_check_never_called', 'plagiarism_compilatio')];
 } else {
-    $cronfrequency = get_config('plagiarism_cmp', 'cron_frequency');
+    $cronfrequency = get_config('plagiarism_compilatio', 'cron_frequency');
 
     if ($cronfrequency == null) {
         // We don't have data about frequency yet.
         if ($lastcron <= strtotime('-1 hour')) {
             // Cron hasn't been called within the previous hour.
-            $alerts[] = ['warning', get_string('cron_check', 'plagiarism_cmp', userdate($lastcron)) . ' ' .
-                get_string('cron_check_not_ok', 'plagiarism_cmp') . ' ' .
-                get_string('cron_recommandation', 'plagiarism_cmp')
+            $alerts[] = ['warning', get_string('cron_check', 'plagiarism_compilatio', userdate($lastcron)) . ' ' .
+                get_string('cron_check_not_ok', 'plagiarism_compilatio') . ' ' .
+                get_string('cron_recommandation', 'plagiarism_compilatio')
             ];
         } else {
-            $alerts[] = ['success', get_string('cron_check', 'plagiarism_cmp', userdate($lastcron)) . ' ' .
-                get_string('cron_recommandation', 'plagiarism_cmp')];
+            $alerts[] = ['success', get_string('cron_check', 'plagiarism_compilatio', userdate($lastcron)) . ' ' .
+                get_string('cron_recommandation', 'plagiarism_compilatio')];
         }
     } else {
         if ($cronfrequency > 15 || $lastcron <= strtotime('-1 hour')) {// Warning.
-            $alert = get_string('cron_check', 'plagiarism_cmp', userdate($lastcron)) . ' ';
+            $alert = get_string('cron_check', 'plagiarism_compilatio', userdate($lastcron)) . ' ';
 
             if ($lastcron <= strtotime('-1 hour')) {
                 // Cron hasn't been called within the previous hour.
-                $alert .= get_string('cron_check_not_ok', 'plagiarism_cmp') . ' ';
+                $alert .= get_string('cron_check_not_ok', 'plagiarism_compilatio') . ' ';
             }
 
-            $alert .= get_string('cron_frequency', 'plagiarism_cmp', $cronfrequency) . ' ';
+            $alert .= get_string('cron_frequency', 'plagiarism_compilatio', $cronfrequency) . ' ';
 
 
-            $alerts[] = ['warning', $alert . get_string('cron_recommandation', 'plagiarism_cmp')];
+            $alerts[] = ['warning', $alert . get_string('cron_recommandation', 'plagiarism_compilatio')];
         } else {
             // Cron is called more than once every 15 minutes.
-            $alerts[] = ['success', get_string('cron_check', 'plagiarism_cmp', userdate($lastcron)) . ' ' .
-                get_string('cron_frequency', 'plagiarism_cmp', $cronfrequency) . ' ' .
-                get_string('cron_recommandation', 'plagiarism_cmp')
+            $alerts[] = ['success', get_string('cron_check', 'plagiarism_compilatio', userdate($lastcron)) . ' ' .
+                get_string('cron_frequency', 'plagiarism_compilatio', $cronfrequency) . ' ' .
+                get_string('cron_recommandation', 'plagiarism_compilatio')
             ];
         }
     }
 }
 
 if ($assignsuccess) {
-    $alerts[] = ['success', get_string('plugin_enabled_assign', 'plagiarism_cmp')];
+    $alerts[] = ['success', get_string('plugin_enabled_assign', 'plagiarism_compilatio')];
 } else {
-    $alerts[] = ['warning', get_string('plugin_disabled_assign', 'plagiarism_cmp')];
+    $alerts[] = ['warning', get_string('plugin_disabled_assign', 'plagiarism_compilatio')];
 }
 
 
 if ($workshopsuccess) {
-    $alerts[] = ['success', get_string('plugin_enabled_workshop', 'plagiarism_cmp')];
+    $alerts[] = ['success', get_string('plugin_enabled_workshop', 'plagiarism_compilatio')];
 } else {
-    $alerts[] = ['warning', get_string('plugin_disabled_workshop', 'plagiarism_cmp')];
+    $alerts[] = ['warning', get_string('plugin_disabled_workshop', 'plagiarism_compilatio')];
 }
 
 
 if ($forumsuccess) {
-    $alerts[] = ['success', get_string('plugin_enabled_forum', 'plagiarism_cmp')];
+    $alerts[] = ['success', get_string('plugin_enabled_forum', 'plagiarism_compilatio')];
 } else {
-    $alerts[] = ['warning', get_string('plugin_disabled_forum', 'plagiarism_cmp')];
+    $alerts[] = ['warning', get_string('plugin_disabled_forum', 'plagiarism_compilatio')];
 }
 
 if ($quizsuccess) {
-    $alerts[] = ['success', get_string('plugin_enabled_quiz', 'plagiarism_cmp')];
+    $alerts[] = ['success', get_string('plugin_enabled_quiz', 'plagiarism_compilatio')];
 } else {
-    $alerts[] = ['warning', get_string('plugin_enabled_quiz', 'plagiarism_cmp')];
+    $alerts[] = ['warning', get_string('plugin_enabled_quiz', 'plagiarism_compilatio')];
 }
 
 /*

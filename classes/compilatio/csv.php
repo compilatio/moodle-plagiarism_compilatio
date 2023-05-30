@@ -17,14 +17,17 @@
 /**
  * csv.php - Contains methods to generate CSV files.
  *
- * @package    plagiarism_cmp
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * Class to generate csv file
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioCsv {
 
@@ -69,14 +72,13 @@ class CompilatioCsv {
         $sql = "
             SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname,
                 pcf.status, pcf.similarityscore, pcf.timesubmitted
-            FROM {plagiarism_cmp_files} pcf
+            FROM {plagiarism_compilatio_file} pcf
             JOIN {user} usr ON pcf.userid= usr.id
             WHERE pcf.cm=?";
 
         $files = $DB->get_records_sql($sql, [$cmid]);
 
-        $cmpcm = $DB->get_record('plagiarism_cmp_module', ['cmid' => $cmid]);
-        $analysistype = $cmpcm["analysistype"];
+        $cmpcm = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
         // Get the name of the activity in order to generate header line and the filename.
         $sql = "
@@ -115,21 +117,21 @@ class CompilatioCsv {
             if ($file->status == "scored") {
                 $line["similarities_rate"] = $file->similarityscore;
             } else if ($file->status == "sent") {
-                if ($analysistype == 'manual') {
-                    $line["similarities_rate"] = get_string("manual_analysis", "plagiarism_cmp");
-                } else if ($analysistype == 'planned') {
+                if ($cmpcm->analysistype == 'manual') {
+                    $line["similarities_rate"] = get_string("manual_analysis", "plagiarism_compilatio");
+                } else if ($cmpcm->analysistype == 'planned') {
                     $date = userdate($cmpcm->analysistime);
-                    $line["similarities_rate"] = get_string("title_planned", "plagiarism_cmp", $date);
+                    $line["similarities_rate"] = get_string("title_planned", "plagiarism_compilatio", $date);
                 }
             } else {
-                $line["similarities_rate"] = get_string("title_" . $file->status, "plagiarism_cmp");
+                $line["similarities_rate"] = get_string("title_" . $file->status, "plagiarism_compilatio");
             }
 
             if ($csv === $head) {
                 // Translate headers, using the key of the array as the key for translation :.
                 $headers = array_keys($line);
                 $headerstranslated = array_map(function($item) {
-                    return get_string($item, "plagiarism_cmp");
+                    return get_string($item, "plagiarism_compilatio");
                 }, $headers);
                 $csv .= '"' . implode('","', $headerstranslated) . "\"\n";
             }

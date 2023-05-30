@@ -17,17 +17,20 @@
 /**
  * Get JWT to redirect user to report
  *
- * @package    plagiarism_cmp
- * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * This script is called by amd/build/ajax_api.js
+ *
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @param   string $_POST['idDoc']
+ * @return  string
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 require_login();
 
@@ -35,30 +38,58 @@ global $OUTPUT;
 
 $docid = required_param('docid', PARAM_RAW);
 $cmid = required_param('cmid', PARAM_RAW);
+$reporttype = optional_param('type', 'detailed', PARAM_RAW);
 
-$userid = $DB->get_field('plagiarism_cmp_module', 'userid', ['cmid' => $cmid]);
-$compilatio = new CompilatioAPI(get_config('plagiarism_cmp', 'apikey'), $userid);
-$jwt = $compilatio->get_report_token($docid);
+$modulecontext = context_module::instance($cmid);
+$isteacher = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
 
-if ($jwt === false) {
-    echo $OUTPUT->header();
+$userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmid]);
+$compilatio = new CompilatioAPI($userid);
 
-    $ln = current_language();
+if ($isteacher) {
+    $jwt = $compilatio->get_report_token($docid);
 
-    if (!in_array($ln, ['fr', 'en', 'it', 'es'])) {
-        $language = 'en';
+    if ($jwt === false) {
+        echo $OUTPUT->header();
+
+        echo "<p><img src='" . $OUTPUT->image_url('compilatio', 'plagiarism_compilatio') . "' alt='Compilatio' width='250'></p>";
+
+        echo "<div class='compilatio-alert compilatio-alert-danger'>"
+                . get_string('redirect_report_failed', 'plagiarism_compilatio') .
+            '</div>';
+        echo $OUTPUT->footer();
     } else {
-        $language = $ln;
+        header('location: https://app.compilatio.net/api/private/reports/redirect/' . $jwt);
+    }
+} else {
+    $doc = $compilatio->get_document($docid);
+
+    $lang = substr(current_language(), 0, 2);
+    $lang = in_array($lang, ['fr', 'en', 'it', 'es', 'de', 'pt']) ? $lang : 'fr';
+    error_log('coucou');
+    if (isset($doc->analyses->anasim->id)) {
+        error_log('coucou2');
+        $filepath = $compilatio->get_pdf_report($doc->analyses->anasim->id, $lang, $reporttype);
+
+        if (is_file($filepath)) {
+            error_log('coucou3');
+            header('HTTP/1.1 200 OK');
+            header('Date: ' . date('D M j G:i:s T Y'));
+            header('Last-Modified: ' . date('D M j G:i:s T Y'));
+            header('Content-Disposition: attachment;filename=' . basename($filepath));
+            header('Content-Type: application/pdf');
+            header('Content-Length: ' . filesize($filepath));
+            readfile($filepath);
+            exit(0);
+        }
     }
 
-    echo "<p><img src='"
-            . $OUTPUT->image_url('compilatio-logo-' . $language, 'plagiarism_cmp') .
-        "' alt='Compilatio' width='250'></p>";
+    echo $OUTPUT->header();
+
+    echo "<p><img src='" . $OUTPUT->image_url('compilatio', 'plagiarism_compilatio') . "' alt='Compilatio' width='250'></p>";
 
     echo "<div class='compilatio-alert compilatio-alert-danger'>"
-            . get_string('redirect_report_failed', 'plagiarism_cmp') .
+            . get_string('download_report_failed', 'plagiarism_compilatio') .
         '</div>';
     echo $OUTPUT->footer();
-} else {
-    header('location: https://app.compilatio.net/api/private/reports/redirect/' . $jwt);
 }

@@ -15,43 +15,37 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Start analysis for all document in course module
+ * Set document indexing state via Compilatio API
  *
  * This script is called by amd/build/ajax_api.js
  *
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @param string $_POST['cmid']
+ * @param   string $_POST['docId']
+ * @return  boolean
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
-
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/documentFrame.php');
 
 require_login();
+global $DB;
 
-global $SESSION;
+$docid = required_param('docId', PARAM_TEXT);
 
-$cmid = required_param('cmid', PARAM_TEXT);
+$file = $DB->get_record('plagiarism_compilatio_file', ['id' => $docid]);
 
-// Handle not sent documents :.
-$files = compilatio_get_unsent_documents($cmid);
+if (!empty($file)) {
+    CompilatioAnalyses::check_analysis($file);
 
-if (count($files) != 0) {
-    CompilatioSendFile::send_unsent_files($files, $cmid);
-    $countsuccess = count($files) - count(compilatio_get_unsent_documents($cmid));
-}
+    $file = $DB->get_record('plagiarism_compilatio_file', ['id' => $docid]);
+    $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $file->cm]);
 
-if ($countsuccess > 0) {
-    $SESSION->compilatio_alerts = [
-        [
-            'class' => 'info',
-            'content' => get_string('document_sent', 'plagiarism_compilatio', $countsuccess)
-        ]
-    ];
+    echo CompilatioDocumentFrame::get_score($file->similarityscore, $cmconfig);
 }

@@ -17,15 +17,14 @@
 /**
  * provider.php - Privacy class for requesting and deleting user data
  *
- * @package    plagiarism_cmp
- * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @package    plagiarism_compilatio
+ * @copyright  2019 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_cmp\privacy;
+namespace plagiarism_compilatio\privacy;
 
-require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -47,6 +46,9 @@ use core_privacy\local\request\writer;
 
 /**
  * Class provider for exporting or deleting data
+ *
+ * @copyright  2019 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
     // This plugin has data and must therefore define the metadata provider in order to describe it.
@@ -83,28 +85,39 @@ class provider implements
             'privacy:metadata:core_plagiarism'
         );
 
-        $collection->add_database_table('plagiarism_cmp_files', [
-            'userid'   => 'privacy:metadata:plagiarism_cmp_files:userid',
-            'filename' => 'privacy:metadata:plagiarism_cmp_files:filename'
-        ], 'privacy:metadata:plagiarism_cmp_files');
-
-        $collection->add_database_table('plagiarism_cmp_user', [
-            'userid'       => 'privacy:metadata:plagiarism_cmp_files:userid',
-            'compilatioid' => 'privacy:metadata:plagiarism_cmp_files:compilatioid'
-        ], 'privacy:metadata:plagiarism_cmp_user');
+        $collection->add_database_table('plagiarism_compilatio_file', [
+            'id'                => 'privacy:metadata:plagiarism_compilatio_file:id',
+            'cm'                => 'privacy:metadata:plagiarism_compilatio_file:cm',
+            'userid'            => 'privacy:metadata:plagiarism_compilatio_file:userid',
+            'identifier'        => 'privacy:metadata:plagiarism_compilatio_file:identifier',
+            'filename'          => 'privacy:metadata:plagiarism_compilatio_file:filename',
+            'timesubmitted'     => 'privacy:metadata:plagiarism_compilatio_file:timesubmitted',
+            'status'            => 'privacy:metadata:plagiarism_compilatio_file:status',
+            'externalid'        => 'privacy:metadata:plagiarism_compilatio_file:externalid',
+            'similarityscore'   => 'privacy:metadata:plagiarism_compilatio_file:similarityscore',
+            'indexed'           => 'privacy:metadata:plagiarism_compilatio_file:indexed',
+        ], 'privacy:metadata:plagiarism_compilatio_file');
 
         $collection->add_external_location_link('External Compilatio Document', [
-            'authors'   => 'privacy:metadata:external_compilatio_document:authors',
-            'depositor' => 'privacy:metadata:external_compilatio_document:depositor',
-            'filename'  => 'privacy:metadata:external_compilatio_document:filename'
+            'lastname'          => 'privacy:metadata:external_compilatio_document:lastname',
+            'firstname'         => 'privacy:metadata:external_compilatio_document:firstname',
+            'email_adress'      => 'privacy:metadata:external_compilatio_document:email_adress',
+            'user_id'           => 'privacy:metadata:external_compilatio_document:user_id',
+            'filename'          => 'privacy:metadata:external_compilatio_document:filename',
+            'upload_date'       => 'privacy:metadata:external_compilatio_document:upload_date',
+            'id'                => 'privacy:metadata:external_compilatio_document:id',
+            'indexed'           => 'privacy:metadata:external_compilatio_document:indexed'
         ], 'privacy:metadata:external_compilatio_document');
 
-        $collection->add_external_location_link('External Compilatio User', [
-            'firstname' => 'privacy:metadata:external_compilatio_user:firstname',
-            'lastname'  => 'privacy:metadata:external_compilatio_user:lastname',
-            'email'     => 'privacy:metadata:external_compilatio_user:email',
-            'username'  => 'privacy:metadata:external_compilatio_user:username'
-        ], 'privacy:metadata:external_compilatio_user');
+        $collection->add_external_location_link('External Compilatio Report', [
+            'id'                    => 'privacy:metadata:external_compilatio_report:id',
+            'doc_id'                => 'privacy:metadata:external_compilatio_report:doc_id',
+            'user_id'               => 'privacy:metadata:external_compilatio_report:user_id',
+            'start'                 => 'privacy:metadata:external_compilatio_report:start',
+            'end'                   => 'privacy:metadata:external_compilatio_report:end',
+            'state'                 => 'privacy:metadata:external_compilatio_report:state',
+            'plagiarism_percent'    => 'privacy:metadata:external_compilatio_report:plagiarism_percent'
+        ], 'privacy:metadata:external_compilatio_report');
 
         return $collection;
     }
@@ -120,7 +133,7 @@ class provider implements
         $sql = "SELECT c.id
                 FROM {context} c
                 JOIN {course_modules} cm ON c.instanceid = cm.id
-                JOIN {plagiarism_cmp_files} pcf ON cm.id = pcf.cm
+                JOIN {plagiarism_compilatio_file} pcf ON cm.id = pcf.cm
                 WHERE pcf.userid = ? AND c.contextlevel = ?";
 
         $contextlist = new contextlist();
@@ -142,10 +155,10 @@ class provider implements
 
         global $DB;
 
-        $submissions = $DB->get_records('plagiarism_cmp_files', ['userid' => $userid, 'cm' => $context->instanceid]);
+        $submissions = $DB->get_records('plagiarism_compilatio_file', ['userid' => $userid, 'cm' => $context->instanceid]);
 
         foreach ($submissions as $submission) {
-            $data["plagiarism_cmp_files"][] = (object)$submission;
+            $data["plagiarism_compilatio_file"][] = (object)$submission;
         }
 
         if (isset($data)) {
@@ -161,13 +174,13 @@ class provider implements
     public static function delete_plagiarism_for_context(\context $context) {
 
         global $DB, $CFG;
-        require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
-        require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-        $files = $DB->get_records('plagiarism_cmp_files', ["cm" => $context->instanceid]);
-        cmp_delete_files($files);
+        $files = $DB->get_records('plagiarism_compilatio_file', ["cm" => $context->instanceid]);
+        compilatio_delete_files($files);
 
-        $DB->delete_records('plagiarism_cmp_files', ['cm' => $context->instanceid]);
+        $DB->delete_records('plagiarism_compilatio_file', ['cm' => $context->instanceid]);
     }
 
     /**
@@ -180,17 +193,17 @@ class provider implements
 
         global $DB, $CFG;
 
-        require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
-        require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-        $ownerfile = get_config('plagiarism_cmp', 'owner_file');
+        $ownerfile = get_config('plagiarism_compilatio', 'owner_file');
 
         // If the student owns the document (and not the school), we can delete everything from the databases.
         if ($ownerfile === '0') {
-            $files = $DB->get_records('plagiarism_cmp_files', ["userid" => $userid]);
-            cmp_delete_files($files);
+            $files = $DB->get_records('plagiarism_compilatio_file', ["userid" => $userid]);
+            compilatio_delete_files($files);
 
-            $DB->delete_records('plagiarism_cmp_files', ['userid' => $userid]);
+            $DB->delete_records('plagiarism_compilatio_file', ['userid' => $userid]);
         }
     }
 
@@ -203,18 +216,18 @@ class provider implements
     public static function delete_plagiarism_for_users(array $userids, \context $context) {
 
         global $DB, $CFG;
-        require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
-        require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $cmid = $context->instanceid;
 
         foreach ($userids as $userid) {
-            $files = $DB->get_records('plagiarism_cmp_files', ["userid" => $userid, "cm" => $cmid]);
-            cmp_delete_files($files);
+            $files = $DB->get_records('plagiarism_compilatio_file', ["userid" => $userid, "cm" => $cmid]);
+            compilatio_delete_files($files);
         }
 
         foreach ($userids as $userid) {
-            $DB->delete_records('plagiarism_cmp_files', ['userid' => $userid, 'cm' => $cmid]);
+            $DB->delete_records('plagiarism_compilatio_file', ['userid' => $userid, 'cm' => $cmid]);
         }
     }
 }

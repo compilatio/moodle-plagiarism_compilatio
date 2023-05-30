@@ -15,18 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * helpcenter.php - This script redirects to Compilatio helpcenter
- * 
- * @package    plagiarism_cmp
- * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * This script redirects to Compilatio helpcenter
+ *
+ * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * It is called from assignments pages or plugin administration section
+ *
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 require_login();
 
@@ -40,10 +41,10 @@ if (in_array($page, $availpages) === false) {
     $page = 'teacher';
 }
 
-$compilatio = new CompilatioAPI(get_config('plagiarism_cmp', 'apikey'), $userid);
+$compilatio = new CompilatioAPI($userid);
 $token = $compilatio->get_zendesk_jwt();
 
-$helpcenterpage = get_config('plagiarism_cmp', 'helpcenter_' . $page);
+$helpcenterpage = get_config('plagiarism_compilatio', 'helpcenter_' . $page);
 
 header('Location: https://compilatio.zendesk.com/access/jwt?jwt=' . $token . '&return_to=' . urlencode($helpcenterpage));
 exit;

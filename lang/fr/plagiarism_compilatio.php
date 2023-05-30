@@ -14,15 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * plagiarism_cmp.php - Contains french Plagiarism plugin translation.
+ * plagiarism_compilatio.php - Contains french Plagiarism plugin translation.
  *
- * @package    plagiarism_cmp
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 $string['pluginname'] = 'Compilatio - Plugin de détection de plagiat';
-$string['cmp'] = 'Plugin de détection de plagiat Compilatio';
+$string['compilatio'] = 'Plugin de détection de plagiat Compilatio';
 
 // Admin Compilatio settings.
 $string['activate_compilatio'] = 'Activer le plug-in Compilatio';
@@ -52,7 +54,7 @@ $string["enable_search_tab"] = "Outil de recherche permettant d'identifier l'aut
 $string["enable_search_tab_help"] = "L'outil de recherche permet de rechercher le nom et prénom d'un étudiant d'après un identifiant de document visible dans les rapports d'analyses parmi tous les documents présent sur votre plateforme.";
 $string["enable_analyses_auto"] = "Possibilité de lancer immédiatement les analyses";
 $string["enable_analyses_auto_help"] = "<p>Cette option permettra aux enseignants d'activer sur une activité le lancement automatique de l'analyse des documents (i.e. immédiatement après leur dépôt).<br>
-Notez que dans ce cas : 
+Notez que dans ce cas :
 <ul>
     <li>Le nombre d'analyses effectuées par votre établissement peut être significativement plus important.</li>
     <li>Les documents des premiers déposants ne seront pas comparés avec les documents des derniers déposants.</li>
@@ -108,6 +110,14 @@ $string['analysistype_manual'] = 'Manuel';
 $string['analysistype_prog'] = 'Programmé';
 $string['analysistype_auto'] = 'Immédiat';
 $string['analysis_date'] = "Date d'analyse (lancement programmé uniquement)";
+$string['detailed'] = 'Rapport détaillé';
+$string['certificate'] = "Certificat d'analyse";
+$string['reporttype'] = 'Rapport disponible pour les étudiants';
+$string['reporttype_help'] = "<p>Vous disposez de deux options :</p>
+<ul>
+    <li><strong> Certificat d'analyse :</strong> L'étudiant aura accès au certificat d'analyse de son document.</li>
+    <li><strong> Rapport détaillé :</strong> L'étudiant aura accès à la version PDF du rapport.</li>
+</ul>";
 $string['thresholds_settings'] = "Réglage des seuils d'affichage des taux de similitudes :";
 $string['thresholds_description'] = "Indiquez les seuils que vous souhaitez utiliser, afin de faciliter le repérage des rapports d’analyse (% de similitudes) : ";
 $string['numeric_threshold'] = "Le seuil doit être numérique.";
@@ -120,7 +130,7 @@ $string['studentanalyses_help'] = "Ceci permet aux étudiants d'analyser leur fi
 $string['activate_submissiondraft'] = 'Pour permettre aux étudiants d\'analyser leurs brouillons, vous devez activer l\'option <b>{$a}</b> dans la partie';
 $string['quiz_help'] = 'Seules les questions de type composition dont la réponse contient au moins {$a} mots seront analysés.';
 $string["admin_disabled_reports"] = "L'administrateur a désactivé l'affichage des rapports de similitudes aux étudiants.";
-$string['help_compilatio_format_content'] = "Compilatio.net prend en charge la plupart des formats utilisés en bureautique et sur Internet. Les formats suivants sont acceptés : ";
+$string['help_compilatio_format_content'] = "Compilatio prend en charge la plupart des formats utilisés en bureautique et sur Internet. Les formats suivants sont acceptés : ";
 $string['max_file_size_allowed'] = 'Les fichiers ne doivent pas excéder <strong>{$a} Mo</strong>';
 $string['min_max_word_required'] = 'Pour pouvoir être analysé, un texte doit avoir entre {$a->min} et {$a->max} mots';
 
@@ -130,7 +140,7 @@ $string['defaultupdated'] = "Les valeurs par défaut ont été mises à jour";
 $string['defaults_desc'] = "Les paramètres suivants sont utilisés comme valeurs par défaut dans les activités de Moodle intégrant Compilatio.";
 
 // Compilatio document frame.
-//$string["title_scored"] = 'Analyse terminée: {$a}% de similitudes.';
+$string["title_score"] = 'Analyse terminée: {$a}% de similitudes. Si vous avez ignoré des sources dans le rapport, cliquez ici pour mettre à jour le score.';
 $string['btn_unsent'] = 'Envoyer';
 $string['title_unsent'] = "Envoyer le document à Compilatio";
 $string['btn_sent'] = 'Analyser';
@@ -141,9 +151,8 @@ $string['btn_queue'] = "Dans la file d'attente";
 $string['title_queue'] = "Le document est en attente d'analyse et va bientôt être traité par Compilatio";
 $string['btn_analyzing'] = 'Analyse en cours';
 $string['title_analyzing'] = "Le fichier est en cours d'analyse par Compilatio.";
-$string['btn_error_analysis_failed'] = 'Erreur analyse échouée';
+$string['btn_error_analysis_failed'] = 'Analyse échouée';
 $string['title_error_analysis_failed'] = "L'analyse de ce document n'a pas fonctionné correctement.";
-//$string['btn_error_sending_failed'] = 'Renvoyer';
 $string['btn_error_sending_failed'] = 'Envoi échoué';
 $string['title_error_sending_failed'] = "Une erreur s'est produite lors de l'envoi du fichier à Compilatio";
 $string['btn_error_unsupported'] = 'Fichier non supporté';
@@ -177,7 +186,7 @@ $string['similarities_disclaimer'] = "Vous pouvez analyser les similitudes prés
 	Attention, des similitudes mesurées lors d’une analyse ne révèlent pas nécessairement un plagiat. Le rapport d’analyse vous aide à comprendre si les similitudes correspondent à des emprunts et citations convenablement identifiés ou à des plagiats.";
 $string['programmed_analysis_future'] = 'Les documents seront analysés par Compilatio le {$a}.';
 $string['programmed_analysis_past'] = 'Les documents ont été soumis pour analyse à Compilatio le {$a}.';
-$string['webservice_unreachable'] = "Le service Compilatio.net est actuellement indisponible. Veuillez nous excuser pour la gêne occasionnée.";
+$string['webservice_unreachable'] = "Le service Compilatio est actuellement indisponible. Veuillez nous excuser pour la gêne occasionnée.";
 $string['start_all_analysis'] = "Analyser tous les documents";
 $string['send_all_documents'] = "Envoyer tous les documents";
 $string['reset_docs_in_error'] = 'Réinitialiser les documents en erreur';
@@ -208,6 +217,7 @@ $string['no_document_available_for_analysis'] = "Aucun document n'était disponi
 $string["analysis_started"] = '{$a} analyses démandées.';
 $string["start_analysis_in_progress"] = 'Lancement des analyses en cours';
 $string["document_sent"] = '{$a} documents envoyés.';
+$string["not_sent"] = "Les documents suivants n'ont pas pu être envoyés : ";
 $string["send_documents_in_progress"] = 'Envoi des documents en cours';
 $string["not_analyzed"] = "Les documents suivants n'ont pas pu être analysés : ";
 $string["not_analyzed_extracting"] = "Les documents suivants n'ont pas pu être analysés car ils sont en cours d'extraction, veuillez réessayez plus tard";
@@ -263,7 +273,7 @@ $string['helpcenter_error'] = "Nous ne pouvons pas vous connecter automatiquemen
 // Auto diagnostic page.
 $string["auto_diagnosis_title"] = "Auto-diagnostic";
 $string["api_key_valid"] = "La clé API enregistrée est valide.";
-$string["api_key_not_tested"] = "La clé API n'a pas pû être vérifiée car la connexion au service Compilatio.net à échouée.";
+$string["api_key_not_tested"] = "La clé API n'a pas pû être vérifiée car la connexion au service Compilatio à échouée.";
 $string["api_key_not_valid"] = "La clé API enregistrée est invalide. Elle est spécifique à la plateforme utilisée. Vous pouvez en obtenir une en contactant <a href='mailto:ent@compilatio.net'>ent@compilatio.net</a>.";
 $string['cron_check_never_called'] = "CRON n'a pas été exécuté depuis l'activation du plugin. Il est possible qu'il soit mal configuré.";
 $string['cron_check'] = 'CRON a été exécuté le {$a} pour la dernière fois.';
@@ -297,30 +307,45 @@ $string["similarities_rate"] = "Taux de similitudes";
 $string['manual_analysis'] = "L'analyse de ce document doit être déclenchée manuellement";
 
 // Scheduled tasks.
-$string['get_scores'] = "Récupère les taux de similitudes depuis Compilatio.net";
-$string['send_files'] = "Envoie les fichiers à Compilatio.net pour détection de plagiat";
-$string['update_meta'] = "Exécute les tâches planifiées par Compilatio.net";
-$string['trigger_timed_analyses'] = "Déclenche les analyses de plagiat programmées";
+$string['get_scores'] = "Récupère les taux de similitudes depuis Compilatio";
+$string['update_meta'] = "Exécute les tâches planifiées par Compilatio";
+$string['trigger_analyses'] = "Déclenche les analyses Compilatio"; // ADTD v2 document management.
+
+// Report.
+$string['redirect_report_failed'] = "Une erreur s'est produite lors de la récupération du rapport d'analyse. Veuillez réessayer plus tard ou contacter le support (support@compilatio.net) si le problème persiste.";
+$string['download_report_failed'] = "Une erreur s'est produite lors du téléchargement du rapport d'analyse.";
 
 // Privacy (RGPD).
 $string['privacy:metadata:core_files'] = 'Fichiers déposés ou créés depuis un champ de saisie';
 $string['privacy:metadata:core_plagiarism'] = 'Ce plugin est appelé par le sous-système de détection de plagiat de Moodle';
 
-$string['privacy:metadata:plagiarism_cmp_files'] = 'Informations à propos des fichiers soumis à Compilatio';
-$string['privacy:metadata:plagiarism_cmp_files:userid'] = "L'identifiant Moodle de l'utilisateur qui a fait la soumission";
-$string['privacy:metadata:plagiarism_cmp_files:filename'] = "Nom du fichier soumis ou nom généré pour les contenus texte";
+$string['privacy:metadata:plagiarism_compilatio_file'] = 'Informations à propos des fichiers soumis à Compilatio dans la base de données du plugin';
+$string['privacy:metadata:plagiarism_compilatio_file:id'] = 'L\'identifiant de la soumission dans la base de données de Moodle';
+$string['privacy:metadata:plagiarism_compilatio_file:cm'] = 'L\'identifiant du module de cours où se trouve la soumission';
+$string['privacy:metadata:plagiarism_compilatio_file:userid'] = 'L\'identifiant de l\'utilisateur Moodle qui a fait la soumission';
+$string['privacy:metadata:plagiarism_compilatio_file:identifier'] = 'La contenthash de la soumission';
+$string['privacy:metadata:plagiarism_compilatio_file:filename'] = 'Le nom (éventuellement auto-généré) de la soumission';
+$string['privacy:metadata:plagiarism_compilatio_file:timesubmitted'] = 'L\'heure à laquelle le fichier a été enregistré dans la base de données Moodle du plugin';
+$string['privacy:metadata:plagiarism_compilatio_file:externalid'] = 'L\'identifiant de la soumission dans la base de données de Compilatio';
+$string['privacy:metadata:plagiarism_compilatio_file:status'] = 'L\'état de l\'analyse la soumission (Analysé, En attente, Temps dépassé...)';
+$string['privacy:metadata:plagiarism_compilatio_file:similarityscore'] = 'Le pourcentage de similitudes trouvées pour cette soumission';
+$string['privacy:metadata:plagiarism_compilatio_file:indexed'] = "L'état d'indexation en bibliothèque de référence du fichier.";
 
-$string['privacy:metadata:plagiarism_cmp_user'] = "Informations à propos de l'enseignant qui a créé un module avec Compilatio";
-$string['privacy:metadata:plagiarism_cmp_files:userid'] = "L'identifiant Moodle de l'enseignant";
-$string['privacy:metadata:plagiarism_cmp_files:compilatioid'] = "L'identifiant Compilatio de l'enseignant";
+$string['privacy:metadata:external_compilatio_document'] = 'Informations à propos des documents dans la base de données de Compilatio';
+$string['privacy:metadata:external_compilatio_document:lastname'] = 'Nom de l\'utilisateur Compilatio qui a soumis le fichier - attention, cet utilisateur est celui qui est lié à la clé d\'API Compilatio sur la plateforme Moodle (c\'est donc souvent l\'administrateur de la plateforme)';
+$string['privacy:metadata:external_compilatio_document:firstname'] = 'Prénom de l\'utilisateur Compilatio qui a soumis le fichier - attention, cet utilisateur est celui qui est lié à la clé d\'API Compilatio sur la plateforme Moodle (c\'est donc souvent l\'administrateur de la plateforme)';
+$string['privacy:metadata:external_compilatio_document:email_adress'] = 'Adresse email de l\'utilisateur Compilatio qui a soumis le fichier - attention, cet utilisateur est celui qui est lié à la clé d\'API Compilatio sur la plateforme Moodle (c\'est donc souvent l\'administrateur de la plateforme)';
+$string['privacy:metadata:external_compilatio_document:user_id'] = 'L\'identifiant de l\'utilisateur Compilatio qui a soumis le fichier - attention, cet utilisateur est celui qui est lié à la clé d\'API Compilatio sur la plateforme Moodle (c\'est donc souvent l\'administrateur de la plateforme)';
+$string['privacy:metadata:external_compilatio_document:filename'] = 'Le nom de la soumission';
+$string['privacy:metadata:external_compilatio_document:upload_date'] = 'L\'heure à laquelle le fichier à été enregistré dans la base de données Compilatio';
+$string['privacy:metadata:external_compilatio_document:id'] = 'L\'identifiant de la soumission dans la base de données de Compilatio';
+$string['privacy:metadata:external_compilatio_document:indexed'] = 'L\'état d\'indéxation de la soumission (si elle est utilisée comme document de référence lors des analyses)';
 
-$string['privacy:metadata:external_compilatio_document'] = 'Informations et contenu des documents dans la base de données de Compilatio';
-$string['privacy:metadata:external_compilatio_document:authors'] = "Nom, prénom et adresse mail de l'utilisateur Moodle (ou les membres du groupe) qui a soumis le fichier";
-$string['privacy:metadata:external_compilatio_document:depositor'] = "Nom, prénom et adresse mail de l'utilisateur Moodle qui a soumis le fichier";
-$string['privacy:metadata:external_compilatio_document:filename'] = "Nom du fichier soumis ou nom généré pour les contenus texte";
-
-$string['privacy:metadata:external_compilatio_user'] = "Informations à propos de l'enseignant qui a créé un module avec Compilatio";
-$string['privacy:metadata:external_compilatio_user:firstname'] = "Prénom de l'enseignant";
-$string['privacy:metadata:external_compilatio_user:lastname'] = "Nom de l'enseignant";
-$string['privacy:metadata:external_compilatio_user:email'] = "Adresse mail de l'enseignant";
-$string['privacy:metadata:external_compilatio_user:username'] = "Adresse mail de l'enseignant";
+$string['privacy:metadata:external_compilatio_report'] = 'Informations à propos du rapport d\'analyse dans la base de données de Compilatio (uniquement si le document a été analysé)';
+$string['privacy:metadata:external_compilatio_report:id'] = 'L\'identifiant Compilatio du rapport d\'analyse';
+$string['privacy:metadata:external_compilatio_report:doc_id'] = 'L\'identifiant Compilatio du document qui a été analysé';
+$string['privacy:metadata:external_compilatio_report:user_id'] = 'L\'identifiant de l\'utilisateur Compilatio qui a soumis le fichier - attention, cet utilisateur est celui qui est lié à la clé d\'API Compilatio sur la plateforme Moodle (c\'est donc souvent l\'administrateur de la plateforme)';
+$string['privacy:metadata:external_compilatio_report:start'] = 'La date de début de l\'analyse';
+$string['privacy:metadata:external_compilatio_report:end'] = 'La date de fin de l\'analyse';
+$string['privacy:metadata:external_compilatio_report:state'] = 'L\'état de l\'analyse de la soumission (Analysé, En attente, Temps dépassé...)';
+$string['privacy:metadata:external_compilatio_report:plagiarism_percent'] = 'Le pourcentage de similitudes trouvées pour cette soumission';

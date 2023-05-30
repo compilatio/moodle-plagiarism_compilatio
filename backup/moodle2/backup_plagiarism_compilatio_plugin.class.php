@@ -15,18 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * backup_plagiarism_cmp_plugin.class.php - Contains Plagiarism plugin methods to backup the plugin.
+ * backup_plagiarism_compilatio_plugin.class.php - Contains Plagiarism plugin methods to backup the plugin.
  *
- * @package    plagiarism_cmp
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * Backup class
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class backup_plagiarism_cmp_plugin extends backup_plagiarism_plugin {
+class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
 
     /**
      * Define the plugin's structure
@@ -51,7 +55,7 @@ class backup_plagiarism_cmp_plugin extends backup_plagiarism_plugin {
                 'analysistype', 'analysistime', 'warningthreshold', 'criticalthreshold', 'defaultindexing']);
         $pluginwrapper->add_child($compilatioconfigs);
         $compilatioconfigs->add_child($compilatioconfig);
-        $compilatioconfig->set_source_table('plagiarism_cmp_module', ['cmid' => backup::VAR_PARENTID]);
+        $compilatioconfig->set_source_table('plagiarism_compilatio_module', ['cmid' => backup::VAR_PARENTID]);
 
         // Now information about files to module.
         $compilatiofiles = new backup_nested_element('compilatio_files');
@@ -62,7 +66,7 @@ class backup_plagiarism_cmp_plugin extends backup_plagiarism_plugin {
         $pluginwrapper->add_child($compilatiofiles);
         $compilatiofiles->add_child($compilatiofile);
         if ($userinfo) {
-            $compilatiofile->set_source_table('plagiarism_cmp_files', ['cm' => backup::VAR_PARENTID]);
+            $compilatiofile->set_source_table('plagiarism_compilatio_file', ['cm' => backup::VAR_PARENTID]);
         }
         return $plugin;
     }
@@ -86,7 +90,7 @@ class backup_plagiarism_cmp_plugin extends backup_plagiarism_plugin {
         $pluginwrapper->add_child($compilatioconfigs);
         $compilatioconfigs->add_child($compilatioconfig);
         $compilatioconfig->set_source_table('config_plugins', ['name' => backup::VAR_PARENTID,
-            'plugin' => backup_helper::is_sqlparam('plagiarism_cmp_course')]);
+            'plugin' => backup_helper::is_sqlparam('plagiarism_compilatio_course')]);
         return $plugin;
     }
 }

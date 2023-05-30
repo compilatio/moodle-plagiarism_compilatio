@@ -17,18 +17,22 @@
 /**
  * frame.php - Contains method to get Compilatio Frame.
  *
- * @package    plagiarism_cmp
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/statistics.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/csv.php');
 
 /**
  * CompilatioFrame class
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioFrame {
 
@@ -44,7 +48,7 @@ class CompilatioFrame {
             return;
         }
 
-        if (!has_capability('plagiarism/cmp:viewreport', $PAGE->context)) {
+        if (!has_capability('plagiarism/compilatio:viewreport', $PAGE->context)) {
             return;
         }
 
@@ -64,62 +68,67 @@ class CompilatioFrame {
         }
 
         $cmid = $PAGE->context->instanceid;
-        $plagiarismsettings = (array) get_config('plagiarism_cmp');
+        $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 
         $compilatioenabled = $plagiarismsettings['enabled'] && $plagiarismsettings['enable_mod_' . $module];
 
-        $compilatioactivated = $DB->get_field('plagiarism_cmp_module', 'activated', ['cmid' => $cmid]);
+        $compilatioactivated = $DB->get_field('plagiarism_compilatio_cm_cfg', 'activated', ['cmid' => $cmid]);
 
         if ($compilatioactivated != 1 || !$compilatioenabled) {
             return;
         }
 
-        $export = optional_param('compilatio_export', '', PARAM_BOOL);
+        $export = optional_param('cmp_csv_export', '', PARAM_BOOL);
         if ($export) {
-            csv_helper::generate_cm_csv($cmid, $module);
+            CompilatioCsv::generate_cm_csv($cmid, $module);
         }
 
         // Store plagiarismfiles in $SESSION.
         $sql = 'cm = ? AND externalid IS NOT null';
-        $SESSION->compilatio_plagiarismfiles = $DB->get_records_select('plagiarism_cmp_files', $sql, [$cmid]);
+        $SESSION->compilatio_plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_file', $sql, [$cmid]);
         $filesids = array_keys($SESSION->compilatio_plagiarismfiles);
 
         $alerts = [];
 
-        if (isset($SESSION->compilatio_alert)) {
-            $alerts[] = $SESSION->compilatio_alert;
-            unset($SESSION->compilatio_alert);
+        if (isset($SESSION->compilatio_alerts)) {
+            foreach ($SESSION->compilatio_alerts as $alert) {
+                $alerts[] = $alert;
+            }
+            unset($SESSION->compilatio_alerts);
         }
 
         $startallanalyses = $sendalldocs = $resetdocsinerror = false;
 
-        $analysistype = $DB->get_field('plagiarism_cmp_module', 'analysistype', ['cmid' => $cmid]);
+        $analysistype = $DB->get_field('plagiarism_compilatio_cm_cfg', 'analysistype', ['cmid' => $cmid]);
 
-        if ($analysistype == 'manual' && $DB->count_records('plagiarism_cmp_files', ['status' => 'sent', 'cm' => $cmid]) !== 0) {
+        if (
+            $analysistype == 'manual'
+                && $DB->count_records('plagiarism_compilatio_file', ['status' => 'sent', 'cm' => $cmid]) !== 0
+        ) {
             $startallanalyses = true;
 
         } else if ($analysistype == 'planned') { // Display the date of analysis if its type is set on 'Planned'.
-            $analysistime = $DB->get_field('plagiarism_cmp_module', 'analysistime', ['cmid' => $cmid]);
+            $analysistime = $DB->get_field('plagiarism_compilatio_cm_cfg', 'analysistime', ['cmid' => $cmid]);
             $date = userdate($analysistime);
             if ($analysistime > time()) {
-                $analysisdate = get_string('programmed_analysis_future', 'plagiarism_cmp', $date);
+                $analysisdate = get_string('programmed_analysis_future', 'plagiarism_compilatio', $date);
             } else {
-                $analysisdate = get_string('programmed_analysis_past', 'plagiarism_cmp', $date);
+                $analysisdate = get_string('programmed_analysis_past', 'plagiarism_compilatio', $date);
             }
         }
 
         // Get webservice status :.
-        $webservicestatus = get_config('plagiarism_cmp', 'connection_webservice');
+        $webservicestatus = get_config('plagiarism_compilatio', 'connection_webservice');
         // If the record exists and if the webservice is marked as unreachable in Cron function :.
         if ($webservicestatus != null && $webservicestatus === '0') {
             $alerts[] = [
                 'class' => 'danger',
-                'content' => get_string('webservice_unreachable', 'plagiarism_cmp')
+                'content' => get_string('webservice_unreachable', 'plagiarism_compilatio')
             ];
         }
 
         // Display reset docs in error button if necesseary.
-        $sql = "SELECT COUNT(DISTINCT pcf.id) FROM {plagiarism_cmp_files} pcf
+        $sql = "SELECT COUNT(DISTINCT pcf.id) FROM {plagiarism_compilatio_file} pcf
             WHERE pcf.cm=? AND (status = 'error_analysis_failed' OR status = 'error_sending_failed')";
         if ($DB->count_records_sql($sql, [$cmid]) !== 0) {
             $resetdocsinerror = true;
@@ -127,12 +136,12 @@ class CompilatioFrame {
 
         // Check for unsend documents.
         if ($module == 'assign') {
-            $countunsend = count(cmp_get_unsent_documents($cmid));
+            $countunsend = count(compilatio_get_unsent_documents($cmid));
 
             if ($countunsend !== 0) {
                 $alerts[] = [
                     'class' => 'danger',
-                    'content' => get_string('unsent_documents', 'plagiarism_cmp')
+                    'content' => get_string('unsent_documents', 'plagiarism_compilatio')
                 ];
                 $sendalldocs = true;
             }
@@ -140,7 +149,7 @@ class CompilatioFrame {
             $countunsend = 0;
         }
 
-        $compilatio = new CompilatioAPI(get_config('plagiarism_cmp', 'apikey'));
+        $compilatio = new CompilatioAPI();
 
         foreach ($compilatio->get_alerts() as $alert) {
             $language = substr(current_language(), 0, 2);
@@ -160,10 +169,14 @@ class CompilatioFrame {
             }
         }
 
-        $user = $DB->get_record('plagiarism_cmp_user', ['userid' => $USER->id]);
+        $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => $USER->id]);
 
         if (!empty($user)) {
-            $PAGE->requires->js_call_amd('plagiarism_cmp/compilatio_ajax_api', 'checkUserInfo', [$CFG->httpswwwroot, $user->compilatioid]);
+            $PAGE->requires->js_call_amd(
+                'plagiarism_compilatio/compilatio_ajax_api',
+                'checkUserInfo',
+                [$CFG->httpswwwroot, $user->compilatioid]
+            );
 
             if ($user->validatedtermsofservice == 0) {
                 $lang = substr(current_language(), 0, 2);
@@ -173,13 +186,13 @@ class CompilatioFrame {
                 $alerts[] = "
                     <div class='cmp-alert cmp-alert-danger'>
                         <div>
-                            <p>" . get_string('terms_of_service_alert', 'plagiarism_cmp', $termsofservice) . "<p>
+                            <p>" . get_string('terms_of_service_alert', 'plagiarism_compilatio', $termsofservice) . "<p>
                             <input id='tos-btn' class='btn btn-primary' type='submit'
-                                value=\"" . get_string('terms_of_service_alert_btn', 'plagiarism_cmp') . "\">
+                                value=\"" . get_string('terms_of_service_alert_btn', 'plagiarism_compilatio') . "\">
                         </div>
                     </div>";
                     $PAGE->requires->js_call_amd(
-                        'plagiarism_cmp/compilatio_ajax_api',
+                        'plagiarism_compilatio/compilatio_ajax_api',
                         'validateTermsOfService',
                         [$CFG->httpswwwroot, $user->compilatioid]
                     );
@@ -193,64 +206,64 @@ class CompilatioFrame {
         $output .= "<div id='cmp-tabs' style='display:none'>";
 
         // Display logo.
-        $output .= "<img id='cmp-logo' src='" . new moodle_url('/plagiarism/cmp/pix/compilatio.png') . "'>";
+        $output .= "<img id='cmp-logo' src='" . new moodle_url('/plagiarism/compilatio/pix/compilatio.png') . "'>";
 
         // Help icon.
-        $output .= "<div title='" . get_string('compilatio_help_assign', 'plagiarism_cmp') .
+        $output .= "<div title='" . get_string('compilatio_help_assign', 'plagiarism_compilatio') .
             "' id='show-help' class='cmp-icon'><i class='fa fa-question-circle fa-2x'></i></div>";
 
         // Stat icon.
         $output .= "<div id='show-stats' class='cmp-icon'  title='" .
-            get_string('display_stats', 'plagiarism_cmp') . "'><i class='fa fa-bar-chart fa-2x'></i></div>";
+            get_string('display_stats', 'plagiarism_compilatio') . "'><i class='fa fa-bar-chart fa-2x'></i></div>";
 
         // Alert icon.
         if (count($alerts) !== 0) {
             $output .= "<div id='cmp-show-notifications' title='";
-            $output .= get_string('display_notifications', 'plagiarism_cmp');
+            $output .= get_string('display_notifications', 'plagiarism_compilatio');
             $output .= "' class='cmp-icon active' ><i class='fa fa-bell fa-2x'></i>";
             $output .= "<span id='cmp-count-alerts' class='cmp-badge cmp-badge-danger'>" . count($alerts) . "</span></div>";
         }
 
         if ($plagiarismsettings['enable_search_tab']) {
             // Search icon.
-            $output .= "<div title='" . get_string('compilatio_search_tab', 'plagiarism_cmp') .
+            $output .= "<div title='" . get_string('compilatio_search_tab', 'plagiarism_compilatio') .
                 "' id='show-search' class='cmp-icon'><i class='fa fa-search fa-2x'></i></div>";
         }
 
         // Hide/Show button.
         $output .= "
             <div id='cmp-hide-area' class='cmp-icon'  title='" .
-        get_string('hide_area', 'plagiarism_cmp') . "'>
+        get_string('hide_area', 'plagiarism_compilatio') . "'>
                 <i class='fa fa-chevron-up fa-2x'></i>
             </div>";
 
         // Display buttons.
-        if (has_capability('plagiarism/cmp:triggeranalysis', $PAGE->context)) {
+        if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
             if ($startallanalyses) {
                 $output .= "<button class='cmp-btn-lg cmp-btn-primary cmp-start-btn' >
-                        " . get_string('start_all_analysis', 'plagiarism_cmp') . "
+                        " . get_string('start_all_analysis', 'plagiarism_compilatio') . "
                         <i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
                     </button>";
-                $PAGE->requires->js_call_amd('plagiarism_cmp/compilatio_ajax_api', 'startAllAnalysis',
-                    [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_cmp')]);
+                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
+                    [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
             }
 
             if ($sendalldocs) {
                 $output .= "<button class='cmp-btn-lg cmp-btn-primary cmp-send-btn' >
-                        " . get_string('send_all_documents', 'plagiarism_cmp') . "
+                        " . get_string('send_all_documents', 'plagiarism_compilatio') . "
                         <i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
                     </button>";
-                $PAGE->requires->js_call_amd('plagiarism_cmp/compilatio_ajax_api', 'sendUnsentDocs',
-                    [$CFG->httpswwwroot, $cmid, get_string('send_documents_in_progress', 'plagiarism_cmp')]);
+                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'sendUnsentDocs',
+                    [$CFG->httpswwwroot, $cmid, get_string('send_documents_in_progress', 'plagiarism_compilatio')]);
             }
 
             if ($resetdocsinerror) {
                 $output .= "<button class='cmp-btn-lg cmp-btn-primary cmp-reset-btn' >
-                        " . get_string('reset_docs_in_error', 'plagiarism_cmp') . "
+                        " . get_string('reset_docs_in_error', 'plagiarism_compilatio') . "
                         <i class='cmp-icon-lg cmp-ml-10 fa fa-rotate-right'></i>
                     </button>";
-                $PAGE->requires->js_call_amd('plagiarism_cmp/compilatio_ajax_api', 'resetDocsInError',
-                    [$CFG->httpswwwroot, $cmid, get_string('reset_docs_in_error_in_progress', 'plagiarism_cmp')]);
+                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'resetDocsInError',
+                    [$CFG->httpswwwroot, $cmid, get_string('reset_docs_in_error_in_progress', 'plagiarism_compilatio')]);
             }
         }
 
@@ -260,10 +273,10 @@ class CompilatioFrame {
 
         // Home tab.
         $output .= "<div id='cmp-home' class='cmp-tabs-content'>
-                        <p>" . get_string('similarities_disclaimer', 'plagiarism_cmp') . "</p>";
+                        <p>" . get_string('similarities_disclaimer', 'plagiarism_compilatio') . "</p>";
         if ($module == 'quiz') {
-            $nbmotsmin = get_config('plagiarism_cmp', 'min_word');
-            $output .= "<p><b>" . get_string('quiz_help', 'plagiarism_cmp', $nbmotsmin) . "</b></p>";
+            $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
+            $output .= "<p><b>" . get_string('quiz_help', 'plagiarism_compilatio', $nbmotsmin) . "</b></p>";
         }
         $output .= "</div>";
 
@@ -271,31 +284,35 @@ class CompilatioFrame {
         $output .= "<div id='cmp-help' class='cmp-tabs-content'>";
 
         if (empty($plagiarismsettings['apikey']) || empty($user)) {
-            $output .= "<p>" . get_string('helpcenter_error', 'plagiarism_cmp')
+            $output .= "<p>" . get_string('helpcenter_error', 'plagiarism_compilatio')
                 . "<a href='https://support.compilatio.net/'>https://support.compilatio.net</a></p>";
         } else {
-            $output .= "<p><a href='../../plagiarism/cmp/helpcenter.php?userid=" . $user->compilatioid . "'
-            target='_blank' >" . get_string('helpcenter', 'plagiarism_cmp') . "
-            <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
-                <path fill='none' stroke='#555' stroke-linecap='round'
-                stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
-            </svg></a></p>";
+            $output .= "<p>
+                <a href='../../plagiarism/compilatio/helpcenter.php?userid=" . $user->compilatioid . "' target='_blank' >"
+                    . get_string('helpcenter', 'plagiarism_compilatio') .
+                    "<i class='fa fa-external-link'></i>
+                </a>
+            </p>";
         }
 
-        $output .= "
-                <p><a href='http://etat-services.compilatio.net/?lang=FR'
-                    target='_blank' >" . get_string('goto_compilatio_service_status', 'plagiarism_cmp') . "
-                    <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
-                        <path fill='none' stroke='#555' stroke-linecap='round'
-                        stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
-                    </svg></a></p>
-            </div>";
+        $output .= "<p>
+            <a href='http://etat-services.compilatio.net/?lang=FR' target='_blank' >"
+                . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') .
+                "<i class='fa fa-external-link'></i>
+            </a>
+            </p></div>";
 
         // Stats tab.
+        $url = $PAGE->url;
+        $url->param('cmp_csv_export', true);
+        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") . "' class='cmp-icon pr-3' href='$url'>
+                <i class='fa fa-download fa-2x'></i>
+            </a>";
+
         $output .= "
-            <div id='cmp-stats' class='cmp-tabs-content text-center'>
-                <div class='row'>"
-                . CompilatioStatistics::get_statistics($cmid) .
+            <div id='cmp-stats' class='cmp-tabs-content'>
+                <div class='row text-center'>"
+                . CompilatioStatistics::get_statistics($cmid) . $exportbutton .
                 "</div>
             </div>";
 
@@ -336,17 +353,17 @@ class CompilatioFrame {
 
         // Search tab.
         $output .= "<div id='cmp-search' class='cmp-tabs-content'>
-            <h5>" . get_string('compilatio_search_tab', 'plagiarism_cmp') . "</h5>
-            <p>" . get_string('compilatio_search_help', 'plagiarism_cmp') . "</p>
+            <h5>" . get_string('compilatio_search_tab', 'plagiarism_compilatio') . "</h5>
+            <p>" . get_string('compilatio_search_help', 'plagiarism_compilatio') . "</p>
             <form class='form-inline' action=" . $PAGE->url . " method='post'>
                 <input class='form-control m-2' type='text' id='docId' name='docId' value='" . $docid
-                    . "' placeholder='" . get_string('compilatio_iddocument', 'plagiarism_cmp') . "'>
-                <input class='btn btn-primary' type='submit' value='" .get_string('compilatio_search', 'plagiarism_cmp'). "'>
+                    . "' placeholder='" . get_string('compilatio_iddocument', 'plagiarism_compilatio') . "'>
+                <input class='btn btn-primary' type='submit' value='" .get_string('compilatio_search', 'plagiarism_compilatio'). "'>
             </form>";
 
         if (!empty($docid)) {
             $sql = "SELECT usr.lastname, usr.firstname, cf.cm
-                FROM {plagiarism_cmp_files} cf
+                FROM {plagiarism_compilatio_file} cf
                 JOIN {user} usr on cf.userid = usr.id
                 WHERE cf.externalid = ?";
             $doc = $DB->get_record_sql($sql, [$docid]);
@@ -354,9 +371,9 @@ class CompilatioFrame {
             if ($doc) {
                 $module = get_coursemodule_from_id(null, $doc->cm);
                 $doc->modulename = $module->name;
-                $output .= get_string('compilatio_author', 'plagiarism_cmp', $doc);
+                $output .= get_string('compilatio_author', 'plagiarism_compilatio', $doc);
             } else {
-                $output .= get_string('compilatio_search_notfound', 'plagiarism_cmp');
+                $output .= get_string('compilatio_search_notfound', 'plagiarism_compilatio');
             }
         }
 
@@ -369,7 +386,7 @@ class CompilatioFrame {
 
         $output .= "</div>";
 
-        $PAGE->requires->js_call_amd('plagiarism_cmp/compilatio_ajax_api', 'compilatioTabs', [count($alerts), $docid]);
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', [count($alerts), $docid]);
 
         return $output;
     }

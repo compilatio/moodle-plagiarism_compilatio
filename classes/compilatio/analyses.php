@@ -17,19 +17,22 @@
 /**
  * analyses.php - Contains methods to start an analysis and get the analysis result.
  *
- * @package    plagiarism_cmp
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 /**
  * CompilatioAnalyses class
+ * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioAnalyses {
     /**
@@ -42,8 +45,8 @@ class CompilatioAnalyses {
 
         global $DB, $OUTPUT;
 
-        $userid = $DB->get_field('plagiarism_cmp_module', 'userid', ['cmid' => $cmpfile->cm]);
-        $compilatio = new CompilatioAPI(get_config('plagiarism_cmp', 'apikey'), $userid);
+        $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmpfile->cm]);
+        $compilatio = new CompilatioAPI($userid);
 
         $analyse = $compilatio->start_analyse($cmpfile->externalid);
 
@@ -61,13 +64,13 @@ class CompilatioAnalyses {
             $cmpfile->status = 'error_too_long';
 
         } else if (strpos($analyse, 'is not extracted, wait few seconds and retry.') !== false) {
-            return get_string('extraction_in_progress', 'plagiarism_cmp');
+            return get_string('extraction_in_progress', 'plagiarism_compilatio');
         } else if ($analyse == 'Error need terms of service validation') {
             return;
         } else {
             return $analyse;
         }
-        $DB->update_record('plagiarism_cmp_files', $cmpfile);
+        $DB->update_record('plagiarism_compilatio_file', $cmpfile);
 
         return $cmpfile->status;
     }
@@ -83,8 +86,8 @@ class CompilatioAnalyses {
 
         global $DB;
 
-        $userid = $DB->get_field('plagiarism_cmp_module', 'userid', ['cmid' => $cmpfile->cm]);
-        $compilatio = new CompilatioAPI(get_config('plagiarism_cmp', 'apikey'), $userid);
+        $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmpfile->cm]);
+        $compilatio = new CompilatioAPI($userid);
 
         $doc = $compilatio->get_document($cmpfile->externalid);
 
@@ -103,10 +106,10 @@ class CompilatioAnalyses {
                 $cmpfile->status = 'scored';
                 $cmpfile->similarityscore = $scores->displayed_similarity_percent ?? 0;
 
-                $emailstudents = $DB->get_field('plagiarism_cmp_module', 'studentemail', ['cmid' => $cmpfile->cm]);
+                $emailstudents = $DB->get_field('plagiarism_compilatio_cm_cfg', 'studentemail', ['cmid' => $cmpfile->cm]);
                 if (!empty($emailstudents)) {
-                    $compilatio = new plagiarism_plugin_cmp();
-                    $compilatio->cmp_send_student_email($cmpfile);
+                    $compilatio = new plagiarism_plugin_compilatio();
+                    $compilatio->compilatio_send_student_email($cmpfile);
                 }
 
             } else if ($state == 'crashed' || $state == 'aborted' || $state == 'canceled') {
@@ -114,6 +117,6 @@ class CompilatioAnalyses {
             }
         }
 
-        $DB->update_record('plagiarism_cmp_files', $cmpfile);
+        $DB->update_record('plagiarism_compilatio_file', $cmpfile);
     }
 }

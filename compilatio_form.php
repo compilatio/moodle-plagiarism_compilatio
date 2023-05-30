@@ -17,20 +17,24 @@
 /**
  * compilatio_form.php - Contains Plagiarism plugin helper methods for communicate with the web service.
  *
- * @package    plagiarism_cmp
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 
 require_once($CFG->dirroot . '/lib/formslib.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 /**
  * Setup form class
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class compilatio_setup_form extends moodleform {
 
@@ -42,85 +46,85 @@ class compilatio_setup_form extends moodleform {
         global $CFG, $DB;
 
         $mform = & $this->_form;
-        $mform->addElement('html', get_string('compilatioexplain', 'plagiarism_cmp'));
-        $mform->addElement('checkbox', 'enabled', get_string('activate_compilatio', 'plagiarism_cmp'));
+        $mform->addElement('html', get_string('compilatioexplain', 'plagiarism_compilatio'));
+        $mform->addElement('checkbox', 'enabled', get_string('activate_compilatio', 'plagiarism_compilatio'));
 
         $mform->addElement('html', '<p style="font-size: 12px;font-style: italic;">' .
-                           get_string("disclaimer_data", "plagiarism_cmp") . '</p>');
+                           get_string("disclaimer_data", "plagiarism_compilatio") . '</p>');
 
-        $mform->addElement('text', 'apikey', get_string('apikey', 'plagiarism_cmp'));
+        $mform->addElement('text', 'apikey', get_string('apikey', 'plagiarism_compilatio'));
         $mform->setType('apikey', PARAM_RAW);
-        $mform->addHelpButton('apikey', 'apikey', 'plagiarism_cmp');
+        $mform->addHelpButton('apikey', 'apikey', 'plagiarism_compilatio');
         $mform->addRule('apikey', null, 'required', null, 'client');
 
-        $mform->addElement('checkbox', 'disable_ssl_verification', get_string("disable_ssl_verification", "plagiarism_cmp"));
+        $mform->addElement('checkbox', 'disable_ssl_verification', get_string("disable_ssl_verification", "plagiarism_compilatio"));
         $mform->setDefault('disable_ssl_verification', 0);
-        $mform->addHelpButton('disable_ssl_verification', 'disable_ssl_verification', 'plagiarism_cmp');
+        $mform->addHelpButton('disable_ssl_verification', 'disable_ssl_verification', 'plagiarism_compilatio');
 
         $mform->addElement('textarea', 'student_disclosure',
-                           get_string('students_disclosure', 'plagiarism_cmp'),
+                           get_string('students_disclosure', 'plagiarism_compilatio'),
                            'wrap="virtual" rows="6" cols="50"');
-        $mform->addHelpButton('student_disclosure', 'students_disclosure', 'plagiarism_cmp');
-        $mform->setDefault('student_disclosure', get_string('studentdisclosuredefault', 'plagiarism_cmp'));
+        $mform->addHelpButton('student_disclosure', 'students_disclosure', 'plagiarism_compilatio');
+        $mform->setDefault('student_disclosure', get_string('studentdisclosuredefault', 'plagiarism_compilatio'));
 
-        $mform->addElement('html', get_string('enable_activities_title', 'plagiarism_cmp'));
+        $mform->addElement('html', get_string('enable_activities_title', 'plagiarism_compilatio'));
 
         $mods = get_plugin_list('mod');
         foreach ($mods as $mod => $modname) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
                 $modstring = 'enable_mod_' . $mod;
                 $string = "";
-                if (string_exists($modstring, "plagiarism_cmp")) {
-                    $string = get_string($modstring, 'plagiarism_cmp');
+                if (string_exists($modstring, "plagiarism_compilatio")) {
+                    $string = get_string($modstring, 'plagiarism_compilatio');
                 }
                 $mform->addElement('checkbox', $modstring, $string);
             }
         }
 
-        $mform->addElement('html', get_string('teacher_features_title', 'plagiarism_cmp'));
+        $mform->addElement('html', get_string('teacher_features_title', 'plagiarism_compilatio'));
 
         $mform->addElement('checkbox', 'enable_show_reports',
-                           get_string("enable_show_reports", "plagiarism_cmp"));
+                           get_string("enable_show_reports", "plagiarism_compilatio"));
         $mform->setDefault('enable_show_reports', 0);
 
-        $apikey = get_config('plagiarism_cmp', 'apikey');
+        $apikey = get_config('plagiarism_compilatio', 'apikey');
         if (!empty($apikey)) {
             $compilatio = new CompilatioAPI($apikey);
 
             if ($compilatio->check_allow_student_analyses()) {
                 $mform->addElement('checkbox', 'enable_student_analyses',
-                    get_string("enable_student_analyses", "plagiarism_cmp"));
+                    get_string("enable_student_analyses", "plagiarism_compilatio"));
                 $mform->setDefault('enable_student_analyses', 0);
-                $mform->addHelpButton('enable_student_analyses', 'enable_student_analyses', 'plagiarism_cmp');
+                $mform->addHelpButton('enable_student_analyses', 'enable_student_analyses', 'plagiarism_compilatio');
             }
         }
 
-        $mform->addElement('checkbox', 'enable_analyses_auto', get_string("enable_analyses_auto", "plagiarism_cmp"));
+        $mform->addElement('checkbox', 'enable_analyses_auto', get_string("enable_analyses_auto", "plagiarism_compilatio"));
         $mform->setDefault('enable_analyses_auto', 0);
-        $mform->addHelpButton('enable_analyses_auto', 'enable_analyses_auto', 'plagiarism_cmp');
+        $mform->addHelpButton('enable_analyses_auto', 'enable_analyses_auto', 'plagiarism_compilatio');
 
-        $mform->addElement('checkbox', 'enable_search_tab', get_string("enable_search_tab", "plagiarism_cmp"));
+        $mform->addElement('checkbox', 'enable_search_tab', get_string("enable_search_tab", "plagiarism_compilatio"));
         $mform->setDefault('enable_search_tab', 0);
-        $mform->addHelpButton('enable_search_tab', 'enable_search_tab', 'plagiarism_cmp');
+        $mform->addHelpButton('enable_search_tab', 'enable_search_tab', 'plagiarism_compilatio');
 
-        $mform->addElement('html', get_string('document_deleting', 'plagiarism_cmp'));
-        $mform->addElement('checkbox', 'keep_docs_indexed', get_string("keep_docs_indexed", "plagiarism_cmp"));
+        $mform->addElement('html', get_string('document_deleting', 'plagiarism_compilatio'));
+        $mform->addElement('checkbox', 'keep_docs_indexed', get_string("keep_docs_indexed", "plagiarism_compilatio"));
         $mform->setDefault('keep_docs_indexed', 1);
-        $mform->addHelpButton('keep_docs_indexed', 'keep_docs_indexed', 'plagiarism_cmp');
+        $mform->addHelpButton('keep_docs_indexed', 'keep_docs_indexed', 'plagiarism_compilatio');
 
         $radioarray = [];
         $radioarray[] = $mform->createElement('radio',
-            'owner_file', '', get_string('owner_file_school', 'plagiarism_cmp'), 1);
+            'owner_file', '', get_string('owner_file_school', 'plagiarism_compilatio'), 1);
         $radioarray[] = $mform->createElement('html',
             '<p style="font-size: 12px;font-style: italic;">'
-            . get_string("owner_file_school_details", "plagiarism_cmp") . '</p>');
+            . get_string("owner_file_school_details", "plagiarism_compilatio") . '</p>');
         $radioarray[] = $mform->createElement('radio',
-            'owner_file', '', get_string('owner_file_student', 'plagiarism_cmp'), 0);
+            'owner_file', '', get_string('owner_file_student', 'plagiarism_compilatio'), 0);
         $radioarray[] = $mform->createElement('html',
             '<p style="font-size: 12px;font-style: italic;">'
-            . get_string("owner_file_student_details", "plagiarism_cmp") . '</p>');
+            . get_string("owner_file_student_details", "plagiarism_compilatio") . '</p>');
 
-        $mform->addGroup($radioarray, 'owner_file', get_string('owner_file', 'plagiarism_cmp'), [''], false);
+        $mform->addGroup($radioarray, 'owner_file', get_string('owner_file', 'plagiarism_compilatio'), [''], false);
         $mform->setDefault('owner_file', 1);
 
         $this->add_action_buttons(true);
@@ -129,7 +133,9 @@ class compilatio_setup_form extends moodleform {
 }
 
 /**
- * Class defaults form
+ * Class
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class compilatio_defaults_form extends moodleform {
 
@@ -139,7 +145,7 @@ class compilatio_defaults_form extends moodleform {
      */
     protected function definition() {
         $mform = & $this->_form;
-        cmp_get_form_elements($mform, true);
+        compilatio_get_form_elements($mform, true);
         $this->add_action_buttons(true);
     }
 }

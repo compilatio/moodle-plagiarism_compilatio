@@ -17,18 +17,17 @@
 /**
  * stats_json.php - Generates global statistics about the assignments
  *
- * @package    plagiarism_cmp
- * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   plagiarism_compilatio
+ * @author    Dan Marsden <dan@danmarsden.com>
+ * @copyright 2012 Dan Marsden http://danmarsden.com
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/compilatio_form.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/statistics.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
 
 require_login();
 

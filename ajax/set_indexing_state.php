@@ -16,38 +16,42 @@
 
 /**
  * Set document indexing state via Compilatio API
- * 
- * @package    plagiarism_cmp
- * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ *
+ * This script is called by amd/build/ajax_api.js
+ *
+ * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @param   string $_POST['docId']
+ * @param   string $_POST['indexingState']
+ * @return  boolean
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 require_login();
 global $DB;
 
 // Get global Compilatio settings.
-$plagiarismsettings = (array) get_config('plagiarism_cmp');
+$plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $docid = optional_param('docId', '', PARAM_TEXT);
 $indexingstatepost = optional_param('indexingState', '', PARAM_TEXT);
 
 if (isset($docid) && isset($indexingstatepost)) {
     $indexingstate = (int) ((boolean) $indexingstatepost);
-    $file = $DB->get_record('plagiarism_cmp_files', ['id' => $docid]);
+    $file = $DB->get_record('plagiarism_compilatio_file', ['id' => $docid]);
 
-    $userid = $DB->get_field('plagiarism_cmp_module', 'userid', ['cmid' => $file->cm]);
-    $compilatio = new CompilatioAPI(get_config('plagiarism_cmp', 'apikey'), $userid);
+    $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $file->cm]);
+    $compilatio = new CompilatioAPI($userid);
 
     if ($compilatio->set_indexing_state($file->externalid, $indexingstate) === true) {
         $file->indexed = $indexingstate;
-        $DB->update_record('plagiarism_cmp_files', $file);
+        $DB->update_record('plagiarism_compilatio_file', $file);
         echo ('true');
     } else {
         echo ('false');

@@ -17,18 +17,22 @@
 /**
  * update_meta.php - Contains Plagiarism plugin update_meta task.
  *
- * @package    plagiarism_cmp
+ * @since 2.0
+ * @package    plagiarism_compilatio
+ * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_cmp\task;
+namespace plagiarism_compilatio\task;
 
-require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 /**
  * Task class
+ * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class update_meta extends \core\task\scheduled_task {
 
@@ -37,7 +41,7 @@ class update_meta extends \core\task\scheduled_task {
      * @return string Name
      */
     public function get_name() {
-        return get_string('update_meta', 'plagiarism_cmp');
+        return get_string('update_meta', 'plagiarism_compilatio');
     }
 
     /**
@@ -46,24 +50,24 @@ class update_meta extends \core\task\scheduled_task {
      */
     public function execute() {
         global $DB, $CFG;
-        require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         // Update the 'Compilatio unavailable' marker in the database.
-        $compilatio = new \CompilatioAPI('test');
+        $compilatio = new \CompilatioAPI(null, 'test');
         if ($compilatio->check_apikey() == 'Forbidden ! Your api key is invalid') {
-            set_config('connection_webservice', 1, 'plagiarism_cmp');
+            set_config('connection_webservice', 1, 'plagiarism_compilatio');
         } else {
-            set_config('connection_webservice', 0, 'plagiarism_cmp');
+            set_config('connection_webservice', 0, 'plagiarism_compilatio');
         }
 
-        $compilatio = new \CompilatioAPI(get_config('plagiarism_cmp', 'apikey'));
+        $compilatio = new \CompilatioAPI();
 
         // Send data about plugin version to Compilatio.
         $language = $CFG->lang;
         $releasephp = phpversion();
         $releasemoodle = $CFG->release;
-        $releaseplugin = get_config('plagiarism_cmp', 'version');
-        $cronfrequency = get_config('plagiarism_cmp', 'cron_frequency');
+        $releaseplugin = get_config('plagiarism_compilatio', 'version');
+        $cronfrequency = get_config('plagiarism_compilatio', 'cron_frequency');
         if ($cronfrequency == null) {
             $cronfrequency = 0;
         }
@@ -71,21 +75,13 @@ class update_meta extends \core\task\scheduled_task {
 
         // Update compilatio config.
         $config = $compilatio->get_config();
+        set_config('min_word', $config->minDocumentWord, 'plagiarism_compilatio');
+        set_config('max_word', $config->maxDocumentWord, 'plagiarism_compilatio');
+        set_config('max_size', $config->maxDocumentSize, 'plagiarism_compilatio');
 
-        if (!empty($config)) {
-            set_config('min_word', $config->minDocumentWord, 'plagiarism_cmp');
-            set_config('max_word', $config->maxDocumentWord, 'plagiarism_cmp');
-            set_config('max_size', $config->maxDocumentSize, 'plagiarism_cmp');
+        set_config('helpcenter_admin', $config->zendeskPages->moodle_admin, 'plagiarism_compilatio');
+        set_config('helpcenter_teacher', $config->zendeskPages->moodle_teacher, 'plagiarism_compilatio');
 
-            set_config('helpcenter_admin', $config->zendeskPages->moodle_admin, 'plagiarism_cmp');
-            set_config('helpcenter_teacher', $config->zendeskPages->moodle_teacher, 'plagiarism_cmp');
-            //set_config('last_plugin_version', $config->moodle->lastVersion, 'plagiarism_cmp');
-        }
-
-        $filetypes = $compilatio->get_allowed_file_types();
-
-        if (!empty($filetypes)) {
-            set_config('file_types', json_encode($filetypes), 'plagiarism_cmp');
-        }
+        set_config('file_types', json_encode($compilatio->get_allowed_file_types()), 'plagiarism_compilatio');
     }
 }

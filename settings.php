@@ -17,19 +17,19 @@
 /**
  * plagiarism.php - allows the admin to configure plagiarism stuff
  *
- * @package   plagiarism_cmp
- * @author    Compilatio <support@compilatio.net>
- * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @package   plagiarism_compilatio
+ * @author    Dan Marsden <dan@danmarsden.com>
+ * @copyright 2012 Dan Marsden http://danmarsden.com
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-use plagiarism_cmp\task\update_meta;
+use plagiarism_compilatio\task\update_meta;
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/lib.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/compilatio_form.php');
-require_once($CFG->dirroot . '/plagiarism/cmp/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -38,7 +38,7 @@ $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
 
 $mform = new compilatio_setup_form();
-$plagiarismplugin = new plagiarism_plugin_cmp();
+$plagiarismplugin = new plagiarism_plugin_compilatio();
 
 if ($mform->is_cancelled()) {
     redirect('settings.php');
@@ -50,11 +50,11 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         'enable_mod_assign',
         'enable_mod_forum',
         'enable_mod_workshop',
-        'enable_mod_quiz', 
+        'enable_mod_quiz',
         'enable_show_reports',
         'enable_search_tab',
         'enable_student_analyses',
-        'enable_analyses_auto', 
+        'enable_analyses_auto',
         'disable_ssl_verification',
         'keep_docs_indexed'
     ];
@@ -68,12 +68,17 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     foreach ($data as $field => $value) {
         // Ignore the button and API Config.
         if ($field != 'submitbutton') {
-            set_config($field, $value, 'plagiarism_cmp');
+            set_config($field, $value, 'plagiarism_compilatio');
         }
     }
 
+    // The setting compilatio_use is deprecated in Moodle 3.9+ but it must be kept for versions < 3.9 (versions < 2020061500).
+    if ($CFG->version < 2020061500) {
+        set_config('compilatio_use', $data->enabled, 'plagiarism');
+    }
+
     // Set the default config for course modules if not set.
-    $plagiarismdefaults = $DB->get_record('plagiarism_cmp_module', ['cmid' => 0]);
+    $plagiarismdefaults = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => 0]);
     if (empty($plagiarismdefaults)) {
         $defaultconfig = new stdClass();
         $defaultconfig->cmid = 0;
@@ -86,10 +91,10 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         $defaultconfig->warningthreshold = 10;
         $defaultconfig->criticalthreshold = 25;
         $defaultconfig->defaultindexing = 1;
-        $DB->insert_record('plagiarism_cmp_module', $defaultconfig);
+        $DB->insert_record('plagiarism_compilatio_cm_cfg', $defaultconfig);
     }
 
-    cache_helper::invalidate_by_definition('core', 'config', [], 'plagiarism_cmp');
+    cache_helper::invalidate_by_definition('core', 'config', [], 'plagiarism_compilatio');
     $updatemeta = new update_meta();
     $updatemeta->execute();
 
@@ -98,45 +103,51 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
 echo $OUTPUT->header();
 $currenttab = 'compilatiosettings';
-require_once($CFG->dirroot . '/plagiarism/cmp/compilatio_tabs.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 
-$plagiarismsettings = (array) get_config('plagiarism_cmp');
+$plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $mform->set_data($plagiarismsettings);
 
 if (!empty($plagiarismsettings['enabled'])) {
-    $compilatio = new CompilatioAPI(get_config('plagiarism_cmp', 'apikey'));
+    $compilatio = new CompilatioAPI();
     $validapikey = $compilatio->check_apikey();
     if ($validapikey === true) {
         if (!$compilatio->check_allow_student_analyses()) {
-            set_config('enable_student_analyses', 0, 'plagiarism_cmp');
+            set_config('enable_student_analyses', 0, 'plagiarism_compilatio');
         }
 
         $subscription = $compilatio->get_subscription_info();
-	    $subscriptioninfos = '';
-        $subscriptioninfos .= '<li>' . get_string('subscription_start', 'plagiarism_cmp') . ' '
-            . cmp_format_date($subscription->validity_period->start) . '</li>';
-        $subscriptioninfos .= '<li>' . get_string('subscription_end', 'plagiarism_cmp') . ' '
-            . cmp_format_date($subscription->validity_period->end) . '</li>';
+
+        $subscriptioninfos = '';
+        $subscriptioninfos .= '<li>' . get_string('subscription_start', 'plagiarism_compilatio') . ' '
+            . compilatio_format_date($subscription->validity_period->start) . '</li>';
+        $subscriptioninfos .= '<li>' . get_string('subscription_end', 'plagiarism_compilatio') . ' '
+            . compilatio_format_date($subscription->validity_period->end) . '</li>';
 
         if (isset($subscription->quotas)) {
             foreach ($subscription->quotas as $quota) {
                 if (($quota->blocking === false && $quota->resource === 'analysis_count') ||
                     ($quota->blocking === true && $quota->resource === 'analysis_page_count')) {
 
-                    $subscriptioninfos .= '<li>' . get_string('subscription_' . $quota->resource, 'plagiarism_cmp', $quota) . '</li>';
+                    $subscriptioninfos .= '<li>'
+                            . get_string('subscription_' . $quota->resource, 'plagiarism_compilatio', $quota) .
+                        '</li>';
                 }
             }
         }
 
         echo $OUTPUT->notification(
-            '<p>' . get_string('enabledandworking', 'plagiarism_cmp') . '</p>'
-            . get_string('subscription', 'plagiarism_cmp') . "<ul style='margin: 0;'>" . $subscriptioninfos . '</ul>',
+            '<p>' . get_string('enabledandworking', 'plagiarism_compilatio') . '</p>'
+            . get_string('subscription', 'plagiarism_compilatio') . "<ul style='margin: 0;'>" . $subscriptioninfos . '</ul>',
             'notifysuccess'
         );
     } else {
         // Disable compilatio as this config isn't correct.
-        set_config('enabled', 0, 'plagiarism_cmp');
-        echo $OUTPUT->notification(get_string('saved_config_failed', 'plagiarism_cmp') . ' ' . $validapikey);
+        set_config('enabled', 0, 'plagiarism_compilatio');
+        if ($CFG->version < 2020061500) {
+            set_config('compilatio_use', 0, 'plagiarism');
+        }
+        echo $OUTPUT->notification(get_string('saved_config_failed', 'plagiarism_compilatio') . ' ' . $validapikey);
     }
 }
 
