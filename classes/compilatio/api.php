@@ -665,11 +665,20 @@ class CompilatioAPI {
     }
 
     private function call_api($endpoint, $method = null, $data = null, $handle = null, $header = []) {
+        // To delete.
+        global $CFG;
+
         $ch = curl_init();
+
+        // To delete.
+        $fp = fopen($CFG->dataroot . '/temp/compilatio/curllog.txt', 'a+');
 
         $params = [
             CURLOPT_URL => $this->urlrest . $endpoint,
             CURLOPT_RETURNTRANSFER => true,
+
+            CURLOPT_VERBOSE => 1,// To delete.
+            CURLOPT_STDERR => $fp,// To delete.
         ];
 
         $header[] = 'X-Auth-Token: ' . $this->apikey;

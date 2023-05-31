@@ -74,22 +74,22 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                     $dbman->create_table($table);
                     echo("create table '" . $tablename . "'");
                 }
-                if ($matches[1] == 'not expected') {
+                /*if ($matches[1] == 'not expected') {
                     $table = new xmldb_table($tablename);
                     $dbman->drop_table($table);
                     echo("drop table '" . $tablename . "'");
-                }
+                }*/
             }
 
             // Fields changes.
             if (preg_match("/^column '(.*?)' (.*?)(,| '| \(|$)/", $message, $matches)) {
                 $table = new xmldb_table($tablename);
 
-                if (strpos($matches[2], 'is not expected') === 0) {
+                /*if (strpos($matches[2], 'is not expected') === 0) {
                     $field = new xmldb_field($matches[1]);
                     $dbman->drop_field($table, $field);
                     echo("drop field '" . $matches[1] . "'");
-                }
+                }*/
 
                 $field = $schema->getTable($tablename)->getField($matches[1]);
                 if ($matches[2] == 'is missing') {
@@ -114,7 +114,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
             // Indexes changes.
             if (preg_match("/^(.*?) index '(.*?)'/", $message, $matches)) {
                 $table = new xmldb_table($tablename);
-                if ($matches[1] == 'Unexpected') {
+                /*if ($matches[1] == 'Unexpected') {
                     $indexes        = $DB->get_indexes($tablename);
                     $indexname      = $matches[2];
                     $indextype      = $indexes[$matches[2]]['unique'];
@@ -122,7 +122,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                     $index          = new xmldb_index($indexname, $indextype, $indexfields);
                     $dbman->drop_index($table, $index);
                     echo("drop index '" . $matches[2] . "'");
-                }
+                }*/
                 if ($matches[1] == 'Missing') {
                     if (($index = $schema->getTable($tablename)->getIndex($matches[2])) !== null) {
                         $dbman->add_index($table, $index);
@@ -139,7 +139,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         echo("</p>");
     }
     echo("<p>Compilatio tables structure has been checked.</p>");
-    echo $OUTPUT->box_end();
+    //echo $OUTPUT->box_end();
 
     if ($oldversion <= 2015081400) {
         $DB->execute("UPDATE {plagiarism_compilatio_config} SET value='1' WHERE name='compilatio_analysistype' AND cm=0");
@@ -223,15 +223,34 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021062300, 'plagiarism', 'compilatio');
     }
 
-    if ($oldversion < 2023012300) {
+    if ($oldversion < 2023060000) {
         // API key.
         $apiconfigs = $DB->get_records('plagiarism_compilatio_apicon');
         foreach ($apiconfigs as $apiconfig) {
             set_config('v2apikey', $apiconfig->api_key, 'plagiarism_compilatio');
         }
 
+        // Plugin settings.
+        $settings = [
+            'allow_analyses_auto' => 'enable_analyses_auto',
+            'allow_teachers_to_show_reports' => 'enable_show_reports',
+            'allow_student_analyses' => 'enable_student_analyses',
+            'allow_search_tab' => 'enable_search_tab'
+        ];
+
+        foreach ($settings as $oldsetting => $newsetting) {
+            $value = get_config('plagiarism_compilatio', $oldsetting);
+            set_config($newsetting, $value, 'plagiarism_compilatio');
+        }
+
+        $settings = ['nb_mots_max', 'nb_mots_min', 'file_max_size', 'apiconfigid', 'idgroupe'];
+
+        foreach ($settings as $setting) {
+            unset_config('plagiarism_compilatio', $setting);
+        }
+
         // Course modules config.
-        $cmids = $DB->get_records_sql("SELECT DISTINCT cm FROM {plagiarism_compilatio_config}");
+        $cmids = $DB->get_fieldset_sql("SELECT DISTINCT cm FROM {plagiarism_compilatio_config}");
 
         foreach ($cmids as $cmid) {
             $config = $DB->get_records_menu('plagiarism_compilatio_config', ['cm' => $cmid], '', 'name, value');
@@ -282,8 +301,8 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
             foreach ($files as $file) {
                 $status = [
-                    201 => 'send',
-                    202 => 'send',
+                    201 => 'sent',
+                    202 => 'sent',
                     203 => 'analyzing',
                     404 => 'error_not_found',
                     412 => 'error_too_short',
@@ -297,23 +316,10 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                     'pending' => 'error_sending_failed'
                 ];
 
-                if (strpos($file->filename, '.htm') !== false) {
+                if (preg_match('~^post-\d+-\d+-\d+.htm$~', $file->filename)) {  
+                    $filename = 'forum' . substr($file->filename, strrpos($file->filename, '-'));
 
-                    $sql = "SELECT {$modulename}.name AS 'moduletitle', modules.name AS 'moduletype'
-                        FROM {course_modules} course_modules
-                        JOIN {modules} modules ON modules.id = course_modules.module
-                        JOIN {{$modulename}} {$modulename}
-                            ON course_modules.instance = {$modulename}.id AND modules.name = '{$modulename}'
-                        WHERE course_modules.id = ?";
-                    $mod = $DB->get_field_sql($sql, [$file->cm]);
-
-                    $filename = $mod->moduletitle;
-
-                    if (isset($file->objectid)) {
-                        $filename .= '-' . $file->objectid . '.htm';
-                    }
-
-                    switch ($mod->moduletype) {
+                    /*switch ($mod->moduletype) {
                         // SHA1 content ??? => foreach = caca.
                         case 'assign':
                             $filename .= $DB->get_field('assignsubmission_onlinetext', 'onlinetext', ['submission' => $objectid]);
@@ -333,16 +339,18 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                                 WHERE quiz.id = ? AND qa.questionid = ?";
                             $filename  = $DB->get_field_sql($sql, [$objectid, $questionid]);
                             break;
-                    }
+                    }*/
+                } else {
+                    $filename = $file->filename;
                 }
 
-                $reporturl = preg_match('/^[a-f0-9]{40}$/', $file->reporturl) ? $file->reporturl : null;
+                $reporturl = preg_match('/^[a-f0-9]{40}$/', $file->reporturl) ? null : $file->reporturl;
 
                 $v3file = (object) [
                     'cm'              => $file->cm,
                     'userid'          => $file->userid,
                     'identifier'      => $file->identifier,
-                    'filename'        => $file->filename,
+                    'filename'        => $filename,
                     'externalid'      => $file->externalid,
                     'status'          => $status[$file->statuscode],
                     'similarityscore' => $file->similarityscore,
@@ -356,8 +364,55 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
             }
         } while (1);
 
-        upgrade_plugin_savepoint(true, 2023012300, 'plagiarism', 'compilatio');
+        upgrade_plugin_savepoint(true, 2023060000, 'plagiarism', 'compilatio');
     }
+
+    foreach ($compilatiodbchecks as $tablename => $results) {
+
+        echo("<h4>" . $tablename . "</h4><p>");
+
+        foreach ($results as $message) {
+            echo($message . " => ");
+
+            // Tables changes.
+            if (preg_match("/^table is (.*)/", $message, $matches)) {
+                if ($matches[1] == 'not expected') {
+                    $table = new xmldb_table($tablename);
+                    $dbman->drop_table($table);
+                    echo("drop table '" . $tablename . "'");
+                }
+            }
+
+            // Fields changes.
+            if (preg_match("/^column '(.*?)' (.*?)(,| '| \(|$)/", $message, $matches)) {
+                $table = new xmldb_table($tablename);
+
+                if (strpos($matches[2], 'is not expected') === 0) {
+                    $field = new xmldb_field($matches[1]);
+                    $dbman->drop_field($table, $field);
+                    echo("drop field '" . $matches[1] . "'");
+                }
+            }
+
+            // Indexes changes.
+            if (preg_match("/^(.*?) index '(.*?)'/", $message, $matches)) {
+                $table = new xmldb_table($tablename);
+                if ($matches[1] == 'Unexpected') {
+                    $indexes        = $DB->get_indexes($tablename);
+                    $indexname      = $matches[2];
+                    $indextype      = $indexes[$matches[2]]['unique'];
+                    $indexfields    = $indexes[$matches[2]]['columns'];
+                    $index          = new xmldb_index($indexname, $indextype, $indexfields);
+                    $dbman->drop_index($table, $index);
+                    echo("drop index '" . $matches[2] . "'");
+                }
+            }
+
+            echo("<br />");
+        }
+        echo("</p>");
+    }
+    echo("<p>Compilatio tables structure has been checked.</p>");
 
     return true;
 }

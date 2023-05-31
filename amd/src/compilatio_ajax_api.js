@@ -89,7 +89,6 @@ define(['jquery'], function($) {
                 refreshScoreBtn.on("mouseover", (e) => {
                     refreshScoreBtn.find('i').removeClass('fa-circle').addClass('fa-refresh');
                 });
-
                 refreshScoreBtn.on("mouseout", (e) => {
                     refreshScoreBtn.find('i').removeClass('fa-refresh').addClass('fa-circle');
                 });

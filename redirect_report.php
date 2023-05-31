@@ -66,13 +66,11 @@ if ($isteacher) {
 
     $lang = substr(current_language(), 0, 2);
     $lang = in_array($lang, ['fr', 'en', 'it', 'es', 'de', 'pt']) ? $lang : 'fr';
-    error_log('coucou');
+
     if (isset($doc->analyses->anasim->id)) {
-        error_log('coucou2');
         $filepath = $compilatio->get_pdf_report($doc->analyses->anasim->id, $lang, $reporttype);
 
         if (is_file($filepath)) {
-            error_log('coucou3');
             header('HTTP/1.1 200 OK');
             header('Date: ' . date('D M j G:i:s T Y'));
             header('Last-Modified: ' . date('D M j G:i:s T Y'));

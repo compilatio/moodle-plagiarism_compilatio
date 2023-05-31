@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 require_once($CFG->dirroot . '/lib/formslib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/settings.php');
 
 /**
  * Setup form class
@@ -145,7 +146,7 @@ class compilatio_defaults_form extends moodleform {
      */
     protected function definition() {
         $mform = & $this->_form;
-        compilatio_get_form_elements($mform, true);
+        CompilatioSettings::get_form_elements($mform, true);
         $this->add_action_buttons(true);
     }
 }

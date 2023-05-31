@@ -34,5 +34,4 @@ require_login();
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
 
-
 echo json_encode(CompilatioStatistics::get_global_statistics());
