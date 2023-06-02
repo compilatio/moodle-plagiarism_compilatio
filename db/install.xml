@@ -23,9 +23,6 @@
         <KEY NAME="cm" TYPE="foreign" FIELDS="cm" REFTABLE="course_modules" REFFIELDS="id"/>
         <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
-      <INDEXES>
-        <INDEX NAME="mdl_cmp_files_extid" UNIQUE="true" FIELDS="externalid"/>
-      </INDEXES>
     </TABLE>
     <TABLE NAME="plagiarism_compilatio_user" COMMENT="Used to store Compilatio user information">
       <FIELDS>

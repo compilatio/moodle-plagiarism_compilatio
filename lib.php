@@ -239,10 +239,7 @@ function compilatio_get_unsent_documents($cmid) {
 }
 
 /**
- * Check if Compilatio is enabled
- *  in moodle
- *  in this module type
- *  in this course module
+ * Check if Compilatio is enabled in moodle in this module type in this course module
  *
  * @param  int      $cmid Course module ID
  * @return boolean  Return true if enabled, false otherwise

@@ -201,7 +201,7 @@ class CompilatioDocumentFrame {
             $report = '';
             if ($canviewreport) {
                 $href = "{$CFG->httpswwwroot}/plagiarism/compilatio/redirect_report.php?docid={$cmpfile->externalid}&cmid={$cmpfile->cm}&type={$config->reporttype}";
-                    
+
                 // ADTD v2 document management.
                 if (isset($cmpfile->reporturl)) {
                     $href = $cmpfile->reporturl;
@@ -351,7 +351,7 @@ class CompilatioDocumentFrame {
             $color = 'red';
         }
 
-        return "<span 
+        return "<span
                     title='" . get_string('title_score', 'plagiarism_compilatio', $score) . "'
                     class='cmp-similarity cmp-similarity-" . $color . "'
                 >

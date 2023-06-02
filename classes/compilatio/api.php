@@ -104,6 +104,34 @@ class CompilatioAPI {
         return false;
     }
 
+    public function get_or_create_user($teacher = null) {
+        global $USER, $DB;
+
+        if (!isset($teacher)) {
+            $teacher = $USER;
+        }
+
+        // Check if user already exists in Compilatio.
+        $compilatioid = $this->get_user_by_email($teacher->email);
+
+        // Create the user if doesn't exists.
+        if ($compilatioid == 404) {
+            $lang = substr(current_language(), 0, 2);
+            $compilatioid = $this->set_user($teacher->firstname, $teacher->lastname, $teacher->email, $lang);
+        }
+
+        if (!preg_match('/^[a-f0-9]{40}$/', $compilatioid)) {
+            return null;
+        }
+
+        $user = new stdClass();
+        $user->compilatioid = $compilatioid;
+        $user->userid = $teacher->id;
+        $user->id = $DB->insert_record('plagiarism_compilatio_user', $user);
+
+        return $user;
+    }
+
     /**
      * Create Elastisafe user
      *
@@ -112,7 +140,7 @@ class CompilatioAPI {
      * @param   string  $email          User's email
      * @return  string                  Return the user's ID, an error message otherwise
      */
-    public function set_user($firstname, $lastname, $email, $lang) {
+    private function set_user($firstname, $lastname, $email, $lang) {
         $endpoint = '/api/private/user/create';
         $params = [
             'firstname' => $firstname,
@@ -157,7 +185,7 @@ class CompilatioAPI {
      * @param   string  $email          Teacher's moodle email
      * @return  string                  Return the user's ID if exist, an error message otherwise
      */
-    public function get_user_by_email($email) {
+    private function get_user_by_email($email) {
         $endpoint = '/api/private/user/lms/' . strtolower($email);
 
         $response = json_decode($this->call_api($endpoint));

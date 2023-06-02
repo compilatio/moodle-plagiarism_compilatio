@@ -241,12 +241,13 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         foreach ($settings as $oldsetting => $newsetting) {
             $value = get_config('plagiarism_compilatio', $oldsetting);
             set_config($newsetting, $value, 'plagiarism_compilatio');
+            unset_config($oldsetting, 'plagiarism_compilatio');
         }
 
         $settings = ['nb_mots_max', 'nb_mots_min', 'file_max_size', 'apiconfigid', 'idgroupe'];
 
         foreach ($settings as $setting) {
-            unset_config('plagiarism_compilatio', $setting);
+            unset_config($setting, 'plagiarism_compilatio');
         }
 
         // Course modules config.

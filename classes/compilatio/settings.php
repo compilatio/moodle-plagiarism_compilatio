@@ -58,6 +58,10 @@ class CompilatioSettings {
                 $cmconfig->cmid = $data->coursemodule;
             }
 
+
+            // Si activation pas de fichiers et userid et folderid vide => settage ???.
+
+
             if ($data->activated === '1') {
                 // Validation on thresholds.
                 if (!isset($data->warningthreshold, $data->criticalthreshold) ||
@@ -78,23 +82,7 @@ class CompilatioSettings {
 
                     if (empty($user)) {
                         $compilatio = new CompilatioAPI();
-
-                        // Check if user already exists in Compilatio.
-                        $compilatioid = $compilatio->get_user_by_email($USER->email);
-
-                        // Create the user if doesn't exists.
-                        if ($compilatioid == 404) {
-                            $lang = substr(current_language(), 0, 2);
-                            $compilatioid = $compilatio->set_user($USER->firstname, $USER->lastname, $USER->email, $lang);
-                        }
-
-                        $user = new stdClass();
-                        $user->compilatioid = $compilatioid;
-                        $user->userid = $USER->id;
-
-                        if (compilatio_valid_md5($compilatioid)) {
-                            $user->id = $DB->insert_record('plagiarism_compilatio_user', $user);
-                        }
+                        $user = $compilatio->get_or_create_user();
                     }
 
                     $cmconfig->userid = $user->compilatioid;
@@ -207,7 +195,7 @@ class CompilatioSettings {
                 $needtermsofservice = true;
             }
 
-            // ADTD v2 document management. 
+            // ADTD v2 document management.
             if (!empty($config) && null === $config->userid) {
                 $needtermsofservice = false;
             }

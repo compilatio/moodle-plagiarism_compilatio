@@ -122,7 +122,60 @@ class CompilatioEventHandler {
 
                 $keepfileindexed = boolval(get_config('plagiarism_compilatio', 'keep_docs_indexed'));
                 compilatio_delete_files($files, true, $keepfileindexed);
+
+                self::set_folder_and_user_if_not($event['courseid'], $modulename);
             }
+        }
+    }
+
+    // ADTD v2 course modules management.
+    private static function set_folder_and_user_if_not($courseid, $modulename) {
+        global $DB, $USER;
+
+        $sql = "SELECT cfg.*, {$modulename}.name FROM {plagiarism_compilatio_cm_cfg} cfg
+            JOIN {course_modules} course_modules ON cfg.cmid = course_modules.id
+            JOIN {modules} modules ON modules.id = course_modules.module
+            JOIN {{$modulename}} {$modulename} ON course_modules.instance = {$modulename}.id AND modules.name = '{$modulename}'
+            WHERE cfg.folderid IS NULL AND cfg.userid IS NULL AND course_modules.course = ? AND modules.name = ?";
+
+        $cmconfigs = $DB->get_records_sql($sql, [$courseid, $modulename]);
+
+        foreach ($cmconfigs as $cmconfig) {
+            $compilatio = new CompilatioAPI();
+
+            $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => 0]);
+
+            if (empty($user)) {
+                $domain = explode('@', $USER->email);
+                $domain = end($domain);
+                $globaluser = (object) [
+                    'firstname' => 'global user',
+                    'lastname' => 'moodle',
+                    'email' => 'moodleglobaluser@' . $domain,
+                    'id' => 0
+                ];
+                $user = $compilatio->get_or_create_user($globaluser);
+                $compilatio->set_user_id($user->compilatioid);
+                $compilatio->validate_terms_of_service();
+            }
+
+            $compilatio->set_user_id($user->compilatioid);
+
+            $cmconfig->userid = $user->compilatioid;
+
+            $folderid = $compilatio->set_folder(
+                $cmconfig->name,
+                $cmconfig->defaultindexing,
+                $cmconfig->analysistype,
+                $cmconfig->analysistime,
+                $cmconfig->warningthreshold,
+                $cmconfig->criticalthreshold
+            );
+            if (compilatio_valid_md5($folderid)) {
+                $cmconfig->folderid = $folderid;
+            }
+
+            $DB->update_record('plagiarism_compilatio_cm_cfg', $cmconfig);
         }
     }
 

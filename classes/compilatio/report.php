@@ -48,10 +48,10 @@ class CompilatioReport {
 
         $lang = substr(current_language(), 0, 2);
         $lang = in_array($lang, ['fr', 'en', 'it', 'es', 'de', 'pt']) ? $lang : 'fr';
-    
+
         if (isset($doc->analyses->anasim->id)) {
             $filepath = $compilatio->get_pdf_report($doc->analyses->anasim->id, $lang, $reporttype);
-    
+
             if (is_file($filepath)) {
                 header('HTTP/1.1 200 OK');
                 header('Date: ' . date('D M j G:i:s T Y'));
