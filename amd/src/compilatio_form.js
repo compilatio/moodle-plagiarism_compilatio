@@ -7,8 +7,8 @@ define(['jquery'], function($) {
 
     exports.afterPercentValues = function(strSimilarityPercent, strRedTreshold) {
         $(document).ready(function() {
-            var txtGreen = $('<span>', {'class': 'cmp-ml-10'}).text(strSimilarityPercent);
-            var txtOrange = $('<span>', {'class': 'cmp-ml-10'}).text(strSimilarityPercent + ', ' + strRedTreshold + '.');
+            var txtGreen = $('<span>', {'class': 'ml-2'}).text(strSimilarityPercent);
+            var txtOrange = $('<span>', {'class': 'ml-2'}).text(strSimilarityPercent + ', ' + strRedTreshold + '.');
             $('#warningthreshold').after(txtGreen);
             $('#criticalthreshold').after(txtOrange);
         });

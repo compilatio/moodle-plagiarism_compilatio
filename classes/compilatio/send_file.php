@@ -18,16 +18,13 @@
  * send_file.php - Contains methods to send files.
  *
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * CompilatioSendFile class
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');

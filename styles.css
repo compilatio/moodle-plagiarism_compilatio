@@ -34,16 +34,7 @@
     color: #494c4e;
 }
 
-/* Icon Spacing and Sizing */
-.cmp-ml-10 {
-    margin-left: 10px;
-}
-.cmp-ml-5 {
-    margin-left: 5px;
-}
-.cmp-mr-10 {
-    margin-right: 10px;
-}
+/* Icon sizing */
 .cmp-icon-lg {
   font-size: 1.2em !important;
   vertical-align: middle;
@@ -70,10 +61,6 @@ Compilatio frame area
     color: #202121;
 }
 
-#cmp-tabs-separator {
-  margin: 1rem 0;
-  border-bottom: 2px solid #EBEBF0;
-}
 .cmp-tabs-content {
     display: none;
 }
@@ -94,23 +81,6 @@ Compilatio frame area
   left: -5px;
 }
 
-.cmp-badge {
-    color: #fff;
-    border-radius: 20px;
-    padding: 3px 6px;
-    font-weight: bold;
-    font-size: 11px;
-}
-.cmp-badge-info {
-    background-color: #006fbf;
-}
-.cmp-badge-danger {
-    background-color: #dc3545;
-}
-.cmp-badge-success {
-    background-color: #38ba7d;
-}
-
 #cmp-container {
     flex: 1 0 auto;
     display: flex;
@@ -123,14 +93,6 @@ Compilatio frame area
     border-radius: 4px;
     margin: 70px 5% 10px 5%;
     color: #444;
-}
-
-#cmp-planned-analyses {
-    border-top: 2px solid #EBEBF0;
-    text-align: center;
-    font-style: italic;
-    margin-top: 7px;
-    padding-top: 5px;
 }
 
 .cmp-alert {
@@ -284,15 +246,6 @@ a.cmp-btn-primary:hover {
 }
 
 /* Similarities */
-.cmp-similarity-green {
-    color: #38ba7d;
-}
-.cmp-similarity-orange {
-    color: #f39c12;
-}
-.cmp-similarity-red {
-    color: #f34541;
-}
 .cmp-similarity {
     cursor: pointer;
     margin: 0 5px;

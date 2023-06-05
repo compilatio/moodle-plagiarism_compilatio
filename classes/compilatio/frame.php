@@ -18,9 +18,8 @@
  * frame.php - Contains method to get Compilatio Frame.
  *
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,8 +30,6 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/csv.php'
 
 /**
  * CompilatioFrame class
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioFrame {
 
@@ -141,7 +138,7 @@ class CompilatioFrame {
             if ($countunsend !== 0) {
                 $alerts[] = [
                     'class' => 'danger',
-                    'content' => get_string('unsent_documents', 'plagiarism_compilatio')
+                    'content' => get_string('unsent_docs', 'plagiarism_compilatio')
                 ];
                 $sendalldocs = true;
             }
@@ -221,7 +218,7 @@ class CompilatioFrame {
             $output .= "<div id='cmp-show-notifications' title='";
             $output .= get_string('display_notifications', 'plagiarism_compilatio');
             $output .= "' class='cmp-icon active' ><i class='fa fa-bell fa-2x'></i>";
-            $output .= "<span id='cmp-count-alerts' class='cmp-badge cmp-badge-danger'>" . count($alerts) . "</span></div>";
+            $output .= "<span id='cmp-count-alerts' class='badge badge-pill badge-danger'>" . count($alerts) . "</span></div>";
         }
 
         if ($plagiarismsettings['enable_search_tab']) {
@@ -242,7 +239,7 @@ class CompilatioFrame {
             if ($startallanalyses) {
                 $output .= "<button class='cmp-btn-lg cmp-btn-primary cmp-start-btn' >
                         " . get_string('start_all_analysis', 'plagiarism_compilatio') . "
-                        <i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
+                        <i class='cmp-icon-lg ml-2 fa fa-play-circle'></i>
                     </button>";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
                     [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
@@ -251,7 +248,7 @@ class CompilatioFrame {
             if ($sendalldocs) {
                 $output .= "<button class='cmp-btn-lg cmp-btn-primary cmp-send-btn' >
                         " . get_string('send_all_documents', 'plagiarism_compilatio') . "
-                        <i class='cmp-icon-lg cmp-ml-10 fa fa-play-circle'></i>
+                        <i class='cmp-icon-lg ml-2 fa fa-play-circle'></i>
                     </button>";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'sendUnsentDocs',
                     [$CFG->httpswwwroot, $cmid, get_string('send_documents_in_progress', 'plagiarism_compilatio')]);
@@ -260,7 +257,7 @@ class CompilatioFrame {
             if ($resetdocsinerror) {
                 $output .= "<button class='cmp-btn-lg cmp-btn-primary cmp-reset-btn' >
                         " . get_string('reset_docs_in_error', 'plagiarism_compilatio') . "
-                        <i class='cmp-icon-lg cmp-ml-10 fa fa-rotate-right'></i>
+                        <i class='cmp-icon-lg ml-2 fa fa-rotate-right'></i>
                     </button>";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'resetDocsInError',
                     [$CFG->httpswwwroot, $cmid, get_string('reset_docs_in_error_in_progress', 'plagiarism_compilatio')]);
@@ -269,7 +266,7 @@ class CompilatioFrame {
 
         $output .= "</div>";
 
-        $output .= "<div id='cmp-tabs-separator'></div>";
+        $output .= "<div class='border-bottom my-3 mx-0'></div>";
 
         // Home tab.
         $output .= "<div id='cmp-home' class='cmp-tabs-content'>
@@ -290,15 +287,15 @@ class CompilatioFrame {
             $output .= "<p>
                 <a href='../../plagiarism/compilatio/helpcenter.php?userid=" . $user->compilatioid . "' target='_blank' >"
                     . get_string('helpcenter', 'plagiarism_compilatio') .
-                    "<i class='fa fa-external-link'></i>
+                    "<i class='ml-2 fa fa-external-link'></i>
                 </a>
             </p>";
         }
 
         $output .= "<p>
-            <a href='http://etat-services.compilatio.net/?lang=FR' target='_blank' >"
+            <a href='../../plagiarism/compilatio/helpcenter.php?page=service_status' target='_blank' >"
                 . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') .
-                "<i class='fa fa-external-link'></i>
+                "<i class='ml-2 fa fa-external-link'></i>
             </a>
             </p></div>";
 
@@ -371,7 +368,7 @@ class CompilatioFrame {
             if ($doc) {
                 $module = get_coursemodule_from_id(null, $doc->cm);
                 $doc->modulename = $module->name;
-                $output .= get_string('compilatio_author', 'plagiarism_compilatio', $doc);
+                $output .= get_string('compilatio_depositor', 'plagiarism_compilatio', $doc);
             } else {
                 $output .= get_string('compilatio_search_notfound', 'plagiarism_compilatio');
             }
@@ -381,7 +378,7 @@ class CompilatioFrame {
 
         // Display timed analysis date.
         if (isset($analysisdate)) {
-            $output .= "<span id='cmp-planned-analyses'>$analysisdate</span>";
+            $output .= "<span class='border-top pt-2 mt-2 text-center font-italic'>$analysisdate</span>";
         }
 
         $output .= "</div>";

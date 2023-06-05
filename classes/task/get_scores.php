@@ -15,22 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * get_scores.php - Contains Plagiarism plugin get_scores task.
+ * get_scores.php - Contains get_scores task.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace plagiarism_compilatio\task;
 
 /**
- * Task class
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Get_scores task class
  */
 class get_scores extends \core\task\scheduled_task {
 

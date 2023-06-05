@@ -15,13 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * update_meta.php - Contains Plagiarism plugin update_meta task.
+ * update_meta.php - Contains update_meta task.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,9 +28,7 @@ namespace plagiarism_compilatio\task;
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 /**
- * Task class
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Update_meta task class
  */
 class update_meta extends \core\task\scheduled_task {
 
@@ -75,13 +71,20 @@ class update_meta extends \core\task\scheduled_task {
 
         // Update compilatio config.
         $config = $compilatio->get_config();
-        set_config('min_word', $config->minDocumentWord, 'plagiarism_compilatio');
-        set_config('max_word', $config->maxDocumentWord, 'plagiarism_compilatio');
-        set_config('max_size', $config->maxDocumentSize, 'plagiarism_compilatio');
+        if (!empty($config)) {
+            set_config('min_word', $config->minDocumentWord, 'plagiarism_compilatio');
+            set_config('max_word', $config->maxDocumentWord, 'plagiarism_compilatio');
+            set_config('max_size', $config->maxDocumentSize, 'plagiarism_compilatio');
 
-        set_config('helpcenter_admin', $config->zendeskPages->moodle_admin, 'plagiarism_compilatio');
-        set_config('helpcenter_teacher', $config->zendeskPages->moodle_teacher, 'plagiarism_compilatio');
+            set_config('helpcenter_admin', $config->zendeskPages->moodle_admin, 'plagiarism_compilatio');
+            set_config('helpcenter_teacher', $config->zendeskPages->moodle_teacher, 'plagiarism_compilatio');
+            set_config('helpcenter_service_status', $config->zendeskPages->service_status, 'plagiarism_compilatio');
+        }
 
-        set_config('file_types', json_encode($compilatio->get_allowed_file_types()), 'plagiarism_compilatio');
+        $filetypes = $compilatio->get_allowed_file_types();
+
+        if (!empty($filetypes)) {
+            set_config('file_types', json_encode($filetypes), 'plagiarism_compilatio');
+        }
     }
 }

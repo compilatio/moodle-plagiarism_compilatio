@@ -15,14 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * lib.php - Contains Plagiarism plugin specific functions called by Modules.
+ * lib.php - Contains inherited plagiarism class and specific functions and callbacks called by Moodle.
  *
- * @since 2.0
- * @package    plagiarism_compilatio
- * @subpackage plagiarism
- * @author     Dan Marsden <dan@danmarsden.com>
- * @copyright  2012 Dan Marsden http://danmarsden.com
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   plagiarism_compilatio
+ * @author    Compilatio <support@compilatio.net>
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
@@ -38,8 +36,6 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/settings
 
 /**
  * Compilatio Class
- * @copyright  2012 Dan Marsden http://danmarsden.com
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plagiarism_plugin_compilatio extends plagiarism_plugin {
     /**

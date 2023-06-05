@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * plagiarism.php - allows the admin to configure plagiarism stuff
+ * settings.php - allows the admin to configure plugin global settings
  *
  * @package   plagiarism_compilatio
- * @author    Dan Marsden <dan@danmarsden.com>
- * @copyright 2012 Dan Marsden http://danmarsden.com
+ * @author    Compilatio <support@compilatio.net>
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 use plagiarism_compilatio\task\update_meta;
@@ -138,15 +138,12 @@ if (!empty($plagiarismsettings['enabled'])) {
 
         echo $OUTPUT->notification(
             '<p>' . get_string('enabledandworking', 'plagiarism_compilatio') . '</p>'
-            . get_string('subscription', 'plagiarism_compilatio') . "<ul style='margin: 0;'>" . $subscriptioninfos . '</ul>',
+            . get_string('subscription', 'plagiarism_compilatio') . "<ul class='m-0'>" . $subscriptioninfos . '</ul>',
             'notifysuccess'
         );
     } else {
         // Disable compilatio as this config isn't correct.
         set_config('enabled', 0, 'plagiarism_compilatio');
-        if ($CFG->version < 2020061500) {
-            set_config('compilatio_use', 0, 'plagiarism');
-        }
         echo $OUTPUT->notification(get_string('saved_config_failed', 'plagiarism_compilatio') . ' ' . $validapikey);
     }
 }

@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * stats_json.php - Generates global statistics about the assignments
+ * stats_json.php - Generates global statistics about the course modules
  *
  * @package   plagiarism_compilatio
- * @author    Dan Marsden <dan@danmarsden.com>
- * @copyright 2012 Dan Marsden http://danmarsden.com
+ * @author    Compilatio <support@compilatio.net>
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once(dirname(dirname(__FILE__)) . '/../config.php');

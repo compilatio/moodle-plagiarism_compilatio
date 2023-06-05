@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * plagiarism.php - allows the admin to configure plagiarism stuff
+ * autodiagnosis.php - check that the plugin is working properly
  *
  * @package   plagiarism_compilatio
- * @author    Dan Marsden <dan@danmarsden.com>
- * @copyright 2012 Dan Marsden http://danmarsden.com
+ * @author    Compilatio <support@compilatio.net>
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * analyses.php - Contains methods to start an analysis and get the analysis result.
+ * settings.php - Contains methods to display and save settings.
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
@@ -30,8 +30,6 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php'
 
 /**
  * CompilatioSettings class
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioSettings {
     /**
@@ -57,10 +55,6 @@ class CompilatioSettings {
                 $cmconfig = new stdClass();
                 $cmconfig->cmid = $data->coursemodule;
             }
-
-
-            // Si activation pas de fichiers et userid et folderid vide => settage ???.
-
 
             if ($data->activated === '1') {
                 // Validation on thresholds.
@@ -343,7 +337,7 @@ class CompilatioSettings {
                 $mform->disabledif('studentanalyses', 'submissiondrafts', 'eq', '0');
 
                 $group = [];
-                $group[] = $mform->createElement('html', "<p style='color: #b94a48;'>" .
+                $group[] = $mform->createElement('html', "<p class='text-danger'>" .
                     get_string(
                         'activate_submissiondraft',
                         'plagiarism_compilatio',
@@ -376,7 +370,7 @@ class CompilatioSettings {
         $mform->addElement(
             'text',
             'warningthreshold',
-            get_string('warningthreshold', 'plagiarism_compilatio'),
+            get_string('green_threshold', 'plagiarism_compilatio'),
             "size='5' id='warningthreshold'"
         );
         $mform->addElement('html', '<noscript>' . get_string('similarity_percent', 'plagiarism_compilatio') . '</noscript>');
@@ -384,7 +378,7 @@ class CompilatioSettings {
         $mform->addElement(
             'text',
             'criticalthreshold',
-            get_string('criticalthreshold', 'plagiarism_compilatio'),
+            get_string('orange_threshold', 'plagiarism_compilatio'),
             "size='5' id='criticalthreshold'"
         );
 
@@ -396,12 +390,12 @@ class CompilatioSettings {
 
         // Max file size / min words / max words.
         $size = (get_config('plagiarism_compilatio', 'max_size') / 1024 / 1024);
-        $mform->addElement('html', '<p>' . get_string('max_file_size_allowed', 'plagiarism_compilatio', $size) . '</p>');
+        $mform->addElement('html', '<p>' . get_string('max_file_size', 'plagiarism_compilatio', $size) . '</p>');
 
         $word = new stdClass();
         $word->max = get_config('plagiarism_compilatio', 'max_word');
         $word->min = get_config('plagiarism_compilatio', 'min_word');
-        $mform->addElement('html', '<p>' . get_string('min_max_word_required', 'plagiarism_compilatio', $word) . '</p>');
+        $mform->addElement('html', '<p>' . get_string('word_limits', 'plagiarism_compilatio', $word) . '</p>');
 
         // File types allowed.
         $filetypes = json_decode(get_config('plagiarism_compilatio', 'file_types'));

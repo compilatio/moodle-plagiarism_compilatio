@@ -15,13 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This script redirects to Compilatio helpcenter
+ * This script redirects to Compilatio helpcenter - It is called from assignments pages or plugin administration section
  *
- * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * It is called from assignments pages or plugin administration section
- *
+ * @package   plagiarism_compilatio
+ * @author    Compilatio <support@compilatio.net>
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
@@ -32,7 +31,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php'
 require_login();
 
 // Check GET parameter.
-$availpages = ['admin', 'teacher'];
+$availpages = ['admin', 'teacher', 'service_status'];
 
 $page = optional_param('page', 'teacher', PARAM_RAW);
 $userid = optional_param('userid', null, PARAM_RAW);
@@ -41,10 +40,17 @@ if (in_array($page, $availpages) === false) {
     $page = 'teacher';
 }
 
+$helpcenterpage = get_config('plagiarism_compilatio', 'helpcenter_' . $page);
+
+if ($page == 'service_status') {
+    $lang = substr(current_language(), 0, 2);
+    $lang = in_array($lang, ['fr', 'en', 'it', 'es', 'de', 'pt']) ? $lang : 'fr';
+    header("Location: https://support.compilatio.net/hc/{$lang}/" . $helpcenterpage);
+    exit;
+}
+
 $compilatio = new CompilatioAPI($userid);
 $token = $compilatio->get_zendesk_jwt();
-
-$helpcenterpage = get_config('plagiarism_compilatio', 'helpcenter_' . $page);
 
 header('Location: https://compilatio.zendesk.com/access/jwt?jwt=' . $token . '&return_to=' . urlencode($helpcenterpage));
 exit;

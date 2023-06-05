@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * help.php - Display help for the administrator
+ * help.php - Display help links for the administrator
  *
  * @package   plagiarism_compilatio
- * @author    Dan Marsden <dan@danmarsden.com>
- * @copyright 2012 Dan Marsden http://danmarsden.com
+ * @author    Compilatio <support@compilatio.net>
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -58,7 +58,7 @@ if ($validapikey === true) {
         . "<a href='https://support.compilatio.net/'>https://support.compilatio.net</a>");
 }
 echo("<p class='mt-3'>
-        <a href='http://etat-services.compilatio.net/?lang=FR' target='_blank' >
+        <a href='helpcenter.php?page=service_status' target='_blank' >
             " . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') . "
             <i class='fa fa-external-link'></i>
         </a>

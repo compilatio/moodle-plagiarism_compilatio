@@ -17,10 +17,8 @@
 /**
  * Start a document analysis via Compilatio API
  *
- * This script is called by amd/build/ajax_api.js
- *
- * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param string $_POST['docId']
  */
@@ -49,7 +47,7 @@ $res = new StdClass();
 
 if ($status == 'queue') {
     $res->documentFrame = "<div title='" . get_string('title_' . $status, 'plagiarism_compilatio') . "' class='cmp-btn-secondary'>
-            <i class='cmp-icon-lg cmp-mr-10 cmp-ml-5 fa fa-spinner fa-spin'></i>"
+            <i class='cmp-icon-lg mx-2 fa fa-spinner fa-spin'></i>"
             . get_string('btn_' . $status, 'plagiarism_compilatio') .
         "</div>";
     $res->bgcolor = 'primary';
@@ -62,7 +60,7 @@ if ($status == 'queue') {
 
     $res->documentFrame =
         "<div title='" . get_string('title_' . $status, 'plagiarism_compilatio', $value ?? null) . "' class='cmp-btn-error'>
-            <i class='cmp-mr-10 cmp-ml-5 fa fa-exclamation-triangle'></i>" . get_string('btn_error', 'plagiarism_compilatio') .
+            <i class='mx-2 fa fa-exclamation-triangle'></i>" . get_string('btn_error', 'plagiarism_compilatio') .
         "</div>";
     $res->bgcolor = 'error';
 } else {

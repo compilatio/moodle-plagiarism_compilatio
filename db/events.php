@@ -15,13 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * events.php - Contains Plagiarism plugin array who list event catched by the plugin.
+ * events.php - Contains array who list event catched by the plugin.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

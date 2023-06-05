@@ -15,13 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * compilatio_form.php - Contains Plagiarism plugin helper methods for communicate with the web service.
+ * compilatio_form.php - Contains plugin global settings form.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -50,8 +48,8 @@ class compilatio_setup_form extends moodleform {
         $mform->addElement('html', get_string('compilatioexplain', 'plagiarism_compilatio'));
         $mform->addElement('checkbox', 'enabled', get_string('activate_compilatio', 'plagiarism_compilatio'));
 
-        $mform->addElement('html', '<p style="font-size: 12px;font-style: italic;">' .
-                           get_string("disclaimer_data", "plagiarism_compilatio") . '</p>');
+        $mform->addElement('html', '<p><small class="font-italic">' .
+                           get_string("disclaimer_data", "plagiarism_compilatio") . '</small></p>');
 
         $mform->addElement('text', 'apikey', get_string('apikey', 'plagiarism_compilatio'));
         $mform->setType('apikey', PARAM_RAW);
@@ -117,13 +115,13 @@ class compilatio_setup_form extends moodleform {
         $radioarray[] = $mform->createElement('radio',
             'owner_file', '', get_string('owner_file_school', 'plagiarism_compilatio'), 1);
         $radioarray[] = $mform->createElement('html',
-            '<p style="font-size: 12px;font-style: italic;">'
-            . get_string("owner_file_school_details", "plagiarism_compilatio") . '</p>');
+            '<small class="font-italic mb-3">'
+            . get_string("owner_file_school_details", "plagiarism_compilatio") . '</small>');
         $radioarray[] = $mform->createElement('radio',
             'owner_file', '', get_string('owner_file_student', 'plagiarism_compilatio'), 0);
         $radioarray[] = $mform->createElement('html',
-            '<p style="font-size: 12px;font-style: italic;">'
-            . get_string("owner_file_student_details", "plagiarism_compilatio") . '</p>');
+            '<small class="font-italic mb-3">'
+            . get_string("owner_file_student_details", "plagiarism_compilatio") . '</small>');
 
         $mform->addGroup($radioarray, 'owner_file', get_string('owner_file', 'plagiarism_compilatio'), [''], false);
         $mform->setDefault('owner_file', 1);

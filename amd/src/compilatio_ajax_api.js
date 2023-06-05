@@ -85,19 +85,21 @@ define(['jquery'], function($) {
             el.empty().append(button);
 
             setTimeout(e => {
-                var refreshScoreBtn = $('#cmp-' + domid + ' .cmp-similarity');
-                refreshScoreBtn.on("mouseover", (e) => {
-                    refreshScoreBtn.find('i').removeClass('fa-circle').addClass('fa-refresh');
-                });
-                refreshScoreBtn.on("mouseout", (e) => {
-                    refreshScoreBtn.find('i').removeClass('fa-refresh').addClass('fa-circle');
-                });
-                refreshScoreBtn.click(function() {
-                    refreshScoreBtn.empty();
-                    $.post(basepath + '/plagiarism/compilatio/ajax/update_score.php', {'docId': cmpfileid}, function(res) {
-                        refreshScoreBtn.replaceWith(res);
+                if (isteacher) {
+                    var refreshScoreBtn = $('#cmp-' + domid + ' .cmp-similarity');
+                    refreshScoreBtn.on("mouseover", (e) => {
+                        refreshScoreBtn.find('i').removeClass('fa-circle').addClass('fa-refresh');
                     });
-                });
+                    refreshScoreBtn.on("mouseout", (e) => {
+                        refreshScoreBtn.find('i').removeClass('fa-refresh').addClass('fa-circle');
+                    });
+                    refreshScoreBtn.click(function() {
+                        refreshScoreBtn.empty();
+                        $.post(basepath + '/plagiarism/compilatio/ajax/update_score.php', {'docId': cmpfileid}, function(res) {
+                            refreshScoreBtn.replaceWith(res);
+                        });
+                    });
+                }
 
                 var toogleIndexingStateBtn = $('#cmp-' + domid + ' .cmp-library');
                 toogleIndexingStateBtn.click(function() {

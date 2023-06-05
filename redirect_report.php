@@ -17,13 +17,10 @@
 /**
  * Get JWT to redirect user to report
  *
- * This script is called by amd/build/ajax_api.js
- *
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * @param   string $_POST['idDoc']
- * @return  string
+ * @package   plagiarism_compilatio
+ * @author    Compilatio <support@compilatio.net>
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');

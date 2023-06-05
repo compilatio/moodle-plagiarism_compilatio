@@ -18,7 +18,8 @@
  * provider.php - Privacy class for requesting and deleting user data
  *
  * @package    plagiarism_compilatio
- * @copyright  2019 Compilatio.net {@link https://www.compilatio.net}
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -46,9 +47,6 @@ use core_privacy\local\request\writer;
 
 /**
  * Class provider for exporting or deleting data
- *
- * @copyright  2019 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
     // This plugin has data and must therefore define the metadata provider in order to describe it.
@@ -86,38 +84,27 @@ class provider implements
         );
 
         $collection->add_database_table('plagiarism_compilatio_file', [
-            'id'                => 'privacy:metadata:plagiarism_compilatio_file:id',
-            'cm'                => 'privacy:metadata:plagiarism_compilatio_file:cm',
-            'userid'            => 'privacy:metadata:plagiarism_compilatio_file:userid',
-            'identifier'        => 'privacy:metadata:plagiarism_compilatio_file:identifier',
-            'filename'          => 'privacy:metadata:plagiarism_compilatio_file:filename',
-            'timesubmitted'     => 'privacy:metadata:plagiarism_compilatio_file:timesubmitted',
-            'status'            => 'privacy:metadata:plagiarism_compilatio_file:status',
-            'externalid'        => 'privacy:metadata:plagiarism_compilatio_file:externalid',
-            'similarityscore'   => 'privacy:metadata:plagiarism_compilatio_file:similarityscore',
-            'indexed'           => 'privacy:metadata:plagiarism_compilatio_file:indexed',
+            'userid'   => 'privacy:metadata:plagiarism_compilatio_file:userid',
+            'filename' => 'privacy:metadata:plagiarism_compilatio_file:filename'
         ], 'privacy:metadata:plagiarism_compilatio_file');
 
+        $collection->add_database_table('plagiarism_compilatio_user', [
+            'userid'       => 'privacy:metadata:plagiarism_compilatio_user:userid',
+            'compilatioid' => 'privacy:metadata:plagiarism_compilatio_user:compilatioid'
+        ], 'privacy:metadata:plagiarism_compilatio_user');
+
         $collection->add_external_location_link('External Compilatio Document', [
-            'lastname'          => 'privacy:metadata:external_compilatio_document:lastname',
-            'firstname'         => 'privacy:metadata:external_compilatio_document:firstname',
-            'email_adress'      => 'privacy:metadata:external_compilatio_document:email_adress',
-            'user_id'           => 'privacy:metadata:external_compilatio_document:user_id',
-            'filename'          => 'privacy:metadata:external_compilatio_document:filename',
-            'upload_date'       => 'privacy:metadata:external_compilatio_document:upload_date',
-            'id'                => 'privacy:metadata:external_compilatio_document:id',
-            'indexed'           => 'privacy:metadata:external_compilatio_document:indexed'
+            'authors'   => 'privacy:metadata:external_compilatio_document:authors',
+            'depositor' => 'privacy:metadata:external_compilatio_document:depositor',
+            'filename'  => 'privacy:metadata:external_compilatio_document:filename'
         ], 'privacy:metadata:external_compilatio_document');
 
-        $collection->add_external_location_link('External Compilatio Report', [
-            'id'                    => 'privacy:metadata:external_compilatio_report:id',
-            'doc_id'                => 'privacy:metadata:external_compilatio_report:doc_id',
-            'user_id'               => 'privacy:metadata:external_compilatio_report:user_id',
-            'start'                 => 'privacy:metadata:external_compilatio_report:start',
-            'end'                   => 'privacy:metadata:external_compilatio_report:end',
-            'state'                 => 'privacy:metadata:external_compilatio_report:state',
-            'plagiarism_percent'    => 'privacy:metadata:external_compilatio_report:plagiarism_percent'
-        ], 'privacy:metadata:external_compilatio_report');
+        $collection->add_external_location_link('External Compilatio User', [
+            'firstname' => 'privacy:metadata:external_compilatio_user:firstname',
+            'lastname'  => 'privacy:metadata:external_compilatio_user:lastname',
+            'email'     => 'privacy:metadata:external_compilatio_user:email',
+            'username'  => 'privacy:metadata:external_compilatio_user:username'
+        ], 'privacy:metadata:external_compilatio_user');
 
         return $collection;
     }

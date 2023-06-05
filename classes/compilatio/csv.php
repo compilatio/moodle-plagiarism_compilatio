@@ -18,16 +18,13 @@
  * csv.php - Contains methods to generate CSV files.
  *
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * Class to generate csv file
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioCsv {
 
@@ -115,16 +112,16 @@ class CompilatioCsv {
             $line["timesubmitted"] = date("d/m/y H:i:s", $file->timesubmitted);
 
             if ($file->status == "scored") {
-                $line["similarities_rate"] = $file->similarityscore;
+                $line["stats_score"] = $file->similarityscore;
             } else if ($file->status == "sent") {
                 if ($cmpcm->analysistype == 'manual') {
-                    $line["similarities_rate"] = get_string("manual_analysis", "plagiarism_compilatio");
+                    $line["stats_score"] = get_string("manual_analysis", "plagiarism_compilatio");
                 } else if ($cmpcm->analysistype == 'planned') {
                     $date = userdate($cmpcm->analysistime);
-                    $line["similarities_rate"] = get_string("title_planned", "plagiarism_compilatio", $date);
+                    $line["stats_score"] = get_string("title_planned", "plagiarism_compilatio", $date);
                 }
             } else {
-                $line["similarities_rate"] = get_string("title_" . $file->status, "plagiarism_compilatio");
+                $line["stats_score"] = get_string("title_" . $file->status, "plagiarism_compilatio");
             }
 
             if ($csv === $head) {

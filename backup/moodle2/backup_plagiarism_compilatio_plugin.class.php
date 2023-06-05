@@ -17,18 +17,14 @@
 /**
  * backup_plagiarism_compilatio_plugin.class.php - Contains Plagiarism plugin methods to backup the plugin.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * Backup class
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
 

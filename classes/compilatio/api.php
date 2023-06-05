@@ -18,16 +18,13 @@
  * api.php - Contains methods to communicate with Compilatio REST API.
  *
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * CompilatioAPI class
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioAPI {
     private $apikey;
@@ -455,10 +452,9 @@ class CompilatioAPI {
 
         $handle = fopen($filepath, 'wb');
 
-        if ($this->call_api($endpoint, 'download', null, $handle) == 200) {
+        if ($this->call_api_on_behalf_of_user($endpoint, 'download', null, $handle) == 200) {
             return $filepath;
         } else {
-            error_log('coucou4');
             return false;
         }
     }
@@ -693,20 +689,13 @@ class CompilatioAPI {
     }
 
     private function call_api($endpoint, $method = null, $data = null, $handle = null, $header = []) {
-        // To delete.
         global $CFG;
 
         $ch = curl_init();
 
-        // To delete.
-        $fp = fopen($CFG->dataroot . '/temp/compilatio/curllog.txt', 'a+');
-
         $params = [
             CURLOPT_URL => $this->urlrest . $endpoint,
-            CURLOPT_RETURNTRANSFER => true,
-
-            CURLOPT_VERBOSE => 1,// To delete.
-            CURLOPT_STDERR => $fp,// To delete.
+            CURLOPT_RETURNTRANSFER => true
         ];
 
         $header[] = 'X-Auth-Token: ' . $this->apikey;

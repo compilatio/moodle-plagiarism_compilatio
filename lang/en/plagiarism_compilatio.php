@@ -16,11 +16,9 @@
 /**
  * plagiarism_compilatio.php - Contains english Plagiarism plugin translation.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 $string['pluginname'] = 'Compilatio plagiarism plugin';
@@ -121,8 +119,8 @@ $string['reporttype_help'] = "<p>There are 2 possible options :</p>
 $string['thresholds_settings'] = "Limits :";
 $string['thresholds_description'] = "Indicate the threshold that you want to use, in order to facilitate the finding of analysis report (% of similarities) :";
 $string['numeric_threshold'] = "Threshold must be a number.";
-$string['warningthreshold'] = "Green up to";
-$string['criticalthreshold'] = "Orange up to";
+$string['green_threshold'] = "Green up to";
+$string['orange_threshold'] = "Orange up to";
 $string['red_threshold'] = "red otherwise";
 $string['similarity_percent'] = '% of similarities';
 $string['studentanalyses'] = "Allow students to analyze their documents";
@@ -131,8 +129,8 @@ $string['activate_submissiondraft'] = 'To allow students to analyze their drafts
 $string['quiz_help'] = 'Only essay questions whose answer contain at least {$a} words will be analyzed.';
 $string["admin_disabled_reports"] = "The administrator does not allow the teachers to display the similarity reports to the students.";
 $string['help_compilatio_format_content'] = "Compilatio handles most formats used in word processors and on the internet. The following formats are supported : ";
-$string['max_file_size_allowed'] = 'Files must not exceed <strong>{$a} MB</strong>';
-$string['min_max_word_required'] = 'To be able to be analyzed, a text must have between {$a->min} and {$a->max} word';
+$string['max_file_size'] = 'Files must not exceed <strong>{$a} MB</strong>';
+$string['word_limits'] = 'To be able to be analyzed, a text must have between {$a->min} and {$a->max} word';
 
 // Default settings page.
 $string['compilatiodefaults'] = 'Compilatio defaults';
@@ -140,7 +138,8 @@ $string['defaultupdated'] = 'Default values updated';
 $string['defaults_desc'] = 'The following settings are the defaults set when enabling Compilatio within an Activity Module';
 
 // Compilatio document frame.
-$string["title_score"] = 'Analysis completed: {$a}% of similarities. If you have ignored any sources in the report, click here to update the score.';
+$string["title_score"] = 'Analysis completed: {$a}% of similarities.';
+$string["title_score_teacher"] = 'If you have ignored any sources in the report, click here to update the score.';
 $string['btn_unsent'] = 'Send';
 $string['title_unsent'] = "Send the document to Compilatio";
 $string['btn_sent'] = 'Analyze';
@@ -221,16 +220,16 @@ $string["not_sent"] = "The following documents couldn't be sent: ";
 $string["send_documents_in_progress"] = 'Sending documents in progress';
 $string["not_analyzed"] = "The following documents couldn't be analyzed: ";
 $string["not_analyzed_extracting"] = "The following documents can't be analyzed because they are being extracted, please try again later";
-$string["unsent_documents"] = 'This activity contains documents not submitted to Compilatio.';
+$string["unsent_docs"] = 'This activity contains documents not submitted to Compilatio.';
 $string['reset_docs_in_error_in_progress'] = 'Reset of documents in error in progress';
 
 // Search author tab.
 $string["compilatio_search_tab"] = "Find the depositor of a document.";
 $string["compilatio_search"] = "Search";
-$string["compilatio_search_help"] = "You can find the depositor of a document by retrieving the document identifier from the sources of the analysis report. Example: 1. Your document: <b>1st5xfj2</b> - Assign_Name(30)Name_Copied_Document.odt.";
+$string["compilatio_search_help"] = "You can find the depositor of a document by retrieving the document identifier from the sources of the analysis report.";
 $string["compilatio_iddocument"] = "Document identifier";
 $string["compilatio_search_notfound"] = "No document was found for this identifier among the documents loaded on your Moodle platform.";
-$string["compilatio_author"] = 'The document in activity <b>{$a->modulename}</b> was submitted by the Moodle user <b>{$a->lastname} {$a->firstname}</b>.';
+$string["compilatio_depositor"] = 'The document in activity <b>{$a->modulename}</b> was submitted by the Moodle user <b>{$a->lastname} {$a->firstname}</b>.';
 
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistics';
@@ -239,21 +238,20 @@ $string['export_csv'] = 'Export data about this activity into a CSV file';
 $string['progress'] = "Progress";
 $string['results'] = "Results";
 $string['errors'] = "Errors";
-$string['documents_analyzed'] = '{$a} analyzed documents';
-$string['documents_analyzing'] = '{$a} documents being analyzed';
-$string['documents_in_queue'] = '{$a} documents awaiting analysis';
-$string["stats_min"] = 'Minimum';
-$string["stats_max"] = 'Maximum';
-$string["stats_avg"] = 'Average';
+$string['analyzed_docs'] = '{$a} analyzed document(s)';
+$string['analyzing_docs'] = '{$a} document(s) being analyzed';
+$string['queuing_docs'] = '{$a} document(s) awaiting analysis';
+$string['stats_min'] = 'Minimum';
+$string['stats_max'] = 'Maximum';
+$string['stats_avg'] = 'Average';
 $string['stats_score'] = 'Similarities percentage';
-$string["stats_error_empty"] = "No errors detected";
-$string["stats_error_unknown"] = " unknown errors";
+$string['stats_error_unknown'] = ' unknown errors';
 $string['stats_threshold'] = 'Number of documents per threshold';
-$string['no_documents_available'] = 'No documents are available for analysis in this activity.';
 
 // Global Statistics.
 $string["no_statistics_yet"] = 'No documents have been analyzed yet.';
 $string["teacher"] = "Teacher";
+$string["activity"] = "Activity";
 $string["minimum"] = 'Minimum rate';
 $string["maximum"] = 'Maximum rate';
 $string["average"] = 'Average rate';
@@ -263,7 +261,7 @@ $string["export_raw_csv"] = 'Click here to export raw data in CSV format';
 $string["export_global_csv"] = 'Click here to export this data in CSV format';
 $string["global_statistics_description"] = 'All the documents data send to Compilatio.';
 $string["global_statistics"] = 'Global statistics';
-$string["activities_statistics"] = 'Statistics about activities';
+$string["activities_statistics"] = 'Statistics by activity';
 $string["similarities"] = 'Similarities';
 
 // Help tab.
@@ -306,7 +304,6 @@ $string["firstname"] = "First name";
 $string["lastname"] = "Last name";
 $string["filename"] = "Filename";
 $string['timesubmitted'] = "Submitted to Compilatio on";
-$string["similarities_rate"] = "Similarities rate";
 $string['manual_analysis'] = 'The analysis of this document must be triggered manually.';
 
 // Scheduled tasks.
@@ -322,35 +319,21 @@ $string['download_report_failed'] = "An error occurred while downloading the ana
 $string['privacy:metadata:core_files'] = 'Files attached to submissions or created from online text submissions';
 $string['privacy:metadata:core_plagiarism'] = 'This plugin is called by Moodle plagiarism subsystem';
 
-$string['privacy:metadata:plagiarism_compilatio_file'] = 'Informations about the submissions uploaded';
-$string['privacy:metadata:plagiarism_compilatio_file:id'] = 'The submission\'s ID stored in the Moodle database';
-$string['privacy:metadata:plagiarism_compilatio_file:cm'] = 'The course module\'s ID where the submission is stored';
-$string['privacy:metadata:plagiarism_compilatio_file:userid'] = 'The Moodle user\'s ID who made the submission';
-$string['privacy:metadata:plagiarism_compilatio_file:identifier'] = 'The submission\'s contenthash';
-$string['privacy:metadata:plagiarism_compilatio_file:filename'] = 'The submission\'s name (eventually auto-generated)';
-$string['privacy:metadata:plagiarism_compilatio_file:timesubmitted'] = 'The timestamp when the submission was stored in the Moodle database of the plugin';
-$string['privacy:metadata:plagiarism_compilatio_file:externalid'] = 'The submission\'s ID stored in the Compilatio database';
-$string['privacy:metadata:plagiarism_compilatio_file:status'] = 'The submission\'s status (Scored, In queue, Error...)';
-$string['privacy:metadata:plagiarism_compilatio_file:similarityscore'] = 'The submission\'s similarity score';
-$string['privacy:metadata:plagiarism_compilatio_file:indexed'] = 'The submission\'s indexing state';
+$string['privacy:metadata:plagiarism_compilatio_file'] = "Information about files submitted to Compilatio";
+$string['privacy:metadata:plagiarism_compilatio_file:userid'] = "The Moodle ID of the user who made the submission";
+$string['privacy:metadata:plagiarism_compilatio_file:filename'] = "Name of file submitted or generated name for online text";
 
-$string['privacy:metadata:external_compilatio_document'] = 'Informations about the documents in Compilatio database';
-$string['privacy:metadata:external_compilatio_document:depositor'] = 'Lastname, firstname and email adress of the user who submitted the file';
-$string['privacy:metadata:external_compilatio_document:authors'] = 'Lastname, firstname and email adress of the user who submitted the file or group members';
-$string['privacy:metadata:external_compilatio_document:lastname'] = 'The Compilatio user\'s last name of the teacher who created the assignment';
-$string['privacy:metadata:external_compilatio_document:firstname'] = 'The Compilatio user\'s first name of the teacher who created the assignment';
-$string['privacy:metadata:external_compilatio_document:email_adress'] = 'The Compilatio user\'s email adress of the teacher who created the assignment';
-$string['privacy:metadata:external_compilatio_document:user_id'] = 'The Compilatio user\'s ID of the teacher who created the assignment';
-$string['privacy:metadata:external_compilatio_document:filename'] = 'The submission\'s name';
-$string['privacy:metadata:external_compilatio_document:upload_date'] = 'The timestamp when the submission was stored in the Compilatio database';
-$string['privacy:metadata:external_compilatio_document:id'] = 'The submission\'s ID stored in the Compilatio database';
-$string['privacy:metadata:external_compilatio_document:indexed'] = 'The submission\'s indexing state (if the submission can be used to detect similarities with other documents)';
+$string['privacy:metadata:plagiarism_compilatio_user'] = "Information about the teacher who created a course module with Compilatio";
+$string['privacy:metadata:plagiarism_compilatio_user:userid'] = "The Moodle ID of the teacher";
+$string['privacy:metadata:plagiarism_compilatio_user:compilatioid'] = "The Compilatio ID of the teacher";
 
-$string['privacy:metadata:external_compilatio_report'] = 'Informations about the reports in Compilatio database (only if the document has been analyzed)';
-$string['privacy:metadata:external_compilatio_report:id'] = 'The Compilatio report\'s ID';
-$string['privacy:metadata:external_compilatio_report:doc_id'] = 'The Compilatio submission\'s ID which was analyzed';
-$string['privacy:metadata:external_compilatio_report:user_id'] = 'The Compilatio user\'s ID of the teacher who created the assignment';
-$string['privacy:metadata:external_compilatio_report:start'] = 'The timestamp when the analysis started';
-$string['privacy:metadata:external_compilatio_report:end'] = 'The timestamp when the analysis ended';
-$string['privacy:metadata:external_compilatio_report:state'] = 'The submission\'s state (Analyzed, In queue, Error...)';
-$string['privacy:metadata:external_compilatio_report:plagiarism_percent'] = 'The submission\'s similarity score';
+$string['privacy:metadata:external_compilatio_document'] = 'Information and content of the documents in Compilatio database';
+$string['privacy:metadata:external_compilatio_document:authors'] = 'First name, last name and email of the Moodle user (or members of group) who submitted the file';
+$string['privacy:metadata:external_compilatio_document:depositor'] = 'First name, last name and email of the Moodle user who submitted the file';
+$string['privacy:metadata:external_compilatio_document:filename'] = "Name of file submitted or generated name for online text";
+
+$string['privacy:metadata:external_compilatio_user'] = 'Information about the teacher who created a course module with Compilatio';
+$string['privacy:metadata:external_compilatio_user:firstname'] = 'First name of the teacher';
+$string['privacy:metadata:external_compilatio_user:lastname'] = 'Last name of the teacher';
+$string['privacy:metadata:external_compilatio_user:email'] = 'Email of the teacher';
+$string['privacy:metadata:external_compilatio_user:username'] = 'Email of the teacher';

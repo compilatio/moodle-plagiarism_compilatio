@@ -15,12 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Set document indexing state via Compilatio API
+ * Update similarity score state for a document
  *
- * This script is called by amd/build/ajax_api.js
- *
- * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param   string $_POST['docId']
  * @return  boolean
@@ -47,5 +45,5 @@ if (!empty($file)) {
     $file = $DB->get_record('plagiarism_compilatio_file', ['id' => $docid]);
     $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $file->cm]);
 
-    echo CompilatioDocumentFrame::get_score($file->similarityscore, $cmconfig);
+    echo CompilatioDocumentFrame::get_score($file->similarityscore, $cmconfig, true);
 }

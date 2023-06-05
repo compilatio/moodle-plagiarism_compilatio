@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * statistics.php - Display global statistics about assignments
+ * statistics.php - Display global statistics about course modules
  *
  * @package   plagiarism_compilatio
- * @author    Dan Marsden <dan@danmarsden.com>
- * @copyright 2012 Dan Marsden http://danmarsden.com
+ * @author    Compilatio <support@compilatio.net>
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -58,8 +58,7 @@ if (count($rows) === 0) {
     echo html_writer::tag('p', get_string('global_statistics_description', 'plagiarism_compilatio'));
     echo html_writer::tag('a', get_string('export_raw_csv', 'plagiarism_compilatio'), [
         'href' => $url,
-        'style' => 'margin-bottom:20px;',
-        'class' => 'cmp-btn cmp-btn-primary'
+        'class' => 'mb-3 cmp-btn cmp-btn-primary'
     ]);
     echo html_writer::tag('legend', get_string('activities_statistics', 'plagiarism_compilatio'), [
         'class' => 'cmp-legend'
@@ -86,7 +85,7 @@ if (count($rows) === 0) {
     $tableheadjs = [
         get_string('course'),
         get_string('teacher', 'plagiarism_compilatio'),
-        get_string('modulename', 'assign'),
+        get_string('activity', 'plagiarism_compilatio'),
         str_replace(' ', '<br/>', get_string('documents_number', 'plagiarism_compilatio')),
         get_string('minimum', 'plagiarism_compilatio'),
         get_string('maximum', 'plagiarism_compilatio'),
@@ -103,7 +102,7 @@ if (count($rows) === 0) {
     $tablehead = [
         get_string('course'),
         get_string('teacher', 'plagiarism_compilatio'),
-        get_string('modulename', 'assign'),
+        get_string('activity', 'plagiarism_compilatio'),
         str_replace(' ', '<br/>', get_string('documents_number', 'plagiarism_compilatio')),
         get_string('minimum', 'plagiarism_compilatio'),
         get_string('maximum', 'plagiarism_compilatio'),
@@ -116,7 +115,7 @@ if (count($rows) === 0) {
         $tablenojs->data[] = [
             $row['course'],
             $row['teacher'],
-            $row['assign'],
+            $row['activity'],
             $row['analyzed_documents_count'],
             $row['minimum_rate'],
             $row['maximum_rate'],
@@ -129,8 +128,7 @@ if (count($rows) === 0) {
     $url = new moodle_url('/plagiarism/compilatio/CSV.php', ['raw' => 0]);
     echo html_writer::tag('a', get_string('export_global_csv', 'plagiarism_compilatio'), [
         'href' => $url,
-        'style' => 'margin-bottom:20px;',
-        'class' => 'cmp-btn cmp-btn-primary'
+        'class' => 'mb-3 cmp-btn cmp-btn-primary'
     ]);
 }
 echo $OUTPUT->box_end();

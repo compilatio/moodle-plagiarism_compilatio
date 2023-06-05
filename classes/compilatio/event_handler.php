@@ -18,9 +18,8 @@
  * event_handler.php - Contains methods to handle Moodle events.
  *
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,8 +31,6 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php'
 
 /**
  * CompilatioEventHandler class
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioEventHandler {
 
@@ -205,7 +202,7 @@ class CompilatioEventHandler {
             foreach ($cmcfgs as $cmcfg) {
                 // Update filename for restored forum posts.
                 $posts = $DB->get_records_sql("SELECT * FROM {plagiarism_compilatio_file}
-                    WHERE cm = ? AND filename LIKE 'forum%'", [$cmcfg->cmid]);
+                    WHERE cm = ? AND (filename LIKE 'forum-%.htm' OR filename LIKE 'post-%.htm')", [$cmcfg->cmid]);
                 foreach ($posts as $post) {
                     $restoredpost = $DB->get_record_sql("SELECT * FROM {plagiarism_compilatio_file}
                         WHERE cm != ? AND filename = ?", [$cmcfg->cmid, $post->filename]);

@@ -17,10 +17,8 @@
 /**
  * Set document indexing state via Compilatio API
  *
- * This script is called by amd/build/ajax_api.js
- *
- * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param   string $_POST['docId']
  * @param   string $_POST['indexingState']

@@ -17,13 +17,11 @@
 // the plagiarism compilatio plugin.
 
 /**
- * upgrade.php - Contains Plagiarism plugin class to upgrade the database between differents versions.
+ * upgrade.php - Contains class to upgrade the plugin database between differents versions.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -229,6 +227,9 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         foreach ($apiconfigs as $apiconfig) {
             set_config('v2apikey', $apiconfig->api_key, 'plagiarism_compilatio');
         }
+
+        // On leur fourni un nouveau set de clé API v5 LMS (multi-user) et ils doivent saissir cette clé API dans les paramètres du plugin après la MAJ vers v3 (action utilisateur + action Compilatio) 
+        // CALL api => passe la clé API v5 classique (mono-user) en clé API v5 LMS (multi-user) et qui genere une nouvelle clé API v5 classique pour gérer les documents v2 (clé qui se désactive au bout de x temps ?). 
 
         // Plugin settings.
         $settings = [

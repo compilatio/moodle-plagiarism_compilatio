@@ -15,10 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * trigger_analyses.php - Contains Plagiarism plugin trigger_analyses task.
+ * trigger_analyses.php - Contains trigger_analyses task.
  *
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
  * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,9 +26,7 @@
 namespace plagiarism_compilatio\task;
 // ADTD v2 document management.
 /**
- * Task class
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Trigger_analyses task class
  */
 class trigger_analyses extends \core\task\scheduled_task {
 

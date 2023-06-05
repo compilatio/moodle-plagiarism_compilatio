@@ -18,16 +18,13 @@
  * statistics.php - Contains statistics methods.
  *
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * CompilatioStatistics class
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioStatistics {
     /**
@@ -83,18 +80,18 @@ class CompilatioStatistics {
 
             $teachers = $DB->get_records_sql($query);
             $courseurl = new moodle_url('/course/view.php', ['id' => $row->id]);
-            $assignurl = new moodle_url('/mod/' . $row->module_type . '/view.php', ['id' => $row->cm, 'action' => 'grading']);
+            $activityurl = new moodle_url('/mod/' . $row->module_type . '/view.php', ['id' => $row->cm, 'action' => 'grading']);
 
             $result = [];
             if ($html) {
                 $result['course'] = "<a href='$courseurl'>$row->course</a>";
-                $result['assign'] = "<a href='$assignurl'>$row->module_name</a>";
+                $result['activity'] = "<a href='$activityurl'>$row->module_name</a>";
 
             } else {
                 $result['courseid'] = $row->id;
                 $result['course'] = $row->course;
-                $result['assignid'] = $row->cm;
-                $result['assign'] = $row->module_name;
+                $result['activityid'] = $row->cm;
+                $result['activity'] = $row->module_name;
             }
 
             $result['analyzed_documents_count'] = $row->count;
@@ -191,19 +188,19 @@ class CompilatioStatistics {
                 <h4 class='cmp-color-primary'>" . get_string('progress', 'plagiarism_compilatio') . "</h4>
                 <div class='position-relative cmp-box mx-2 my-3 p-3'>
                     <h5 class='fw-bold cmp-color-green'>"
-                      . get_string('documents_analyzed', 'plagiarism_compilatio', $countbystatus['scored']->count ?? 0) .
+                      . get_string('analyzed_docs', 'plagiarism_compilatio', $countbystatus['scored']->count ?? 0) .
                     "</h5>
                 </div>
 
                 <div class='cmp-box mx-2 my-3'>
                     <h5 class='p-3 cmp-color-primary'>"
-                      . get_string('documents_analyzing', 'plagiarism_compilatio', $countbystatus['analyzing']->count ?? 0) .
+                      . get_string('analyzing_docs', 'plagiarism_compilatio', $countbystatus['analyzing']->count ?? 0) .
                     "</h5>
                 </div>
 
                 <div class='cmp-box mx-2 my-3'>
                     <h5 class='p-3 cmp-color-primary'>"
-                      . get_string('documents_in_queue', 'plagiarism_compilatio', $countbystatus['queue']->count ?? 0) .
+                      . get_string('queuing_docs', 'plagiarism_compilatio', $countbystatus['queue']->count ?? 0) .
                     "</h5>
                 </div>
             </div>";
@@ -222,7 +219,7 @@ class CompilatioStatistics {
                     <div class='pt-1 pb-2 fw-bold cmp-color-secondary'>"
                         . get_string('stats_' . $elem, 'plagiarism_compilatio') .
                     "</div>
-                    <h3 class='cmp-color-" . $color . "'>" . $scorestats->$elem . " %</h3>
+                    <h3 class='cmp-color-" . $color . "'>" . $scorestats->$elem . " <small>%</small></h3>
                 </div>";
         }
 

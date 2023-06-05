@@ -18,9 +18,8 @@
  * analyses.php - Contains methods to start an analysis and get the analysis result.
  *
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,8 +30,6 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php'
 
 /**
  * CompilatioAnalyses class
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class CompilatioAnalyses {
     /**
