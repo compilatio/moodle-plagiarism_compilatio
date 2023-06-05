@@ -10,6 +10,7 @@ CHANGES
 - Fix plugin behaviour when refreshing documents informations for v4 documents
 - Improve upgrade plugin process
 - Delete language packs
+- Update Compilatio service status link
 
 CHANGELOG : https://support.compilatio.net/hc/en-us/articles/360019664658
 
