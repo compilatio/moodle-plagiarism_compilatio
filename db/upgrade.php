@@ -40,9 +40,9 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
     $schema = new xmldb_structure('db');
     $schema->setVersion($CFG->version);
-    $xmldb_file = new xmldb_file($CFG->dirroot . '/plagiarism/compilatio/db/install.xml');
-    $xmldb_file->loadXMLStructure();
-    $structure = $xmldb_file->getStructure();
+    $xmldbfile = new xmldb_file($CFG->dirroot . '/plagiarism/compilatio/db/install.xml');
+    $xmldbfile->loadXMLStructure();
+    $structure = $xmldbfile->getStructure();
     $tables = $structure->getTables();
     foreach ($tables as $table) {
         $table->setPrevious(null);
@@ -54,7 +54,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     $compilatiodbchecks = [];
     foreach ($dbchecks as $tablename => $results) {
         if (strpos($tablename, 'compilatio')) {
-            $compilatiodbchecks[$tablename] = $results; 
+            $compilatiodbchecks[$tablename] = $results;
         }
     }
 
@@ -116,7 +116,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                         $dbman->change_field_default($table, $field);
                         echo("change default value for '" . $matches[1] . "'");
                     }
-                    if (in_array($matches[2], 
+                    if (in_array($matches[2],
                         ['should allow NULL', 'has unknown type', 'has incorrect type', 'has unsupported type'])) {
                         $dbman->change_field_type($table, $field);
                         echo("change type for '" . $matches[1] . "'");

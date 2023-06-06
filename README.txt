@@ -9,7 +9,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 CHANGES
 - Fix plugin behaviour when refreshing documents informations for v4 documents
 - Improve upgrade plugin process
-- Delete language packs
+- Delete language files others than EN
 - Update Compilatio service status link
 
 CHANGELOG : https://support.compilatio.net/hc/en-us/articles/360019664658

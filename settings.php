@@ -184,7 +184,8 @@ if (!empty($plagiarismsettings['enabled']) && !$incorrectconfig) {
                 get_string("admin_account_expire_content", "plagiarism_compilatio") . "</div>";
         }
 
-        echo "<p><strong>" . get_string('subscription_will_expire', 'plagiarism_compilatio') . ' ' . $a->end_date . '.</strong></p>';
+        echo '<p><strong>' . get_string('subscription_will_expire', 'plagiarism_compilatio');
+        echo ' ' . $a->end_date . '.</strong></p>';
         echo $OUTPUT->box_end();
     }
     $plagiarismsettings = get_config('plagiarism_compilatio');

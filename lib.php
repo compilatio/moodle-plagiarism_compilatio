@@ -2142,7 +2142,7 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
         if (!empty($nbmotsmin) && $docstatus->documentProperties->wordCount < $nbmotsmin) {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_SHORT;
         }
-        
+
         $nbmotsmax = get_config('plagiarism_compilatio', 'nb_mots_max');
         if (!empty($nbmotsmax) && $docstatus->documentProperties->wordCount > $nbmotsmax) {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_LONG;
