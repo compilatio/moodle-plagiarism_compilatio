@@ -53,7 +53,7 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="name-unique" TYPE="unique" FIELDS="name"/>
+        <KEY NAME="name" TYPE="unique" FIELDS="name"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="plagiarism_compilatio_news" COMMENT="Used to store news such as updates or maintenances from Compilatio">

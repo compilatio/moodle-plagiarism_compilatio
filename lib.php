@@ -2103,10 +2103,12 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
             $plagiarismfile->similarityscore = round($docstatus->documentStatus->indice);
             $plagiarismfile->idcourt = $docstatus->documentProperties->Shortcut;
 
-            if (preg_match('/^[a-f0-9]{40}$/', $plagiarismfile->externalid)) {
-                $plagiarismfile->reporturl = $plagiarismfile->externalid;
-            } else {
-                $plagiarismfile->reporturl = $compilatio->get_report_url($plagiarismfile->externalid);
+            if (!preg_match("~^https://www\.compilatio\.net/user/ws/reportmain/handler~", $plagiarismfile->reporturl)) {
+                if (preg_match('/^[a-f0-9]{40}$/', $plagiarismfile->externalid)) {
+                    $plagiarismfile->reporturl = $plagiarismfile->externalid;
+                } else {
+                    $plagiarismfile->reporturl = $compilatio->get_report_url($plagiarismfile->externalid);
+                }
             }
 
             $emailstudents = $DB->get_field('plagiarism_compilatio_config',
@@ -2139,6 +2141,11 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
         $nbmotsmin = get_config('plagiarism_compilatio', 'nb_mots_min');
         if (!empty($nbmotsmin) && $docstatus->documentProperties->wordCount < $nbmotsmin) {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_SHORT;
+        }
+
+        $nbmotsmax = get_config('plagiarism_compilatio', 'nb_mots_max');
+        if (!empty($nbmotsmax) && $docstatus->documentProperties->wordCount > $nbmotsmax) {
+            $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_LONG;
         }
 
         // Optional yellow warning in submissions.

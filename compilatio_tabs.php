@@ -27,6 +27,9 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
+$plugin = new stdClass();
+require('version.php');
+
 // Get tabs' title.
 $strplagiarism         = get_string('compilatio', 'plagiarism_compilatio');
 $strplagiarismdefaults = get_string('compilatiodefaults', 'plagiarism_compilatio');
@@ -37,6 +40,7 @@ $strmigration          = get_string('migration_title', 'plagiarism_compilatio');
 
 // Display Compilatio logo.
 echo output_helper::get_logo();
+echo('<p class="float-right">[ version: ' . $plugin->version . ', release: ' . $plugin->release . ' ]</p>');
 echo '<div style="clear:both"></div>';
 
 // Create tabs.

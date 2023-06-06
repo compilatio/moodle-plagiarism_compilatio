@@ -32,7 +32,7 @@ require_login();
 $idgroupe = required_param('idgroupe', PARAM_TEXT);
 
 // Gheck GET parameter.
-$availpages = ['moodle-admin', 'moodle-teacher', 'moodle-info-waiting'];
+$availpages = ['moodle-admin', 'moodle-teacher', 'moodle-info-waiting', 'service-state'];
 
 $page = optional_param('page', 'moodle-teacher', PARAM_RAW);
 if (in_array($page, $availpages) === false) {
