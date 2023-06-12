@@ -57,17 +57,13 @@ class update_meta extends \core\task\scheduled_task {
         }
 
         $compilatio = new \CompilatioAPI();
-
-        // Send data about plugin version to Compilatio.
-        $language = $CFG->lang;
-        $releasephp = phpversion();
-        $releasemoodle = $CFG->release;
-        $releaseplugin = get_config('plagiarism_compilatio', 'version');
-        $cronfrequency = get_config('plagiarism_compilatio', 'cron_frequency');
-        if ($cronfrequency == null) {
-            $cronfrequency = 0;
-        }
-        $compilatio->set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency);
+        $compilatio->set_moodle_configuration(
+            phpversion(),
+            $CFG->release,
+            get_config('plagiarism_compilatio', 'version'),
+            $CFG->lang, 
+            get_config('plagiarism_compilatio', 'cron_frequency') ?? 0
+        );
 
         // Update compilatio config.
         $config = $compilatio->get_config();

@@ -266,7 +266,7 @@ class CompilatioFrame {
 
         $output .= "</div>";
 
-        $output .= "<div class='border-bottom my-3 mx-0'></div>";
+        $output .= "<div id='cmp-tabs-separator' class='border-bottom my-3 mx-0'></div>";
 
         // Home tab.
         $output .= "<div id='cmp-home' class='cmp-tabs-content'>

@@ -40,7 +40,7 @@ class CompilatioAPI {
             $apikey = get_config('plagiarism_compilatio', 'apikey');
         }
 
-        $this->urlrest = 'https://app.compilatio.net';
+        $this->urlrest = 'https://benoit.ronflex.compilatio.net';
         $this->userid = $userid;
 
         if (!empty($apikey)) {
@@ -69,12 +69,35 @@ class CompilatioAPI {
         $endpoint = '/api/private/user/lms/23a3a6980c0f49d98c5dc1ec03478e9161ad5d352cb4651b14865d21d0e81be';
 
         $response = json_decode($this->call_api($endpoint));
-
+        error_log(var_export($response,true));
         $error = $this->get_error_response($response, 404);
         if ($error === false) {
             return true;
         }
         return $error;
+    }
+
+    public function get_apikey_user_id() {
+        $endpoint = '/api/private/authentication/check-api-key';
+
+        $response = json_decode($this->call_api($endpoint));
+
+        if ($this->get_error_response($response, 200) === false) {
+            return $response->data->user->id;
+        }
+        return false;
+    }
+
+    public function update_apikey() {
+        $endpoint = '/api/private/moodle-configuration/update-api-key';
+
+        $response = json_decode($this->call_api($endpoint, 'post'));
+
+        if ($this->get_error_response($response, 200) === false) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -673,18 +696,13 @@ class CompilatioAPI {
 
     // ADTR v2 document management.
     private function call_api_on_behalf_of_user($endpoint, $method = null, $data = null, $handle = null) {
+        global $DB;
+
         $header = [];
 
-        if (null === $this->userid) {
-            $v2apikey = get_config('plagiarism_compilatio', 'v2apikey');
-
-            if (!empty($v2apikey)) {
-                $this->apikey = $v2apikey;
-            }
-        } else {
-            $header[] = 'X-LMS-USER-ID: ' . $this->userid;
-        }
-
+        $header[] = null === $this->userid
+            ? 'X-LMS-USER-ID: ' . $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => 0])
+            : 'X-LMS-USER-ID: ' . $this->userid;
         return $this->call_api($endpoint, $method, $data, $handle, $header);
     }
 

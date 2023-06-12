@@ -143,6 +143,7 @@ class CompilatioEventHandler {
             $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => 0]);
 
             if (empty($user)) {
+                // TODO get user instead of this.
                 $domain = explode('@', $USER->email);
                 $domain = end($domain);
                 $globaluser = (object) [

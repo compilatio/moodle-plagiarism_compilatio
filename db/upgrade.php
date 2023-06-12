@@ -56,6 +56,9 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         }
     }
 
+    $tablestodelete = [];
+    $fieldstodelete = [];
+
     echo $OUTPUT->box_start('generalbox boxaligncenter');
 
     foreach ($compilatiodbchecks as $tablename => $results) {
@@ -72,47 +75,62 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                     $dbman->create_table($table);
                     echo("create table '" . $tablename . "'");
                 }
-                /*if ($matches[1] == 'not expected') {
+                if ($matches[1] == 'not expected') {
                     $table = new xmldb_table($tablename);
-                    $dbman->drop_table($table);
+                    //$dbman->drop_table($table);
+                    $tablestodelete[] = $table;
                     echo("drop table '" . $tablename . "'");
-                }*/
+                }
             }
 
             // Fields changes.
             if (preg_match("/^column '(.*?)' (.*?)(,| '| \(|$)/", $message, $matches)) {
                 $table = new xmldb_table($tablename);
 
-                /*if (strpos($matches[2], 'is not expected') === 0) {
+                if (strpos($matches[2], 'is not expected') === 0) {
                     $field = new xmldb_field($matches[1]);
-                    $dbman->drop_field($table, $field);
+                    echo('check for indexes before droping field => ');
+                    $indexes = $DB->get_indexes($tablename);
+                    foreach ($indexes as $k => $idx) {
+                        if (in_array($matches[1], $idx['columns'])) {
+                            echo('index ' . $k . 'found => ');
+                            $indexname      = $k;
+                            $indextype      = $idx['unique'];
+                            $indexfields    = $idx['columns'];
+                            $index          = new xmldb_index($indexname, $indextype, $indexfields);
+                            $dbman->drop_index($table, $index);
+                            echo("drop index '" . $k . "' => ");
+                        }
+                    }
+                    //$dbman->drop_field($table, $field);
+                    $fieldstodelete[] = ['table' => $table, 'field' => $field];
                     echo("drop field '" . $matches[1] . "'");
-                }*/
-
-                $field = $schema->getTable($tablename)->getField($matches[1]);
-                if ($matches[2] == 'is missing') {
-                    $dbman->add_field($table, $field);
-                    echo("add field '" . $matches[1] . "'");
-                }
-                if ($matches[2] == 'should be NOT NULL') {
-                    $dbman->change_field_notnull($table, $field);
-                    echo("change '" . $matches[1] . "' not null");
-                }
-                if ($matches[2] == 'has default') {
-                    $dbman->change_field_default($table, $field);
-                    echo("change default value for '" . $matches[1] . "'");
-                }
-                if (in_array($matches[2], ['has unknown type', 'has incorrect type', 'has unsupported type'])) {
-
-                    $dbman->change_field_type($table, $field);
-                    echo("change type for '" . $matches[1] . "'");
+                } else {
+                    $field = $schema->getTable($tablename)->getField($matches[1]);
+                    if ($matches[2] == 'is missing') {
+                        $dbman->add_field($table, $field);
+                        echo("add field '" . $matches[1] . "'");
+                    }
+                    if ($matches[2] == 'should be NOT NULL') {
+                        $dbman->change_field_notnull($table, $field);
+                        echo("change '" . $matches[1] . "' not null");
+                    }
+                    if ($matches[2] == 'has default') {
+                        $dbman->change_field_default($table, $field);
+                        echo("change default value for '" . $matches[1] . "'");
+                    }
+                    if (in_array($matches[2],
+                        ['should allow NULL', 'has unknown type', 'has incorrect type', 'has unsupported type'])) {
+                        $dbman->change_field_type($table, $field);
+                        echo("change type for '" . $matches[1] . "'");
+                    }
                 }
             }
 
             // Indexes changes.
             if (preg_match("/^(.*?) index '(.*?)'/", $message, $matches)) {
                 $table = new xmldb_table($tablename);
-                /*if ($matches[1] == 'Unexpected') {
+                if ($matches[1] == 'Unexpected') {
                     $indexes        = $DB->get_indexes($tablename);
                     $indexname      = $matches[2];
                     $indextype      = $indexes[$matches[2]]['unique'];
@@ -120,7 +138,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                     $index          = new xmldb_index($indexname, $indextype, $indexfields);
                     $dbman->drop_index($table, $index);
                     echo("drop index '" . $matches[2] . "'");
-                }*/
+                }
                 if ($matches[1] == 'Missing') {
                     if (($index = $schema->getTable($tablename)->getIndex($matches[2])) !== null) {
                         $dbman->add_index($table, $index);
@@ -137,7 +155,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         echo("</p>");
     }
     echo("<p>Compilatio tables structure has been checked.</p>");
-    //echo $OUTPUT->box_end();
+    echo $OUTPUT->box_end();
 
     if ($oldversion <= 2015081400) {
         $DB->execute("UPDATE {plagiarism_compilatio_config} SET value='1' WHERE name='compilatio_analysistype' AND cm=0");
@@ -223,13 +241,17 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
     if ($oldversion < 2023060000) {
         // API key.
-        $apiconfigs = $DB->get_records('plagiarism_compilatio_apicon');
-        foreach ($apiconfigs as $apiconfig) {
-            set_config('v2apikey', $apiconfig->api_key, 'plagiarism_compilatio');
-        }
+        $apiconfigid = get_config('plagiarism_compilatio', 'apiconfigid');
+        $apikey = $DB->get_record('plagiarism_compilatio_apicon', 'api_key', ['id' => $apiconfigid]);
+        set_config('apikey', $apikey, 'plagiarism_compilatio');
 
-        // On leur fourni un nouveau set de clé API v5 LMS (multi-user) et ils doivent saissir cette clé API dans les paramètres du plugin après la MAJ vers v3 (action utilisateur + action Compilatio) 
-        // CALL api => passe la clé API v5 classique (mono-user) en clé API v5 LMS (multi-user) et qui genere une nouvelle clé API v5 classique pour gérer les documents v2 (clé qui se désactive au bout de x temps ?). 
+        require_once($CFG->dirroot . '/plagiarism/compilatio/api.php');
+        $compilatio = new CompilatioAPI(null, $apikey);
+        $compilatioid = $compilatio->get_apikey_user_id();
+
+        $DB->insert_record('plagiarism_compilatio_user', (object) ['userid' => 0, 'compilatioid' => $compilatioid]);
+
+        $compilatio->update_apikey();
 
         // Plugin settings.
         $settings = [
@@ -320,28 +342,6 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
                 if (preg_match('~^post-\d+-\d+-\d+.htm$~', $file->filename)) {  
                     $filename = 'forum' . substr($file->filename, strrpos($file->filename, '-'));
-
-                    /*switch ($mod->moduletype) {
-                        // SHA1 content ??? => foreach = caca.
-                        case 'assign':
-                            $filename .= $DB->get_field('assignsubmission_onlinetext', 'onlinetext', ['submission' => $objectid]);
-                            break;
-                        case 'workshop':
-                            $filename .= $DB->get_field('workshop_submissions', 'content', ['id' => $objectid]);
-                            break;
-                        case 'forum':
-                            $filename .= substr($file->filename, strrpos($file->filename, '-'));
-                            break;
-                        case 'quiz':
-                            $questionid = substr(explode('.', $cmpfile->filename)[0], strpos($cmpfile->filename, "Q") + 1);
-
-                            $sql = "SELECT responsesummary
-                                FROM {quiz_attempts} quiz
-                                JOIN {question_attempts} qa ON quiz.uniqueid = qa.questionusageid
-                                WHERE quiz.id = ? AND qa.questionid = ?";
-                            $filename  = $DB->get_field_sql($sql, [$objectid, $questionid]);
-                            break;
-                    }*/
                 } else {
                     $filename = $file->filename;
                 }
@@ -369,52 +369,13 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023060000, 'plagiarism', 'compilatio');
     }
 
-    foreach ($compilatiodbchecks as $tablename => $results) {
-
-        echo("<h4>" . $tablename . "</h4><p>");
-
-        foreach ($results as $message) {
-            echo($message . " => ");
-
-            // Tables changes.
-            if (preg_match("/^table is (.*)/", $message, $matches)) {
-                if ($matches[1] == 'not expected') {
-                    $table = new xmldb_table($tablename);
-                    $dbman->drop_table($table);
-                    echo("drop table '" . $tablename . "'");
-                }
-            }
-
-            // Fields changes.
-            if (preg_match("/^column '(.*?)' (.*?)(,| '| \(|$)/", $message, $matches)) {
-                $table = new xmldb_table($tablename);
-
-                if (strpos($matches[2], 'is not expected') === 0) {
-                    $field = new xmldb_field($matches[1]);
-                    $dbman->drop_field($table, $field);
-                    echo("drop field '" . $matches[1] . "'");
-                }
-            }
-
-            // Indexes changes.
-            if (preg_match("/^(.*?) index '(.*?)'/", $message, $matches)) {
-                $table = new xmldb_table($tablename);
-                if ($matches[1] == 'Unexpected') {
-                    $indexes        = $DB->get_indexes($tablename);
-                    $indexname      = $matches[2];
-                    $indextype      = $indexes[$matches[2]]['unique'];
-                    $indexfields    = $indexes[$matches[2]]['columns'];
-                    $index          = new xmldb_index($indexname, $indextype, $indexfields);
-                    $dbman->drop_index($table, $index);
-                    echo("drop index '" . $matches[2] . "'");
-                }
-            }
-
-            echo("<br />");
-        }
-        echo("</p>");
+    foreach ($tablestodelete as $table) {
+        $dbman->drop_table($table);
     }
-    echo("<p>Compilatio tables structure has been checked.</p>");
+
+    foreach ($fieldstodelete as $field) {
+        $dbman->drop_field($field['table'], $field['field']);
+    }
 
     return true;
 }
