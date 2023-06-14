@@ -269,17 +269,23 @@ class compilatioservice {
         unlink($filepath);
 
         if (!isset($response->status->code, $response->status->message)) {
-            return "Error in function send_doc_v5 : request response's status not found / cURL params : "
-                . var_export($curloptions, true) . " / cURL Error : "
-                . curl_error($ch) . " / cURL response : " . var_export($t, true);
+            mtrace("Error in function send_doc_v5 : request response's status not found / cURL params : "
+            . var_export($curloptions, true) . " / cURL Error : "
+            . curl_error($ch) . " / cURL response : " . var_export($t, true));
+            return '(Error: empty response status)';
         }
 
         if ($response->status->code == 201) {
             return $response->data->document->id;
         } else {
-            return "Error in function send_doc_v5 : cURL params : "
+            if ($response->status->message == 'Forbidden ! Your read only API key cannot modify this resource') {
+                return '(' . get_string('read_only_apikey_error', 'plagiarism_compilatio') . ')';
+            }
+
+            mtrace("Error in function send_doc_v5 : cURL params : "
                 . var_export($curloptions, true) . " / cURL Error : "
-                . curl_error($ch) . " / cURL response : " . var_export($t, true);
+                . curl_error($ch) . " / cURL response : " . var_export($t, true));
+            return '(' . $response->status->message . ')';
         }
     }
 
@@ -301,6 +307,51 @@ class compilatioservice {
             }
             return $returnarray;
         }
+    }
+
+     /**
+     * Get JWT to access a document report.
+     *
+     * @param  string $docid Docid
+     * @return string Return a JWT if succeed, an error otherwise
+     */
+    public function set_document_depositor($docid, $depositor) {
+        if (!isset($depositor->firstname, $depositor->lastname, $depositor->email)) {
+            return false;
+        }
+
+        $params = [
+            'depositor' => [
+                'firstname' => $depositor->firstname,
+                'lastname' => $depositor->lastname,
+                'email_address' => $depositor->email
+            ],
+            'authors' => [
+                [
+                    'firstname' => $depositor->firstname,
+                    'lastname' => $depositor->lastname,
+                    'email_address' => $depositor->email
+                ]
+            ]
+        ];
+
+        $ch = curl_init();
+        $curloptions = [
+            CURLOPT_URL => COMPILATIO_API_URL . "/document/" . $docid,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['X-Auth-Token: ' . $this->key, 'Content-Type: application/json'],
+            CURLOPT_CUSTOMREQUEST => 'PATCH',
+            CURLOPT_POSTFIELDS => json_encode($params)
+        ];
+        $curloptions = $this->set_proxy_settings($curloptions);
+        curl_setopt_array($ch, $curloptions);
+        $response = json_decode(curl_exec($ch));
+
+        if (($response->status->code ?? null) == 200) {
+            return true;
+        }
+        
+        return false;
     }
 
     /**
@@ -442,7 +493,7 @@ class compilatioservice {
      */
     public function start_analyse($compihash) {
 
-        try {
+        /*try {
             if (!is_object($this->soapcli)) {
                 return("Error in constructor compilatio() " . $this->soapcli);
             }
@@ -450,12 +501,12 @@ class compilatioservice {
             $param = array($this->key, $compihash);
             $this->soapcli->__call('startDocumentAnalyse', $param);
 
-        } catch (SoapFault $fault) {
+        } catch (SoapFault $fault) {*/
             $error = new stdClass();
-            $error->code = $fault->faultcode;
-            $error->string = $fault->faultstring;
+            $error->code = 'startDocumentAnalyse error';//$fault->faultcode;
+            $error->string = 'Forbidden ! Your read only API key cannot modify this resource';//$fault->faultstring;
             return $error;
-        }
+        //}
 
         return true;
     }

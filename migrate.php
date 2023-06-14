@@ -109,7 +109,6 @@ if (!empty($apikey)) {
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 $currenttab = 'compilatiomigrate';
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 echo "<h3>" . get_string('migration_title', 'plagiarism_compilatio') . "</h3>";
@@ -162,5 +161,4 @@ if ($migrationcounterror > 0) {
     echo "</div>";
 }
 
-echo $OUTPUT->box_end();
 echo $OUTPUT->footer();

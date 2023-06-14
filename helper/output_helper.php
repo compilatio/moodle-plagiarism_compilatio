@@ -177,7 +177,7 @@ class output_helper {
         $html .= html_writer::end_div();
 
         // Warning information.
-        if ($warning != '') {
+        if ($warning != '' && strpos($warning, '(') === false) {
             // Get locale strings for warnings codes.
             $errorinfos = explode(",", $warning);
             if (count($errorinfos) > 1) {

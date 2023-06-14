@@ -40,9 +40,9 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
     $schema = new xmldb_structure('db');
     $schema->setVersion($CFG->version);
-    $xmldb_file = new xmldb_file($CFG->dirroot . '/plagiarism/compilatio/db/install.xml');
-    $xmldb_file->loadXMLStructure();
-    $structure = $xmldb_file->getStructure();
+    $xmldbfile = new xmldb_file($CFG->dirroot . '/plagiarism/compilatio/db/install.xml');
+    $xmldbfile->loadXMLStructure();
+    $structure = $xmldbfile->getStructure();
     $tables = $structure->getTables();
     foreach ($tables as $table) {
         $table->setPrevious(null);
@@ -54,7 +54,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     $compilatiodbchecks = [];
     foreach ($dbchecks as $tablename => $results) {
         if (strpos($tablename, 'compilatio')) {
-            $compilatiodbchecks[$tablename] = $results; 
+            $compilatiodbchecks[$tablename] = $results;
         }
     }
 
@@ -87,27 +87,40 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
                 if (strpos($matches[2], 'is not expected') === 0) {
                     $field = new xmldb_field($matches[1]);
+                    echo('check for indexes before droping field => ');
+                    $indexes = $DB->get_indexes($tablename);
+                    foreach ($indexes as $k => $idx) {
+                        if (in_array($matches[1], $idx['columns'])) {
+                            echo('index ' . $k . 'found => ');
+                            $indexname      = $k;
+                            $indextype      = $idx['unique'];
+                            $indexfields    = $idx['columns'];
+                            $index          = new xmldb_index($indexname, $indextype, $indexfields);
+                            $dbman->drop_index($table, $index);
+                            echo("drop index '" . $k . "' => ");
+                        }
+                    }
                     $dbman->drop_field($table, $field);
                     echo("drop field '" . $matches[1] . "'");
-                }
-
-                $field = $schema->getTable($tablename)->getField($matches[1]);
-                if ($matches[2] == 'is missing') {
-                    $dbman->add_field($table, $field);
-                    echo("add field '" . $matches[1] . "'");
-                }
-                if ($matches[2] == 'should be NOT NULL') {
-                    $dbman->change_field_notnull($table, $field);
-                    echo("change '" . $matches[1] . "' not null");
-                }
-                if ($matches[2] == 'has default') {
-                    $dbman->change_field_default($table, $field);
-                    echo("change default value for '" . $matches[1] . "'");
-                }
-                if (in_array($matches[2], ['has unknown type', 'has incorrect type', 'has unsupported type'])) {
-                    
-                    $dbman->change_field_type($table, $field);
-                    echo("change type for '" . $matches[1] . "'");
+                } else {
+                    $field = $schema->getTable($tablename)->getField($matches[1]);
+                    if ($matches[2] == 'is missing') {
+                        $dbman->add_field($table, $field);
+                        echo("add field '" . $matches[1] . "'");
+                    }
+                    if ($matches[2] == 'should be NOT NULL') {
+                        $dbman->change_field_notnull($table, $field);
+                        echo("change '" . $matches[1] . "' not null");
+                    }
+                    if ($matches[2] == 'has default') {
+                        $dbman->change_field_default($table, $field);
+                        echo("change default value for '" . $matches[1] . "'");
+                    }
+                    if (in_array($matches[2],
+                        ['should allow NULL', 'has unknown type', 'has incorrect type', 'has unsupported type'])) {
+                        $dbman->change_field_type($table, $field);
+                        echo("change type for '" . $matches[1] . "'");
+                    }
                 }
             }
 

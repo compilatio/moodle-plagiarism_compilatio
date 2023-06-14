@@ -399,7 +399,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_UNEXTRACTABLE) {
             $span = get_string("error", "plagiarism_compilatio");
             $image = "exclamation";
-            $title = get_string('unextractablefile', 'plagiarism_compilatio');
+            $title = get_string('sending_failed', 'plagiarism_compilatio', $docwarning ?? '');
             $output .= output_helper::get_plagiarism_area($domid, $span, $image, $title, "",
                 "", true, $indexingstate, $docwarning);
 
@@ -928,16 +928,16 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
             <path fill='none' stroke='#555' stroke-linecap='round'
             stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
         </svg></a></p>";
-    }
 
-    $output .= "
-            <p><a href='http://etat-services.compilatio.net/?lang=FR'" .
-                "target='_blank' >" . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') . "
-                <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
-                    <path fill='none' stroke='#555' stroke-linecap='round'
-                    stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
-                </svg></a></p>
-        </div>";
+        $output .= '
+            <p style="margin-top: 15px;">
+            <a href="../../plagiarism/compilatio/helpcenter.php?page=service-state&idgroupe=' . $plagiarismsettings['idgroupe'] . '" target="_blank">
+            ' . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') . '
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="-5 -11 24 24">
+            <path fill="none" stroke="#555" stroke-linecap="round" stroke-linejoin="round" d="M8 2h4v4m0-4L6 8M4 2H2v10h10v-2"></path>
+            </svg></a></p>
+        </div>';
+    }
 
     // Stats tab.
     $output .= "
@@ -1901,6 +1901,21 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
             }
         }
 
+        $userfiles = $DB->get_records_select(
+            'plagiarism_compilatio_files',
+            'userid = ? AND externalid IS NOT null AND migrationstatus != 242',
+            [$plagiarismfile->userid]
+        );
+
+        mtrace(var_export($userfiles,true));
+
+        foreach ($userfiles as $userfile) {
+            if ($compilatio->set_document_depositor($userfile->externalid, $depositor)) {
+                $userfile->migrationstatus = 242;
+                $DB->update_record('plagiarism_compilatio_files', $userfile);
+            }
+        }
+
         $idcompi = $compilatio->send_doc_v5($name, $filename, $filecontents, $indexingstate, $depositor, $authors);
     } else { // V4 Doc sending.
         $idcompi = $compilatio->send_doc($name, $name, $filename, $mimetype, $filecontents);
@@ -1910,6 +1925,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
     if (compilatio_valid_md5($idcompi)) {
         $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_ACCEPTED;
         $plagiarismfile->externalid = $idcompi;
+        $plagiarismfile->migrationstatus = 242;
         $plagiarismfile->apiconfigid = $plagiarismsettings['apiconfigid'];
 
         $config = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => $plagiarismfile->cm), '', 'name, value');
@@ -1919,12 +1935,12 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
 
         $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
         return $idcompi;
+    } else {
+        $plagiarismfile->errorresponse = $idcompi;
     }
 
     $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_UNEXTRACTABLE;
     $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
-    mtrace("invalid compilatio response received - will try again later." . $idcompi);
-    // Invalid response returned - increment attempt value and return false to allow this to be called again.
     return false;
 }
 
@@ -2056,6 +2072,8 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
             } else if ($analyse->string == "Document extraction error") {
                 $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_UNEXTRACTABLE;
                 $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+            } else if ($analyse->string == "Forbidden ! Your read only API key cannot modify this resource") {
+                return get_string('read_only_apikey_error', 'plagiarism_compilatio');
             }
 
         } else {
@@ -2142,7 +2160,7 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
         if (!empty($nbmotsmin) && $docstatus->documentProperties->wordCount < $nbmotsmin) {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_SHORT;
         }
-        
+
         $nbmotsmax = get_config('plagiarism_compilatio', 'nb_mots_max');
         if (!empty($nbmotsmax) && $docstatus->documentProperties->wordCount > $nbmotsmax) {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_LONG;
