@@ -70,7 +70,7 @@ if ($rawcsv) {
             pcf.id "file_id",
             pcf.filename "file_name",
             pcf.status "file_status",
-            pcf.similarityscore "file_similarityscore",
+            pcf.displayedscore "file_score",
             ' . $todate . '(pcf.timesubmitted) "file_submitted_on"
         FROM {plagiarism_compilatio_file} pcf
         JOIN {user} student ON pcf.userid=student.id
@@ -136,7 +136,7 @@ if ($rawcsv) {
         $row = (array) $row;
         unset($row["id"]);
         if ($row["file_status"] !== "scored") {
-            $row["file_similarityscore"] = "";
+            $row["file_score"] = "";
         }
         $return .= '"' . implode('","', $row) . "\"\n";
     }

@@ -208,7 +208,7 @@ class CompilatioDocumentFrame {
                     "</a>";
             }
 
-            $score = self::get_score($cmpfile->similarityscore, $config, $isteacher);
+            $score = self::get_score($cmpfile, $config, $isteacher);
 
         } else if ($status == 'sent') {
             if (($config->analysistype ?? null) == 'planned') {
@@ -334,21 +334,50 @@ class CompilatioDocumentFrame {
      * @param  mixed  $indexingstate Indexing state
      * @return string                Return the HTML
      */
-    public static function get_score($score, $config, $isteacher) {
-        if ($score <= $config->warningthreshold ?? 10) {
+    public static function get_score($cmpfile, $config, $isteacher) {
+        if ($cmpfile->displayedscore <= $config->warningthreshold ?? 10) {
             $color = 'green';
-        } else if ($score <= $config->criticalthreshold ?? 25) {
+        } else if ($cmpfile->displayedscore <= $config->criticalthreshold ?? 25) {
             $color = 'orange';
         } else {
             $color = 'red';
         }
 
-        $title = get_string('title_score', 'plagiarism_compilatio', $score);
+        $title = get_string('title_score', 'plagiarism_compilatio', $cmpfile->displayedscore);
         $title .= $isteacher ? ' ' . get_string('title_score_teacher', 'plagiarism_compilatio') : '';
 
-        return "<span title='{$title}' class='cmp-similarity cmp-color-{$color}'>
-                    <i class='fa fa-circle'></i> {$score}<small>%</small>
-                </span>";
+        $html = "<span title='{$title}' class='cmp-similarity cmp-color-{$color}'>
+                <i class='fa fa-circle'></i> {$cmpfile->displayedscore}<small>%</small>
+            </span>";
+
+        if (!isset($cmpfile->utlscore, $cmpfile->similarityscore)) {
+            return $html;
+        }
+
+        $tooltip = "<b>{$cmpfile->displayedscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b>
+            <ul>
+                <li>" . get_string('similarities', 'plagiarism_compilatio') . " : <b>{$cmpfile->similarityscore}%</b></li>
+                <li>" . get_string('utl', 'plagiarism_compilatio') . " : <b>{$cmpfile->utlscore}%</b></li>
+                <li>" . get_string('ai_text', 'plagiarism_compilatio') . " : <b>" . $cmpfile->iascore ?? get_string('unmeasured', 'plagiarism_compilatio') . "%</b></li>
+            </ul>";
+
+
+        $html .= "<span data-toggle='tooltip' data-html='true'  title='{$tooltip}'>";
+        $html .= $cmpfile->similarityscore > 0 
+            ? "<i class='fa fa-circle cmp-color-{$color}'></i>"
+            : "<i class='fa fa-circle cmp-color-secondary'></i>";
+        
+        $html .= $cmpfile->utlscore > 0 
+            ? "<i class='fa fa-circle cmp-color-{$color} '></i>"
+            : "<i class='fa fa-circle cmp-color-secondary'></i>";
+        if (isset($cmpfile->aiscore)) {
+            $html .= $cmpfile->aiscore > 0 
+                ? "<i class='fa fa-circle cmp-color-{$color}'></i>"
+                : "<i class='fa fa-circle cmp-color-secondary'></i>";
+        }
+        $html .= "</span>";
+
+        return $html;
     }
 
     /**

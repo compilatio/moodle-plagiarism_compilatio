@@ -120,14 +120,22 @@ class CompilatioEventHandler {
                 $keepfileindexed = boolval(get_config('plagiarism_compilatio', 'keep_docs_indexed'));
                 compilatio_delete_files($files, true, $keepfileindexed);
 
-                self::set_folder_and_user_if_not($event['courseid'], $modulename);
+                self::create_folder_if_not_set($event['courseid'], $modulename);
             }
         }
     }
 
     // ADTD v2 course modules management.
-    private static function set_folder_and_user_if_not($courseid, $modulename) {
+    private static function create_folder_if_not_set($courseid, $modulename) {
         global $DB, $USER;
+
+        $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => 0]);
+
+        if (empty($user)) {
+            return;
+        }
+
+        $compilatio = new CompilatioAPI($user->compilatioid);
 
         $sql = "SELECT cfg.*, {$modulename}.name FROM {plagiarism_compilatio_cm_cfg} cfg
             JOIN {course_modules} course_modules ON cfg.cmid = course_modules.id
@@ -138,27 +146,6 @@ class CompilatioEventHandler {
         $cmconfigs = $DB->get_records_sql($sql, [$courseid, $modulename]);
 
         foreach ($cmconfigs as $cmconfig) {
-            $compilatio = new CompilatioAPI();
-
-            $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => 0]);
-
-            if (empty($user)) {
-                // TODO get user instead of this.
-                $domain = explode('@', $USER->email);
-                $domain = end($domain);
-                $globaluser = (object) [
-                    'firstname' => 'global user',
-                    'lastname' => 'moodle',
-                    'email' => 'moodleglobaluser@' . $domain,
-                    'id' => 0
-                ];
-                $user = $compilatio->get_or_create_user($globaluser);
-                $compilatio->set_user_id($user->compilatioid);
-                $compilatio->validate_terms_of_service();
-            }
-
-            $compilatio->set_user_id($user->compilatioid);
-
             $cmconfig->userid = $user->compilatioid;
 
             $folderid = $compilatio->set_folder(
@@ -274,7 +261,7 @@ class CompilatioEventHandler {
                 $compilatio->set_indexing_state($file->externalid, $plugincm->defaultindexing);
 
                 $file->status = 'sent';
-                $file->similarityscore = 0;
+                $file->displayedscore = 0;
                 $file->attempt = 0;
                 $file->timesubmitted = time();
                 $file->indexed = $plugincm->defaultindexing;

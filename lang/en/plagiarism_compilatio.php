@@ -165,6 +165,12 @@ $string['title_error_too_long'] = 'This document contain too many words to be an
 $string['btn_error_not_found'] = 'Document not found';
 $string['title_error_not_found'] = 'This document was not found. Please contact your moodle administrator. Error : document not found for this API key.';
 
+$string['tooltip_detailed_scores'] = '% de textes suspects, dont :';
+$string['similarities'] = 'Similitudes';
+$string['utl'] = 'Langue non reconnu';
+$string['ai_text'] = 'Texte généré par IA';
+$string['unmeasured'] = 'non mesuré';
+
 $string['previouslysubmitted'] = 'Previously submitted as';
 $string['student_analyze'] = "The analysis can be started by the student";
 $string['student_help'] = "You can analyze your draft with Compilatio Magister, to measure similarities in the text of your files.<br/>

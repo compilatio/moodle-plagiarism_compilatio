@@ -242,10 +242,10 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     if ($oldversion < 2023060000) {
         // API key.
         $apiconfigid = get_config('plagiarism_compilatio', 'apiconfigid');
-        $apikey = $DB->get_record('plagiarism_compilatio_apicon', 'api_key', ['id' => $apiconfigid]);
+        $apikey = $DB->get_field('plagiarism_compilatio_apicon', 'api_key', ['id' => $apiconfigid]);
         set_config('apikey', $apikey, 'plagiarism_compilatio');
 
-        require_once($CFG->dirroot . '/plagiarism/compilatio/api.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
         $compilatio = new CompilatioAPI(null, $apikey);
         $compilatioid = $compilatio->get_apikey_user_id();
 
@@ -355,7 +355,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                     'filename'        => $filename,
                     'externalid'      => $file->externalid,
                     'status'          => $status[$file->statuscode],
-                    'similarityscore' => $file->similarityscore,
+                    'displayedscore'  => $file->similarityscore,
                     'timesubmitted'   => $file->timesubmitted,
                     'reporturl'       => $reporturl
                 ];
@@ -365,6 +365,8 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                 $DB->delete_records('plagiarism_compilatio_files', ['id' => $file->id]);
             }
         } while (1);
+
+        compilatio_update_meta();
 
         upgrade_plugin_savepoint(true, 2023060000, 'plagiarism', 'compilatio');
     }

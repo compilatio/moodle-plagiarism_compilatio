@@ -43,9 +43,9 @@ class CompilatioStatistics {
                 modules.name 'module_type',
                 CONCAT(COALESCE(assign.name, ''), COALESCE(forum.name, ''), COALESCE(workshop.name, ''),
                 COALESCE(quiz.name, '')) 'module_name',
-                AVG(similarityscore) 'avg',
-                MIN(similarityscore) 'min',
-                MAX(similarityscore) 'max',
+                AVG(displayedscore) 'avg',
+                MIN(displayedscore) 'min',
+                MAX(displayedscore) 'max',
                 COUNT(DISTINCT plagiarism_compilatio_file.id) 'count'
             FROM {plagiarism_compilatio_file} plagiarism_compilatio_file
             JOIN {course_modules} course_modules
@@ -161,20 +161,20 @@ class CompilatioStatistics {
         $documentscount = $DB->count_records_sql($from, [$cmid]);
 
         $countgreen = $DB->count_records_sql(
-            $from . " AND status = 'scored' AND similarityscore <= $warningthreshold",
+            $from . " AND status = 'scored' AND displayedscore <= $warningthreshold",
             [$cmid]
         );
         $countorange = $DB->count_records_sql(
-            $from . " AND status = 'scored' AND similarityscore > $warningthreshold AND similarityscore <= $criticalthreshold",
+            $from . " AND status = 'scored' AND displayedscore > $warningthreshold AND displayedscore <= $criticalthreshold",
             [$cmid]
         );
         $countred = $DB->count_records_sql(
-            $from . " AND status = 'scored' AND similarityscore > $criticalthreshold",
+            $from . " AND status = 'scored' AND displayedscore > $criticalthreshold",
             [$cmid]
         );
 
         $scorestats = $DB->get_record_sql(
-            "SELECT ROUND(AVG(similarityscore)) avg, MIN(similarityscore) min, MAX(similarityscore) max
+            "SELECT ROUND(AVG(displayedscore)) avg, MIN(displayedscore) min, MAX(displayedscore) max
                 FROM {plagiarism_compilatio_file} pcf
                 WHERE pcf.cm=? AND status='scored'",
             [$cmid]

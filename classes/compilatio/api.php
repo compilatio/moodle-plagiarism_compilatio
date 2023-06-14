@@ -40,7 +40,7 @@ class CompilatioAPI {
             $apikey = get_config('plagiarism_compilatio', 'apikey');
         }
 
-        $this->urlrest = 'https://benoit.ronflex.compilatio.net';
+        $this->urlrest = 'https://app.compilatio.net';
         $this->userid = $userid;
 
         if (!empty($apikey)) {
