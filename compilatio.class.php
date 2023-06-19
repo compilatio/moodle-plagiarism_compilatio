@@ -232,22 +232,18 @@ class compilatioservice {
             'origin' => 'moodle'
         ];
 
-        if (isset($depositor->firstname, $depositor->lastname, $depositor->email)) {
-            $params['depositor'] = [
-                'firstname' => $depositor->firstname,
-                'lastname' => $depositor->lastname,
-                'email_address' => $depositor->email
-            ];
-        }
+        $params['depositor'] = [
+            'firstname' => $this->sanitize($depositor->firstname),
+            'lastname' => $this->sanitize($depositor->lastname),
+            'email_address' => $this->validate_email($depositor->email)
+        ];
 
         foreach ($authors as $author) {
-            if (isset($author->firstname, $author->lastname, $author->email)) {
-                $params['authors'][] = [
-                    'firstname' => $author->firstname,
-                    'lastname' => $author->lastname,
-                    'email_address' => $author->email
-                ];
-            }
+            $params['authors'][] = [
+                'firstname' => $this->sanitize($author->firstname),
+                'lastname' => $this->sanitize($author->lastname),
+                'email_address' => $this->validate_email($author->email)
+            ];
         }
 
         $ch = curl_init();
@@ -287,6 +283,23 @@ class compilatioservice {
                 . curl_error($ch) . " / cURL response : " . var_export($t, true));
             return '(' . $response->status->message . ')';
         }
+    }
+
+    private function sanitize($value) {
+        $forbiddenCharacters = [".","!","?",":","%","&","*","=","#","$","@","/","\\","<",">","(",")","[","]","{","}"];
+
+        if (!is_string($value) || '' === $value) {
+            return null;
+        }
+
+        $value = trim($value, " \n\r\t\v\x00" . implode('', $forbiddenCharacters));
+
+        return str_replace($forbiddenCharacters, '_', $value);
+    }
+
+    private function validate_email($email) {
+        $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+        return filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
     }
 
     /**
@@ -493,7 +506,7 @@ class compilatioservice {
      */
     public function start_analyse($compihash) {
 
-        /*try {
+        try {
             if (!is_object($this->soapcli)) {
                 return("Error in constructor compilatio() " . $this->soapcli);
             }
@@ -501,12 +514,12 @@ class compilatioservice {
             $param = array($this->key, $compihash);
             $this->soapcli->__call('startDocumentAnalyse', $param);
 
-        } catch (SoapFault $fault) {*/
+        } catch (SoapFault $fault) {
             $error = new stdClass();
-            $error->code = 'startDocumentAnalyse error';//$fault->faultcode;
-            $error->string = 'Forbidden ! Your read only API key cannot modify this resource';//$fault->faultstring;
+            $error->code = $fault->faultcode;
+            $error->string = $fault->faultstring;
             return $error;
-        //}
+        }
 
         return true;
     }

@@ -924,18 +924,13 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     } else {
         $output .= "<p><a href='../../plagiarism/compilatio/helpcenter.php?idgroupe=" . $plagiarismsettings['idgroupe'] . "'" .
         "target='_blank' >" . get_string('helpcenter', 'plagiarism_compilatio') . "
-        <svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' viewBox='-5 -11 24 24'>
-            <path fill='none' stroke='#555' stroke-linecap='round'
-            stroke-linejoin='round' d='M8 2h4v4m0-4L6 8M4 2H2v10h10v-2'></path>
-        </svg></a></p>";
+        <i class='ml-2 fa fa-external-link'></i></a></p>";
 
         $output .= '
             <p style="margin-top: 15px;">
             <a href="../../plagiarism/compilatio/helpcenter.php?page=service-state&idgroupe=' . $plagiarismsettings['idgroupe'] . '" target="_blank">
             ' . get_string('goto_compilatio_service_status', 'plagiarism_compilatio') . '
-            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="-5 -11 24 24">
-            <path fill="none" stroke="#555" stroke-linecap="round" stroke-linejoin="round" d="M8 2h4v4m0-4L6 8M4 2H2v10h10v-2"></path>
-            </svg></a></p>
+            <i class="ml-2 fa fa-external-link"></i></a></p>
         </div>';
     }
 
@@ -1871,6 +1866,15 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
 
     if (strlen($compilatio->key) == 40) { // V5 Doc sending.
         $depositor = $DB->get_record("user", ["id" => $plagiarismfile->userid], 'firstname, lastname, email');
+
+        if (empty($depositor)) {
+            $depositor = (object) [
+                'firstname' => 'not_found', 
+                'lastname' => 'not_found',
+                'email' => null
+            ];
+        }
+
         $authors = [$depositor];
 
         if ($module->modname == 'assign') {
@@ -3471,6 +3475,10 @@ function compilatio_handle_quiz_attempt($attemptid) {
     $attempt = \quiz_attempt::create($attemptid);
     $userid = $attempt->get_userid();
     $cmid = $attempt->get_cmid();
+
+    if (!compilatio_enabled($cmid)) {
+        return;
+    }
 
     foreach ($attempt->get_slots() as $slot) {
         $answer = $attempt->get_question_attempt($slot);
