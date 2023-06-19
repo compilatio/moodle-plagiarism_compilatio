@@ -124,7 +124,12 @@ class plagiarism_compilatio_observer {
      */
     public static function quiz_attempt_deleted(
         \mod_quiz\event\attempt_deleted $event) {
-            global $CFG;
+        global $CFG;
+
+        if ($CFG->version < 2021051700) {
+            return;
+        }
+
         try {
             require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
             compilatio_event_handler($event->get_data(), false, false);
