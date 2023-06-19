@@ -196,7 +196,7 @@ if ($forumsuccess) {
 if ($quizsuccess) {
     $alerts[] = array('success', get_string("plugin_enabled_quiz", "plagiarism_compilatio"));
 } else {
-    $alerts[] = array('warning', get_string("plugin_enabled_quiz", "plagiarism_compilatio"));
+    $alerts[] = array('warning', get_string("plugin_disabled_quiz", "plagiarism_compilatio"));
 }
 
 /*

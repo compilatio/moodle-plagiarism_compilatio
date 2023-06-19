@@ -67,5 +67,6 @@ if (!$idgroupe) {
     <path fill="none" stroke="#555" stroke-linecap="round" stroke-linejoin="round" d="M8 2h4v4m0-4L6 8M4 2H2v10h10v-2"></path>
     </svg></a></p>');
 }
+
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();
