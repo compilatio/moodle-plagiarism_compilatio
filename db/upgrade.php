@@ -255,10 +255,10 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
         // Plugin settings.
         $settings = [
-            'allow_analyses_auto' => 'enable_analyses_auto',
+            'allow_analyses_auto'            => 'enable_analyses_auto',
             'allow_teachers_to_show_reports' => 'enable_show_reports',
-            'allow_student_analyses' => 'enable_student_analyses',
-            'allow_search_tab' => 'enable_search_tab'
+            'allow_student_analyses'         => 'enable_student_analyses',
+            'allow_search_tab'               => 'enable_search_tab'
         ];
 
         foreach ($settings as $oldsetting => $newsetting) {
@@ -292,7 +292,6 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                 'showstudentscore'  => $showstudent[$config['compilatio_show_student_score']],
                 'showstudentreport' => $showstudent[$config['compilatio_show_student_report']],
                 'studentanalyses'   => $config['compi_student_analyses'],
-                'studentemail'      => $config['compilatio_studentemail'],
                 'analysistype'      => $analysistype[$config['compilatio_analysistype']],
                 'analysistime'      => $config['compilatio_timeanalyse'],
                 'warningthreshold'  => $config['green_threshold'],

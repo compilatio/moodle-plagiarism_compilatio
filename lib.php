@@ -75,7 +75,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             'showstudentreport',
             'reporttype',
             'studentanalyses',
-            'studentemail',
             'analysistype',
             'analysistime',
             'warningthreshold',
@@ -115,31 +114,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             $outputhtml .= $OUTPUT->box_end();
         }
         return $outputhtml;
-    }
-
-    /**
-     * Send a mail to the student
-     *
-     * @param  array $plagiarismfile File
-     * @return mixed                 Return void if succeed, false otherwise.
-     */
-    public function compilatio_send_student_email($plagiarismfile) {
-        global $DB, $CFG;
-
-        if (empty($plagiarismfile->userid)) { // Sanity check.
-            return false;
-        }
-
-        $user = $DB->get_record('user', ['id' => $plagiarismfile->userid]);
-        $site = get_site();
-        $a = new stdClass();
-        $cm = get_coursemodule_from_id('', $plagiarismfile->cm);
-        $a->modulename = format_string($cm->name);
-        $a->modulelink = $CFG->wwwroot . '/mod/' . $cm->modname . '/view.php?id=' . $cm->id;
-        $a->coursename = format_string($DB->get_field('course', 'fullname', ['id' => $cm->course]));
-        $emailsubject = get_string('studentemailsubject', 'plagiarism_compilatio');
-        $emailcontent = get_string('studentemailcontent', 'plagiarism_compilatio', $a);
-        email_to_user($user, $site->shortname, $emailsubject, $emailcontent);
     }
 }
 

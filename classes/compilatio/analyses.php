@@ -102,13 +102,6 @@ class CompilatioAnalyses {
 
                 $cmpfile->status = 'scored';
                 $cmpfile->displayedscore = $scores->displayed_similarity_percent ?? 0;
-
-                $emailstudents = $DB->get_field('plagiarism_compilatio_cm_cfg', 'studentemail', ['cmid' => $cmpfile->cm]);
-                if (!empty($emailstudents)) {
-                    $compilatio = new plagiarism_plugin_compilatio();
-                    $compilatio->compilatio_send_student_email($cmpfile);
-                }
-
             } else if ($state == 'crashed' || $state == 'aborted' || $state == 'canceled') {
                 $cmpfile->status = 'error_analysis_failed';
             }

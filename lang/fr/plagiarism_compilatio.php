@@ -73,6 +73,8 @@ $string['owner_file_student'] = "L'élève est l'unique propriétaire de son dev
 $string['owner_file_student_details'] = "En cas de demande de suppression des données personnelles d'un élève, les devoirs seront supprimés de la plateforme Moodle et de la bibliothèque de références Compilatio. Les devoirs ne seront plus disponibles pour une comparaison avec de nouveaux documents.";
 
 // Activity settings.
+$string['info_cm_activation'] = 'En activant Compilatio sur cette activité, les documents rendus seront chargés sur votre compte Compilatio ({$a}).<br>Tous les enseignants inscrits dans ce cours pourrons utiliser Compilatio sur cette activité.';
+$string['info_cm_activated'] = 'Les documents rendus dans cette activité sont chargés sur le compte Compilatio {$a}.<br>Tous les enseignants inscrits dans ce cours peuvent utiliser Compilatio sur cette activité.';
 $string['terms_of_service'] = 'J\'ai pris connaissance des <a href=\'{$a}\'>Conditions générales d\'utilisation</a> de Compilatio et je les accepte.';
 $string['terms_of_service_info'] = '<a href=\'{$a}\'>Conditions générales d\'utilisation</a> de Compilatio';
 $string['terms_of_service_alert'] = 'Les <a href=\'{$a}\'>Conditions générales d\'utilisation</a> de Compilatio n\'ont pas été validés ou on été mises à jour.<br> Merci d\'en prendre connaissance et de les valider pour pouvoir utiliser Compilatio.';
@@ -87,8 +89,6 @@ $string['showstudentreport'] = "Permettre à l'étudiant de visualiser le rappor
 $string['showstudentreport_help'] = 'Le rapport d’analyse d’un document présente les passages similaires avec les sources détectées et leurs pourcentages de similitudes.';
 $string['immediately'] = "Immédiatement";
 $string['showwhenclosed'] = "Quand l'activité est fermée";
-$string['studentemail'] = "Envoyer un mail à l'étudiant";
-$string['studentemail_help'] = "Ceci enverra un e-mail à l'élève quand un fichier a été traité pour leur faire savoir que le rapport est disponible.";
 $string['analysistype'] = 'Lancement des analyses';
 $string['analysistype_help'] = "<p>Vous disposez de deux options :
     <ul>
@@ -174,11 +174,6 @@ $string['failedanalysis'] = "Compilatio n'a pas réussi à analyser votre docume
 $string['indexed_document'] = "Document ajouté à la bibliothèque de références de votre établissement. Son contenu pourra être utilisé pour détecter des similitudes avec d’autres documents.";
 $string['not_indexed_document'] = "Document non ajouté à la bibliothèque de références de votre établissement. Son contenu ne sera pas utilisé pour détecter des similitudes avec d’autres documents.";
 $string['extraction_in_progress'] = 'extraction du document en cours, veuillez réessayer plus tard';
-
-// Student email.
-$string['studentemailsubject'] = 'Le fichier a été traité par Compilatio';
-$string['studentemailcontent'] = 'Le fichier que vous avez soumis à {$a->modulename} dans {$a->coursename} a été traité par l\'outil de détection de plagiat Compilatio
-    {$a->modulelink}';
 
 // Compilatio frame.
 $string['similarities_disclaimer'] = "Vous pouvez analyser les similitudes présentes dans les documents de cette activité à l’aide du logiciel <a href='http://compilatio.net' target='_blank'>Compilatio</a>.<br/>

@@ -86,7 +86,6 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         $defaultconfig->showstudentscore = 'never';
         $defaultconfig->showstudentreport = 'never';
         $defaultconfig->studentanalyses = 0;
-        $defaultconfig->studentemail = 0;
         $defaultconfig->analysistype = 'manual';
         $defaultconfig->warningthreshold = 10;
         $defaultconfig->criticalthreshold = 25;

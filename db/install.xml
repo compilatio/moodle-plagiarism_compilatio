@@ -49,7 +49,6 @@
         <FIELD NAME="showstudentreport" TYPE="char" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="reporttype" TYPE="char" LENGTH="11" NOTNULL="false" DEFAULT="detailed" SEQUENCE="false"/>
         <FIELD NAME="studentanalyses" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="studentemail" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="analysistype" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="analysistime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="warningthreshold" TYPE="int" LENGTH="5" NOTNULL="false" SEQUENCE="false"/>

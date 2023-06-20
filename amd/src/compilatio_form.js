@@ -20,15 +20,20 @@ define(['jquery'], function($) {
             let tos = $('#id_termsofservice');
 
             if (activated.val() == 0) {
+                tos.checked = true;
                 tos.prop('checked', true);
                 tos.closest('.form-group').hide();
             }
 
             activated.on('change', function() {
                 if (this.value == 0) {
+                    console.log('checked');
+                    tos.checked = true;
                     tos.prop('checked', true);
                     tos.closest('.form-group').hide();
                 } else {
+                    console.log('not checked');
+                    tos.checked = false;
                     tos.prop('checked', false);
                     tos.closest('.form-group').show();
                 }

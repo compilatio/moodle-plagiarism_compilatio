@@ -73,6 +73,8 @@ $string['owner_file_student'] = 'The student is the only owner of his document';
 $string['owner_file_student_details'] = 'When a student request to delete all his data, his documents and reports will be deleted from Moodle and the Compilatio document database. Documents will no longer be available for comparison with other documents.';
 
 // Activity settings.
+$string['info_cm_activation'] = 'By activating Compilatio on this activity, submitted documents will be uploaded to your Compilatio account {$a}.<br>All teachers enrolled in this course will be able to use Compilatio on this activity.';
+$string['info_cm_activated'] = 'Documents submitted in this activity are uploaded to the Compilatio account {$a}.<br>All teachers enrolled in this course can use Compilatio on this activity.';
 $string['terms_of_service'] = 'I have read the <a href=\'{$a}\'>Terms of Service</a> of Compilatio and I accept them.';
 $string['terms_of_service_info'] = '<a href=\'{$a}\'>Terms of Service</a> of Compilatio';
 $string['terms_of_service_alert'] = 'The Compilatio <a href=\'{$a}\'>Terms of Service</a> have not been validated or have been updated. Please read and accept them before using Compilatio.';
@@ -87,8 +89,6 @@ $string['showstudentreport'] = 'Show similarity report to student';
 $string['showstudentreport_help'] = 'The similarity report gives a breakdown on what parts of the submission were plagiarised and the location of the detected sources.';
 $string['immediately'] = "Immediately";
 $string['showwhenclosed'] = 'When Activity closed';
-$string['studentemail'] = 'Send Student email';
-$string['studentemail_help'] = 'This will send an e-mail to the student when a file has been processed to let them know that a report is available.';
 $string['analysistype'] = 'Analysis Start';
 $string['analysistype_help'] = "<p>You have two options:
     <ul>
@@ -180,11 +180,6 @@ $string['failedanalysis'] = 'Compilatio failed to analyse your document: ';
 $string['indexed_document'] = "Document added to your institution&#39s document database. Its content may be used to detect similarities with other documents.";
 $string['not_indexed_document'] = "Document not added to your institution&#39s document database. Its content will not be used to detect similarities with other documents.";
 $string['extraction_in_progress'] = 'document extraction in progress, please try again later';
-
-// Student email.
-$string['studentemailsubject'] = 'File processed by Compilatio';
-$string['studentemailcontent'] = 'The file you submitted to {$a->modulename} in {$a->coursename} has now been processed by the Plagiarism tool Compilatio.
-    {$a->modulelink}';
 
 // Compilatio frame.
 $string['similarities_disclaimer'] = "You can analyze similarities in this activity's documents with <a href='http://www.compilatio.net/en/' target='_blank'>Compilatio</a>.<br/>

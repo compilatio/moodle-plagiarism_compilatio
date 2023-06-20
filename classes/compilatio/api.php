@@ -52,7 +52,7 @@ class CompilatioAPI {
 
     public function get_config() {
         $endpoint = '/api/public/config/config';
-        $response = json_decode($this->call_api($endpoint));
+        $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
             return $response->data;
@@ -68,7 +68,7 @@ class CompilatioAPI {
     public function check_apikey() {
         $endpoint = '/api/private/user/lms/23a3a6980c0f49d98c5dc1ec03478e9161ad5d352cb4651b14865d21d0e81be';
 
-        $response = json_decode($this->call_api($endpoint));
+        $response = json_decode($this->build_curl($endpoint));
         error_log(var_export($response,true));
         $error = $this->get_error_response($response, 404);
         if ($error === false) {
@@ -80,7 +80,7 @@ class CompilatioAPI {
     public function get_apikey_user_id() {
         $endpoint = '/api/private/authentication/check-api-key';
 
-        $response = json_decode($this->call_api($endpoint));
+        $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
             return $response->data->user->id;
@@ -91,7 +91,7 @@ class CompilatioAPI {
     public function update_apikey() {
         $endpoint = '/api/private/moodle-configuration/update-api-key';
 
-        $response = json_decode($this->call_api($endpoint, 'post'));
+        $response = json_decode($this->build_curl($endpoint, 'post'));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;
@@ -108,7 +108,7 @@ class CompilatioAPI {
     public function check_allow_student_analyses() {
         $endpoint = '/api/private/authentication/check-api-key';
 
-        $response = json_decode($this->call_api($endpoint));
+        $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
             $bundle = $response->data->user->current_bundle;
@@ -173,7 +173,7 @@ class CompilatioAPI {
             'origin' => 'LMS-Moodle'
         ];
 
-        $response = json_decode($this->call_api($endpoint, 'post', json_encode($params)));
+        $response = json_decode($this->build_curl($endpoint, 'post', json_encode($params)));
 
         if ($this->get_error_response($response, 201) === false) {
             return $response->data->user->id;
@@ -190,7 +190,7 @@ class CompilatioAPI {
     public function get_user($userid) {
         $endpoint = '/api/private/user/' . $userid;
 
-        $response = json_decode($this->call_api($endpoint));
+        $response = json_decode($this->build_curl($endpoint));
 
         $error = $this->get_error_response($response, 200);
         if ($error === false) {
@@ -208,7 +208,7 @@ class CompilatioAPI {
     private function get_user_by_email($email) {
         $endpoint = '/api/private/user/lms/' . strtolower($email);
 
-        $response = json_decode($this->call_api($endpoint));
+        $response = json_decode($this->build_curl($endpoint));
 
         $error = $this->get_error_response($response, 200);
         if ($error === false) {
@@ -233,7 +233,7 @@ class CompilatioAPI {
             'email' => $email
         ];
 
-        $response = json_decode($this->call_api($endpoint, 'patch', json_encode($params)));
+        $response = json_decode($this->build_curl($endpoint, 'patch', json_encode($params)));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;
@@ -278,7 +278,7 @@ class CompilatioAPI {
             }
         }
 
-        $response = json_decode($this->call_api_on_behalf_of_user($endpoint, 'upload', $params));
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'upload', $params));
 
         $error = $this->get_error_response($response, 201);
         if ($error === false) {
@@ -298,7 +298,7 @@ class CompilatioAPI {
      */
     public function get_document($docid) {
         $endpoint = '/api/private/document/' . $docid;
-        $response = json_decode($this->call_api_on_behalf_of_user($endpoint));
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
 
         $error = $this->get_error_response($response, 200);
         if ($error === false) {
@@ -315,7 +315,7 @@ class CompilatioAPI {
      */
     public function delete_document($docid) {
         $endpoint = '/api/private/document/' . $docid;
-        $response = json_decode($this->call_api_on_behalf_of_user($endpoint, 'delete'));
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'delete'));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;
@@ -357,7 +357,7 @@ class CompilatioAPI {
             $params['scheduled_analysis_date'] = $analysistime;
         }
 
-        $response = json_decode($this->call_api_on_behalf_of_user($endpoint, 'post', json_encode($params)));
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post', json_encode($params)));
 
         if ($this->get_error_response($response, 201) === false) {
             return $response->data->folder->id;
@@ -400,7 +400,7 @@ class CompilatioAPI {
             $params['scheduled_analysis_date'] = $analysistime;
         }
 
-        $response = json_decode($this->call_api_on_behalf_of_user($endpoint, 'patch', json_encode($params)));
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', json_encode($params)));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;
@@ -416,7 +416,7 @@ class CompilatioAPI {
      */
     public function delete_folder($folderid) {
         $endpoint = '/api/private/folder/' . $folderid;
-        $response = json_decode($this->call_api_on_behalf_of_user($endpoint, 'delete'));
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'delete'));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;
@@ -434,7 +434,7 @@ class CompilatioAPI {
     public function set_indexing_state($docid, $indexed) {
         $endpoint = '/api/private/document/' . $docid;
 
-        $response = json_decode($this->call_api_on_behalf_of_user($endpoint, 'patch', json_encode(['indexed' => $indexed])));
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', json_encode(['indexed' => $indexed])));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;
@@ -451,7 +451,7 @@ class CompilatioAPI {
     public function get_report_token($docid) {
         $endpoint = '/api/private/documents/' . $docid . '/report/jwt';
 
-        $response = json_decode($this->call_api_on_behalf_of_user($endpoint, 'post'));
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post'));
 
         if ($this->get_error_response($response, 201) === false) {
             return $response->data->jwt;
@@ -475,7 +475,7 @@ class CompilatioAPI {
 
         $handle = fopen($filepath, 'wb');
 
-        if ($this->call_api_on_behalf_of_user($endpoint, 'download', null, $handle) == 200) {
+        if ($this->build_curl_on_behalf_of_user($endpoint, 'download', null, $handle) == 200) {
             return $filepath;
         } else {
             return false;
@@ -498,7 +498,7 @@ class CompilatioAPI {
             ]
         ];
 
-        $response = json_decode($this->call_api_on_behalf_of_user($endpoint, 'post', json_encode($params)));
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post', json_encode($params)));
 
         $error = $this->get_error_response($response, 201);
         if ($error === false) {
@@ -517,11 +517,11 @@ class CompilatioAPI {
      */
     public function delete_analyse($docid) {
         $endpoint = '/api/private/analysis/get-by-doc/' . $docid;
-        $response = json_decode($this->call_api_on_behalf_of_user($endpoint));
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
             $endpoint = '/api/private/analysis/' . $response->data->analysis->id;
-            $response = json_decode($this->call_api_on_behalf_of_user($endpoint, 'delete'));
+            $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'delete'));
 
             if ($this->get_error_response($response, 200) === false) {
                 return true;
@@ -538,7 +538,7 @@ class CompilatioAPI {
     public function get_allowed_file_types() {
         $endpoint = '/api/public/file/allowed-extensions';
 
-        $response = json_decode($this->call_api($endpoint));
+        $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
             return $response->data;
@@ -566,7 +566,7 @@ class CompilatioAPI {
             'cron_frequency' => $cronfrequency
         ];
 
-        $response = json_decode($this->call_api($endpoint, 'post', json_encode($params)));
+        $response = json_decode($this->build_curl($endpoint, 'post', json_encode($params)));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;
@@ -582,7 +582,7 @@ class CompilatioAPI {
     public function validate_terms_of_service() {
         $endpoint = '/api/private/terms-of-service/validate';
 
-        $response = json_decode($this->call_api_on_behalf_of_user($endpoint));
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
             return $response->data->termsOfService_validated;
@@ -598,7 +598,7 @@ class CompilatioAPI {
     public function get_zendesk_jwt() {
         $endpoint = '/api/private/user/zendesk/jwt';
 
-        $response = json_decode($this->call_api_on_behalf_of_user($endpoint));
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
             return $response->data->token;
@@ -614,7 +614,7 @@ class CompilatioAPI {
     public function get_alerts() {
         $endpoint = '/api/private/alert/list/moodle';
 
-        $response = json_decode($this->call_api($endpoint));
+        $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
             return $response->data->alerts;
@@ -629,7 +629,7 @@ class CompilatioAPI {
      */
     public function get_subscription_info() {
         $endpoint = '/api/private/authentication/check-api-key';
-        $response = json_decode($this->call_api($endpoint));
+        $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
             foreach ($response->data->user->current_bundle->accesses as $access) {
@@ -645,7 +645,7 @@ class CompilatioAPI {
 
         $endpoint = '/api/private/subscription/bundles/' . $magisterstandardbundleid . '/last-subscription';
 
-        $response = json_decode($this->call_api($endpoint));
+        $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
             return $response->data->subscription;
@@ -664,7 +664,7 @@ class CompilatioAPI {
     public function get_translation($lang, $key) {
         $endpoint = '/api/public/translation/last-version/' . $lang . '/key/' . $key;
 
-        $response = json_decode($this->call_api($endpoint));
+        $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
             $translation = $response->data;
@@ -695,7 +695,7 @@ class CompilatioAPI {
     }
 
     // ADTR v2 document management.
-    private function call_api_on_behalf_of_user($endpoint, $method = null, $data = null, $handle = null) {
+    private function build_curl_on_behalf_of_user($endpoint, $method = null, $data = null, $handle = null) {
         global $DB;
 
         $header = [];
@@ -703,10 +703,10 @@ class CompilatioAPI {
         $header[] = null === $this->userid
             ? 'X-LMS-USER-ID: ' . $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => 0])
             : 'X-LMS-USER-ID: ' . $this->userid;
-        return $this->call_api($endpoint, $method, $data, $handle, $header);
+        return $this->build_curl($endpoint, $method, $data, $handle, $header);
     }
 
-    private function call_api($endpoint, $method = null, $data = null, $handle = null, $header = []) {
+    private function build_curl($endpoint, $method = null, $data = null, $handle = null, $header = []) {
         global $CFG;
 
         $ch = curl_init();

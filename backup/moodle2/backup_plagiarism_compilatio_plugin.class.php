@@ -47,7 +47,7 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
 
         $compilatioconfigs = new backup_nested_element('compilatio_modules');
         $compilatioconfig = new backup_nested_element('compilatio_module', ['id'],
-            ['folderid', 'userid', 'activated', 'showstudentreport', 'showstudentscore', 'studentanalyses', 'studentemail',
+            ['folderid', 'userid', 'activated', 'showstudentreport', 'showstudentscore', 'studentanalyses',
                 'analysistype', 'analysistime', 'warningthreshold', 'criticalthreshold', 'defaultindexing']);
         $pluginwrapper->add_child($compilatioconfigs);
         $compilatioconfigs->add_child($compilatioconfig);

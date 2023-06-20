@@ -71,7 +71,7 @@ class CompilatioSettings {
                     $data->showstudentreport = 'never';
                 }
 
-                if ($newconfig) {
+                if ($newconfig || (!isset($cmconfig->userid) && $cmconfig->activated === '0')) {
                     $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => $USER->id]);
 
                     if (empty($user)) {
@@ -91,24 +91,20 @@ class CompilatioSettings {
                     }
                 }
 
-                foreach ($plugin->config_options() as $element) {
-                    $cmconfig->$element = $data->$element ?? null;
-                }
-
                 if (isset($cmconfig->userid)) {
                     $compilatio ??= new CompilatioAPI($cmconfig->userid);
 
                     // Get Datetime for Compilatio folder.
                     $date = new DateTime();
                     $date->setTimestamp($data->analysistime);
-                    $data->analysistime = $date->format('Y-m-d H:i:s');
+                    $analysistime = $date->format('Y-m-d H:i:s');
 
-                    if ($newconfig) {
+                    if ($newconfig || (!isset($cmconfig->folderid) && $cmconfig->activated === '0')) {
                         $folderid = $compilatio->set_folder(
                             $data->name,
                             $data->defaultindexing,
                             $data->analysistype,
-                            $data->analysistime,
+                            $analysistime,
                             $data->warningthreshold,
                             $data->criticalthreshold
                         );
@@ -121,11 +117,15 @@ class CompilatioSettings {
                             $data->name,
                             $data->defaultindexing,
                             $data->analysistype,
-                            $data->analysistime,
+                            $analysistime,
                             $data->warningthreshold,
                             $data->criticalthreshold
                         );
                     }
+                }
+
+                foreach ($plugin->config_options() as $element) {
+                    $cmconfig->$element = $data->$element ?? null;
                 }
             } else {
                 $cmconfig->activated = 0;
@@ -190,11 +190,15 @@ class CompilatioSettings {
             }
 
             // ADTD v2 document management.
-            if (!empty($config) && null === $config->userid) {
+            if (!empty($config) && null === $config->userid && $config->activated === '1') {
                 $needtermsofservice = false;
             }
 
-            self::get_form_elements($mform, false, $needtermsofservice, $modulename);
+            if (!empty($config->userid)) {
+                $teacheremail = $DB->get_field('user', 'email', ['id' => $cmpuser->userid]);
+            }
+
+            self::get_form_elements($mform, false, $needtermsofservice, $modulename, $teacheremail ?? null);
 
             // Disable all plagiarism elements if activated eg 0.
             foreach ($plagiarismelements as $element) {
@@ -220,8 +224,8 @@ class CompilatioSettings {
      * @param boolean $defaults if this is being loaded from defaults form or from inside a mod.
      * @param string  $modulename
      */
-    public static function get_form_elements($mform, $defaults = false, $needtermsofservice = false, $modulename = null) {
-        global $PAGE, $CFG, $DB;
+    public static function get_form_elements($mform, $defaults = false, $needtermsofservice = false, $modulename = null, $teacheremail = null) {
+        global $PAGE, $CFG, $DB, $USER;
 
         $lang = substr(current_language(), 0, 2);
 
@@ -239,6 +243,14 @@ class CompilatioSettings {
 
         $mform->addElement('select', 'activated', get_string('activated', 'plagiarism_compilatio'), $ynoptions);
         $mform->setDefault('activated', 1);
+
+        $group = [];
+        $infostring = isset($teacheremail)
+            ? get_string('info_cm_activated', 'plagiarism_compilatio', $teacheremail)
+            : get_string('info_cm_activation', 'plagiarism_compilatio', $USER->email);
+        $group[] = $mform->createElement('html', "<p>{$infostring}</p>");
+        $mform->addGroup($group, 'info_cm', '', ' ', false);
+        $mform->hideIf('info_cm', 'activated', 'eq', '0');
 
         $termsofservice = 'https://app.compilatio.net/api/private/terms-of-service/magister/' . $lang;
         if ($needtermsofservice) {
@@ -348,14 +360,6 @@ class CompilatioSettings {
                 $mform->hideIf('activatesubmissiondraft', 'submissiondrafts', 'eq', '1');
             }
         }
-
-        $mform->addElement(
-            'select',
-            'studentemail',
-            get_string('studentemail', 'plagiarism_compilatio'),
-            $ynoptions
-        );
-        $mform->addHelpButton('studentemail', 'studentemail', 'plagiarism_compilatio');
 
         // Indexing state.
         $mform->addElement('select', 'defaultindexing', get_string('defaultindexing', 'plagiarism_compilatio'), $ynoptions);
