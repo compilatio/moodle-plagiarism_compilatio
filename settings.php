@@ -110,6 +110,11 @@ $mform->set_data($plagiarismsettings);
 if (!empty($plagiarismsettings['enabled'])) {
     $compilatio = new CompilatioAPI();
     $validapikey = $compilatio->check_apikey();
+
+    if (get_config('plagiarism_compilatio', 'read_only_apikey') === '1') {
+        echo $OUTPUT->notification(get_string('read_only_apikey', 'plagiarism_compilatio'));
+    }
+
     if ($validapikey === true) {
         if (!$compilatio->check_allow_student_analyses()) {
             set_config('enable_student_analyses', 0, 'plagiarism_compilatio');

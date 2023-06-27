@@ -43,9 +43,9 @@ class CompilatioStatistics {
                 modules.name 'module_type',
                 CONCAT(COALESCE(assign.name, ''), COALESCE(forum.name, ''), COALESCE(workshop.name, ''),
                 COALESCE(quiz.name, '')) 'module_name',
-                AVG(displayedscore) 'avg',
-                MIN(displayedscore) 'min',
-                MAX(displayedscore) 'max',
+                AVG(globalscore) 'avg',
+                MIN(globalscore) 'min',
+                MAX(globalscore) 'max',
                 COUNT(DISTINCT plagiarism_compilatio_file.id) 'count'
             FROM {plagiarism_compilatio_file} plagiarism_compilatio_file
             JOIN {course_modules} course_modules
@@ -161,20 +161,20 @@ class CompilatioStatistics {
         $documentscount = $DB->count_records_sql($from, [$cmid]);
 
         $countgreen = $DB->count_records_sql(
-            $from . " AND status = 'scored' AND displayedscore <= $warningthreshold",
+            $from . " AND status = 'scored' AND globalscore <= $warningthreshold",
             [$cmid]
         );
         $countorange = $DB->count_records_sql(
-            $from . " AND status = 'scored' AND displayedscore > $warningthreshold AND displayedscore <= $criticalthreshold",
+            $from . " AND status = 'scored' AND globalscore > $warningthreshold AND globalscore <= $criticalthreshold",
             [$cmid]
         );
         $countred = $DB->count_records_sql(
-            $from . " AND status = 'scored' AND displayedscore > $criticalthreshold",
+            $from . " AND status = 'scored' AND globalscore > $criticalthreshold",
             [$cmid]
         );
 
         $scorestats = $DB->get_record_sql(
-            "SELECT ROUND(AVG(displayedscore)) avg, MIN(displayedscore) min, MAX(displayedscore) max
+            "SELECT ROUND(AVG(globalscore)) avg, MIN(globalscore) min, MAX(globalscore) max
                 FROM {plagiarism_compilatio_file} pcf
                 WHERE pcf.cm=? AND status='scored'",
             [$cmid]

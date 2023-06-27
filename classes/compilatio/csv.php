@@ -68,7 +68,7 @@ class CompilatioCsv {
 
         $sql = "
             SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname,
-                pcf.status, pcf.displayedscore, pcf.timesubmitted
+                pcf.status, pcf.globalscore, pcf.timesubmitted
             FROM {plagiarism_compilatio_file} pcf
             JOIN {user} usr ON pcf.userid= usr.id
             WHERE pcf.cm=?";
@@ -112,7 +112,7 @@ class CompilatioCsv {
             $line["timesubmitted"] = date("d/m/y H:i:s", $file->timesubmitted);
 
             if ($file->status == "scored") {
-                $line["stats_score"] = $file->displayedscore;
+                $line["stats_score"] = $file->globalscore;
             } else if ($file->status == "sent") {
                 if ($cmpcm->analysistype == 'manual') {
                     $line["stats_score"] = get_string("manual_analysis", "plagiarism_compilatio");

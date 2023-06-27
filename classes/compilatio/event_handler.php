@@ -261,7 +261,7 @@ class CompilatioEventHandler {
                 $compilatio->set_indexing_state($file->externalid, $plugincm->defaultindexing);
 
                 $file->status = 'sent';
-                $file->displayedscore = 0;
+                $file->globalscore = 0;
                 $file->attempt = 0;
                 $file->timesubmitted = time();
                 $file->indexed = $plugincm->defaultindexing;

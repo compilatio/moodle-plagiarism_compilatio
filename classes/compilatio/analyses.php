@@ -87,21 +87,27 @@ class CompilatioAnalyses {
         $compilatio = new CompilatioAPI($userid);
 
         $doc = $compilatio->get_document($cmpfile->externalid);
-
+        mtrace(var_export($doc,true));
         if ($doc == 'Not Found') {
             $cmpfile->status = 'error_not_found';
         }
 
-        if (isset($doc->analyses->anasim->state)) {
-            $state = $doc->analyses->anasim->state;
+        // TODO anasim-premium.
+
+        if (isset($doc->analyses[0]->state)) {
+            $state = $doc->analyses[0]->state;
 
             if ($state == 'running') {
                 $cmpfile->status = 'analyzing';
             } else if ($state == 'finished') {
-                $scores = $doc->light_reports->anasim->scores;
+                $scores = $doc->light_reports[0]->scores;
 
                 $cmpfile->status = 'scored';
-                $cmpfile->displayedscore = $scores->displayed_similarity_percent ?? 0;
+                $cmpfile->globalscore = $scores->displayed_similarity_percent ?? 0;
+                $cmpfile->similarityscore = $scores->similarity_percent ?? 0;
+                //$cmpfile->utlscore = $scores->unrecognized_text_language_percent ?? 0;
+                $cmpfile->utlscore = $doc->light_reports['anasim-premium']->scores->unrecognized_text_language_percent ?? null;
+                $cmpfile->aiscore = $doc->light_reports['anasim-premium']->scores->ai_generated_percent ?? null;
             } else if ($state == 'crashed' || $state == 'aborted' || $state == 'canceled') {
                 $cmpfile->status = 'error_analysis_failed';
             }

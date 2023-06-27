@@ -114,13 +114,18 @@ class CompilatioFrame {
             }
         }
 
-        // Get webservice status :.
         $webservicestatus = get_config('plagiarism_compilatio', 'connection_webservice');
-        // If the record exists and if the webservice is marked as unreachable in Cron function :.
         if ($webservicestatus != null && $webservicestatus === '0') {
             $alerts[] = [
                 'class' => 'danger',
                 'content' => get_string('webservice_unreachable', 'plagiarism_compilatio')
+            ];
+        }
+
+        if (get_config('plagiarism_compilatio', 'read_only_apikey') === '1') {
+            $alerts[] = [
+                'class' => 'danger',
+                'content' => get_string('read_only_apikey', 'plagiarism_compilatio')
             ];
         }
 

@@ -34,6 +34,10 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 class CompilatioSendFile {
+
+    private static $depositor;
+    private static $authors;
+
     /**
      * Send file to compilatio
      *
@@ -109,46 +113,15 @@ class CompilatioSendFile {
 
             $compilatio = new CompilatioAPI($cmconfig->userid);
 
-            $depositor = $DB->get_record("user", ["id" => $userid], 'firstname, lastname, email');
-            $authors = [$depositor];
-
-            $module = get_coursemodule_from_id(null, $cmid);
-
-            if ($module->modname == 'assign') {
-                $isgroupsubmission = $DB->get_field_sql(
-                    'SELECT teamsubmission FROM {course_modules} course_modules
-                        JOIN {assign} assign ON course_modules.instance = assign.id
-                        WHERE course_modules.id = ?',
-                    ['id' => $cmid]
-                );
-
-                if ($isgroupsubmission === '1') {
-                    $groupid = $DB->get_fieldset_sql(
-                        'SELECT groupid FROM {groups_members} gm
-                            JOIN {groups} g ON g.id = gm.groupid
-                            WHERE courseid = ? AND userid = ?',
-                        [$module->course, $userid]
-                    );
-
-                    if (count($groupid) == 1) {
-                        $authors = $DB->get_records_sql(
-                            'SELECT firstname, lastname, email FROM {groups} g
-                                JOIN {groups_members} gm ON g.id = gm.groupid
-                                JOIN {user} user ON user.id = gm.userid
-                                WHERE courseid = ? AND g.id = ?',
-                            [$module->course, $groupid[0]]
-                        );
-                    }
-                }
-            }
+            self::set_depositor_and_authors($userid, $cmid);
 
             $docid = $compilatio->set_document(
                 $cmpfile->filename,
                 $cmconfig->folderid,
                 $filepath,
                 $cmpfile->indexed,
-                $depositor,
-                $authors
+                self::$depositor,
+                self::$authors
             );
 
             unlink($filepath);
@@ -217,5 +190,54 @@ class CompilatioSendFile {
             }
         }
         return false;
+    }
+
+    private static function set_depositor_and_authors ($userid, $cmid) {
+        global $DB;
+
+        $depositor = $DB->get_record("user", ["id" => $userid], 'firstname, lastname, email');
+
+        if (empty($depositor)) {
+            $depositor = (object) [
+                'firstname' => 'not_found', 
+                'lastname' => 'not_found',
+                'email' => null
+            ];
+        }
+
+        $authors = [$depositor];
+
+        $module = get_coursemodule_from_id(null, $cmid);
+
+        if ($module->modname == 'assign') {
+            $isgroupsubmission = $DB->get_field_sql(
+                'SELECT teamsubmission FROM {course_modules} course_modules
+                    JOIN {assign} assign ON course_modules.instance = assign.id
+                    WHERE course_modules.id = ?',
+                ['id' => $cmid]
+            );
+
+            if ($isgroupsubmission === '1') {
+                $groupid = $DB->get_fieldset_sql(
+                    'SELECT groupid FROM {groups_members} gm
+                        JOIN {groups} g ON g.id = gm.groupid
+                        WHERE courseid = ? AND userid = ?',
+                    [$module->course, $userid]
+                );
+
+                if (count($groupid) == 1) {
+                    $authors = $DB->get_records_sql(
+                        'SELECT firstname, lastname, email FROM {groups} g
+                            JOIN {groups_members} gm ON g.id = gm.groupid
+                            JOIN {user} user ON user.id = gm.userid
+                            WHERE courseid = ? AND g.id = ?',
+                        [$module->course, $groupid[0]]
+                    );
+                }
+            }
+        }
+
+        self::$authors = $authors;
+        self::$depositor = $depositor;
     }
 }

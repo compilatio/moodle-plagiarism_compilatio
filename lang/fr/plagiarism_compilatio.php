@@ -24,6 +24,8 @@
 $string['pluginname'] = 'Compilatio - Plugin de détection de plagiat';
 $string['compilatio'] = 'Plugin de détection de plagiat Compilatio';
 
+$string['read_only_apikey'] = "Votre clé API n'est plus active, elle ne vous permet plus de charger ou d'analyser des documents";
+
 // Admin Compilatio settings.
 $string['activate_compilatio'] = 'Activer le plug-in Compilatio';
 $string['disclaimer_data'] = 'En activant Compilatio, vous acceptez que des informations concernant la configuration de votre plateforme Moodle soient collectées afin de faciliter le support et la maintenance du service.';
@@ -164,6 +166,12 @@ $string['btn_error_too_long'] = 'Document trop long';
 $string['title_error_too_long'] = 'Ce document contient trop de mots pour être analysé. Taille maximale : {$a} mots';
 $string['btn_error_not_found'] = 'Document non trouvé';
 $string['title_error_not_found'] = "Ce document n'a pas été trouvé. Veuillez contacter votre administrateur de moodle. Erreur : document non trouvé pour cette clé API.";
+
+$string['tooltip_detailed_scores'] = '% de textes suspects, dont :';
+$string['similarities'] = 'Similitudes';
+$string['utl'] = 'Langue non reconnue';
+$string['ai_text'] = 'Texte généré par IA';
+$string['unmeasured'] = 'non mesuré';
 
 $string['previouslysubmitted'] = "Auparavant soumis comme";
 $string['student_analyze'] = "L'analyse peut être lancée par l'étudiant";

@@ -57,7 +57,7 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
         $compilatiofiles = new backup_nested_element('compilatio_files');
         $compilatiofile = new backup_nested_element('compilatio_file', ['id'],
             ['userid', 'identifier', 'filename', 'externalid',
-                'status', 'displayedscore', 'aiscore', 'utlscore', 'similarityscore', 'timesubmitted', 'indexed', 'reporturl']);
+                'status', 'globalscore', 'aiscore', 'utlscore', 'similarityscore', 'timesubmitted', 'indexed', 'reporturl']);
 
         $pluginwrapper->add_child($compilatiofiles);
         $compilatiofiles->add_child($compilatiofile);

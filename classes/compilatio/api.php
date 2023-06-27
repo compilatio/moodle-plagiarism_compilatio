@@ -66,10 +66,19 @@ class CompilatioAPI {
      * @return boolean Return true if valid, an error message otherwise
      */
     public function check_apikey() {
+        $endpoint = '/api/private/authentication/check-api-key';
+
+        $response = json_decode($this->build_curl($endpoint));
+
+        if ($this->get_error_response($response, 200) === false) {
+            $readonly = $response->data->user->current_api_key->read_only ?? false;
+            set_config('read_only_apikey', (int) $readonly, 'plagiarism_compilatio');
+        }
+
         $endpoint = '/api/private/user/lms/23a3a6980c0f49d98c5dc1ec03478e9161ad5d352cb4651b14865d21d0e81be';
 
         $response = json_decode($this->build_curl($endpoint));
-        error_log(var_export($response,true));
+
         $error = $this->get_error_response($response, 404);
         if ($error === false) {
             return true;
@@ -260,22 +269,18 @@ class CompilatioAPI {
             'origin' => 'moodle'
         ];
 
-        if (isset($depositor->firstname, $depositor->lastname, $depositor->email)) {
-            $params['depositor'] = [
-                'firstname' => $depositor->firstname,
-                'lastname' => $depositor->lastname,
-                'email_address' => $depositor->email
-            ];
-        }
+        $params['depositor'] = [
+            'firstname' => $this->sanitize($depositor->firstname),
+            'lastname' => $this->sanitize($depositor->lastname),
+            'email_address' => $this->validate_email($depositor->email)
+        ];
 
         foreach ($authors as $author) {
-            if (isset($author->firstname, $author->lastname, $author->email)) {
-                $params['authors'][] = [
-                    'firstname' => $author->firstname,
-                    'lastname' => $author->lastname,
-                    'email_address' => $author->email
-                ];
-            }
+            $params['authors'][] = [
+                'firstname' => $this->sanitize($author->firstname),
+                'lastname' => $this->sanitize($author->lastname),
+                'email_address' => $this->validate_email($author->email)
+            ];
         }
 
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'upload', $params));
@@ -288,6 +293,23 @@ class CompilatioAPI {
             return $response->data->document->id;
         }
         return $error;
+    }
+
+    private function sanitize($value) {
+        $forbiddenCharacters = [".","!","?",":","%","&","*","=","#","$","@","/","\\","<",">","(",")","[","]","{","}"];
+
+        if (!is_string($value) || '' === $value) {
+            return null;
+        }
+
+        $value = trim($value, " \n\r\t\v\x00" . implode('', $forbiddenCharacters));
+
+        return str_replace($forbiddenCharacters, '_', $value);
+    }
+
+    private function validate_email($email) {
+        $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+        return filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
     }
 
     /**
@@ -612,7 +634,7 @@ class CompilatioAPI {
      * @return  array   Return an array of alerts
      */
     public function get_alerts() {
-        $endpoint = '/api/private/alert/list/moodle';
+        $endpoint = '/api/public/alerts/moodle/' . get_config('plagiarism_compilatio', 'version');
 
         $response = json_decode($this->build_curl($endpoint));
 
@@ -689,9 +711,11 @@ class CompilatioAPI {
                 $DB->update_record('plagiarism_compilatio_user', $user);
             }
             return $response->errors->key;
-        } else {
-            return $response->status->message;
+        } else if ($response->status->message == 'Forbidden ! Your read only API key cannot modify this resource') {
+            set_config('read_only_apikey', 1, 'plagiarism_compilatio');
         }
+
+        return $response->status->message;
     }
 
     // ADTR v2 document management.
