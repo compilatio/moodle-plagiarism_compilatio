@@ -212,8 +212,6 @@ define(['jquery'], function($) {
                     tabs.not(tabClicked).removeClass('active');
 
                     tabClicked.toggleClass('active');
-                    $('#cmp-hide-area').fadeIn();
-                    $('#cmp-tabs-separator').show();
                 }
             }
 
@@ -222,14 +220,6 @@ define(['jquery'], function($) {
                 elementClicked.show();
                 elements.not(elementClicked).hide();
                 tabs.removeClass('active');
-                $('#cmp-hide-area').fadeIn();
-                $('#cmp-tabs-separator').show();
-            });
-            $('#cmp-hide-area').on('click', function() {
-                elements.hide();
-                $(this).fadeOut();
-                tabs.removeClass('active');
-                $('#cmp-tabs-separator').hide();
             });
         });
     };

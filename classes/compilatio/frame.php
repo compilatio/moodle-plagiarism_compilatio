@@ -163,6 +163,10 @@ class CompilatioFrame {
                 $text = $translation;
             }
 
+            if ($text === 'DONT_DISPLAY') {
+                continue;
+            }
+
             if (time() > strtotime($alert->activation_period->start) && time() < strtotime($alert->activation_period->end)) {
                 $alerts[] = [
                     'class' => 'info',
@@ -212,7 +216,7 @@ class CompilatioFrame {
         // Display the tabs: Notification tab will be hidden if there is 0 alerts.
         $output .= "<div id='cmp-tabs' style='display:none'>";
 
-        $output .= "<i id='cmp-hide-frame' class='cmp-icon mr-2 fa-2x fa fa-bars'></i>";
+        $output .= "<i id='cmp-hide-frame' title='" . get_string('hide_area', 'plagiarism_compilatio') . "' class='cmp-icon mr-2 fa-2x fa fa-bars'></i>";
 
         // Display logo.
         $output .= "<img id='cmp-logo' src='" . new moodle_url('/plagiarism/compilatio/pix/compilatio.png') . "'>";
@@ -238,13 +242,6 @@ class CompilatioFrame {
             $output .= "<div title='" . get_string('compilatio_search_tab', 'plagiarism_compilatio') .
                 "' id='show-search' class='cmp-icon'><i class='fa fa-search fa-2x'></i></div>";
         }
-
-        // Hide/Show button.
-        $output .= "
-            <div id='cmp-hide-area' class='cmp-icon'  title='" .
-        get_string('hide_area', 'plagiarism_compilatio') . "'>
-                <i class='fa fa-chevron-up fa-2x'></i>
-            </div>";
 
         // Display buttons.
         if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
