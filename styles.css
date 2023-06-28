@@ -79,6 +79,7 @@ Compilatio frame area
 
 #cmp-logo {
     width: 250px;
+    float: left;
     cursor: pointer;
 }
 #cmp-tabs .cmp-icon {
