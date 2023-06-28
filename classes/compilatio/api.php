@@ -30,6 +30,7 @@ class CompilatioAPI {
     private $apikey;
     private $urlrest;
     private $userid;
+    private $recipe;
 
     public function set_user_id($userid) {
         $this->userid = $userid;
@@ -73,6 +74,16 @@ class CompilatioAPI {
         if ($this->get_error_response($response, 200) === false) {
             $readonly = $response->data->user->current_api_key->read_only ?? false;
             set_config('read_only_apikey', (int) $readonly, 'plagiarism_compilatio');
+
+            $bundle = $response->data->user->current_bundle;
+
+            foreach ($bundle->accesses as $access) {
+                if ($access->resource == 'api') {
+                    $recipe = $access->name;
+                }
+            }
+
+            set_config('recipe', $recipe ?? 'anasim', 'plagiarism_compilatio');
         }
 
         $endpoint = '/api/private/user/lms/23a3a6980c0f49d98c5dc1ec03478e9161ad5d352cb4651b14865d21d0e81be';
@@ -511,10 +522,12 @@ class CompilatioAPI {
      * @return mixed    Return true if succeed, an error message otherwise
      */
     public function start_analyse($docid) {
+        $this->recipe = $this->recipe ?? get_config('plagiarism_compilatio', 'recipe');
+
         $endpoint = '/api/private/analysis/';
         $params = [
             'doc_id' => $docid,
-            'recipe_name' => 'anasim',
+            'recipe_name' => $this->recipe,
             'tags' => [
                 'stable'
             ]

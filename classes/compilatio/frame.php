@@ -171,6 +171,11 @@ class CompilatioFrame {
             }
         }
 
+        $alerts[] = [
+            'class' => 'info',
+            'content' => 'coucou',
+        ];
+
         $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => $USER->id]);
 
         if (!empty($user)) {
@@ -201,11 +206,18 @@ class CompilatioFrame {
             }
         }
 
-        $output = '';
-        $output .= "<div id='cmp-container'>";
+        $output = "<div id='cmp-display-frame'>
+                <i class='cmp-icon mr-3 fa-2x fa fa-bars'></i>
+                <img src='" . new moodle_url("/plagiarism/compilatio/pix/c-net.svg") . "'>
+                <i id='cmp-bell' class='cmp-icon fa fa-bell' style='display:none'></i>
+            </div>";
+
+        $output .= "<div id='cmp-container' style='display:none'>";
 
         // Display the tabs: Notification tab will be hidden if there is 0 alerts.
         $output .= "<div id='cmp-tabs' style='display:none'>";
+
+        $output .= "<i id='cmp-hide-frame' class='cmp-icon mr-3 fa-2x fa fa-bars'></i>";
 
         // Display logo.
         $output .= "<img id='cmp-logo' src='" . new moodle_url('/plagiarism/compilatio/pix/compilatio.png') . "'>";

@@ -168,9 +168,9 @@ $string['btn_error_not_found'] = 'Document non trouvé';
 $string['title_error_not_found'] = "Ce document n'a pas été trouvé. Veuillez contacter votre administrateur de moodle. Erreur : document non trouvé pour cette clé API.";
 
 $string['tooltip_detailed_scores'] = '% de textes suspects, dont :';
-$string['similarities'] = 'Similitudes';
-$string['utl'] = 'Langue non reconnue';
-$string['ai_text'] = 'Texte généré par IA';
+$string['similarityscore'] = 'Similitudes';
+$string['utlscore'] = 'Langue non reconnue';
+$string['aiscore'] = 'Texte généré par IA';
 $string['unmeasured'] = 'non mesuré';
 
 $string['previouslysubmitted'] = "Auparavant soumis comme";

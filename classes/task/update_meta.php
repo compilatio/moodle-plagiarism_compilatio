@@ -57,6 +57,7 @@ class update_meta extends \core\task\scheduled_task {
         }
 
         $compilatio = new \CompilatioAPI();
+        $compilatio->check_apikey();
         $compilatio->set_moodle_configuration(
             phpversion(),
             $CFG->release,

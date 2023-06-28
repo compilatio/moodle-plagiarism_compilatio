@@ -131,6 +131,10 @@ class CompilatioSettings {
                 $cmconfig->activated = 0;
             }
 
+            if (get_config('plagiarism_compilatio', 'read_only_apikey') === '1') {
+                return $data;
+            }
+
             if ($newconfig) {
                 $DB->insert_record('plagiarism_compilatio_cm_cfg', $cmconfig);
             } else {

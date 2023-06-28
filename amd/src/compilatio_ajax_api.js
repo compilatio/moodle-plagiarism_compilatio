@@ -155,6 +155,19 @@ define(['jquery'], function($) {
 
     exports.compilatioTabs = function(alertsCount, docid) {
         $(document).ready(function() {
+
+            if (alertsCount > 0) {
+                $('#cmp-bell').show();
+            }
+            $('#cmp-display-frame').on('click', function() {
+                $(this).hide();
+                $('#cmp-container').show();
+            });
+            $('#cmp-hide-frame').on('click', function() {
+                $('#cmp-container').hide();
+                $('#cmp-display-frame').show();
+            });
+
             $('#cmp-tabs').show();
 
             var selectedElement = '';

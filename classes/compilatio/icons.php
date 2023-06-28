@@ -41,7 +41,7 @@ class CompilatioIcons {
             </svg>";
     }
 
-    public static function microchip_ai($color) {
+    public static function aiscore($color) {
         $color = self::get_hexadecimal_color($color);
         return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' height='1em' class='mr-1 icon-inline'>
         <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -52,7 +52,7 @@ class CompilatioIcons {
     </svg>";
     }
 
-    public static function utl($color) {
+    public static function utlscore($color) {
         $color = self::get_hexadecimal_color($color);
         return "<svg xmlns='http://www.w3.org/2000/svg' height='1em' viewBox='0 0 640 512' class='mr-1'>
                 <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -63,7 +63,7 @@ class CompilatioIcons {
             </svg>";
     }
 
-    public static function copy_paste($color) {
+    public static function similarityscore($color) {
         $color = self::get_hexadecimal_color($color);  
         return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' height='1em' fill='none' class='mx-1 icon-inline'>
             <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->

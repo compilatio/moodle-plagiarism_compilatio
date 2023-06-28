@@ -349,24 +349,21 @@ class CompilatioDocumentFrame {
                 <i class='fa fa-circle'></i> {$cmpfile->globalscore}<small>%</small>
             </span>";
 
-        if (isset($cmpfile->utlscore)) {
-            $ai = isset($cmpfile->aiscore) ? $cmpfile->aiscore . '%' : get_string('unmeasured', 'plagiarism_compilatio');
-            $utl = isset($cmpfile->utlscore) ? $cmpfile->utlscore . '%' : get_string('unmeasured', 'plagiarism_compilatio');
-            $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>
-                " . get_string('similarities', 'plagiarism_compilatio') . " : <b>{$cmpfile->similarityscore}%</b><br>
-                " . get_string('utl', 'plagiarism_compilatio') . " : <b>{$utl}</b><br>
-                " . get_string('ai_text', 'plagiarism_compilatio') . " : <b>{$ai}</b>";
+        if (get_config('plagiarism_compilatio', 'recipe') === 'anasim-premium') {
+            $scores = ['similarityscore', 'utlscore', 'aiscore'];
+            $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
+            $icons = '';
 
-            $html .= "<span data-toggle='tooltip' data-html='true'  title='{$tooltip}'>";
+            foreach ($scores as $score) {
+                $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
+                $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
+                if (isset($cmpfile->$score)) {
+                    $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
+                }
+            }
 
-            $html .= CompilatioIcons::copy_paste($cmpfile->similarityscore > 0 ? $color : null);
-            $html .= CompilatioIcons::utl($cmpfile->utlscore > 0 ? $color : null);
+            $html .= "<span data-toggle='tooltip' data-html='true'  title='{$tooltip}'>" . $icons . "</span>";
         }
-
-        if (isset($cmpfile->aiscore)) {
-            $html .= CompilatioIcons::microchip_ai($cmpfile->aiscore > 0 ? $color : null);
-        }
-        $html .= "</span>";
 
         return $html;
     }

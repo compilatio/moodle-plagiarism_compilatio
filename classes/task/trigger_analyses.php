@@ -47,7 +47,7 @@ class trigger_analyses extends \core\task\scheduled_task {
         require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 
         $sql = "SELECT file.* FROM {plagiarism_compilatio_file} file
-            JOIN {plagiarism_compilatio_config} config ON config.cmid = file.cm
+            JOIN {plagiarism_compilatio_cm_cfg} config ON config.cmid = file.cm
             WHERE file.status = 'sent' AND config.activated = '1' AND config.analysistype = 'planned' AND config.analysistime < ?";
         $files = $DB->get_records_sql($sql, [time()]);
 

@@ -87,27 +87,26 @@ class CompilatioAnalyses {
         $compilatio = new CompilatioAPI($userid);
 
         $doc = $compilatio->get_document($cmpfile->externalid);
-        mtrace(var_export($doc,true));
+
         if ($doc == 'Not Found') {
             $cmpfile->status = 'error_not_found';
         }
 
-        // TODO anasim-premium.
+        $recipe = get_config('plagiarism_compilatio', 'recipe');
 
-        if (isset($doc->analyses[0]->state)) {
-            $state = $doc->analyses[0]->state;
+        if (isset($doc->analyses->$recipe->state)) {
+            $state = $doc->analyses->$recipe->state;
 
             if ($state == 'running') {
                 $cmpfile->status = 'analyzing';
             } else if ($state == 'finished') {
-                $scores = $doc->light_reports[0]->scores;
+                $scores = $doc->light_reports->$recipe->scores;
 
                 $cmpfile->status = 'scored';
                 $cmpfile->globalscore = $scores->displayed_similarity_percent ?? 0;
-                $cmpfile->similarityscore = $scores->similarity_percent ?? 0;
-                //$cmpfile->utlscore = $scores->unrecognized_text_language_percent ?? 0;
-                $cmpfile->utlscore = $doc->light_reports['anasim-premium']->scores->unrecognized_text_language_percent ?? null;
-                $cmpfile->aiscore = $doc->light_reports['anasim-premium']->scores->ai_generated_percent ?? null;
+                $cmpfile->similarityscore = $scores->similarity_percent ?? null;
+                $cmpfile->utlscore = $scores->unrecognized_text_language_percent ?? null;
+                $cmpfile->aiscore = $scores->ai_generated_percent ?? null;
             } else if ($state == 'crashed' || $state == 'aborted' || $state == 'canceled') {
                 $cmpfile->status = 'error_analysis_failed';
             }
