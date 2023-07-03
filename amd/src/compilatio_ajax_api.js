@@ -143,6 +143,18 @@ define(['jquery'], function($) {
 
     exports.compilatioTabs = function(basepath, alertsCount, idcourt, notifIcon, notifTitle) {
         $(document).ready(function() {
+            if (alertsCount > 0) {
+                $('#cmp-bell').show();
+            }
+            $('#cmp-display-frame').on('click', function() {
+                $(this).hide();
+                $('#compilatio-container').show();
+            });
+            $('#cmp-hide-frame').on('click', function() {
+                $('#compilatio-container').hide();
+                $('#cmp-display-frame').show();
+            });
+
             $.post(basepath + '/plagiarism/compilatio/ajax/get_waiting_time.php', {}, function(message) {
                 if (message != false) {
                     if (alertsCount > 0) {

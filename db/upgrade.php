@@ -236,5 +236,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021062300, 'plagiarism', 'compilatio');
     }
 
+    compilatio_update_meta();
+
     return true;
 }

@@ -9,7 +9,12 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 CHANGES
 - Fix quiz attempt throw error in version < 3.5 (may also affect other versions < 3.11)
 - Update Compilatio service status link (in Compilatio container)
-- Display error message returned by API on failed document upload to Compilatio.
+- Display error message returned by API on failed document upload to Compilatio
+- Fix send files error when using groups in assignments with postgresql
+- Compilatio container can now be minimized (and is minimized by default)
+- Update document's depositor on old documents
+- Handling read-only API key errors
+- Add global score and detailed scores for Magister+ API keys
 
 CHANGELOG : https://support.compilatio.net/hc/en-us/articles/360019664658
 

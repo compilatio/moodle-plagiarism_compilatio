@@ -196,7 +196,6 @@ class output_helper {
         }
 
         $html .= html_writer::end_div();
-        $html .= html_writer::div("", 'compilatio-clear');
 
         return $html;
     }
@@ -235,4 +234,83 @@ class output_helper {
         return $html;
     }
 
+    /**
+     * Display an image and similarity percentage according to the thresholds
+     *
+     * @param  float  $score          Similarity score to be displayed
+     * @param  int    $greenthreshold Green for $score lower than that threshold
+     * @param  int    $redthreshold   Red for $score higher than that threshold
+     * @return string                 the HTML string displaying colored score and an image
+     */
+    public static function get_scores($results, $greenthreshold, $redthreshold) {
+        if ($results['score'] <= $greenthreshold) {
+            $color = 'green';
+        } else if ($results['score'] <= $redthreshold) {
+            $color = 'orange';
+        } else {
+            $color = 'red';
+        }
+
+        $scores = ['similarityscore', 'utlscore', 'aiscore'];
+        $tooltip = "<b>" . $results['score'] . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
+        $icons = '';
+
+        foreach ($scores as $score) {
+            $message = isset($results[$score]) ? $results[$score] . '%' : get_string('unmeasured', 'plagiarism_compilatio');
+            $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
+            if (isset($results[$score])) {
+                $icons .= self::$score($results[$score] > 0 ? $color : null);
+            }
+        }
+
+        $html = "<span style='padding-top:10px;' data-toggle='tooltip' data-html='true'  title='{$tooltip}'>" . $icons . "</span>";
+
+        return $html;
+    }
+
+    public static function aiscore($color) {
+        $color = self::get_hexadecimal_color($color);
+        return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' height='1em' class='mr-1 icon-inline'>
+        <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+        <path
+            d='M184 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64h-8c-35.3 0-64 28.7-64 64v8H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v48H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v48H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v8c0 35.3 28.7 64 64 64h8v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h48v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h48v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h8c35.3 0 64-28.7 64-64v-8h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448V280h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448V184h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448v-8c0-35.3-28.7-64-64-64h-8V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H280V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H184V24zM112 128c0-8.8 7.2-16 16-16H384c8.8 0 16 7.2 16 16V384c0 8.8-7.2 16-16 16H128c-8.8 0-16-7.2-16-16V128zm224 44c-11 0-20 9-20 20V320c0 11 9 20 20 20s20-9 20-20V192c0-11-9-20-20-20zM234.3 184c-3.2-7.3-10.4-12-18.3-12s-15.1 4.7-18.3 12l-56 128c-4.4 10.1 .2 21.9 10.3 26.3s21.9-.2 26.3-10.3l5.3-12h64.8l5.3 12c4.4 10.1 16.2 14.7 26.3 10.3s14.7-16.2 10.3-26.3l-56-128zM216 241.9L230.9 276H201.1L216 241.9z'
+            fill='{$color}'
+        />
+    </svg>";
+    }
+
+    public static function utlscore($color) {
+        $color = self::get_hexadecimal_color($color);
+        return "<svg xmlns='http://www.w3.org/2000/svg' height='1em' viewBox='0 0 640 512' class='mr-1'>
+                <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                <path
+                    fill='{$color}' 
+                    d='M0 64C0 28.7 28.7 0 64 0C192 0 320 0 448 0c35.3 0 64 28.7 64 64c0 42.9 0 85.8 0 128.7c-5.3-.5-10.6-.7-16-.7s-10.7 .2-16 .7c0-42.9 0-85.8 0-128.7c0-17.7-14.3-32-32-32c-128 0-256 0-384 0C46.3 32 32 46.3 32 64c0 96 0 192 0 288c0 17.7 14.3 32 32 32c32 0 64 0 96 0c17.7 0 32 14.3 32 32c0 16 0 32 0 48c32.7-24.5 65.4-49.1 98.1-73.6c5.5-4.2 12.3-6.4 19.2-6.4c3.8 0 7.6 0 11.4 0c1 11 3 21.7 5.9 32c-5.8 0-11.6 0-17.3 0c-41.2 30.9-82.5 61.9-123.7 92.8c-4.9 3.6-11.4 4.2-16.8 1.5s-8.8-8.2-8.8-14.3c0-16 0-32 0-48c0-10.7 0-21.3 0-32c-10.7 0-21.3 0-32 0c-21.3 0-42.7 0-64 0c-35.3 0-64-28.7-64-64C0 256 0 160 0 64zm128 96c0-8.8 7.2-16 16-16c74.7 0 149.3 0 224 0c8.8 0 16 7.2 16 16s-7.2 16-16 16c-74.7 0-149.3 0-224 0c-8.8 0-16-7.2-16-16zm0 96c0-8.8 7.2-16 16-16c42.7 0 85.3 0 128 0c8.8 0 16 7.2 16 16s-7.2 16-16 16c-42.7 0-85.3 0-128 0c-8.8 0-16-7.2-16-16zM352 368c0-79.5 64.5-144 144-144s144 64.5 144 144s-64.5 144-144 144s-144-64.5-144-144zm32 0c0 61.9 50.1 112 112 112s112-50.1 112-112s-50.1-112-112-112s-112 50.1-112 112zm88 56c0-13.3 10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24s-24-10.7-24-24zm8-120c0-8.8 7.2-16 16-16s16 7.2 16 16c0 21.3 0 42.7 0 64c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-64z'
+                />
+            </svg>";
+    }
+
+    public static function similarityscore($color) {
+        $color = self::get_hexadecimal_color($color);  
+        return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' height='1em' fill='none' class='mx-1 icon-inline'>
+            <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+            <path
+                fill='{$color}'
+                d='M104.6 48H64C28.7 48 0 76.7 0 112V384c0 35.3 28.7 64 64 64h96V400H64c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H80c0 17.7 14.3 32 32 32h72.4C202 108.4 227.6 96 256 96h62c-7.1-27.6-32.2-48-62-48H215.4C211.6 20.9 188.2 0 160 0s-51.6 20.9-55.4 48zM144 56a16 16 0 1 1 32 0 16 16 0 1 1 -32 0zM448 464H256c-8.8 0-16-7.2-16-16V192c0-8.8 7.2-16 16-16l140.1 0L464 243.9V448c0 8.8-7.2 16-16 16zM256 512H448c35.3 0 64-28.7 64-64V243.9c0-12.7-5.1-24.9-14.1-33.9l-67.9-67.9c-9-9-21.2-14.1-33.9-14.1H256c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64z'
+            />
+        </svg>";
+    }
+
+    private static function get_hexadecimal_color($color) {
+        switch ($color) {
+            case 'green':
+                return '#6ab35a';
+            case 'orange':
+                return '#f39c12';
+            case 'red':
+                return '#e7685a';
+            default:
+                return '#B0B0B0';
+        }
+    }
 }

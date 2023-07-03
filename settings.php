@@ -147,6 +147,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 }
 
 echo $OUTPUT->header();
+
 $currenttab = 'compilatiosettings';
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
 
@@ -159,7 +160,13 @@ $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $mform->set_data($plagiarismsettings);
 
 if (!empty($plagiarismsettings['enabled']) && !$incorrectconfig) {
+    compilatio_update_news();
     $quotasarray = compilatio_getquotas();
+
+    if (get_config('plagiarism_compilatio', 'read_only_apikey') === '1') {
+        echo $OUTPUT->notification(get_string('read_only_apikey_error', 'plagiarism_compilatio'));
+    }
+
     $quotas = $quotasarray['quotas'];
     if ($quotas == null) {
         // Disable compilatio as this config isn't correct.

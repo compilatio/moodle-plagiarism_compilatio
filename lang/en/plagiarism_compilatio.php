@@ -30,6 +30,7 @@ $string['students_disclosure_help'] = 'This text will be displayed to all studen
 $string['compilatioexplain'] = 'For more information on this plugin see: <a href="http://www.compilatio.net/en/" target="_blank">compilatio.net</a>';
 $string['compilatio'] = 'Compilatio plagiarism plugin';
 // API configuration.
+$string['read_only_apikey_title'] = 'Your API key is no longer active.';
 $string['read_only_apikey_error'] = 'Your API key is no longer active, so you can no longer load or analyze documents.';
 $string['compilatioapi'] = 'Compilatio API Address';
 $string['compilatioapi_help'] = 'This is the address of the Compilatio API';
@@ -48,6 +49,11 @@ $string['formdelete'] = "Delete";
 $string['disable_ssl_verification'] = "Ignore SSL certificate verification.";
 $string['disable_ssl_verification_help'] = "Enable this option if you have problems verifying SSL certificates or if you experience errors when sending files to Compilatio.";
 
+$string['tooltip_detailed_scores'] = '% of suspect texts, including:';
+$string['similarityscore'] = 'Similarities';
+$string['utlscore'] = 'Language not recognized';
+$string['aiscore'] = 'AI-generated text';
+$string['unmeasured'] = 'not measured';
 
 $string['migration_title'] = "Migration v4 to v5";
 $string['migration_info'] = "Compilatio is implementing a new v5 technical platform for all its customers.<br>

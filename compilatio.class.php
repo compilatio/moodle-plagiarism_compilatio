@@ -52,6 +52,8 @@ class compilatioservice {
      */
     public $apiconfigid;
 
+    private $recipe;
+
     /**
      * Retourne l'instance unique.
      *
@@ -117,7 +119,7 @@ class compilatioservice {
                     $this->key = $key;
                     if (!empty($urlsoap)) {
                         $param = array(
-                            'trace' => false,
+                            'trace' => true,
                             'soap_version' => SOAP_1_2,
                             'exceptions' => true,
                         );
@@ -322,6 +324,37 @@ class compilatioservice {
         }
     }
 
+    /**
+     * Check if the api key is valid
+     */
+    public function check_apikey() {
+        $ch = curl_init();
+        $curloptions = [
+            CURLOPT_URL => COMPILATIO_API_URL . "/authentication/check-api-key",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['X-Auth-Token: ' . $this->key, 'Content-Type: application/json']
+        ];
+
+        $curloptions = $this->set_proxy_settings($curloptions);
+        curl_setopt_array($ch, $curloptions);
+        $response = json_decode(curl_exec($ch));
+
+        if (($response->status->code ?? null) == 200) {
+            $readonly = $response->data->user->current_api_key->read_only ?? false;
+            set_config('read_only_apikey', (int) $readonly, 'plagiarism_compilatio');
+
+            $bundle = $response->data->user->current_bundle;
+
+            foreach ($bundle->accesses as $access) {
+                if ($access->resource == 'recipe') {
+                    $recipe = $access->name;
+                }
+            }
+
+            set_config('recipe', $recipe ?? 'anasim', 'plagiarism_compilatio');
+        }
+    }
+
      /**
      * Get JWT to access a document report.
      *
@@ -329,21 +362,17 @@ class compilatioservice {
      * @return string Return a JWT if succeed, an error otherwise
      */
     public function set_document_depositor($docid, $depositor) {
-        if (!isset($depositor->firstname, $depositor->lastname, $depositor->email)) {
-            return false;
-        }
-
         $params = [
             'depositor' => [
-                'firstname' => $depositor->firstname,
-                'lastname' => $depositor->lastname,
-                'email_address' => $depositor->email
+                'firstname' => $this->sanitize($depositor->firstname),
+                'lastname' => $this->sanitize($depositor->lastname),
+                'email_address' => $this->validate_email($depositor->email)
             ],
             'authors' => [
                 [
-                    'firstname' => $depositor->firstname,
-                    'lastname' => $depositor->lastname,
-                    'email_address' => $depositor->email
+                    'firstname' => $this->sanitize($depositor->firstname),
+                    'lastname' => $this->sanitize($depositor->lastname),
+                    'email_address' => $this->validate_email($depositor->email)
                 ]
             ]
         ];
@@ -440,12 +469,18 @@ class compilatioservice {
      */
     public function get_doc($compihash) {
 
+        $this->recipe = $this->recipe ?? get_config('plagiarism_compilatio', 'recipe');
+
         try {
             if (!is_object($this->soapcli)) {
                 return("Error in constructor compilatio() " . $this->soapcli);
             }
 
-            $param = array($this->key, $compihash);
+            $param = [
+                $this->key,
+                $compihash,
+                $this->recipe
+            ];
             $document = $this->soapcli->__call('getDocument', $param);
 
             return $document;
@@ -506,13 +541,20 @@ class compilatioservice {
      */
     public function start_analyse($compihash) {
 
+        $this->recipe = $this->recipe ?? get_config('plagiarism_compilatio', 'recipe');
+
         try {
             if (!is_object($this->soapcli)) {
                 return("Error in constructor compilatio() " . $this->soapcli);
             }
 
-            $param = array($this->key, $compihash);
-            $this->soapcli->__call('startDocumentAnalyse', $param);
+            $params = [
+                $this->key,
+                $compihash,
+                $this->recipe
+            ];
+
+            $this->soapcli->__call('startDocumentAnalyse', $params);
 
         } catch (SoapFault $fault) {
             $error = new stdClass();

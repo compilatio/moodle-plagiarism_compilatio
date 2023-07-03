@@ -71,4 +71,3 @@ if (strpos($jwt, 'Error') === 0) {
 } else {
     header("location: " . COMPILATIO_API_URL . "/reports/redirect/" . $jwt);
 }
-

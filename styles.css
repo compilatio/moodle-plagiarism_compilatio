@@ -106,6 +106,50 @@ a.compilatio-plagiarismreport-link span.link:hover {
 /*
 Head area in assignment
 */
+#cmp-display-frame {
+    position: fixed;
+    top: 4.5rem;
+    right: 5rem;
+    border-radius: 10px;
+    background-color: #F5F6F8;
+    border: 1px solid #EBEBF0;
+    padding: 0.5rem;
+    z-index: 998;
+    display: flex;
+    cursor: pointer;
+
+}
+
+#cmp-display-frame > * {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+#cmp-display-frame > img {
+    height: 30px;
+}
+
+#cmp-bell {
+    position: fixed;
+    top: 4rem;
+    right: 4.5rem;
+    z-index:999;
+}
+
+#cmp-hide-frame {
+    float: right;
+    cursor: pointer;
+}
+
+.cmp-icon {
+    margin: 2px;
+    color: #616262;
+}
+
+.cmp-icon.active, .cmp-icon:hover, .cmp-icon:focus{
+    color: #202121;
+}
+
 #compilatio-hide-area {
     float: right;
 }
