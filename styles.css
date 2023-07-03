@@ -46,7 +46,7 @@ Compilatio frame area
 #cmp-display-frame {
     position: fixed;
     top: 4.5rem;
-    right: 1.5rem;
+    right: 5rem;
     border-radius: 10px;
     background-color: #F5F6F8;
     border: 1px solid #EBEBF0;
@@ -69,8 +69,8 @@ Compilatio frame area
 #cmp-bell {
     position: fixed;
     top: 4rem;
-    right: 1rem;
-    z-index:999;
+    right: 4.5rem;
+    z-index: 999;
 }
 
 #cmp-hide-frame {

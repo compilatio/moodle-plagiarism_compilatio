@@ -354,7 +354,10 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                     'filename'        => $filename,
                     'externalid'      => $file->externalid,
                     'status'          => $status[$file->statuscode],
-                    'globalscore'  => $file->similarityscore,
+                    'globalscore'     => $file->similarityscore,
+                    'similarityscore' => $file->simscore ?? null,
+                    'utlscore'        => $file->utlscore ?? null,
+                    'aiscore'         => $file->aiscore ?? null,
                     'timesubmitted'   => $file->timesubmitted,
                     'reporturl'       => $reporturl
                 ];
