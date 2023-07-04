@@ -115,10 +115,12 @@ class output_helper {
 
         global $OUTPUT, $CFG, $PAGE;
 
-        $html = html_writer::empty_tag('br');
-        $html .= html_writer::div("", 'compilatio-clear');
-        // Var $compid is spread via class because it may be purified inside id attribute.
-        $html .= html_writer::start_div('compilatio-area compi-'.$compid);
+        if ($compid !== null) {
+            $html = html_writer::empty_tag('br');
+            $html .= html_writer::div("", 'compilatio-clear');
+            // Var $compid is spread via class because it may be purified inside id attribute.
+            $html .= html_writer::start_div('compilatio-area compi-'.$compid);
+        }
 
         // Indexing state.
         $html .= self::get_indexing_state($indexed);
@@ -195,7 +197,9 @@ class output_helper {
             $html .= html_writer::end_div();
         }
 
-        $html .= html_writer::end_div();
+        if ($compid !== null) {
+            $html .= html_writer::end_div();
+        }
 
         return $html;
     }

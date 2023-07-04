@@ -29,13 +29,10 @@
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
-
-// Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-
-// Get constants.
+require_once($CFG->dirroot . '/plagiarism/compilatio/helper/output_helper.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
 
 require_login();
@@ -48,10 +45,14 @@ $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('id' => $
 $res = compilatio_startanalyse($plagiarismfile);
 
 if (is_string($res)) {
-    $SESSION->cmp_doc_alert = array(
-        "docid" => $docid,
-        "content" => "<p style='color: #b94a48;'>" . get_string('failedanalysis', 'plagiarism_compilatio') . $res . "</p>"
+    echo "<p id='cmp-start-analyse-error' style='color: #b94a48;'>" . get_string('failedanalysis', 'plagiarism_compilatio') . $res . "</p>";
+} else if ($res === true) {
+    echo output_helper::get_plagiarism_area(
+        null,
+        get_string("queue", "plagiarism_compilatio"),
+        "queue",
+        get_string('queued', 'plagiarism_compilatio')
     );
+} else {
+    echo 'false';
 }
-
-

@@ -1,4 +1,5 @@
-Compilatio.net Plagiarism plugin for Moodle 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.11, 4.0, 4.1, 4.2
+Compilatio.net Plagiarism plugin for Moodle 3.11, 4.0, 4.1, 4.2
+Other supported version (problems may occurs using these versions, we recommend upgrading Moodle to a more recent version): 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10
 
 Author: Compilatio <support@compilatio.net>
 Copyright 2020 Compilatio.net https://www.compilatio.net
@@ -11,7 +12,7 @@ CHANGES
 - Update Compilatio service status link (in Compilatio container)
 - Display error message returned by API on failed document upload to Compilatio
 - Fix send files error when using groups in assignments with postgresql
-- Compilatio container can now be minimized (and is minimized by default)
+- Compilatio container can now be minimized
 - Update document's depositor on old documents
 - Handling read-only API key errors
 - Add global score and detailed scores for Magister+ API keys

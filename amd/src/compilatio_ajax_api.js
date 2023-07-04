@@ -112,10 +112,18 @@ define(['jquery'], function($) {
     exports.startAnalysis = function(basepath, eltId, docId) {
         $(document).ready(function() {
             setTimeout(function() {
-                $(".compi-" + eltId + " > div:last-child").click(function() {
+                let startBtn = $(".compi-" + eltId + " > div:last-child");
+                startBtn.click(function() {
                     $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_analysis.php',
-                    {'docId': docId}, function() {
-                        window.location.reload();
+                    {'docId': docId}, function(res) {
+                        if (res != 'false') {
+                            if (res.startsWith("<p")) {
+                                $('#cmp-start-analyse-error').remove();
+                                startBtn.closest(".compilatio-area").after(res);
+                            } else {
+                                startBtn.replaceWith(res);
+                            }
+                        }
                     });
                 });
             }, 300);

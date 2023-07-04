@@ -160,7 +160,6 @@ $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $mform->set_data($plagiarismsettings);
 
 if (!empty($plagiarismsettings['enabled']) && !$incorrectconfig) {
-    compilatio_update_news();
     $quotasarray = compilatio_getquotas();
 
     if (get_config('plagiarism_compilatio', 'read_only_apikey') === '1') {

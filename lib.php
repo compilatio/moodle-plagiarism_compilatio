@@ -450,11 +450,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             $output .= "</div>";
         }
 
-        if (isset($SESSION->cmp_doc_alert) && $SESSION->cmp_doc_alert["docid"] == $results["pid"]) {
-            $output .= $SESSION->cmp_doc_alert["content"];
-            unset($SESSION->cmp_doc_alert);
-        }
-
         return $output;
     }
 
@@ -886,7 +881,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     // Add the Compilatio news to the alerts displayed :.
     $alerts = array_merge($alerts, compilatio_display_news());
 
-    $output .= "<div id='cmp-display-frame'>
+    $output .= "<div id='cmp-display-frame' style='display:none;'>
         <i class='cmp-icon mr-3 fa-2x fa fa-bars'></i>
         <img src='" . new moodle_url("/plagiarism/compilatio/pix/c-net.svg") . "'>
         <svg id='cmp-bell' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512' height='1em' style='display:none;'>
@@ -895,7 +890,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         </svg>
     </div>";
 
-    $output .= "<div id='compilatio-container' style='display:none'>";
+    $output .= "<div id='compilatio-container'>";
 
     // Display the tabs: Notification tab will be hidden if there is 0 alerts.
     $output .= "<div id='compilatio-tabs' style='display:none'>";
@@ -2085,18 +2080,21 @@ function compilatio_startanalyse($plagiarismfile, $plagiarismsettings = '') {
             if ($analyse->string == 'Invalid document id') {
                 $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_NOT_FOUND;
                 $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
+                return get_string('notfound', 'plagiarism_compilatio');
 
             } else if (strpos($analyse->string, 'max file size') !== false) {
                 $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_LONG;
                 $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
                 preg_match('~of (\d+)~', $analyse->string, $nbmotsmax);
                 set_config('nb_mots_max', $nbmotsmax[1], 'plagiarism_compilatio');
+                return get_string('toolong', 'plagiarism_compilatio', get_config('plagiarism_compilatio', 'nb_mots_max'));
 
             } else if (strpos($analyse->string, 'min file size') !== false) {
                 $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_TOO_SHORT;
                 $DB->update_record('plagiarism_compilatio_files', $plagiarismfile);
                 preg_match('~: (\d+)~', $analyse->string, $nbmotsmin);
                 set_config('nb_mots_min', $nbmotsmin[1], 'plagiarism_compilatio');
+                return get_string('tooshort', 'plagiarism_compilatio', get_config('plagiarism_compilatio', 'nb_mots_min'));
 
             } else if ($analyse->string == "Document extraction in progress") {
                 return get_string('extraction_in_progress', 'plagiarism_compilatio');

@@ -119,7 +119,7 @@ class compilatioservice {
                     $this->key = $key;
                     if (!empty($urlsoap)) {
                         $param = array(
-                            'trace' => true,
+                            'trace' => false,
                             'soap_version' => SOAP_1_2,
                             'exceptions' => true,
                         );
