@@ -38,6 +38,13 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
+    $filestable = new xmldb_table('plagiarism_compilatio_files');
+    $similarityscorefield = new xmldb_field('similarityscore', XMLDB_TYPE_INTEGER, '5', null, XMLDB_NOTNULL, null, 0);
+  
+    if ($dbman->field_exists($filestable, $similarityscorefield)) {
+        $dbman->rename_field($filestable, $similarityscorefield, 'globalscore');
+    }
+
     $schema = new xmldb_structure('db');
     $schema->setVersion($CFG->version);
     $xmldbfile = new xmldb_file($CFG->dirroot . '/plagiarism/compilatio/db/install.xml');

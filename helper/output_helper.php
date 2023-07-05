@@ -115,8 +115,10 @@ class output_helper {
 
         global $OUTPUT, $CFG, $PAGE;
 
+        $html = '';
+
         if ($compid !== null) {
-            $html = html_writer::empty_tag('br');
+            $html .= html_writer::empty_tag('br');
             $html .= html_writer::div("", 'compilatio-clear');
             // Var $compid is spread via class because it may be purified inside id attribute.
             $html .= html_writer::start_div('compilatio-area compi-'.$compid);
@@ -255,7 +257,7 @@ class output_helper {
             $color = 'red';
         }
 
-        $scores = ['similarityscore', 'utlscore', 'aiscore'];
+        $scores = ['simscore', 'utlscore', 'aiscore'];
         $tooltip = "<b>" . $results['score'] . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
         $icons = '';
 
@@ -294,7 +296,7 @@ class output_helper {
             </svg>";
     }
 
-    public static function similarityscore($color) {
+    public static function simscore($color) {
         $color = self::get_hexadecimal_color($color);  
         return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' height='1em' fill='none' class='mx-1 icon-inline'>
             <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->

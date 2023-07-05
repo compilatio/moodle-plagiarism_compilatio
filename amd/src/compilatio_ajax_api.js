@@ -149,93 +149,87 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.compilatioTabs = function(basepath, alertsCount, idcourt, notifIcon, notifTitle) {
+    exports.compilatioTabs = function(alertsCount, idcourt) {
         $(document).ready(function() {
+
+            // Display or hide Compilatio container
+            if (localStorage.getItem("compilatio-container-displayed") == 0) {
+                $('#compilatio-container').hide();
+                $('#cmp-display-frame').show();
+            }
             if (alertsCount > 0) {
                 $('#cmp-bell').show();
             }
             $('#cmp-display-frame').on('click', function() {
+                localStorage.setItem("compilatio-container-displayed", 1);
                 $(this).hide();
                 $('#compilatio-container').show();
             });
             $('#cmp-hide-frame').on('click', function() {
+                localStorage.setItem("compilatio-container-displayed", 0);
                 $('#compilatio-container').hide();
                 $('#cmp-display-frame').show();
+            });            
+
+            $('#compilatio-tabs').show();
+
+            var selectedElement = '';
+            if (idcourt) {
+                selectedElement = '#compi-search';
+            } else if (alertsCount > 0) {
+                selectedElement = '#compi-notifications';
+            } else {
+                selectedElement = '#compi-home';
+            }
+
+            $(selectedElement).show();
+
+            $('#compilatio-show-notifications').on('click', function() {
+                    tabClick($(this), $('#compi-notifications'));
+            });
+            $('#show-stats').on('click', function() {
+                    tabClick($(this), $('#compi-stats'));
+            });
+            $('#show-help').on('click', function() {
+                    tabClick($(this), $('#compi-help'));
+            });
+            $('#show-search').on('click', function() {
+                    tabClick($(this), $('#compi-search'));
             });
 
-            $.post(basepath + '/plagiarism/compilatio/ajax/get_waiting_time.php', {}, function(message) {
-                if (message != false) {
-                    if (alertsCount > 0) {
-                        $("#compi-notif-title").after(message);
-                        var nbAlerts = parseInt($("#count-alerts").text());
-                        $("#count-alerts").text(nbAlerts + 1);
-                    } else {
-                        $("#show-stats").after(notifIcon);
-                        $("#compilatio-tabs").after(notifTitle + message + "</div>");
-                        alertsCount = 1;
-                    }
-                }
+            var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
+            var elements = $('#compi-notifications, #compi-stats, #compi-help, #compi-home, #compi-search');
 
-                $('#compilatio-tabs').show();
+            /**
+             * TabClick
+             * Show clicked tab.
+             *
+             * @param {object} tabClicked
+             * @param {object} contentToShow
+             */
+            function tabClick(tabClicked, contentToShow) {
+                if (!contentToShow.is(':visible')) {
+                    contentToShow.show();
+                    elements.not(contentToShow).hide();
 
-                var selectedElement = '';
-                if (idcourt) {
-                    selectedElement = '#compi-search';
-                } else if (alertsCount > 0) {
-                    selectedElement = '#compi-notifications';
-                } else {
-                    selectedElement = '#compi-home';
-                }
+                    tabs.not(tabClicked).removeClass('active');
 
-                $(selectedElement).show();
-
-                $('#compilatio-show-notifications').on('click', function() {
-                        tabClick($(this), $('#compi-notifications'));
-                });
-                $('#show-stats').on('click', function() {
-                        tabClick($(this), $('#compi-stats'));
-                });
-                $('#show-help').on('click', function() {
-                        tabClick($(this), $('#compi-help'));
-                });
-                $('#show-search').on('click', function() {
-                        tabClick($(this), $('#compi-search'));
-                });
-
-                var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
-                var elements = $('#compi-notifications, #compi-stats, #compi-help, #compi-home, #compi-search');
-
-                /**
-                 * TabClick
-                 * Show clicked tab.
-                 *
-                 * @param {object} tabClicked
-                 * @param {object} contentToShow
-                 */
-                function tabClick(tabClicked, contentToShow) {
-                    if (!contentToShow.is(':visible')) {
-                        contentToShow.show();
-                        elements.not(contentToShow).hide();
-
-                        tabs.not(tabClicked).removeClass('active');
-
-                        tabClicked.toggleClass('active');
-                        $('#compilatio-hide-area').fadeIn();
-                    }
-                }
-
-                $('#compilatio-logo').on('click', function() {
-                    var elementClicked = $('#compi-home');
-                    elementClicked.show();
-                    elements.not(elementClicked).hide();
-                    tabs.removeClass('active');
+                    tabClicked.toggleClass('active');
                     $('#compilatio-hide-area').fadeIn();
-                });
-                $('#compilatio-hide-area').on('click', function() {
-                    elements.hide();
-                    $(this).fadeOut();
-                    tabs.removeClass('active');
-                });
+                }
+            }
+
+            $('#compilatio-logo').on('click', function() {
+                var elementClicked = $('#compi-home');
+                elementClicked.show();
+                elements.not(elementClicked).hide();
+                tabs.removeClass('active');
+                $('#compilatio-hide-area').fadeIn();
+            });
+            $('#compilatio-hide-area').on('click', function() {
+                elements.hide();
+                $(this).fadeOut();
+                tabs.removeClass('active');
             });
         });
     };

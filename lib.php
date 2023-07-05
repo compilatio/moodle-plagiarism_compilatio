@@ -578,14 +578,14 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             if ($viewscore) {
                 // If user can see the report, they can see the score on the report
                 // so make it directly available.
-                $results['score'] = $plagiarismfile->similarityscore;
-                $results['similarityscore'] = $plagiarismfile->simscore;
+                $results['score'] = $plagiarismfile->globalscore;
+                $results['simscore'] = $plagiarismfile->simscore;
                 $results['utlscore'] = $plagiarismfile->utlscore;
                 $results['aiscore'] = $plagiarismfile->aiscore;
             }
             if ($viewscore && $viewreport) {
                 $results['reporturl'] = $plagiarismfile->reporturl;
-                $results['score'] = $plagiarismfile->similarityscore;
+                $results['score'] = $plagiarismfile->globalscore;
             }
             $results['renamed'] = $previouslysubmitted;
         }
@@ -1049,17 +1049,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         $output .= "</div>";
     }
 
-    $params = array(
-        $CFG->httpswwwroot,
-        count($alerts),
-        $iddocument,
-        "<div id='compilatio-show-notifications' title='" . get_string("display_notifications", "plagiarism_compilatio")
-            . "' class='compilatio-icon active'><i class='fa fa-bell fa-2x'></i><span id='count-alerts'>1</span></div>",
-        "<div id='compi-notifications'><h5 id='compi-notif-title'>" .
-            get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>"
-    );
-
-    $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', $params);
+    $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', [count($alerts), $iddocument]);
 
     return $output;
 }
@@ -1934,8 +1924,6 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
             [$plagiarismfile->userid]
         );
 
-        mtrace(var_export($userfiles,true));
-
         foreach ($userfiles as $userfile) {
             if ($compilatio->set_document_depositor($userfile->externalid, $depositor)) {
                 $userfile->migrationstatus = 242;
@@ -2148,7 +2136,7 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
     if (isset($docstatus->documentStatus->status)) {
         if ($docstatus->documentStatus->status == "ANALYSE_COMPLETE") {
             $plagiarismfile->statuscode = COMPILATIO_STATUSCODE_COMPLETE;
-            $plagiarismfile->similarityscore = round($docstatus->documentStatus->indice);
+            $plagiarismfile->globalscore = round($docstatus->documentStatus->indice);
             $plagiarismfile->idcourt = $docstatus->documentProperties->Shortcut;
 
             if (!preg_match("~^https://www\.compilatio\.net/user/ws/reportmain/handler~", $plagiarismfile->reporturl)) {
@@ -2296,7 +2284,7 @@ function compilatio_get_statistics($cmid) {
     $sql = "
         SELECT COUNT(DISTINCT pcf.id)
         FROM {plagiarism_compilatio_files} pcf
-        WHERE pcf.cm=?";
+        WHERE pcf.cm=? ";
 
     $countallsql = $sql;
     $documentscount = $DB->count_records_sql($countallsql, array($cmid));
@@ -2304,10 +2292,10 @@ function compilatio_get_statistics($cmid) {
     $countanalyzedsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_COMPLETE . "'";
     $countanalyzed = $DB->count_records_sql($countanalyzedsql, array($cmid));
 
-    $counthigherthanredsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_COMPLETE . "' AND similarityscore>$redthreshold";
+    $counthigherthanredsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_COMPLETE . "' AND globalscore>$redthreshold";
     $counthigherthanred = $DB->count_records_sql($counthigherthanredsql, array($cmid));
 
-    $countlowerthangreensql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_COMPLETE . "' AND similarityscore<=$greenthreshold";
+    $countlowerthangreensql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_COMPLETE . "' AND globalscore<=$greenthreshold";
     $countlowerthangreen = $DB->count_records_sql($countlowerthangreensql, array($cmid));
 
     $countunsupportedsql = $sql . "AND statuscode='" . COMPILATIO_STATUSCODE_UNSUPPORTED . "'";
@@ -2335,7 +2323,7 @@ function compilatio_get_statistics($cmid) {
     $countanalysing = $DB->count_records_sql($countanalysingsql, array($cmid));
 
     $averagesql = "
-        SELECT AVG(similarityscore) avg
+        SELECT AVG(globalscore) avg
         FROM {plagiarism_compilatio_files} pcf
         WHERE pcf.cm=? AND statuscode='" . COMPILATIO_STATUSCODE_COMPLETE . "'";
 
@@ -2647,6 +2635,10 @@ function compilatio_display_news() {
     foreach ($news as $new) {
         $message = $new->{'message_' . $language} ?? $new->message_en;
 
+        if (empty($message)) {
+            continue;
+        }
+
         // Get the title of the notification according to the type of news:.
         $title = "<i class='fa-lg fa fa-info-circle'></i>";
         $class = "info";
@@ -2877,9 +2869,9 @@ function compilatio_get_global_statistics($html = true) {
             modules.name "module_type",
             CONCAT(COALESCE(assign.name, \'\'), COALESCE(forum.name, \'\'), COALESCE(workshop.name, \'\'),
             COALESCE(quiz.name, \'\')) "module_name",
-            AVG(similarityscore) "avg",
-            MIN(similarityscore) "min",
-            MAX(similarityscore) "max",
+            AVG(globalscore) "avg",
+            MIN(globalscore) "min",
+            MAX(globalscore) "max",
             COUNT(DISTINCT plagiarism_compilatio_files.id) "count"
         FROM {plagiarism_compilatio_files} plagiarism_compilatio_files
         JOIN {course_modules} course_modules
@@ -3376,7 +3368,7 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
                 $pf->externalid = null;
                 $pf->reporturl = null;
                 $pf->statuscode = 'pending';
-                $pf->similarityscore = 0;
+                $pf->globalscore = 0;
                 $pf->attempt = 0;
                 $pf->errorresponse = null;
                 $pf->recyclebinid = null;

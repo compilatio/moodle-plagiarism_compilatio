@@ -350,16 +350,17 @@ class compilatioservice {
                     $recipe = $access->name;
                 }
             }
-
-            set_config('recipe', $recipe ?? 'anasim', 'plagiarism_compilatio');
         }
+
+        set_config('recipe', $recipe ?? 'anasim', 'plagiarism_compilatio');
     }
 
      /**
-     * Get JWT to access a document report.
+     * Update document with depositor and author.
      *
      * @param  string $docid Docid
-     * @return string Return a JWT if succeed, an error otherwise
+     * @param  object $depositor email, lastname and firstname of student
+     * @return boolean Return true if succeed, false otherwise
      */
     public function set_document_depositor($docid, $depositor) {
         $params = [
@@ -392,7 +393,8 @@ class compilatioservice {
         if (($response->status->code ?? null) == 200) {
             return true;
         }
-        
+
+        mtrace("Error in function " . __FUNCTION__ . " : " . ($response->status->message ?? 'empty response status'));
         return false;
     }
 
@@ -800,27 +802,6 @@ class compilatioservice {
         } catch (SoapFault $fault) {
             return false;
         }
-    }
-
-    /**
-     * Get the waiting time for analysis begins
-     *
-     * @return mixed return the magister waiting time if succeed, false otherwise.
-     */
-    public function get_waiting_time() {
-
-        try {
-            if (!is_object($this->soapcli)) {
-                return false;
-            }
-
-            $params = array($this->key);
-            return $this->soapcli->__call('getWaitingTime', $params);
-
-        } catch (SoapFault $fault) {
-            return false;
-        }
-
     }
 
     /**
