@@ -45,7 +45,9 @@ $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', array('id' => $
 $res = compilatio_startanalyse($plagiarismfile);
 
 if (is_string($res)) {
-    echo "<p id='cmp-start-analyse-error' style='color: #b94a48;'>" . get_string('failedanalysis', 'plagiarism_compilatio') . $res . "</p>";
+    echo "<p id='cmp-start-analyse-error' style='color: #b94a48;'>"
+        . get_string('failedanalysis', 'plagiarism_compilatio') . $res .
+    "</p>";
 } else if ($res === true) {
     echo output_helper::get_plagiarism_area(
         null,

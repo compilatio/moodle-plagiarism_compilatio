@@ -169,7 +169,7 @@ define(['jquery'], function($) {
                 localStorage.setItem("compilatio-container-displayed", 0);
                 $('#compilatio-container').hide();
                 $('#cmp-display-frame').show();
-            });            
+            });
 
             $('#compilatio-tabs').show();
 

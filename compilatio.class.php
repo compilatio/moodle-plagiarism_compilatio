@@ -52,6 +52,10 @@ class compilatioservice {
      */
     public $apiconfigid;
 
+    /**
+     * Analysis recipe
+     * @var string
+     */
     private $recipe;
 
     /**
@@ -287,18 +291,30 @@ class compilatioservice {
         }
     }
 
+    /**
+     * Clean forbidden characters for firstname and lastname.
+     *
+     * @param  string $value value
+     * @return string return value w/o forbidden characters
+     */
     private function sanitize($value) {
-        $forbiddenCharacters = [".","!","?",":","%","&","*","=","#","$","@","/","\\","<",">","(",")","[","]","{","}"];
+        $forbiddencharacters = [".", "!", "?", ":", "%", "&", "*", "=", "#", "$", "@", "/", "\\", "<", ">", "(", ")", "[", "]", "{", "}"];
 
         if (!is_string($value) || '' === $value) {
             return null;
         }
 
-        $value = trim($value, " \n\r\t\v\x00" . implode('', $forbiddenCharacters));
+        $value = trim($value, " \n\r\t\v\x00" . implode('', $forbiddencharacters));
 
-        return str_replace($forbiddenCharacters, '_', $value);
+        return str_replace($forbiddencharacters, '_', $value);
     }
 
+    /**
+     * Check email field.
+     *
+     * @param  string $email email
+     * @return string return email if valid, null otherwise
+     */
     private function validate_email($email) {
         $email = filter_var($email, FILTER_SANITIZE_EMAIL);
         return filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
@@ -355,7 +371,7 @@ class compilatioservice {
         set_config('recipe', $recipe ?? 'anasim', 'plagiarism_compilatio');
     }
 
-     /**
+    /**
      * Update document with depositor and author.
      *
      * @param  string $docid Docid

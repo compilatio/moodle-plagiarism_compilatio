@@ -241,12 +241,12 @@ class output_helper {
     }
 
     /**
-     * Display an image and similarity percentage according to the thresholds
+     * Display score icons and tooltip
      *
-     * @param  float  $score          Similarity score to be displayed
+     * @param  array  $results        File results
      * @param  int    $greenthreshold Green for $score lower than that threshold
      * @param  int    $redthreshold   Red for $score higher than that threshold
-     * @return string                 the HTML string displaying colored score and an image
+     * @return string                 the HTML string displaying score icons and tooltip
      */
     public static function get_scores($results, $greenthreshold, $redthreshold) {
         if ($results['score'] <= $greenthreshold) {
@@ -274,6 +274,12 @@ class output_helper {
         return $html;
     }
 
+    /**
+     * Get ai score icon
+     *
+     * @param  string $color color
+     * @return string ai score icon
+     */
     public static function aiscore($color) {
         $color = self::get_hexadecimal_color($color);
         return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' height='1em' class='mr-1 icon-inline'>
@@ -285,6 +291,12 @@ class output_helper {
     </svg>";
     }
 
+    /**
+     * Get utl score icon
+     *
+     * @param  string $color color
+     * @return string utl score icon
+     */
     public static function utlscore($color) {
         $color = self::get_hexadecimal_color($color);
         return "<svg xmlns='http://www.w3.org/2000/svg' height='1em' viewBox='0 0 640 512' class='mr-1'>
@@ -296,8 +308,14 @@ class output_helper {
             </svg>";
     }
 
+    /**
+     * Get similarity score icon
+     *
+     * @param  string $color color
+     * @return string similarity score icon
+     */
     public static function simscore($color) {
-        $color = self::get_hexadecimal_color($color);  
+        $color = self::get_hexadecimal_color($color);
         return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' height='1em' fill='none' class='mx-1 icon-inline'>
             <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
             <path
@@ -307,6 +325,12 @@ class output_helper {
         </svg>";
     }
 
+    /**
+     * Get icon color
+     *
+     * @param  string $color color
+     * @return string hexadecimal color
+     */
     private static function get_hexadecimal_color($color) {
         switch ($color) {
             case 'green':

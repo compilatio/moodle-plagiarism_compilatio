@@ -778,7 +778,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
 
     if (get_config('plagiarism_compilatio', 'read_only_apikey') === '1') {
         $alerts[] = [
-            'class' => 'danger',
+            'class' => 'warning',
             'title' => get_string("read_only_apikey_title", "plagiarism_compilatio"),
             'content' => get_string("read_only_apikey_error", "plagiarism_compilatio")
         ];
@@ -1882,7 +1882,7 @@ function compilatio_send_file_to_compilatio(&$plagiarismfile, $plagiarismsetting
 
         if (empty($depositor)) {
             $depositor = (object) [
-                'firstname' => 'not_found', 
+                'firstname' => 'not_found',
                 'lastname' => 'not_found',
                 'email' => null
             ];
