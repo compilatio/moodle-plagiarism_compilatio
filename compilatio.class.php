@@ -53,6 +53,12 @@ class compilatioservice {
     public $apiconfigid;
 
     /**
+     * Analysis recipe
+     * @var string
+     */
+    private $recipe;
+
+    /**
      * Retourne l'instance unique.
      *
      * @param string $apiconfigid   API configuration Id
@@ -232,22 +238,18 @@ class compilatioservice {
             'origin' => 'moodle'
         ];
 
-        if (isset($depositor->firstname, $depositor->lastname, $depositor->email)) {
-            $params['depositor'] = [
-                'firstname' => $depositor->firstname,
-                'lastname' => $depositor->lastname,
-                'email_address' => $depositor->email
-            ];
-        }
+        $params['depositor'] = [
+            'firstname' => $this->sanitize($depositor->firstname),
+            'lastname' => $this->sanitize($depositor->lastname),
+            'email_address' => $this->validate_email($depositor->email)
+        ];
 
         foreach ($authors as $author) {
-            if (isset($author->firstname, $author->lastname, $author->email)) {
-                $params['authors'][] = [
-                    'firstname' => $author->firstname,
-                    'lastname' => $author->lastname,
-                    'email_address' => $author->email
-                ];
-            }
+            $params['authors'][] = [
+                'firstname' => $this->sanitize($author->firstname),
+                'lastname' => $this->sanitize($author->lastname),
+                'email_address' => $this->validate_email($author->email)
+            ];
         }
 
         $ch = curl_init();
@@ -269,18 +271,53 @@ class compilatioservice {
         unlink($filepath);
 
         if (!isset($response->status->code, $response->status->message)) {
-            return "Error in function send_doc_v5 : request response's status not found / cURL params : "
-                . var_export($curloptions, true) . " / cURL Error : "
-                . curl_error($ch) . " / cURL response : " . var_export($t, true);
+            mtrace("Error in function send_doc_v5 : request response's status not found / cURL params : "
+            . var_export($curloptions, true) . " / cURL Error : "
+            . curl_error($ch) . " / cURL response : " . var_export($t, true));
+            return '(Error: empty response status)';
         }
 
         if ($response->status->code == 201) {
             return $response->data->document->id;
         } else {
-            return "Error in function send_doc_v5 : cURL params : "
+            if ($response->status->message == 'Forbidden ! Your read only API key cannot modify this resource') {
+                return '(' . get_string('read_only_apikey_error', 'plagiarism_compilatio') . ')';
+            }
+
+            mtrace("Error in function send_doc_v5 : cURL params : "
                 . var_export($curloptions, true) . " / cURL Error : "
-                . curl_error($ch) . " / cURL response : " . var_export($t, true);
+                . curl_error($ch) . " / cURL response : " . var_export($t, true));
+            return '(' . $response->status->message . ')';
         }
+    }
+
+    /**
+     * Clean forbidden characters for firstname and lastname.
+     *
+     * @param  string $value value
+     * @return string return value w/o forbidden characters
+     */
+    private function sanitize($value) {
+        $forbiddencharacters = [".", "!", "?", ":", "%", "&", "*", "=", "#", "$", "@", "/", "\\", "<", ">", "(", ")", "[", "]", "{", "}"];
+
+        if (!is_string($value) || '' === $value) {
+            return null;
+        }
+
+        $value = trim($value, " \n\r\t\v\x00" . implode('', $forbiddencharacters));
+
+        return str_replace($forbiddencharacters, '_', $value);
+    }
+
+    /**
+     * Check email field.
+     *
+     * @param  string $email email
+     * @return string return email if valid, null otherwise
+     */
+    private function validate_email($email) {
+        $email = filter_var($email, FILTER_SANITIZE_EMAIL);
+        return filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
     }
 
     /**
@@ -301,6 +338,80 @@ class compilatioservice {
             }
             return $returnarray;
         }
+    }
+
+    /**
+     * Check if the api key is valid
+     */
+    public function check_apikey() {
+        $ch = curl_init();
+        $curloptions = [
+            CURLOPT_URL => COMPILATIO_API_URL . "/authentication/check-api-key",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['X-Auth-Token: ' . $this->key, 'Content-Type: application/json']
+        ];
+
+        $curloptions = $this->set_proxy_settings($curloptions);
+        curl_setopt_array($ch, $curloptions);
+        $response = json_decode(curl_exec($ch));
+
+        if (($response->status->code ?? null) == 200) {
+            $readonly = $response->data->user->current_api_key->read_only ?? false;
+            set_config('read_only_apikey', (int) $readonly, 'plagiarism_compilatio');
+
+            $bundle = $response->data->user->current_bundle;
+
+            foreach ($bundle->accesses as $access) {
+                if ($access->resource == 'recipe') {
+                    $recipe = $access->name;
+                }
+            }
+        }
+
+        set_config('recipe', $recipe ?? 'anasim', 'plagiarism_compilatio');
+    }
+
+    /**
+     * Update document with depositor and author.
+     *
+     * @param  string $docid Docid
+     * @param  object $depositor email, lastname and firstname of student
+     * @return boolean Return true if succeed, false otherwise
+     */
+    public function set_document_depositor($docid, $depositor) {
+        $params = [
+            'depositor' => [
+                'firstname' => $this->sanitize($depositor->firstname),
+                'lastname' => $this->sanitize($depositor->lastname),
+                'email_address' => $this->validate_email($depositor->email)
+            ],
+            'authors' => [
+                [
+                    'firstname' => $this->sanitize($depositor->firstname),
+                    'lastname' => $this->sanitize($depositor->lastname),
+                    'email_address' => $this->validate_email($depositor->email)
+                ]
+            ]
+        ];
+
+        $ch = curl_init();
+        $curloptions = [
+            CURLOPT_URL => COMPILATIO_API_URL . "/document/" . $docid,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['X-Auth-Token: ' . $this->key, 'Content-Type: application/json'],
+            CURLOPT_CUSTOMREQUEST => 'PATCH',
+            CURLOPT_POSTFIELDS => json_encode($params)
+        ];
+        $curloptions = $this->set_proxy_settings($curloptions);
+        curl_setopt_array($ch, $curloptions);
+        $response = json_decode(curl_exec($ch));
+
+        if (($response->status->code ?? null) == 200) {
+            return true;
+        }
+
+        mtrace("Error in function " . __FUNCTION__ . " : " . ($response->status->message ?? 'empty response status'));
+        return false;
     }
 
     /**
@@ -376,12 +487,18 @@ class compilatioservice {
      */
     public function get_doc($compihash) {
 
+        $this->recipe = $this->recipe ?? get_config('plagiarism_compilatio', 'recipe');
+
         try {
             if (!is_object($this->soapcli)) {
                 return("Error in constructor compilatio() " . $this->soapcli);
             }
 
-            $param = array($this->key, $compihash);
+            $param = [
+                $this->key,
+                $compihash,
+                $this->recipe
+            ];
             $document = $this->soapcli->__call('getDocument', $param);
 
             return $document;
@@ -442,13 +559,20 @@ class compilatioservice {
      */
     public function start_analyse($compihash) {
 
+        $this->recipe = $this->recipe ?? get_config('plagiarism_compilatio', 'recipe');
+
         try {
             if (!is_object($this->soapcli)) {
                 return("Error in constructor compilatio() " . $this->soapcli);
             }
 
-            $param = array($this->key, $compihash);
-            $this->soapcli->__call('startDocumentAnalyse', $param);
+            $params = [
+                $this->key,
+                $compihash,
+                $this->recipe
+            ];
+
+            $this->soapcli->__call('startDocumentAnalyse', $params);
 
         } catch (SoapFault $fault) {
             $error = new stdClass();
@@ -694,27 +818,6 @@ class compilatioservice {
         } catch (SoapFault $fault) {
             return false;
         }
-    }
-
-    /**
-     * Get the waiting time for analysis begins
-     *
-     * @return mixed return the magister waiting time if succeed, false otherwise.
-     */
-    public function get_waiting_time() {
-
-        try {
-            if (!is_object($this->soapcli)) {
-                return false;
-            }
-
-            $params = array($this->key);
-            return $this->soapcli->__call('getWaitingTime', $params);
-
-        } catch (SoapFault $fault) {
-            return false;
-        }
-
     }
 
     /**

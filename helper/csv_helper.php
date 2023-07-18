@@ -72,7 +72,7 @@ class csv_helper {
 
         $sql = "
             SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname,
-                pcf.statuscode, pcf.similarityscore, pcf.timesubmitted
+                pcf.statuscode, pcf.globalscore, pcf.timesubmitted
             FROM {plagiarism_compilatio_files} pcf
             JOIN {user} usr ON pcf.userid= usr.id
             WHERE pcf.cm=?";
@@ -118,7 +118,7 @@ class csv_helper {
 
             switch ($file->statuscode) {
                 case COMPILATIO_STATUSCODE_COMPLETE:
-                    $line["similarities"] = $file->similarityscore;
+                    $line["similarities"] = $file->globalscore;
                     break;
                 case COMPILATIO_STATUSCODE_UNEXTRACTABLE:
                     $line["similarities"] = get_string("unextractable", "plagiarism_compilatio");

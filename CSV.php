@@ -69,7 +69,7 @@ if ($rawcsv) {
             pcf.id "file_id",
             pcf.filename "file_name",
             pcf.statuscode "file_status",
-            pcf.similarityscore "file_similarityscore",
+            pcf.globalscore "file_score",
             ' . $todate . '(pcf.timesubmitted) "file_submitted_on"
         FROM {plagiarism_compilatio_files} pcf
         JOIN {user} student ON pcf.userid=student.id
@@ -167,7 +167,7 @@ function clean_row($row) {
     unset($data["id"]);
 
     if ($data["file_status"] !== "Analyzed") {
-        $data["file_similarityscore"] = "";
+        $data["file_score"] = "";
         switch ($data["file_status"]) {
             case "202":
                 $data["file_status"] = "Accepted";

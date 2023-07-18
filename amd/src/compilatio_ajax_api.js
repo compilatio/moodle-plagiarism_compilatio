@@ -112,10 +112,18 @@ define(['jquery'], function($) {
     exports.startAnalysis = function(basepath, eltId, docId) {
         $(document).ready(function() {
             setTimeout(function() {
-                $(".compi-" + eltId + " > div:last-child").click(function() {
+                let startBtn = $(".compi-" + eltId + " > div:last-child");
+                startBtn.click(function() {
                     $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_analysis.php',
-                    {'docId': docId}, function() {
-                        window.location.reload();
+                    {'docId': docId}, function(res) {
+                        if (res != 'false') {
+                            if (res.startsWith("<p")) {
+                                $('#cmp-start-analyse-error').remove();
+                                startBtn.closest(".compilatio-area").after(res);
+                            } else {
+                                startBtn.replaceWith(res);
+                            }
+                        }
                     });
                 });
             }, 300);
@@ -141,81 +149,87 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.compilatioTabs = function(basepath, alertsCount, idcourt, notifIcon, notifTitle) {
+    exports.compilatioTabs = function(alertsCount, idcourt) {
         $(document).ready(function() {
-            $.post(basepath + '/plagiarism/compilatio/ajax/get_waiting_time.php', {}, function(message) {
-                if (message != false) {
-                    if (alertsCount > 0) {
-                        $("#compi-notif-title").after(message);
-                        var nbAlerts = parseInt($("#count-alerts").text());
-                        $("#count-alerts").text(nbAlerts + 1);
-                    } else {
-                        $("#show-stats").after(notifIcon);
-                        $("#compilatio-tabs").after(notifTitle + message + "</div>");
-                        alertsCount = 1;
-                    }
-                }
 
-                $('#compilatio-tabs').show();
+            // Display or hide Compilatio container
+            if (localStorage.getItem("compilatio-container-displayed") == 0) {
+                $('#compilatio-container').hide();
+                $('#cmp-display-frame').show();
+            }
+            if (alertsCount > 0) {
+                $('#cmp-bell').show();
+            }
+            $('#cmp-display-frame').on('click', function() {
+                localStorage.setItem("compilatio-container-displayed", 1);
+                $(this).hide();
+                $('#compilatio-container').show();
+            });
+            $('#cmp-hide-frame').on('click', function() {
+                localStorage.setItem("compilatio-container-displayed", 0);
+                $('#compilatio-container').hide();
+                $('#cmp-display-frame').show();
+            });
 
-                var selectedElement = '';
-                if (idcourt) {
-                    selectedElement = '#compi-search';
-                } else if (alertsCount > 0) {
-                    selectedElement = '#compi-notifications';
-                } else {
-                    selectedElement = '#compi-home';
-                }
+            $('#compilatio-tabs').show();
 
-                $(selectedElement).show();
+            var selectedElement = '';
+            if (idcourt) {
+                selectedElement = '#compi-search';
+            } else if (alertsCount > 0) {
+                selectedElement = '#compi-notifications';
+            } else {
+                selectedElement = '#compi-home';
+            }
 
-                $('#compilatio-show-notifications').on('click', function() {
-                        tabClick($(this), $('#compi-notifications'));
-                });
-                $('#show-stats').on('click', function() {
-                        tabClick($(this), $('#compi-stats'));
-                });
-                $('#show-help').on('click', function() {
-                        tabClick($(this), $('#compi-help'));
-                });
-                $('#show-search').on('click', function() {
-                        tabClick($(this), $('#compi-search'));
-                });
+            $(selectedElement).show();
 
-                var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
-                var elements = $('#compi-notifications, #compi-stats, #compi-help, #compi-home, #compi-search');
+            $('#compilatio-show-notifications').on('click', function() {
+                    tabClick($(this), $('#compi-notifications'));
+            });
+            $('#show-stats').on('click', function() {
+                    tabClick($(this), $('#compi-stats'));
+            });
+            $('#show-help').on('click', function() {
+                    tabClick($(this), $('#compi-help'));
+            });
+            $('#show-search').on('click', function() {
+                    tabClick($(this), $('#compi-search'));
+            });
 
-                /**
-                 * TabClick
-                 * Show clicked tab.
-                 *
-                 * @param {object} tabClicked
-                 * @param {object} contentToShow
-                 */
-                function tabClick(tabClicked, contentToShow) {
-                    if (!contentToShow.is(':visible')) {
-                        contentToShow.show();
-                        elements.not(contentToShow).hide();
+            var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
+            var elements = $('#compi-notifications, #compi-stats, #compi-help, #compi-home, #compi-search');
 
-                        tabs.not(tabClicked).removeClass('active');
+            /**
+             * TabClick
+             * Show clicked tab.
+             *
+             * @param {object} tabClicked
+             * @param {object} contentToShow
+             */
+            function tabClick(tabClicked, contentToShow) {
+                if (!contentToShow.is(':visible')) {
+                    contentToShow.show();
+                    elements.not(contentToShow).hide();
 
-                        tabClicked.toggleClass('active');
-                        $('#compilatio-hide-area').fadeIn();
-                    }
-                }
+                    tabs.not(tabClicked).removeClass('active');
 
-                $('#compilatio-logo').on('click', function() {
-                    var elementClicked = $('#compi-home');
-                    elementClicked.show();
-                    elements.not(elementClicked).hide();
-                    tabs.removeClass('active');
+                    tabClicked.toggleClass('active');
                     $('#compilatio-hide-area').fadeIn();
-                });
-                $('#compilatio-hide-area').on('click', function() {
-                    elements.hide();
-                    $(this).fadeOut();
-                    tabs.removeClass('active');
-                });
+                }
+            }
+
+            $('#compilatio-logo').on('click', function() {
+                var elementClicked = $('#compi-home');
+                elementClicked.show();
+                elements.not(elementClicked).hide();
+                tabs.removeClass('active');
+                $('#compilatio-hide-area').fadeIn();
+            });
+            $('#compilatio-hide-area').on('click', function() {
+                elements.hide();
+                $(this).fadeOut();
+                tabs.removeClass('active');
             });
         });
     };
