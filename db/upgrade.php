@@ -25,6 +25,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use plagiarism_compilatio\task\update_meta;
+
 /**
  * Method to upgrade the database between differents versions
  *
@@ -35,6 +37,13 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     global $CFG, $DB, $OUTPUT;
 
     $dbman = $DB->get_manager();
+
+    $filestable = new xmldb_table('plagiarism_compilatio_files');
+    $similarityscorefield = new xmldb_field('similarityscore', XMLDB_TYPE_INTEGER, '5', null, XMLDB_NOTNULL, null, 0);
+
+    if ($dbman->field_exists($filestable, $similarityscorefield)) {
+        $dbman->rename_field($filestable, $similarityscorefield, 'globalscore');
+    }
 
     $schema = new xmldb_structure('db');
     $schema->setVersion($CFG->version);
@@ -354,7 +363,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                     'filename'        => $filename,
                     'externalid'      => $file->externalid,
                     'status'          => $status[$file->statuscode],
-                    'globalscore'     => $file->similarityscore,
+                    'globalscore'     => $file->globalscore,
                     'similarityscore' => $file->simscore ?? null,
                     'utlscore'        => $file->utlscore ?? null,
                     'aiscore'         => $file->aiscore ?? null,
@@ -368,7 +377,8 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
             }
         } while (1);
 
-        compilatio_update_meta();
+        $updatemeta = new update_meta();
+        $updatemeta->execute();
 
         upgrade_plugin_savepoint(true, 2023060000, 'plagiarism', 'compilatio');
     }

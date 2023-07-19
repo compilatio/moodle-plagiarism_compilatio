@@ -24,8 +24,6 @@
 $string['pluginname'] = 'Compilatio plagiarism plugin';
 $string['compilatio'] = 'Compilatio plagiarism plugin';
 
-$string['read_only_apikey'] = 'Your API key is no longer active, so you can no longer load or analyze documents.';
-
 // Admin Compilatio settings.
 $string['activate_compilatio'] = 'Enable Compilatio';
 $string['disclaimer_data'] = 'By enabling Compilatio, you accept the fact that data about your Moodle configuration will be collected in order to improve support and maintenance of this service.';
@@ -39,6 +37,7 @@ $string['enabledandworking'] = 'The Compilatio plugin is enabled and working.';
 $string['saved_config_failed'] = '<strong>The combination API key - adress entered is invalid. Compilatio is disabled, please try again.<br/>
     The <a href="autodiagnosis.php">auto-diagnosis</a> page can help you to configure this plugin.</strong><br/>
     Error :';
+$string['read_only_apikey'] = 'Your read-only API key does not allow uploading or analyzing documents.';
 $string['subscription'] = '<b>Informations about your subscription:</b>';
 $string['subscription_start'] = 'Start date:';
 $string['subscription_end'] = 'End date included:';

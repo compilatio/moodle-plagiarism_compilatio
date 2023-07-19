@@ -78,13 +78,13 @@ class CompilatioAPI {
             $bundle = $response->data->user->current_bundle;
 
             foreach ($bundle->accesses as $access) {
-                if ($access->resource == 'api') {
+                if ($access->resource == 'recipe') {
                     $recipe = $access->name;
                 }
             }
-
-            set_config('recipe', $recipe ?? 'anasim', 'plagiarism_compilatio');
         }
+
+        set_config('recipe', $recipe ?? 'anasim', 'plagiarism_compilatio');
 
         $endpoint = '/api/private/user/lms/23a3a6980c0f49d98c5dc1ec03478e9161ad5d352cb4651b14865d21d0e81be';
 

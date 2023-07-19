@@ -24,8 +24,6 @@
 $string['pluginname'] = 'Compilatio - Plugin de détection de plagiat';
 $string['compilatio'] = 'Plugin de détection de plagiat Compilatio';
 
-$string['read_only_apikey'] = "Votre clé API n'est plus active, elle ne vous permet plus de charger ou d'analyser des documents";
-
 // Admin Compilatio settings.
 $string['activate_compilatio'] = 'Activer le plug-in Compilatio';
 $string['disclaimer_data'] = 'En activant Compilatio, vous acceptez que des informations concernant la configuration de votre plateforme Moodle soient collectées afin de faciliter le support et la maintenance du service.';
@@ -39,6 +37,7 @@ $string['enabledandworking'] = 'Le plugin Compilatio est actif et fonctionnel.';
 $string['saved_config_failed'] = "<strong>La combinaison adresse - clé API est incorrecte. Le plugin est désactivé, merci de réessayer.<br/>
     La page d'<a href='autodiagnosis.php'>auto-diagnostic</a> peut vous aider à configurer ce plugin.</strong><br/>
     Erreur :";
+$string['read_only_apikey'] = "Votre clé API en lecture seule ne permet pas de télécharger ou d'analyser des documents.";
 $string['subscription'] = '<b>Informations concernant votre abonnement :</b>';
 $string['subscription_start'] = 'Date de début :';
 $string['subscription_end'] = 'Date de fin incluse :';

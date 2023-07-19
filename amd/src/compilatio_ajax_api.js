@@ -156,14 +156,21 @@ define(['jquery'], function($) {
     exports.compilatioTabs = function(alertsCount, docid) {
         $(document).ready(function() {
 
+            // Display or hide Compilatio container
+            if (localStorage.getItem("cmp-container-displayed") == 0) {
+                $('#cmp-container').hide();
+                $('#cmp-display-frame').show();
+            }
             if (alertsCount > 0) {
                 $('#cmp-bell').show();
             }
             $('#cmp-display-frame').on('click', function() {
+                localStorage.setItem("cmp-container-displayed", 1);
                 $(this).hide();
                 $('#cmp-container').show();
             });
             $('#cmp-hide-frame').on('click', function() {
+                localStorage.setItem("cmp-container-displayed", 0);
                 $('#cmp-container').hide();
                 $('#cmp-display-frame').show();
             });
