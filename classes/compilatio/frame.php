@@ -170,7 +170,7 @@ class CompilatioFrame {
             if (time() > strtotime($alert->activation_period->start) && time() < strtotime($alert->activation_period->end)) {
                 $alerts[] = [
                     'class' => 'info',
-                    'content' => $text,
+                    'content' => "<span class='cmp-md'>" . $text . '</span>',
                 ];
             }
         }
@@ -392,6 +392,7 @@ class CompilatioFrame {
 
         $output .= "</div>";
 
+        $output .= "<script src=" . $CFG->wwwroot . "/plagiarism/compilatio/js/drawdown.min.js></script>";
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', [count($alerts), $docid]);
 
         return $output;
