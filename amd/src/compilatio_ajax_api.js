@@ -152,6 +152,11 @@ define(['jquery'], function($) {
     exports.compilatioTabs = function(alertsCount, idcourt) {
         $(document).ready(function() {
 
+            // Convert markdown to HTML.
+            $('.cmp-md').each(function() {
+                $(this).html("<i class='fa-lg fa fa-info-circle'></i><span>" + markdown($.trim($(this).text())) + "</span>")
+            });
+
             // Display or hide Compilatio container
             if (localStorage.getItem("compilatio-container-displayed") == 0) {
                 $('#compilatio-container').hide();

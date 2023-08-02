@@ -295,6 +295,17 @@ ul#compilatio-help-items > li > div {
     border-radius: 4px;
     color: #c09853;
 }
+.compilatio-alert > span > p {
+    margin: 0;
+}
+.cmp-md {
+    display: flex;
+}
+.cmp-md > i {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 1rem;
+}
 .compilatio-alert-danger {
     color: #b94a48;
     background-color: #f2dede;

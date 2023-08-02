@@ -662,26 +662,6 @@ class compilatioservice {
     }
 
     /**
-     * Get a list of the current Compilatio news.
-     *
-     * @return mixed    return a TechnicalNews object if succeed, false otherwise.
-     */
-    public function get_technical_news() {
-
-        try {
-            if (!is_object($this->soapcli)) {
-                return false;
-            }
-
-            $param = array($this->key);
-            return $this->soapcli->__call('getTechnicalNews', $param);
-
-        } catch (SoapFault $fault) {
-            return false;
-        }
-    }
-
-    /**
      * Get a list of the current Compilatio alerts.
      *
      * @return mixed    return a Alert object if succeed, false otherwise.

@@ -969,11 +969,9 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         $output .= "<h5 id='compi-notif-title'>" . get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>";
 
         foreach ($alerts as $alert) {
-            $output .= "
-                <div class='compilatio-alert compilatio-alert-" . $alert["class"] . "'>" .
-                "<strong>" . $alert["title"] . "</strong><br/>" .
-                $alert["content"] .
-                "</div>";
+            $output .= "<div class='compilatio-alert compilatio-alert-" . $alert["class"] . "'>";
+            $output .= !empty($alert["title"]) ? "<strong>" . $alert["title"] . "</strong><br/>" : '';
+            $output .= $alert["content"] . "</div>";
         }
 
         $output .= "</div>";
@@ -1049,6 +1047,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         $output .= "</div>";
     }
 
+    $output .= "<script src=" . $CFG->wwwroot . "/plagiarism/compilatio/js/drawdown.min.js></script>";
     $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', [count($alerts), $iddocument]);
 
     return $output;
@@ -2581,21 +2580,6 @@ function compilatio_update_news() {
             $DB->insert_record("plagiarism_compilatio_news", $new);
         }
     }
-
-    $news = $compilatio->get_technical_news();
-
-    if ($news !== false) {
-        $DB->delete_records_select('plagiarism_compilatio_news', '1=1');
-        foreach ($news as $new) {
-            $new->message_en = compilatio_decode($new->message_en);
-            $new->message_fr = compilatio_decode($new->message_fr);
-            $new->message_it = compilatio_decode($new->message_it);
-            $new->message_es = compilatio_decode($new->message_es);
-            $new->message_de = compilatio_decode($new->message_de);
-            unset($new->id);
-            $DB->insert_record("plagiarism_compilatio_news", $new);
-        }
-    }
 }
 
 /**
@@ -2639,32 +2623,10 @@ function compilatio_display_news() {
             continue;
         }
 
-        // Get the title of the notification according to the type of news:.
-        $title = "<i class='fa-lg fa fa-info-circle'></i>";
-        $class = "info";
-        switch ($new->type) {
-            case PLAGIARISM_COMPILATIO_NEWS_UPDATE:
-                $title = get_string("news_update", "plagiarism_compilatio"); // Info.
-                $class = "info";
-                break;
-            case PLAGIARISM_COMPILATIO_NEWS_INCIDENT:
-                $title = get_string("news_incident", "plagiarism_compilatio"); // Danger.
-                $class = "danger";
-                break;
-            case PLAGIARISM_COMPILATIO_NEWS_MAINTENANCE:
-                $title = get_string("news_maintenance", "plagiarism_compilatio"); // Warning.
-                $class = "warning";
-                break;
-            case PLAGIARISM_COMPILATIO_NEWS_ANALYSIS_PERTURBATED:
-                $title = get_string("news_analysis_perturbated", "plagiarism_compilatio"); // Danger.
-                $class = "danger";
-                break;
-        }
-
         $alerts[] = array(
-            "class" => $class,
-            "title" => $title,
-            "content" => $message,
+            "class" => "info cmp-md",
+            "title" => "",
+            "content" => "<i class='fa-lg fa fa-info-circle'></i>" . $message,
         );
     }
 
