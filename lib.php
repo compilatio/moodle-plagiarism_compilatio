@@ -3476,13 +3476,6 @@ function compilatio_handle_quiz_attempt($attemptid) {
     foreach ($attempt->get_slots() as $slot) {
         $answer = $attempt->get_question_attempt($slot);
         if ($answer->get_question()->get_type_name() == 'essay') {
-
-            // Check for duplicates files.
-            $identifier = sha1($answer->get_response_summary());
-            /*$duplicate = $DB->get_records('plagiarism_compilatio_files',
-                array('identifier' => $identifier, 'userid' => $userid, 'cm' => $cmid));
-            compilatio_remove_duplicates($duplicate);*/
-
             // Online text content.
             $nbmotsmin = get_config('plagiarism_compilatio', 'nb_mots_min');
             if (str_word_count(utf8_decode(strip_tags($answer->get_response_summary()))) >= $nbmotsmin) {
@@ -3501,8 +3494,8 @@ function compilatio_handle_quiz_attempt($attemptid) {
                 $plagiarismfile = new stdClass();
                 $plagiarismfile->cm = $cmid;
                 $plagiarismfile->userid = $userid;
-                $plagiarismfile->identifier = $identifier;
                 $plagiarismfile->filename = "quiz-" . $attempt->get_courseid() . "-" . $cmid . "-" . $attemptid . "-" . "Q" . $answer->get_question_id() . ".htm";
+                $plagiarismfile->identifier = sha1($plagiarismfile->filename);
                 $plagiarismfile->statuscode = '412';
                 $plagiarismfile->timesubmitted = time();
                 $plagiarismfile->apiconfigid = 0;
@@ -3515,13 +3508,6 @@ function compilatio_handle_quiz_attempt($attemptid) {
             $context = context_module::instance($cmid);
             $files = $answer->get_last_qt_files('attachments', $context->id);
             foreach ($files as $file) {
-
-                // Check for duplicate files.
-                /*$sql = "SELECT * FROM {plagiarism_compilatio_files}
-                    WHERE cm = ? AND userid = ? AND identifier = ?";
-                $duplicates = $DB->get_records_sql($sql, array($cmid, $userid, $file->get_contenthash()));
-                compilatio_remove_duplicates($duplicates);
-                */
                 compilatio_queue_file($cmid, $userid, $file, $plagiarismsettings);
             }
         }
