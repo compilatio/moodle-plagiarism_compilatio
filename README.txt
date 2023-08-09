@@ -10,6 +10,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 CHANGES
 - Add conversion from markdown to html in notifications
 - Fix : no more display empty notifications
+- Fix in quiz : not all texts are sent to Compilatio if their contents are identical.
 
 CHANGELOG : https://support.compilatio.net/hc/en-us/articles/360019664658
 

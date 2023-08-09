@@ -113,6 +113,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
      * @return string  HTML or blank.
      */
     public function get_links($linkarray) {
+        global $DB;
 
         // Quiz - only essay question are supported for the moment.
         if (!empty($linkarray['component']) && $linkarray['component'] == 'qtype_essay') {
@@ -137,6 +138,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                         }
                         // If content and file not submitted, try to get the content.
                         if (empty($linkarray['content']) && empty($linkarray['file'])) {
+                            $courseid = $DB->get_field('course_modules', 'course', array('id' => $linkarray['cmid']));
+                            $quizfilename = "quiz-" . $courseid . "-" . $linkarray['cmid'] . "-" . $attempt->get_usage_id() . "-Q" . $attempt->get_question_id() . ".htm";
                             $linkarray['content'] = $attempt->get_response_summary();
                         }
                     }
@@ -158,7 +161,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         $modulecontext = context_module::instance($linkarray['cmid']);
         $teacher = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
 
-        global $DB, $CFG, $PAGE, $SESSION;
+        global $CFG, $PAGE, $SESSION;
         $output = '';
 
         $studentanalyse = compilatio_student_analysis($plugincm['compi_student_analyses'],
@@ -194,8 +197,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         $file->timestamp = time();
 
         if (!empty($linkarray['content'])) {
-            $file->filename = "content-" . $cm->course . "-" . $linkarray['cmid'] . "-" . $userid . ".htm";
-            // Filename is not reliable for posts (forum) !
+            $file->filename = isset($quizfilename) ? $quizfilename : "content-" . $cm->course . "-" . $linkarray['cmid'] . "-" . $userid . ".htm";
+            // Filename is not reliable for forum !
             $file->identifier = sha1($linkarray['content']);
             $file->filepath = $CFG->dataroot . "/temp/compilatio/" . $file->filename;
             $file->type = "tempcompilatio";
@@ -527,8 +530,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         }
 
         // Get compilatio file record.
-        $plagiarismfile = $DB->get_record('plagiarism_compilatio_files',
-            array('cm' => $cmid, 'userid' => $userid, 'identifier' => $filehash));
+        $sql = 'SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND (identifier = ? OR identifier = ?)';
+        $plagiarismfile = $DB->get_record_sql($sql, [$cmid, $userid, $filehash, sha1($file->filename)]);
 
         if (empty($plagiarismfile)) { // Try to get record without userid in forums.
             $sql = "SELECT * FROM {plagiarism_compilatio_files}
@@ -795,16 +798,18 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         );
     }
 
-    // Display a notification for the too short files.
-    $files = compilatio_get_too_short_files($cmid);
-    if (count($files) !== 0) {
-        $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
-        $alerts[] = array(
-            "class" => "danger",
-            "title" => get_string("tooshort_files", "plagiarism_compilatio",
-                get_config('plagiarism_compilatio', 'nb_mots_min')),
-            "content" => $list,
-        );
+    if ($module !== 'quiz') {
+        // Display a notification for the too short files.
+        $files = compilatio_get_too_short_files($cmid);
+        if (count($files) !== 0) {
+            $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
+            $alerts[] = array(
+                "class" => "danger",
+                "title" => get_string("tooshort_files", "plagiarism_compilatio",
+                    get_config('plagiarism_compilatio', 'nb_mots_min')),
+                "content" => $list,
+            );
+        }
     }
 
     // Display a notification for the too long files.
@@ -1426,9 +1431,11 @@ function compilatio_create_temp_file($cmid, $eventdata, $filename = null) {
     $file->filename = $filename;
     $file->timestamp = time();
     $file->identifier = sha1_file($filepath);
+    if (isset($eventdata->attemptid)) {
+        $file->identifier = sha1($filename);
+    }
     $file->filepath = $filepath;
     $file->objectid = $eventdata->objectid ?? null;
-
     return $file;
 }
 
@@ -3195,9 +3202,9 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
 
         // In quiz.
         if ($eventdata['objecttable'] == 'quiz_attempts') {
-            $filename = "quiz-" . $eventdata['courseid'] . "-" . $cmid . "-" . $eventdata['objectid'] . ".htm";
-            $duplicates = $DB->get_records('plagiarism_compilatio_files',
-                array('cm' => $cmid, 'userid' => $userid, 'filename' => $filename));
+            $filename = "quiz-" . $eventdata['courseid'] . "-" . $cmid . "-" . $eventdata['objectid'] . "-%";
+            $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename LIKE ?";
+            $duplicates = $DB->get_records_sql($sql, array($cmid, $userid, $filename));
             compilatio_remove_duplicates($duplicates);
 
             $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'quiz-%'";
@@ -3472,9 +3479,9 @@ function compilatio_handle_quiz_attempt($attemptid) {
 
             // Check for duplicates files.
             $identifier = sha1($answer->get_response_summary());
-            $duplicate = $DB->get_records('plagiarism_compilatio_files',
+            /*$duplicate = $DB->get_records('plagiarism_compilatio_files',
                 array('identifier' => $identifier, 'userid' => $userid, 'cm' => $cmid));
-            compilatio_remove_duplicates($duplicate);
+            compilatio_remove_duplicates($duplicate);*/
 
             // Online text content.
             $nbmotsmin = get_config('plagiarism_compilatio', 'nb_mots_min');
@@ -3490,6 +3497,18 @@ function compilatio_handle_quiz_attempt($attemptid) {
                 $file = compilatio_create_temp_file($cmid, $data);
 
                 compilatio_queue_file($cmid, $userid, $file, $plagiarismsettings);
+            } else {
+                $plagiarismfile = new stdClass();
+                $plagiarismfile->cm = $cmid;
+                $plagiarismfile->userid = $userid;
+                $plagiarismfile->identifier = $identifier;
+                $plagiarismfile->filename = "quiz-" . $attempt->get_courseid() . "-" . $cmid . "-" . $attemptid . "-" . "Q" . $answer->get_question_id() . ".htm";
+                $plagiarismfile->statuscode = '412';
+                $plagiarismfile->timesubmitted = time();
+                $plagiarismfile->apiconfigid = 0;
+                $plagiarismfile->objectid = $attemptid;
+
+                $DB->insert_record('plagiarism_compilatio_files', $plagiarismfile);
             }
 
             // Files attachments.
@@ -3498,11 +3517,11 @@ function compilatio_handle_quiz_attempt($attemptid) {
             foreach ($files as $file) {
 
                 // Check for duplicate files.
-                $sql = "SELECT * FROM {plagiarism_compilatio_files}
+                /*$sql = "SELECT * FROM {plagiarism_compilatio_files}
                     WHERE cm = ? AND userid = ? AND identifier = ?";
                 $duplicates = $DB->get_records_sql($sql, array($cmid, $userid, $file->get_contenthash()));
                 compilatio_remove_duplicates($duplicates);
-
+                */
                 compilatio_queue_file($cmid, $userid, $file, $plagiarismsettings);
             }
         }
