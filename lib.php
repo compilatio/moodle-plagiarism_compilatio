@@ -2801,8 +2801,10 @@ function compilatio_update_connection_status() {
 
     global $DB;
 
+    $apiconfigid = get_config('plagiarism_compilatio', 'apiconfigid');
+
     // Test connection to the Compilatio web service.
-    $connectionstatus = ws_helper::test_connection();
+    $connectionstatus = ws_helper::test_connection($apiconfigid);
 
     // Insert connection status into DB.
     $oldconnectionstatus = $DB->get_record('plagiarism_compilatio_data',
