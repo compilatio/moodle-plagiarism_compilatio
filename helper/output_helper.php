@@ -155,7 +155,7 @@ class output_helper {
 
         // Image.
         if ($image !== "") {
-            $imgsrc = $OUTPUT->image_url($image, 'plagiarism_compilatio');
+            $imgsrc = new moodle_url("/plagiarism/compilatio/pix/{$image}.png");
             $html .= html_writer::img($imgsrc, '%', array('class' => 'float-right'));
         }
 
@@ -194,7 +194,7 @@ class output_helper {
                 $title = get_string($warning, "plagiarism_compilatio");
             }
             $html .= html_writer::start_div('compi-alert');
-            $imgsrc = $OUTPUT->image_url('exclamation-yellow', 'plagiarism_compilatio');
+            $imgsrc = new moodle_url("/plagiarism/compilatio/pix/exclamation-yellow.png");
             $html .= html_writer::img($imgsrc, '/!\\', array('title' => $title));
             $html .= html_writer::end_div();
         }
