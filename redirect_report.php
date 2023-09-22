@@ -49,16 +49,8 @@ $jwt = $compilatio->get_report_token($docid);
 if (strpos($jwt, 'Error') === 0) {
     echo $OUTPUT->header();
 
-    $ln = current_language();
-
-    if (!in_array($ln, array("fr", "en", "it", "es"))) {
-        $language = "en";
-    } else {
-        $language = $ln;
-    }
-
     echo "<p><img src='"
-            . $OUTPUT->image_url('compilatio-logo-' . $language, 'plagiarism_compilatio') .
+            . $OUTPUT->image_url('compilatio-logo', 'plagiarism_compilatio') .
         "' alt='Compilatio' width='250'></p>";
 
     echo "<div class='compilatio-alert compilatio-alert-danger'>"

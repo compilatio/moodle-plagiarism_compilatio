@@ -8,7 +8,10 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+- Update Compilatio container
 - Add conversion from markdown to html in notifications
+- Fix Auto-diagnosis message "Invalid API key" when plugin is disabled
+- Fix error "coding problem..." displayed when starting an analysis
 - Fix : no more display empty notifications
 - Fix in quiz : not all texts are sent to Compilatio if their contents are identical.
 

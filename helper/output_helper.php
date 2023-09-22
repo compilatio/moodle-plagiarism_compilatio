@@ -45,18 +45,9 @@ class output_helper {
      * @return string   HTML tag displaying the right image
      */
     public static function get_logo() {
-
         global $OUTPUT;
 
-        $ln = current_language();
-
-        if (!in_array($ln, array("fr", "en", "it", "es"))) {
-            $language = "en";
-        } else {
-            $language = $ln;
-        }
-
-        return html_writer::img($OUTPUT->image_url('compilatio-logo-' . $language, 'plagiarism_compilatio'),
+        return html_writer::img($OUTPUT->image_url('compilatio-logo', 'plagiarism_compilatio'),
             'Compilatio', array('title' => 'Compilatio', 'id' => 'compilatio-logo'));
     }
 

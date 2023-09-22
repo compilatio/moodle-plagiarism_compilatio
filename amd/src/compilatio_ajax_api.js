@@ -2,7 +2,7 @@ define(['jquery'], function($) {
     /**
      * A Module that handles Compilatio ajax/API calls
      */
-
+  
     /**
      * disableCompilatioButtons
      * Disable Compilatio buttons (during multiple ajax/API calls)
@@ -14,16 +14,16 @@ define(['jquery'], function($) {
             $(this).attr("href", "#");
         });
     }
-
+  
     var exports = {};
-
+  
     var getIndexingState = exports.getIndexingState = function(basepath, eltId, docId, apiconfigid) {
         $(document).ready(function() {
             $.post(basepath + '/plagiarism/compilatio/ajax/get_indexing_state.php',
             {'idDoc': docId, 'apiconfigid': apiconfigid}, function(data) {
                 $(".compi-" + eltId + " .compilatio-library").detach();
                 $(".compi-" + eltId).prepend(data);
-
+  
                 setTimeout(function() {
                     $(".compi-" + eltId + " > div:first-child").click(function() {
                         toggleIndexingState(basepath, eltId, docId, apiconfigid);
@@ -32,7 +32,7 @@ define(['jquery'], function($) {
             });
         });
     };
-
+  
     var toggleIndexingState = exports.toggleIndexingState = function(basepath, eltId, docId, apiconfigid) {
         var indexingState;
         if ($(".compi-" + eltId + " > div:first-child").is('.compilatio-library-in')) {
@@ -51,7 +51,7 @@ define(['jquery'], function($) {
             }
         });
     };
-
+  
     exports.refreshButton = function(basepath, fileIds, docNotUploaded, infoStr) {
         $(document).ready(function() {
             var n = fileIds.length;
@@ -89,7 +89,7 @@ define(['jquery'], function($) {
             }
         });
     };
-
+  
     exports.startAllAnalysis = function(basepath, cmid, title, message) {
         $(document).ready(function() {
             var startAllAnalysis = $("button.comp-start-btn");
@@ -108,7 +108,7 @@ define(['jquery'], function($) {
             });
         });
     };
-
+  
     exports.startAnalysis = function(basepath, eltId, docId) {
         $(document).ready(function() {
             setTimeout(function() {
@@ -129,7 +129,7 @@ define(['jquery'], function($) {
             }, 300);
         });
     };
-
+  
     exports.restartFailedAnalysis = function(basepath, cmid, title, message) {
         $(document).ready(function() {
             var restartFailedAnalysis = $("button.comp-restart-btn");
@@ -148,15 +148,20 @@ define(['jquery'], function($) {
             });
         });
     };
-
+  
     exports.compilatioTabs = function(alertsCount, idcourt) {
         $(document).ready(function() {
-
+  
+          if ($('.moove.secondary-navigation')[0]) {
+              $('#compilatio-container').css('margin-top', '140px');
+              $('#cmp-display-frame').css('margin-top', '140px');
+          }
+  
             // Convert markdown to HTML.
             $('.cmp-md').each(function() {
                 $(this).html("<i class='fa-lg fa fa-info-circle'></i><span>" + markdown($.trim($(this).text())) + "</span>")
             });
-
+  
             // Display or hide Compilatio container
             if (localStorage.getItem("compilatio-container-displayed") == 0) {
                 $('#compilatio-container').hide();
@@ -175,20 +180,18 @@ define(['jquery'], function($) {
                 $('#compilatio-container').hide();
                 $('#cmp-display-frame').show();
             });
-
+  
             $('#compilatio-tabs').show();
-
+  
             var selectedElement = '';
             if (idcourt) {
                 selectedElement = '#compi-search';
-            } else if (alertsCount > 0) {
-                selectedElement = '#compi-notifications';
             } else {
                 selectedElement = '#compi-home';
             }
-
+  
             $(selectedElement).show();
-
+  
             $('#compilatio-show-notifications').on('click', function() {
                     tabClick($(this), $('#compi-notifications'));
             });
@@ -201,10 +204,10 @@ define(['jquery'], function($) {
             $('#show-search').on('click', function() {
                     tabClick($(this), $('#compi-search'));
             });
-
+  
             var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
             var elements = $('#compi-notifications, #compi-stats, #compi-help, #compi-home, #compi-search');
-
+  
             /**
              * TabClick
              * Show clicked tab.
@@ -216,28 +219,22 @@ define(['jquery'], function($) {
                 if (!contentToShow.is(':visible')) {
                     contentToShow.show();
                     elements.not(contentToShow).hide();
-
+  
                     tabs.not(tabClicked).removeClass('active');
-
+  
                     tabClicked.toggleClass('active');
-                    $('#compilatio-hide-area').fadeIn();
                 }
             }
-
+  
             $('#compilatio-logo').on('click', function() {
                 var elementClicked = $('#compi-home');
                 elementClicked.show();
                 elements.not(elementClicked).hide();
                 tabs.removeClass('active');
-                $('#compilatio-hide-area').fadeIn();
-            });
-            $('#compilatio-hide-area').on('click', function() {
-                elements.hide();
-                $(this).fadeOut();
-                tabs.removeClass('active');
             });
         });
     };
-
+  
     return exports;
-});
+  });
+  
