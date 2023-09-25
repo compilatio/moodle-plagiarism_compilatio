@@ -645,7 +645,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         $emailcontent = get_string('studentemailcontent', 'plagiarism_compilatio', $a);
         email_to_user($user, $site->shortname, $emailsubject, $emailcontent);
     }
-
 }
 
 /**
@@ -2542,7 +2541,7 @@ function compilatio_update_account_expiration_date() {
 
     global $DB;
     $expirationdate = compilatio_get_account_expiration_date();
-    if ($expirationdate === false) {
+    if (empty($expirationdate)) {
         return;
     }
     // Insert / update in db.
