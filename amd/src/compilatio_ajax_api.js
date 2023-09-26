@@ -152,10 +152,10 @@ define(['jquery'], function($) {
     exports.compilatioTabs = function(alertsCount, idcourt) {
         $(document).ready(function() {
   
-          if ($('.moove.secondary-navigation')[0]) {
-              $('#compilatio-container').css('margin-top', '140px');
-              $('#cmp-display-frame').css('margin-top', '140px');
-          }
+            if ($('.moove.secondary-navigation')[0]) {
+                $('#compilatio-container').css('margin-top', '140px');
+                $('#cmp-display-frame').css('margin-top', '140px');
+            }
   
             // Convert markdown to HTML.
             $('.cmp-md').each(function() {
@@ -193,16 +193,16 @@ define(['jquery'], function($) {
             $(selectedElement).show();
   
             $('#compilatio-show-notifications').on('click', function() {
-                    tabClick($(this), $('#compi-notifications'));
+                tabClick($(this), $('#compi-notifications'));
             });
             $('#show-stats').on('click', function() {
-                    tabClick($(this), $('#compi-stats'));
+                tabClick($(this), $('#compi-stats'));
             });
             $('#show-help').on('click', function() {
-                    tabClick($(this), $('#compi-help'));
+                tabClick($(this), $('#compi-help'));
             });
             $('#show-search').on('click', function() {
-                    tabClick($(this), $('#compi-search'));
+                tabClick($(this), $('#compi-search'));
             });
   
             var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
