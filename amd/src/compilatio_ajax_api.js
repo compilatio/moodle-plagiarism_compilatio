@@ -90,16 +90,13 @@ define(['jquery'], function($) {
         });
     };
   
-    exports.startAllAnalysis = function(basepath, cmid, title, message) {
+    exports.startAllAnalysis = function(basepath, cmid, message) {
         $(document).ready(function() {
             var startAllAnalysis = $("button.comp-start-btn");
             startAllAnalysis.click(function() {
                 disableCompilatioButtons();
-                $('#compi-notifications').show();
-                $('#compi-stats, #compi-help, #compi-home, #compi-search').hide();
-                $("#compi-notif-title").after(
-                    "<div class='compilatio-alert compilatio-alert-info'><strong>" + title
-                    + "</strong><br/>" + message + "</div>"
+                $("#compi-notices").append(
+                    "<div class='compilatio-alert compilatio-alert-info'>" + message + "<i class='ml-3 fa-spin fa-lg fa fa-spinner'></i></div>"
                 );
                 $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_all_analysis.php',
                 {'cmid': cmid}, function() {
@@ -130,16 +127,13 @@ define(['jquery'], function($) {
         });
     };
   
-    exports.restartFailedAnalysis = function(basepath, cmid, title, message) {
+    exports.restartFailedAnalysis = function(basepath, cmid, message) {
         $(document).ready(function() {
             var restartFailedAnalysis = $("button.comp-restart-btn");
             restartFailedAnalysis.click(function() {
                 disableCompilatioButtons();
-                $('#compi-notifications').show();
-                $('#compi-stats, #compi-help, #compi-home, #compi-search').hide();
-                $("#compi-notif-title").after(
-                    "<div class='compilatio-alert compilatio-alert-info'><strong>" + title
-                    + "</strong><br/>" + message + "</div>"
+                $("#compi-notices").append(
+                    "<div class='compilatio-alert compilatio-alert-info'>" + message + "<i class='ml-3 fa-spin fa-lg fa fa-spinner'></i></div>"
                 );
                 $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_reset_failed_document.php',
                 {'cmid': cmid}, function() {
@@ -180,8 +174,10 @@ define(['jquery'], function($) {
                 $('#compilatio-container').hide();
                 $('#cmp-display-frame').show();
             });
-  
-            $('#compilatio-tabs').show();
+
+            $('#compi-notices > .compilatio-alert > .fa-times').on('click', function() {
+                $('#compi-notices').empty()
+            });
   
             var selectedElement = '';
             if (idcourt) {

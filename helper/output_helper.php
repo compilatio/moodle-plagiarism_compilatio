@@ -146,8 +146,12 @@ class output_helper {
 
         // Image.
         if ($image !== "") {
-            $imgsrc = new moodle_url("/plagiarism/compilatio/pix/{$image}.png");
-            $html .= html_writer::img($imgsrc, '%', array('class' => 'float-right'));
+            if ($image == 'inprogress') {
+                $html .= "<i style='margin-top: 3px;' class='float-right fa-spin fa-lg fa fa-spinner'></i>";
+            } else {
+                $imgsrc = new moodle_url("/plagiarism/compilatio/pix/{$image}.png");
+                $html .= html_writer::img($imgsrc, '%', array('class' => 'float-right'));
+            }
         }
 
         // State information.

@@ -230,6 +230,10 @@ Head area in assignment
 .compilatio-button {
     margin: 0 0.25rem;
 }
+#compi-notices {
+    position: relative;
+    top: 1rem;
+}
 #compilatio-container {
     position: fixed;
     right: 3rem;

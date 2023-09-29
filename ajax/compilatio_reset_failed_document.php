@@ -73,7 +73,7 @@ $countmaxattemptsreached = count($docsmaxattempsreached);
 $files = compilatio_get_max_attempts_files($cmid);
 if ($countmaxattemptsreached !== 0) {
     $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
-    $SESSION->compilatio_alert_max_attempts = array(
+    $SESSION->compilatio_alert = array(
         "class" => "danger",
         "title" => get_string("max_attempts_reach_files", "plagiarism_compilatio"),
         "content" => $list,

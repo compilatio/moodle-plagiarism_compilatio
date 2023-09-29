@@ -715,7 +715,8 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         return;
     }
 
-    $alerts = array();
+    $alerts = [];
+    $notices = [];
     $output = '';
 
     $export = optional_param('compilatio_export', '', PARAM_BOOL);
@@ -729,12 +730,8 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     $plagiarismfilesids = array_keys($SESSION->compilatio_plagiarismfiles);
 
     if (isset($SESSION->compilatio_alert)) {
-        $alerts[] = $SESSION->compilatio_alert;
+        $notices[] = $SESSION->compilatio_alert;
         unset($SESSION->compilatio_alert);
-    }
-    if (isset($SESSION->compilatio_alert_max_attempts)) {
-        $alerts[] = $SESSION->compilatio_alert_max_attempts;
-        unset($SESSION->compilatio_alert_max_attempts);
     }
 
     // Get compilatio analysis type.
@@ -893,8 +890,8 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
 
     $output .= "<div id='compilatio-container'>";
 
-    // Display the tabs: Notification tab will be hidden if there is 0 alerts.
-    $output .= "<div id='compilatio-tabs' style='display:none'>";
+    // Display the tabs.
+    $output .= "<div id='compilatio-tabs'>";
 
     // Display logo.
     $output .= output_helper::get_logo();
@@ -937,15 +934,13 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         if (isset($startallanalysisbutton)) {
             $output .= $startallanalysisbutton;
             $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
-                array($CFG->httpswwwroot, $cmid, get_string("start_analysis_title", "plagiarism_compilatio"),
-                get_string("start_analysis_in_progress", "plagiarism_compilatio")));
+                array($CFG->httpswwwroot, $cmid, get_string("start_analysis_in_progress", "plagiarism_compilatio")));
         }
 
         if (isset($restartfailedanalysisbutton)) {
             $output .= $restartfailedanalysisbutton;
             $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'restartFailedAnalysis',
-                array($CFG->httpswwwroot, $cmid, get_string("reset_failed_document_title", "plagiarism_compilatio"),
-                get_string("reset_failed_document_in_progress", "plagiarism_compilatio")));
+                array($CFG->httpswwwroot, $cmid, get_string("reset_failed_document_in_progress", "plagiarism_compilatio")));
         }
     }
 
@@ -1031,6 +1026,14 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         }
     }
 
+    $output .= "</div>";
+
+    $output .= "<div id='compi-notices'>";
+    foreach ($notices as $notice) {
+        $output .= "<div class='d-flex compilatio-alert compilatio-alert-" . $notice["class"] . "'>";
+        $output .= !empty($notice["title"]) ? "<strong>" . $notice["title"] . "</strong><br/>" : '';
+        $output .= $notice["content"] . "<i style='cursor: pointer;' class='ml-auto my-auto fa fa-times'></i></div>";
+    }
     $output .= "</div>";
 
     // Display timed analysis date.
