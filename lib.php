@@ -113,6 +113,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
      * @return string  HTML or blank.
      */
     public function get_links($linkarray) {
+        global $DB;
 
         // Quiz - only essay question are supported for the moment.
         if (!empty($linkarray['component']) && $linkarray['component'] == 'qtype_essay') {
@@ -137,6 +138,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                         }
                         // If content and file not submitted, try to get the content.
                         if (empty($linkarray['content']) && empty($linkarray['file'])) {
+                            $courseid = $DB->get_field('course_modules', 'course', array('id' => $linkarray['cmid']));
+                            $quizfilename = "quiz-" . $courseid . "-" . $linkarray['cmid'] . "-" . $attempt->get_usage_id() . "-Q" . $attempt->get_question_id() . ".htm";
                             $linkarray['content'] = $attempt->get_response_summary();
                         }
                     }
@@ -158,7 +161,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         $modulecontext = context_module::instance($linkarray['cmid']);
         $teacher = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
 
-        global $DB, $CFG, $PAGE, $SESSION;
+        global $CFG, $PAGE, $SESSION;
         $output = '';
 
         $studentanalyse = compilatio_student_analysis($plugincm['compi_student_analyses'],
@@ -194,8 +197,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         $file->timestamp = time();
 
         if (!empty($linkarray['content'])) {
-            $file->filename = "content-" . $cm->course . "-" . $linkarray['cmid'] . "-" . $userid . ".htm";
-            // Filename is not reliable for posts (forum) !
+            $file->filename = isset($quizfilename) ? $quizfilename : "content-" . $cm->course . "-" . $linkarray['cmid'] . "-" . $userid . ".htm";
+            // Filename is not reliable for forum !
             $file->identifier = sha1($linkarray['content']);
             $file->filepath = $CFG->dataroot . "/temp/compilatio/" . $file->filename;
             $file->type = "tempcompilatio";
@@ -527,8 +530,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         }
 
         // Get compilatio file record.
-        $plagiarismfile = $DB->get_record('plagiarism_compilatio_files',
-            array('cm' => $cmid, 'userid' => $userid, 'identifier' => $filehash));
+        $sql = 'SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND (identifier = ? OR identifier = ?)';
+        $plagiarismfile = $DB->get_record_sql($sql, [$cmid, $userid, $filehash, sha1($file->filename)]);
 
         if (empty($plagiarismfile)) { // Try to get record without userid in forums.
             $sql = "SELECT * FROM {plagiarism_compilatio_files}
@@ -642,7 +645,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         $emailcontent = get_string('studentemailcontent', 'plagiarism_compilatio', $a);
         email_to_user($user, $site->shortname, $emailsubject, $emailcontent);
     }
-
 }
 
 /**
@@ -713,7 +715,8 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         return;
     }
 
-    $alerts = array();
+    $alerts = [];
+    $notices = [];
     $output = '';
 
     $export = optional_param('compilatio_export', '', PARAM_BOOL);
@@ -727,12 +730,8 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     $plagiarismfilesids = array_keys($SESSION->compilatio_plagiarismfiles);
 
     if (isset($SESSION->compilatio_alert)) {
-        $alerts[] = $SESSION->compilatio_alert;
+        $notices[] = $SESSION->compilatio_alert;
         unset($SESSION->compilatio_alert);
-    }
-    if (isset($SESSION->compilatio_alert_max_attempts)) {
-        $alerts[] = $SESSION->compilatio_alert_max_attempts;
-        unset($SESSION->compilatio_alert_max_attempts);
     }
 
     // Get compilatio analysis type.
@@ -746,9 +745,8 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         $url = $PAGE->url;
         $url->param('compilatiostartanalysis', true);
         $startallanalysisbutton = "
-            <button class='compilatio-button comp-button comp-start-btn' >
-                <i class='fa fa-play-circle'></i>
-                " . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "
+            <button title='" . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "' class='btn btn-primary compilatio-button comp-start-btn' >
+                <i class='fa fa-lg fa-play-circle'></i>
             </button>";
 
     } else if ($value == COMPILATIO_ANALYSISTYPE_PROG) { // Display the date of analysis if its type is set on 'Timed'.
@@ -795,16 +793,18 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         );
     }
 
-    // Display a notification for the too short files.
-    $files = compilatio_get_too_short_files($cmid);
-    if (count($files) !== 0) {
-        $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
-        $alerts[] = array(
-            "class" => "danger",
-            "title" => get_string("tooshort_files", "plagiarism_compilatio",
-                get_config('plagiarism_compilatio', 'nb_mots_min')),
-            "content" => $list,
-        );
+    if ($module !== 'quiz') {
+        // Display a notification for the too short files.
+        $files = compilatio_get_too_short_files($cmid);
+        if (count($files) !== 0) {
+            $list = "<ul><li>" . implode("</li><li>", $files) . "</li></ul>";
+            $alerts[] = array(
+                "class" => "danger",
+                "title" => get_string("tooshort_files", "plagiarism_compilatio",
+                    get_config('plagiarism_compilatio', 'nb_mots_min')),
+                "content" => $list,
+            );
+        }
     }
 
     // Display a notification for the too long files.
@@ -851,9 +851,8 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         $url = $PAGE->url;
         $url->param('restartfailedanalysis', true);
         $restartfailedanalysisbutton = "
-            <button class='compilatio-button comp-button comp-restart-btn' >
-                <i class='fa fa-play-circle'></i>
-                " . get_string('reset_failed_document', 'plagiarism_compilatio') . "
+            <button title='" . get_string('reset_failed_document', 'plagiarism_compilatio') . "' class='btn btn-danger compilatio-button comp-restart-btn'>
+                <i class='fa fa-lg fa-repeat'></i>
             </button>";
     }
 
@@ -869,9 +868,8 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
             );
 
             $startallanalysisbutton = "
-                <button class='compilatio-button comp-button comp-start-btn' >
-                    <i class='fa fa-play-circle'></i>
-                    " . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "
+                <button title='" . get_string('startallcompilatioanalysis', 'plagiarism_compilatio') . "' class='btn btn-primary compilatio-button comp-start-btn' >
+                    <i class='fa fa-lg fa-play-circle'></i>
                 </button>";
         }
     } else {
@@ -881,9 +879,9 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
     // Add the Compilatio news to the alerts displayed :.
     $alerts = array_merge($alerts, compilatio_display_news());
 
-    $output .= "<div id='cmp-display-frame' style='display:none;'>
-        <i class='cmp-icon mr-3 fa-2x fa fa-bars'></i>
-        <img src='" . new moodle_url("/plagiarism/compilatio/pix/c-net.svg") . "'>
+    $output .= "<div id='cmp-display-frame' style='display:none;' title='" . get_string('show_area', 'plagiarism_compilatio') . "'>
+        <img src='" . new moodle_url("/plagiarism/compilatio/pix/c-logo.jpg") . "' alt='Compilatio'>
+        <i class='cmp-icon ml-2 fa fa-bars'></i>
         <svg id='cmp-bell' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512' height='1em' style='display:none;'>
             <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
             <path fill='#616262' d='M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416H416c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z'/>
@@ -892,53 +890,77 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
 
     $output .= "<div id='compilatio-container'>";
 
-    // Display the tabs: Notification tab will be hidden if there is 0 alerts.
-    $output .= "<div id='compilatio-tabs' style='display:none'>";
+    // Display the tabs.
+    $output .= "<div id='compilatio-tabs'>";
 
     // Display logo.
     $output .= output_helper::get_logo();
 
     // Help icon.
-    $output .= "<div title='" . get_string("compilatio_help_assign", "plagiarism_compilatio") .
-        "' id='show-help' class='compilatio-icon'><i class='fa fa-question-circle fa-2x'></i></div>";
+    $output .= "<i id='show-help' title='" . get_string("compilatio_help_assign", "plagiarism_compilatio") .
+        "' class='compilatio-icon fa fa-question-circle'></i>";
 
     // Stat icon.
-    $output .= "<div id='show-stats' class='compilatio-icon'  title='" .
-    get_string("display_stats", "plagiarism_compilatio") .
-        "'><i class='fa fa-bar-chart fa-2x'></i></div>";
-
-    // Alert icon.
-    if (count($alerts) !== 0) {
-        $output .= "<div id='compilatio-show-notifications' title='";
-        $output .= get_string("display_notifications", "plagiarism_compilatio");
-        $output .= "' class='compilatio-icon active' ><i class='fa fa-bell fa-2x'></i>";
-        $output .= "<span id='count-alerts'>" . count($alerts) . "</span></div>";
-    }
+    $output .= "<i id='show-stats' title='" . get_string("display_stats", "plagiarism_compilatio") . "' class='compilatio-icon fa fa-bar-chart'></i>";
 
     if ($plagiarismsettings["allow_search_tab"]) {
         // Search icon.
-        $output .= "<div title='" . get_string("compilatio_search_tab", "plagiarism_compilatio") .
-            "' id='show-search' class='compilatio-icon'><i class='fa fa-search fa-2x'></i></div>";
+        $output .= "<i id='show-search' title='" . get_string("compilatio_search_tab", "plagiarism_compilatio") . "' class='compilatio-icon fa fa-search'></i>";
+    }
+
+    // Alert icon.
+    if (count($alerts) !== 0) {
+        $output .= "<span><i 
+                id='compilatio-show-notifications'
+                title='" . get_string("display_notifications", "plagiarism_compilatio") . "'
+                class='compilatio-icon fa fa-bell'
+            ></i>
+            <span id='count-alerts'>" . count($alerts) . "</span></span>";
+    }
+
+    if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
+        // Update button.
+        $url = $PAGE->url;
+        $url->param('compilatioupdate', true);
+        $output .= "
+            <button title='" . get_string('updatecompilatioresults', 'plagiarism_compilatio') . "' class='btn btn-primary compilatio-button'>
+                <i class='fa fa-lg fa-refresh'></i>
+            </button>";
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'refreshButton',
+            array($CFG->httpswwwroot, $plagiarismfilesids, $countdocnotuploaded,
+            get_string('update_in_progress', 'plagiarism_compilatio')));
+
+        // Start all analysis button.
+        if (isset($startallanalysisbutton)) {
+            $output .= $startallanalysisbutton;
+            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
+                array($CFG->httpswwwroot, $cmid, get_string("start_analysis_in_progress", "plagiarism_compilatio")));
+        }
+
+        if (isset($restartfailedanalysisbutton)) {
+            $output .= $restartfailedanalysisbutton;
+            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'restartFailedAnalysis',
+                array($CFG->httpswwwroot, $cmid, get_string("reset_failed_document_in_progress", "plagiarism_compilatio")));
+        }
     }
 
     // Hide/Show button.
-    $output .= "<i id='cmp-hide-frame' title='" . get_string('hide_area', 'plagiarism_compilatio') . "' class='cmp-icon mr-2 fa-2x fa fa-bars'></i>";
+    $output .= "<i id='cmp-hide-frame' title='" . get_string('hide_area', 'plagiarism_compilatio') . "' class='cmp-icon pl-3 fa fa-bars'></i>";
 
     $output .= "</div>";
 
     $output .= "<div class='compilatio-clear'></div>";
 
     // Home tab.
-    $output .= "<div id='compi-home' class='compilatio-tabs-content'>
-                    <p>" . get_string('similarities_disclaimer', 'plagiarism_compilatio') . "</p>";
+    $output .= "<div id='compi-home' class='compilatio-tabs-content'></div>";
+
+    // Help tab.
+    $output .= "<div id='compi-help' class='compilatio-tabs-content'><p>" . get_string('similarities_disclaimer', 'plagiarism_compilatio') . "</p>";
+
     if ($module == "quiz") {
         $nbmotsmin = get_config('plagiarism_compilatio', 'nb_mots_min');
         $output .= "<p><b>" . get_string('quiz_help', 'plagiarism_compilatio', $nbmotsmin) . "</b></p>";
     }
-    $output .= "</div>";
-
-    // Help tab.
-    $output .= "<div id='compi-help' class='compilatio-tabs-content'>";
 
     if (empty($plagiarismsettings['idgroupe'])) {
         $output .= "<p>" . get_string('helpcenter_error', 'plagiarism_compilatio')
@@ -969,11 +991,9 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
         $output .= "<h5 id='compi-notif-title'>" . get_string("tabs_title_notifications", "plagiarism_compilatio") . " : </h5>";
 
         foreach ($alerts as $alert) {
-            $output .= "
-                <div class='compilatio-alert compilatio-alert-" . $alert["class"] . "'>" .
-                "<strong>" . $alert["title"] . "</strong><br/>" .
-                $alert["content"] .
-                "</div>";
+            $output .= "<div class='compilatio-alert compilatio-alert-" . $alert["class"] . "'>";
+            $output .= !empty($alert["title"]) ? "<strong>" . $alert["title"] . "</strong><br/>" : '';
+            $output .= $alert["content"] . "</div>";
         }
 
         $output .= "</div>";
@@ -1008,46 +1028,22 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
 
     $output .= "</div>";
 
+    $output .= "<div id='compi-notices'>";
+    foreach ($notices as $notice) {
+        $output .= "<div class='d-flex compilatio-alert compilatio-alert-" . $notice["class"] . "'>";
+        $output .= !empty($notice["title"]) ? "<strong>" . $notice["title"] . "</strong><br/>" : '';
+        $output .= $notice["content"] . "<i style='cursor: pointer;' class='ml-auto my-auto fa fa-times'></i></div>";
+    }
+    $output .= "</div>";
+
     // Display timed analysis date.
     if (isset($programmedanalysisdate)) {
-        $output .= "<p id='compilatio-programmed-analysis'>$programmedanalysisdate</p>";
+        $output .= "<span id='compilatio-programmed-analysis'>$programmedanalysisdate</span>";
     }
 
     $output .= "</div>";
 
-    if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
-        // Display buttons :.
-        $output .= "<div id='compilatio-button-container'>";
-
-        // Update button.
-        $url = $PAGE->url;
-        $url->param('compilatioupdate', true);
-        $output .= "
-            <button class='compilatio-button comp-button'>
-                    <i class='fa fa-refresh'></i>
-                    " . get_string('updatecompilatioresults', 'plagiarism_compilatio') . "
-            </button>";
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'refreshButton',
-            array($CFG->httpswwwroot, $plagiarismfilesids, $countdocnotuploaded,
-            get_string('update_in_progress', 'plagiarism_compilatio')));
-
-        // Start all analysis button.
-        if (isset($startallanalysisbutton)) {
-            $output .= $startallanalysisbutton;
-            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
-                array($CFG->httpswwwroot, $cmid, get_string("start_analysis_title", "plagiarism_compilatio"),
-                get_string("start_analysis_in_progress", "plagiarism_compilatio")));
-        }
-
-        if (isset($restartfailedanalysisbutton)) {
-            $output .= $restartfailedanalysisbutton;
-            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'restartFailedAnalysis',
-                array($CFG->httpswwwroot, $cmid, get_string("reset_failed_document_title", "plagiarism_compilatio"),
-                get_string("reset_failed_document_in_progress", "plagiarism_compilatio")));
-        }
-
-        $output .= "</div>";
-    }
+    $output .= "<script src=" . $CFG->wwwroot . "/plagiarism/compilatio/js/drawdown.min.js></script>";
 
     $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', [count($alerts), $iddocument]);
 
@@ -1427,9 +1423,11 @@ function compilatio_create_temp_file($cmid, $eventdata, $filename = null) {
     $file->filename = $filename;
     $file->timestamp = time();
     $file->identifier = sha1_file($filepath);
+    if (isset($eventdata->attemptid)) {
+        $file->identifier = sha1($filename);
+    }
     $file->filepath = $filepath;
     $file->objectid = $eventdata->objectid ?? null;
-
     return $file;
 }
 
@@ -2420,7 +2418,7 @@ function compilatio_get_statistics($cmid) {
         $url->param('compilatio_export', true);
         $result .= "<a title='" .
         get_string("export_csv", "plagiarism_compilatio") .
-            "' class='compilatio-icon' href='$url'><i class='fa fa-download fa-2x'></i></a>";
+            "' class='compilatio-icon' href='$url'><i class='fa fa-download'></i></a>";
     }
     return $result;
 }
@@ -2546,7 +2544,7 @@ function compilatio_update_account_expiration_date() {
 
     global $DB;
     $expirationdate = compilatio_get_account_expiration_date();
-    if ($expirationdate === false) {
+    if (empty($expirationdate)) {
         return;
     }
     // Insert / update in db.
@@ -2578,21 +2576,6 @@ function compilatio_update_news() {
     if ($news !== false) {
         $DB->delete_records_select('plagiarism_compilatio_news', '1=1');
         foreach ($news as $new) {
-            $DB->insert_record("plagiarism_compilatio_news", $new);
-        }
-    }
-
-    $news = $compilatio->get_technical_news();
-
-    if ($news !== false) {
-        $DB->delete_records_select('plagiarism_compilatio_news', '1=1');
-        foreach ($news as $new) {
-            $new->message_en = compilatio_decode($new->message_en);
-            $new->message_fr = compilatio_decode($new->message_fr);
-            $new->message_it = compilatio_decode($new->message_it);
-            $new->message_es = compilatio_decode($new->message_es);
-            $new->message_de = compilatio_decode($new->message_de);
-            unset($new->id);
             $DB->insert_record("plagiarism_compilatio_news", $new);
         }
     }
@@ -2639,32 +2622,10 @@ function compilatio_display_news() {
             continue;
         }
 
-        // Get the title of the notification according to the type of news:.
-        $title = "<i class='fa-lg fa fa-info-circle'></i>";
-        $class = "info";
-        switch ($new->type) {
-            case PLAGIARISM_COMPILATIO_NEWS_UPDATE:
-                $title = get_string("news_update", "plagiarism_compilatio"); // Info.
-                $class = "info";
-                break;
-            case PLAGIARISM_COMPILATIO_NEWS_INCIDENT:
-                $title = get_string("news_incident", "plagiarism_compilatio"); // Danger.
-                $class = "danger";
-                break;
-            case PLAGIARISM_COMPILATIO_NEWS_MAINTENANCE:
-                $title = get_string("news_maintenance", "plagiarism_compilatio"); // Warning.
-                $class = "warning";
-                break;
-            case PLAGIARISM_COMPILATIO_NEWS_ANALYSIS_PERTURBATED:
-                $title = get_string("news_analysis_perturbated", "plagiarism_compilatio"); // Danger.
-                $class = "danger";
-                break;
-        }
-
         $alerts[] = array(
-            "class" => $class,
-            "title" => $title,
-            "content" => $message,
+            "class" => "info cmp-md",
+            "title" => "",
+            "content" => "<i class='fa-lg fa fa-info-circle'></i>" . $message,
         );
     }
 
@@ -2717,10 +2678,10 @@ function compilatio_get_non_uploaded_documents($cmid) {
 
         foreach ($files as $file) {
             if ($file->get_filename() != '.') {
-                $compifile = $DB->get_record('plagiarism_compilatio_files',
+                $countfiles = $DB->count_records('plagiarism_compilatio_files',
                     array('identifier' => $file->get_contenthash(), 'cm' => $cmid));
 
-                if (!$compifile) {
+                if ($countfiles == 0) {
                     array_push($notuploadedfiles, $file);
                 }
             }
@@ -2832,8 +2793,10 @@ function compilatio_update_connection_status() {
 
     global $DB;
 
+    $apiconfigid = get_config('plagiarism_compilatio', 'apiconfigid');
+
     // Test connection to the Compilatio web service.
-    $connectionstatus = ws_helper::test_connection();
+    $connectionstatus = ws_helper::test_connection($apiconfigid);
 
     // Insert connection status into DB.
     $oldconnectionstatus = $DB->get_record('plagiarism_compilatio_data',
@@ -3233,9 +3196,9 @@ function compilatio_event_handler($eventdata, $hasfile = true, $hascontent = tru
 
         // In quiz.
         if ($eventdata['objecttable'] == 'quiz_attempts') {
-            $filename = "quiz-" . $eventdata['courseid'] . "-" . $cmid . "-" . $eventdata['objectid'] . ".htm";
-            $duplicates = $DB->get_records('plagiarism_compilatio_files',
-                array('cm' => $cmid, 'userid' => $userid, 'filename' => $filename));
+            $filename = "quiz-" . $eventdata['courseid'] . "-" . $cmid . "-" . $eventdata['objectid'] . "-%";
+            $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename LIKE ?";
+            $duplicates = $DB->get_records_sql($sql, array($cmid, $userid, $filename));
             compilatio_remove_duplicates($duplicates);
 
             $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'quiz-%'";
@@ -3507,13 +3470,6 @@ function compilatio_handle_quiz_attempt($attemptid) {
     foreach ($attempt->get_slots() as $slot) {
         $answer = $attempt->get_question_attempt($slot);
         if ($answer->get_question()->get_type_name() == 'essay') {
-
-            // Check for duplicates files.
-            $identifier = sha1($answer->get_response_summary());
-            $duplicate = $DB->get_records('plagiarism_compilatio_files',
-                array('identifier' => $identifier, 'userid' => $userid, 'cm' => $cmid));
-            compilatio_remove_duplicates($duplicate);
-
             // Online text content.
             $nbmotsmin = get_config('plagiarism_compilatio', 'nb_mots_min');
             if (str_word_count(utf8_decode(strip_tags($answer->get_response_summary()))) >= $nbmotsmin) {
@@ -3528,19 +3484,24 @@ function compilatio_handle_quiz_attempt($attemptid) {
                 $file = compilatio_create_temp_file($cmid, $data);
 
                 compilatio_queue_file($cmid, $userid, $file, $plagiarismsettings);
+            } else {
+                $plagiarismfile = new stdClass();
+                $plagiarismfile->cm = $cmid;
+                $plagiarismfile->userid = $userid;
+                $plagiarismfile->filename = "quiz-" . $attempt->get_courseid() . "-" . $cmid . "-" . $attemptid . "-" . "Q" . $answer->get_question_id() . ".htm";
+                $plagiarismfile->identifier = sha1($plagiarismfile->filename);
+                $plagiarismfile->statuscode = '412';
+                $plagiarismfile->timesubmitted = time();
+                $plagiarismfile->apiconfigid = 0;
+                $plagiarismfile->objectid = $attemptid;
+
+                $DB->insert_record('plagiarism_compilatio_files', $plagiarismfile);
             }
 
             // Files attachments.
             $context = context_module::instance($cmid);
             $files = $answer->get_last_qt_files('attachments', $context->id);
             foreach ($files as $file) {
-
-                // Check for duplicate files.
-                $sql = "SELECT * FROM {plagiarism_compilatio_files}
-                    WHERE cm = ? AND userid = ? AND identifier = ?";
-                $duplicates = $DB->get_records_sql($sql, array($cmid, $userid, $file->get_contenthash()));
-                compilatio_remove_duplicates($duplicates);
-
                 compilatio_queue_file($cmid, $userid, $file, $plagiarismsettings);
             }
         }

@@ -68,7 +68,6 @@ $string['migration_failed_doc'] = "document couldn't be updated, you can try aga
 $string['migration_restart'] = "Retry";
 $string['migration_inprogress'] = "Update in progress, it can take several hours <small>(you can exit this page during the update)</small>";
 $string['migration_form_title'] = "Launch the update of the data stored in Moodle, to complete the migration from v4 to v5.";
-$string['errormigration'] = "";
 
 $string['use_compilatio'] = 'Allow similarity detection with Compilatio';
 $string['activate_compilatio'] = 'Enable Compilatio';
@@ -93,11 +92,11 @@ $string['unknownwarning'] = 'An error occurred trying to send this file to Compi
 $string['unsupportedfiletype'] = 'This file type is not supported by Compilatio';
 $string['toolarge'] = 'This file is too large for Compilatio to process. Maximum size : {$a->Mo} MB';
 $string['tooshort'] = 'This document doesn’t contain enough words for Compilatio to process. Minimum size : {$a} words';
-$string['toolong'] = 'This document contain too many words to be analyzed. Maximum size : {$a} words';
+$string['toolong'] = 'This document contain too many words to be analysed. Maximum size : {$a} words';
 $string['failed'] = 'The analysis of this document did not work correctly.';
 $string['notfound'] = 'This document was not found. Please contact your moodle administrator. Error : document not found for this API key.';
 $string['compilatio_studentemail'] = 'Send Student email';
-$string['compilatio_studentemail_help'] = 'This will send an e-mail to the student when a file has been processed to let them know that a report is available.';
+$string['compilatio_studentemail_help'] = 'This will send an email to the student when a file has been processed to let them know that a report is available.';
 $string['studentemailsubject'] = 'File processed by Compilatio';
 $string['studentemailcontent'] = 'The file you submitted to {$a->modulename} in {$a->coursename} has now been processed by the Plagiarism tool Compilatio.
 {$a->modulelink}';
@@ -105,16 +104,16 @@ $string['filereset'] = 'A file has been reset for re-submission to Compilatio';
 $string['analysis'] = 'Analysis Start';
 $string['analysis_help'] = "<p>You have two options:
     <ul>
-        <li><strong>Manual:</strong> Analysis of documents must be triggered manually with the “Analyze” button of each document or with the “Analyze all documents” button.</li>
-        <li><strong>Scheduled: </strong> All documents are analyzed at the selected time/date.</li>
+        <li><strong>Manual:</strong> Analysis of documents must be triggered manually with the “Analyse” button of each document or with the “Analyse all documents” button.</li>
+        <li><strong>Scheduled: </strong> All documents are analysed at the selected time/date.</li>
     </ul>
     To have all documents compared with each other during the analyses, wait until all works are submitted by students then trigger the analyses.</p>";
 $string['analysis_auto'] = 'Analysis Start';
 $string['analysis_auto_help'] = "<p>You have three options:
     <ul>
-        <li><strong>Manual:</strong> Analysis of documents must be triggered manually with the “Analyze” button of each document or with the “Analyze all documents” button.</li>
-        <li><strong>Scheduled: </strong> All documents are analyzed at the selected time/date.</li>
-        <li><strong>Direct: </strong> Each document is analyzed as soon as the student submits it. The documents in the activity will not be compared to each other.</li>
+        <li><strong>Manual:</strong> Analysis of documents must be triggered manually with the “Analyse” button of each document or with the “Analyse all documents” button.</li>
+        <li><strong>Scheduled: </strong> All documents are analysed at the selected time/date.</li>
+        <li><strong>Direct: </strong> Each document is analysed as soon as the student submits it. The documents in the activity will not be compared to each other.</li>
     </ul>
     To have all documents compared with each other during the analyses, wait until all works are submitted by students then trigger the analyses.</p>";
 $string['analysistype_manual'] = 'Manual';
@@ -125,7 +124,7 @@ $string['enabledandworking'] = 'The Compilatio plugin is enabled and working.';
 $string['subscription_will_expire'] = 'Your Compilatio subscription will expire at the end of';
 $string['startanalysis'] = 'Start analysis';
 $string['compilatioenableplugin'] = 'Enable Compilatio for {$a}';
-$string['failedanalysis'] = 'Compilatio failed to analyze your document: ';
+$string['failedanalysis'] = 'Compilatio failed to analyse your document: ';
 $string['extraction_in_progress'] = 'document extraction in progress, please try again later';
 $string['waitingforanalysis'] = 'This file will be processed on {$a}';
 $string['updatecompilatioresults'] = 'Refresh the informations';
@@ -138,7 +137,7 @@ $string['compilatio:viewreport'] = 'Allow the teacher to view the full report fr
 $string['unextractablefile'] = 'This document could not be loaded on Compilatio.';
 $string['sending_failed'] = 'File upload to Compilatio failed {$a}';
 $string['immediately'] = "Immediately";
-$string['quiz_help'] = 'Only essay questions whose answer contain at least {$a} words will be analyzed.';
+$string['quiz_help'] = 'Only essay questions whose answer contain at least {$a} words will be analysed.';
 $string["allow_analyses_auto"] = "Possibility to start the analyses directly";
 $string["allow_analyses_auto_help"] = "This option will allow teachers to activate the automatic launch of documents analysis on an activity (i.e. immediately after they have been submitted).<br>
 Note that in this case:
@@ -156,14 +155,14 @@ $string['redirect_report_failed'] = "An error occurred while retrieving the anal
 $string["auto_diagnosis_title"] = "Auto-diagnosis";
 // API key.
 $string["api_key_valid"] = "Your API key is valid.";
-$string["api_key_not_tested"] = "Your API key haven't been verified because the connection to Compilatio.net has failed.";
+$string["api_key_not_tested"] = "Your API key haven't been verified because the connection to Compilatio has failed.";
 $string["api_key_not_valid"] = "Your API key is not valid. It is specific to the used platform. You can obtain one by contacting <a href='mailto:ent@compilatio.net'>ent@compilatio.net</a>.";
 // CRON.
-$string['cron_check_never_called'] = 'CRON has never been executed since the activation of the plugin. It may be misconfigured in your server.';
-$string['cron_check'] = 'CRON has been executed on {$a} for the last time.';
-$string['cron_check_not_ok'] = 'It hasn\'t been executed in the last hour.';
+$string['cron_check_never_called'] = 'Plugin scheduled task send_files has never been executed since the activation of the plugin. It may be misconfigured in your server.';
+$string['cron_check'] = 'Plugin scheduled task send_files has been executed on {$a} for the last time.';
+$string['cron_check_not_ok'] = 'Plugin scheduled tasks send_files hasn\'t been executed in the last hour.';
 $string['cron_frequency'] = ' It seems to be run every {$a} minutes.';
-$string['cron_recommandation'] = 'We recommend using a delay below 15 minutes between each CRON execution.';
+$string['cron_recommandation'] = 'For Compilatio plugin scheduled tasks, we recommend using a delay below 15 minutes between each execution.';
 // Connect to webservice.
 $string['webservice_ok'] = "The server is able to connect to the web service.";
 $string['webservice_not_ok'] = "The server wasn't able to connect to the web service. Your firewall may be blocking the connection.";
@@ -182,14 +181,14 @@ $string['plugin_disabled_forum'] = "The plugin isn't enabled for forums.";
 // Plugin enabled for "quiz".
 $string['plugin_enabled_quiz'] = "The plugin is enabled for quiz.";
 $string['plugin_disabled_quiz'] = "The plugin isn't enabled for quiz.";
-$string['programmed_analysis_future'] = 'Documents will be analyzed by Compilatio on {$a}.';
+$string['programmed_analysis_future'] = 'Documents will be analysed by Compilatio on {$a}.';
 $string['programmed_analysis_past'] = 'Documents have been submitted for analysis to Compilatio on {$a}.';
-$string['webservice_unreachable_title'] = "Compilatio.net is unavailable.";
-$string['webservice_unreachable_content'] = "Compilatio.net is currently unavailable. We apologize for the inconvenience.";
-$string['saved_config_failed'] = '<strong>The combination API key - adress entered is invalid. Compilatio is disabled, please try again.<br/>
+$string['webservice_unreachable_title'] = "Compilatio is unavailable.";
+$string['webservice_unreachable_content'] = "Compilatio is currently unavailable. We apologize for the inconvenience.";
+$string['saved_config_failed'] = '<strong>The combination API key - address entered is invalid. Compilatio is disabled, please try again.<br/>
 								The <a href="autodiagnosis.php">auto-diagnosis</a> page can help you to configure this plugin.</strong><br/>
 								Error : ';
-$string['startallcompilatioanalysis'] = "Analyze all documents";
+$string['startallcompilatioanalysis'] = "Analyse all documents";
 $string['numeric_threshold'] = "Threshold must be a number.";
 $string['green_threshold'] = "Green up to";
 $string['orange_threshold'] = "Orange up to";
@@ -198,57 +197,57 @@ $string['similarity_percent'] = '% of similarities';
 $string['thresholds_settings'] = "Limits :";
 $string['thresholds_description'] = "Indicate the threshold that you want to use, in order to facilitate the finding of analysis report (% of similarities) :";
 // Student submit.
-$string['compi_student_analyses'] = "Allow students to analyze their documents";
-$string['compi_student_analyses_help'] = "This allows students to analyze their draft files with Compilatio Magister, before final submission to the teacher.";
-$string['activate_submissiondraft'] = 'To allow students to analyze their drafts, you must enable the <b>{$a}</b> option in the section';
+$string['compi_student_analyses'] = "Allow students to analyse their documents";
+$string['compi_student_analyses_help'] = "This allows students to analyse their draft files with Compilatio Magister, before final submission to the teacher.";
+$string['activate_submissiondraft'] = 'To allow students to analyse their drafts, you must enable the <b>{$a}</b> option in the section';
 $string['allow_student_analyses'] = "Possibility to enable student analysis on drafts.";
 $string['allow_student_analyses_help'] = "This option will allow teachers to activate on an activity the analysis by students of their documents submitted in draft mode with Compilatio Magister, before final submission to the teacher.";
 $string['student_analyze'] = "Student analysis";
 $string['student_start_analyze'] = "The analysis can be started by the student";
-$string['student_help'] = "You can analyze your draft with Compilatio Magister, to measure similarities in the text of your files.<br/>
+$string['student_help'] = "You can analyse your draft with Compilatio Magister, to measure similarities in the text of your files.<br/>
 The contents of your draft will not be used by Compilatio as comparison material for future analyses.<br/>
 Your teacher will, however, have access to this analysis report.";
 
-$string['similarities_disclaimer'] = "You can analyze similarities in this activity's documents with <a href='http://www.compilatio.net/en/' target='_blank'>Compilatio</a>.<br/> Be careful: similarities measured during analysis do not necessarily mean plagiarism. The analysis report helps you to identify if the similarities matched to suitable quotation or to plagiarism.";
+$string['similarities_disclaimer'] = "You can analyse similarities in this activity's documents with <a href='http://www.compilatio.net/en/' target='_blank'>Compilatio</a>.<br/> Be careful: similarities measured during analysis do not necessarily mean plagiarism. The analysis report helps you to identify if the similarities matched to suitable quotation or to plagiarism.";
 $string['progress'] = "Progress :";
 $string['results'] = "Results :";
 $string['errors'] = "Errors :";
-$string['documents_analyzing'] = '{$a} document(s) are being analyzed.';
-$string['documents_in_queue'] = '{$a} document(s) are in the queue to be analyzed.';
-$string['documents_analyzed'] = '{$a->countAnalyzed} document(s) out of {$a->documentsCount} have been sent and analyzed.';
+$string['documents_analyzing'] = '{$a} document(s) are being analysed.';
+$string['documents_in_queue'] = '{$a} document(s) are in the queue to be analysed.';
+$string['documents_analyzed'] = '{$a->countAnalyzed} document(s) out of {$a->documentsCount} have been sent and analysed.';
 $string['average_similarities'] = 'In this activity, the average similarities ratio is {$a}%.';
 $string['documents_analyzed_lower_green'] = '{$a->documentsUnderGreenThreshold} document(s) lower than {$a->greenThreshold}%.';
 $string['documents_analyzed_between_thresholds'] = '{$a->documentsBetweenThresholds} document(s) between {$a->greenThreshold}% and {$a->redThreshold}%.';
 $string['documents_analyzed_higher_red'] = '{$a->documentsAboveRedThreshold} document(s) greater than {$a->redThreshold}%.';
 $string['documents_notfound'] = '{$a} document(s) were not found.';
 $string['documents_failed'] = '{$a} document(s) whose analysis did not work correctly.';
-$string['unsupported_files'] = 'The following file(s) can\'t be analyzed by Compilatio because their format is not supported :';
-$string['unextractable_files'] = 'The following file(s) can\'t be analyzed because they could not be loaded on Compilatio :';
-$string['tooshort_files'] = 'The following file(s) can\'t be analyzed by Compilatio because they doesn’t contain enough words (Minimum size : {$a} words) :';
-$string['toolong_files'] = 'The following file(s) can\'t be analyzed by Compilatio because they contain too many words (Maximum size : {$a} words) :';
+$string['unsupported_files'] = 'The following file(s) can\'t be analysed by Compilatio because their format is not supported :';
+$string['unextractable_files'] = 'The following file(s) can\'t be analysed because they could not be loaded on Compilatio :';
+$string['tooshort_files'] = 'The following file(s) can\'t be analysed by Compilatio because they doesn’t contain enough words (Minimum size : {$a} words) :';
+$string['toolong_files'] = 'The following file(s) can\'t be analysed by Compilatio because they contain too many words (Maximum size : {$a} words) :';
 $string['failedanalysis_files'] = "The analysis of the following documents did not work correctly. You can reset these documents and re-launch their analysis:";
 $string['no_document_available_for_analysis'] = 'No documents were available for analysis';
 $string["analysis_started"] = '{$a} analysis have been requested.';
 $string["start_analysis_title"] = 'Analysis start';
 $string["start_analysis_in_progress"] = 'Launching of the analyses in progress';
-$string["not_analyzed"] = "The following documents can't be analyzed :";
-$string["not_analyzed_extracting"] = "The following documents can't be analyzed because they are being extracted, please try again later";
-$string["account_expire_soon_title"] = "Your Compilatio.net account expires soon";
+$string["not_analyzed"] = "The following documents can't be analysed :";
+$string["not_analyzed_extracting"] = "The following documents can't be analysed because they are being extracted, please try again later";
+$string["account_expire_soon_title"] = "Your Compilatio account expires soon";
 $string["admin_account_expire_content"] = "Your current subscription will end at the end of the current month. If your contract does not expire at the end of the month, a new subscription will automatically be set up by our services. When this is done, this message will disappear. For more information, you can contact our sales or support department at support@compilatio.net.";
-$string["news_update"] = "Compilatio.net update";
-$string["news_incident"] = "Compilatio.net incident";
-$string["news_maintenance"] = "Compilatio.net maintenance";
-$string["news_analysis_perturbated"] = "Compilatio.net - Analysis perturbated";
+$string["news_update"] = "Compilatio update";
+$string["news_incident"] = "Compilatio incident";
+$string["news_maintenance"] = "Compilatio maintenance";
+$string["news_analysis_perturbated"] = "Compilatio - Analysis perturbated";
 $string["display_stats"] = "Display statistics about this activity";
 $string["analysis_completed"] = 'Analysis completed: {$a}% of similarities.';
 $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
 $string["display_notifications"] = "Display notifications";
-$string["compilatio_search_tab"] = "Find the author of a document.";
+$string["compilatio_search_tab"] = "Find the author of a document";
 $string["compilatio_search"] = "Search";
 $string["compilatio_iddocument"] = "Document identifier";
 $string["compilatio_search_notfound"] = "No document was found for this identifier among the documents loaded on your Moodle platform.";
-$string["compilatio_author"] = 'Le document {$a->idcourt} in activity <b>{$a->modulename}</b> belongs to <b>{$a->lastname} {$a->firstname}</b>.';
-$string["compilatio_search_help"] = "You can find the author of a document by retrieving the document identifier from the sources of the analysis report. Example: 1. Your document: <b>1st5xfj2</b> - Assign_Name(30)Name_Copied_Document.odt.";
+$string["compilatio_author"] = 'The document {$a->idcourt} in activity <b>{$a->modulename}</b> belongs to <b>{$a->lastname} {$a->firstname}</b>.';
+$string["compilatio_search_help"] = "You can find the author of a document by retrieving the document identifier from the sources of the analysis report.";
 $string["allow_search_tab"] = "Search tool to identify the author of a document.";
 $string["allow_search_tab_help"] = "The search tool allows you to search for a student's first and last name based on a document identifier visible in the analysis reports among all the documents present on your platform.";
 $string["teacher_features_title"] = "Features enabled for teachers";
@@ -269,16 +268,17 @@ $string["not_analyzed_tooshort"] = '{$a} document(s) haven\'t been analysed beca
 $string["not_analyzed_toolong"] = '{$a} document(s) haven\'t been analysed because they contain too many words.';
 $string['export_csv'] = 'Export data about this activity into a CSV file';
 $string['hide_area'] = 'Hide Compilatio informations';
+$string['show_area'] = 'Show Compilatio informations';
 $string['tabs_title_help'] = 'Help';
 $string['tabs_title_stats'] = 'Statistics';
 $string['tabs_title_notifications'] = 'Notifications';
-$string['queued'] = 'The document is now in queue and it is going to be analyzed soon by Compilatio';
+$string['queued'] = 'The document is now in queue and it is going to be analysed soon by Compilatio';
 $string['no_documents_available'] = 'No documents are available for analysis in this activity.';
 $string['manual_analysis'] = 'The analysis of this document must be triggered manually.';
 $string['disclaimer_data'] = 'By enabling Compilatio, you accept the fact that data about your Moodle configuration will be collected in order to improve support and maintenance of this service.';
 $string['reset'] = 'Reset';
 $string['error'] = 'Error';
-$string['analyze'] = 'Analyze';
+$string['analyze'] = 'Analyse';
 $string['queue'] = 'Queue';
 $string['analyzing'] = 'Analyzing';
 $string['enable_mod_assign'] = 'Enable Compilatio for assignments';
@@ -293,11 +293,11 @@ $string["manual_send_confirmation"] = '{$a} file(s) have been submitted to Compi
 $string["unsent_documents"] = 'Document(s) not sent';
 $string["unsent_documents_content"] = 'This activity contains document(s) not submitted to Compilatio.';
 $string["statistics_title"] = 'Statistics';
-$string["no_statistics_yet"] = 'No documents have been analyzed yet.';
+$string["no_statistics_yet"] = 'No documents have been analysed yet.';
 $string["minimum"] = 'Minimum rate';
 $string["maximum"] = 'Maximum rate';
 $string["average"] = 'Average rate';
-$string["documents_number"] = 'Analyzed documents';
+$string["documents_number"] = 'Analysed documents';
 $string["stats_errors"] = "Errors";
 $string["stats_failed"] = 'Analyses failed';
 $string["stats_notfound"] = 'File not found';
@@ -321,7 +321,7 @@ $string["loading"] = "Loading, please wait...";
 $string["unknownlang"] = "Caution, the language of some passages in this document was not recognized.";
 $string["badqualityanalysis"] = "Issues were encountered while analysing the document. It is possible that certain sources may not have been identified, or the result may be incomplete.";
 // HELP.
-$string['help_compilatio_format_content'] = "Compilatio.net handles most formats used in word processors and on the internet.
+$string['help_compilatio_format_content'] = "Compilatio handles most formats used in word processors and on the internet.
 The following formats are supported :";
 $string['goto_compilatio_service_status'] = "See Compilatio services status.";
 $string['helpcenter'] = "Access the Compilatio Help Center for the using of Compilatio plugin in Moodle.";
@@ -329,9 +329,9 @@ $string['goto_helpcenter'] = "Click on the question mark to open a new window an
 $string['admin_goto_helpcenter'] = "Access the Compilatio Help Center to see articles related to administration of the Moodle plugin.";
 $string['helpcenter_error'] = "We can't automatically connect you to the help centre. Please try again later or go there directly using the following link : ";
 // Buttons.
-$string['get_scores'] = "Retrieve plagiarism scores from Compilatio.net";
-$string['send_files'] = "Upload files to Compilatio.net for plagiarism detection";
-$string['update_meta'] = "Perform Compilatio.net's scheduled operations";
+$string['get_scores'] = "Retrieve plagiarism scores from Compilatio";
+$string['send_files'] = "Upload files to Compilatio for plagiarism detection";
+$string['update_meta'] = "Perform Compilatio's scheduled operations";
 $string['trigger_analyses'] = "Trigger analyses";
 $string['migration_task'] = "Update documents from v4 to v5";
 // Indexing state.
@@ -366,6 +366,6 @@ $string['privacy:metadata:external_compilatio_document:filename'] = "Name of fil
 
 $string['owner_file'] = 'GDPR and document ownership';
 $string['owner_file_school'] = 'The school owns the documents';
-$string['owner_file_school_details'] = 'When a student request to delete all his data, the documents and reports will be stored and available for future comparison with other documents. At the end of the contract with Compilatio, all your school\'s personnal data, including analyzed documents, are deleted within the contractual deadlines.';
+$string['owner_file_school_details'] = 'When a student request to delete all his data, the documents and reports will be stored and available for future comparison with other documents. At the end of the contract with Compilatio, all your school\'s personnal data, including analysed documents, are deleted within the contractual deadlines.';
 $string['owner_file_student'] = 'The student is the only owner of his document';
 $string['owner_file_student_details'] = 'When a student request to delete all his data, his documents and reports will be deleted from Moodle and the Compilatio document database. Documents will no longer be available for comparison with other documents.';

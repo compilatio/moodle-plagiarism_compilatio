@@ -108,16 +108,15 @@ Head area in assignment
 */
 #cmp-display-frame {
     position: fixed;
-    top: 4.5rem;
-    right: 5rem;
-    border-radius: 10px;
+    margin-top: 70px;
+    right: 3rem;
+    border-radius: 4px;
     background-color: #F5F6F8;
     border: 1px solid #EBEBF0;
     padding: 0.5rem;
     z-index: 998;
     display: flex;
     cursor: pointer;
-
 }
 
 #cmp-display-frame > * {
@@ -126,24 +125,25 @@ Head area in assignment
 }
 
 #cmp-display-frame > img {
-    height: 30px;
+    height: 27px;
 }
 
 #cmp-bell {
-    position: fixed;
-    top: 4rem;
-    right: 4.5rem;
+    position: absolute;
+    top: -8px;
+    right: -7px;
     z-index:999;
 }
 
 #cmp-hide-frame {
-    float: right;
     cursor: pointer;
+    margin-left: auto;
 }
 
 .cmp-icon {
     margin: 2px;
     color: #616262;
+    font-size: 1.75em !important;
 }
 
 .cmp-icon.active, .cmp-icon:hover, .cmp-icon:focus{
@@ -154,10 +154,9 @@ Head area in assignment
     float: right;
 }
 #compilatio-logo {
-    width: 200px;
-    float: left;
-    margin-bottom: 15px;
+    width: 175px;
     cursor: pointer;
+    margin-right: 0.5rem;
 }
 .compilatio-help {
     float: left;
@@ -189,8 +188,8 @@ Head area in assignment
     margin-bottom: 10px;
 }
 .compilatio-icon {
-    margin: 2px;
-    color: #616262;
+    color: #6D6D6D;
+    font-size: 1.75em !important;
 }
 .compilatio-icon.active {
     color: #202121;
@@ -201,72 +200,59 @@ Head area in assignment
 .compilatio-icon:focus {
     color: #252525;
 }
-#compilatio-tabs .compilatio-icon {
-    margin-left: 35px;
-    display: inline;
-    cursor: pointer;
-}
 #compilatio-tabs {
-    border-bottom: 2px solid #e3e3e3;
+    display: flex;
+}
+
+#compilatio-tabs > * {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+#compilatio-tabs .compilatio-icon {
+    margin: auto 0.5rem;
+    cursor: pointer;
 }
 .compilatio-tabs-content {
     display: none;
 }
-#compilatio-show-notifications span {
+#count-alerts {
     position: relative;
-    top: 7px;
-    left: -14px;
+    top: 4px;
+    left: -21px;
     background-color: #f00;
     color: #fff;
     border-radius: 20px;
     padding: 1px 4px;
     font-size: 11px;
+    font-weight: bold;
 }
 .compilatio-button {
-    width: 30%;
-    margin: 0 2%;
+    margin: 0 0.25rem;
 }
-#compilatio-button-container {
-    display: flex;
-    justify-content: center;
-    margin: 0 5% 0 5%;
+#compi-notices {
+    position: relative;
+    top: 1rem;
 }
 #compilatio-container {
+    position: fixed;
+    right: 3rem;
+    z-index: 999;
     flex: 1 0 auto;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    min-width: 565px;
-    border-color: #e3e3e3;
-    min-height: 100px;
-    padding: 19px;
-    background-color: #f5f5f5;
-    border: 1px solid #e3e3e3;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    background-color: #F5F6F8;
+    border: 1px solid #EBEBF0;
     border-radius: 4px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
-    margin: 70px 5% 20px 5%;
+    margin: 70px 0 0.5rem 0;
     color: #444;
+    max-width: 750px;
 }
 #compilatio-container h5 {
     text-align: left;
     margin: 10px 0;
-}
-/* Triangle */
-.compilatio-icon::before {
-    border-style: solid;
-    border-width: 0 6px 10px 6px;
-    border-color: transparent transparent #e3e3e3;
-    content: "";
-    position: relative;
-    top: 13px;
-    left: 19px;
-    height: 0;
-    width: 0;
-    visibility: hidden;
-    cursor: auto;
-}
-.compilatio-icon.active::before {
-    visibility: visible;
 }
 ul#compilatio-help-items > li > strong {
     cursor: pointer;
@@ -276,11 +262,9 @@ ul#compilatio-help-items > li > div {
     margin-bottom: 15px;
 }
 #compilatio-programmed-analysis {
-    border-top: 2px solid #e3e3e3;
     text-align: center;
     font-style: italic;
-    margin-top: -3px;
-    padding-top: 2px;
+    margin-top: 0.5rem;
 }
 /*!
  * CSS adapted from Bootstrap (http://getbootstrap.com)
@@ -294,6 +278,17 @@ ul#compilatio-help-items > li > div {
     border: 1px solid #fbeed5;
     border-radius: 4px;
     color: #c09853;
+}
+.compilatio-alert > span > p {
+    margin: 0;
+}
+.cmp-md {
+    display: flex;
+}
+.cmp-md > i {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 1rem;
 }
 .compilatio-alert-danger {
     color: #b94a48;
@@ -309,42 +304,6 @@ ul#compilatio-help-items > li > div {
     color: #3a87ad;
     background-color: #d9edf7;
     border-color: #bce8f1;
-}
-.comp-button {
-    display: inline-block;
-    padding: 4px 12px;
-    font-size: 14px;
-    line-height: 20px;
-    color: #333;
-    text-align: center;
-    cursor: pointer;
-    background-color: #f5f5f5;
-    background-image: linear-gradient(to bottom, #fff, #e6e6e6);
-    background-repeat: repeat-x;
-    border-width: 1px;
-    border-style: solid;
-    -moz-border-top-colors: none;
-    -moz-border-right-colors: none;
-    -moz-border-bottom-colors: none;
-    -moz-border-left-colors: none;
-    border-image: none;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) #b3b3b3;
-    border-radius: 4px;
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-.comp-button:hover,
-.comp-button:focus {
-    color: #333;
-    text-decoration: none;
-    background-position: 0 -15px;
-    transition: background-position 0.11s linear 0.11s;
-    background-color: #e6e6e6;
-}
-.comp-button:active {
-    background-image: none;
-    outline: 0;
-    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
-    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
 }
 legend.compilatio_legend {
     display: block;
@@ -401,11 +360,6 @@ legend.compilatio_legend {
 #compi-update-progress {
     vertical-align: middle;
     margin: auto 10px;
-}
-.compilatio-button.disabled {
-    opacity: 0.2;
-    filter: grayscale(100%);
-    cursor: default;
 }
 #compi-home > p {
     margin-top: 15px;

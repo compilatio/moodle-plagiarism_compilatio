@@ -8,14 +8,16 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Fix quiz attempt throw error in version < 3.5 (may also affect other versions < 3.11)
-- Update Compilatio service status link (in Compilatio container)
-- Display error message returned by API on failed document upload to Compilatio
-- Fix send files error when using groups in assignments with postgresql
-- Compilatio container can now be minimized
-- Update document's depositor on old documents
-- Handling read-only API key errors
-- Add global score and detailed scores for Magister+ API keys
+- Update Compilatio container to minimize display size and support Moove theme
+- Add conversion from markdown to html in notifications
+- Fix Auto-diagnosis message "Invalid API key" when plugin is disabled
+- Fix error "coding problem..." displayed when starting an analysis
+- Fix : no more display empty notifications
+- Fix in quiz : not all texts are sent to Compilatio if their contents are identical.
+- English translation corrections / Update some language strings
+- Fix insert null value error in function get_account_expiration_date
+- Fix warning "get_record return more than one record" in function get_non_uploaded_documents
+- Fix warning caused by deprecated setting compilatio_use not removed
 
 CHANGELOG : https://support.compilatio.net/hc/en-us/articles/360019664658
 

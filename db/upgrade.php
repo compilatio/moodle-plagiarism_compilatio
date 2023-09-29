@@ -175,6 +175,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         if (strpos($k, 'compilatio_') === 0) {
             if ($k == 'compilatio_use') {
                 $newname = 'enabled';
+
                 // Forces old 'compilatio_use' to '1'. Enabling plugin will be deffered to 'enabled' parameter.
                 try {
                     set_config('compilatio_use', '1', 'plagiarism');
@@ -200,6 +201,10 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                 }
             }
         }
+    }
+
+    if ($CFG->version >= 2020061500) {
+        unset_config('compilatio_use', 'plagiarism');
     }
 
     if ($oldversion < 2021011100) {

@@ -88,14 +88,12 @@ $counttotal = count($plagiarismfiles) + $countbegin;
 if ($counttotal === 0) {
     $SESSION->compilatio_alert = array(
         "class" => "info",
-        "title" => get_string("start_analysis_title", "plagiarism_compilatio"),
         "content" => get_string("no_document_available_for_analysis", "plagiarism_compilatio"),
     );
 } else {
     if ($countsuccess > 0) {
         $SESSION->compilatio_alert = array(
             "class" => "info",
-            "title" => get_string("start_analysis_title", "plagiarism_compilatio"),
             "content" => get_string("analysis_started", "plagiarism_compilatio", $countsuccess)
         );
     }

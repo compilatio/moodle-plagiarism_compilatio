@@ -45,18 +45,9 @@ class output_helper {
      * @return string   HTML tag displaying the right image
      */
     public static function get_logo() {
-
         global $OUTPUT;
 
-        $ln = current_language();
-
-        if (!in_array($ln, array("fr", "en", "it", "es"))) {
-            $language = "en";
-        } else {
-            $language = $ln;
-        }
-
-        return html_writer::img($OUTPUT->image_url('compilatio-logo-' . $language, 'plagiarism_compilatio'),
+        return html_writer::img($OUTPUT->image_url('compilatio-logo', 'plagiarism_compilatio'),
             'Compilatio', array('title' => 'Compilatio', 'id' => 'compilatio-logo'));
     }
 
@@ -155,8 +146,12 @@ class output_helper {
 
         // Image.
         if ($image !== "") {
-            $imgsrc = $OUTPUT->image_url($image, 'plagiarism_compilatio');
-            $html .= html_writer::img($imgsrc, '%', array('class' => 'float-right'));
+            if ($image == 'inprogress') {
+                $html .= "<i style='margin-top: 3px;' class='float-right fa-spin fa-lg fa fa-spinner'></i>";
+            } else {
+                $imgsrc = new moodle_url("/plagiarism/compilatio/pix/{$image}.png");
+                $html .= html_writer::img($imgsrc, '%', array('class' => 'float-right'));
+            }
         }
 
         // State information.
@@ -194,7 +189,7 @@ class output_helper {
                 $title = get_string($warning, "plagiarism_compilatio");
             }
             $html .= html_writer::start_div('compi-alert');
-            $imgsrc = $OUTPUT->image_url('exclamation-yellow', 'plagiarism_compilatio');
+            $imgsrc = new moodle_url("/plagiarism/compilatio/pix/exclamation-yellow.png");
             $html .= html_writer::img($imgsrc, '/!\\', array('title' => $title));
             $html .= html_writer::end_div();
         }

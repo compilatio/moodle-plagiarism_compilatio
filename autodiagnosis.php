@@ -98,7 +98,7 @@ if (isset($plagiarismsettings["enable_mod_quiz"])) {
 
 // API key test. Fails if GetQuota method return NULL.
 if (isset($plagiarismsettings["apiconfigid"])) {
-    $apikeysuccess = ws_helper::test_connection();
+    $apikeysuccess = ws_helper::test_connection($plagiarismsettings["apiconfigid"]);
 } else {
     $apikeysuccess = false;
 }

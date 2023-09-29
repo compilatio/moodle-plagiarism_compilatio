@@ -61,12 +61,10 @@ class ws_helper {
      *
      * @return bool false if API key is invalid or if we cannot reach the webservice
      */
-    public static function test_connection() {
-
-        $compilatio = self::get_ws();
+    public static function test_connection($apiconfigid) {
+        $compilatio = self::get_ws($apiconfigid);
         $quotasarray = $compilatio->get_quotas();
         return $quotasarray['quotas'] != null;
-
     }
 
     /**
