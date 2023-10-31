@@ -363,21 +363,21 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                     $image = "play";
                     $title = get_string('startanalysis', 'plagiarism_compilatio');
                 } else if ($results['score'] !== '') { // If score === "" => Student, not allowed to see.
-                    $image = "inprogress";
+                    $content = "<i class='fa-spin fa-lg fa fa-spinner'></i>";
                     $title = get_string('processing_doc', 'plagiarism_compilatio');
                 }
 
                 if ($title !== "") {
-                    $output .= output_helper::get_plagiarism_area($domid, $span, $image, $title, "",
+                    $output .= output_helper::get_plagiarism_area($domid, $span, $image ?? '', $title, $content ?? '',
                         "", false, $indexingstate, $docwarning);
                 }
             }
 
         } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_ANALYSING) {
             $span = get_string("analyzing", "plagiarism_compilatio");
-            $image = "inprogress";
+            $content = "<i style='margin-left: 0.3rem;' class='fa-spin fa-lg fa fa-spinner'></i>";
             $title = get_string('processing_doc', 'plagiarism_compilatio');
-            $output .= output_helper::get_plagiarism_area($domid, $span, $image, $title, "",
+            $output .= output_helper::get_plagiarism_area($domid, $span, '', $title, $content,
                 array(), false, $indexingstate, $docwarning);
 
         } else if ($results['statuscode'] == COMPILATIO_STATUSCODE_UNSUPPORTED) {
@@ -2137,7 +2137,7 @@ function compilatio_check_analysis($plagiarismfile, $manuallytriggered = false) 
             $plagiarismfile->globalscore = round($docstatus->documentStatus->indice);
             $plagiarismfile->idcourt = $docstatus->documentProperties->Shortcut;
 
-            if (!preg_match("~^https://www\.compilatio\.net/user/ws/reportmain/handler~", $plagiarismfile->reporturl)) {
+            if (empty($plagiarismfile->reporturl) || !preg_match("~^https://www\.compilatio\.net/user/ws/reportmain/handler~", $plagiarismfile->reporturl)) {
                 if (preg_match('/^[a-f0-9]{40}$/', $plagiarismfile->externalid)) {
                     $plagiarismfile->reporturl = $plagiarismfile->externalid;
                 } else {
@@ -2573,7 +2573,7 @@ function compilatio_update_news() {
 
     $news = $compilatio->get_alerts();
 
-    if ($news !== false) {
+    if ($news !== false && $news !== null) {
         $DB->delete_records_select('plagiarism_compilatio_news', '1=1');
         foreach ($news as $new) {
             $DB->insert_record("plagiarism_compilatio_news", $new);
@@ -3102,7 +3102,7 @@ function compilatio_course_delete($courseid, $modulename = null) {
     $duplicates = array();
 
     $sql = '
-        SELECT cm
+        SELECT DISTINCT cm
         FROM {plagiarism_compilatio_files} plagiarism_compilatio_files
         JOIN {course_modules} course_modules
             ON plagiarism_compilatio_files.cm = course_modules.id';
@@ -3459,7 +3459,7 @@ function compilatio_handle_quiz_attempt($attemptid) {
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
     $fs = get_file_storage();
 
-    $attempt = \quiz_attempt::create($attemptid);
+    $attempt = \mod_quiz\quiz_attempt::create($attemptid);
     $userid = $attempt->get_userid();
     $cmid = $attempt->get_cmid();
 
