@@ -301,14 +301,13 @@ class CompilatioSettings {
             $mform->setDefault('analysistime', time() + 7 * 24 * 3600);
             $mform->disabledif('analysistime', 'analysistype', 'noteq', 'planned');
 
-            // TODO The image is stored in v4, must be updated to work on v5.
             if ($lang == 'fr') {
                 $group = [];
                 $group[] = $mform->createElement(
                     'static',
                     'calendar',
                     '',
-                    "<img style='width: 40em;' src='https://content.compilatio.net/images/calendrier_affluence_magister.png'>"
+                    "<img style='width: 40em;' src='" . new moodle_url('/plagiarism/compilatio/pix/affluence_calendar.png') . "'>"
                 );
                 $mform->addGroup($group, 'calendargroup', '', ' ', false);
                 $mform->hideIf('calendargroup', 'analysistype', 'noteq', 'planned');

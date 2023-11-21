@@ -28,8 +28,6 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 

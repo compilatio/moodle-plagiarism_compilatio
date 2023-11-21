@@ -77,7 +77,7 @@ class CompilatioAnalyses {
      *
      * @param  object $cmpfile    File
      * @param  bool   $manuallytriggered Manually triggered
-     * @return void
+     * @return object $cmpfile    File
      */
     public static function check_analysis($cmpfile) {
 
@@ -98,7 +98,7 @@ class CompilatioAnalyses {
             $state = $doc->analyses->$recipe->state;
 
             if ($state == 'running') {
-                $cmpfile->status = 'analyzing';
+                $cmpfile->status = 'analysing';
             } else if ($state == 'finished') {
                 $scores = $doc->light_reports->$recipe->scores;
 
@@ -114,6 +114,8 @@ class CompilatioAnalyses {
         }
 
         $DB->update_record('plagiarism_compilatio_file', $cmpfile);
+
+        return $cmpfile;
     }
 }
 

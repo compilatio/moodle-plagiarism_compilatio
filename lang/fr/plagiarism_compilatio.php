@@ -149,8 +149,8 @@ $string['btn_planned'] = "Analyse planifiée";
 $string['title_planned'] = 'Ce fichier sera traité le {$a}';
 $string['btn_queue'] = "Dans la file d'attente";
 $string['title_queue'] = "Le document est en attente d'analyse et va bientôt être traité par Compilatio";
-$string['btn_analyzing'] = 'Analyse en cours';
-$string['title_analyzing'] = "Le fichier est en cours d'analyse par Compilatio.";
+$string['btn_analysing'] = 'Analyse en cours';
+$string['title_analysing'] = "Le fichier est en cours d'analyse par Compilatio.";
 $string['btn_error_analysis_failed'] = 'Analyse échouée';
 $string['title_error_analysis_failed'] = "L'analyse de ce document n'a pas fonctionné correctement.";
 $string['btn_error_sending_failed'] = 'Envoi échoué';
@@ -173,7 +173,7 @@ $string['aiscore'] = 'Texte généré par IA';
 $string['unmeasured'] = 'non mesuré';
 
 $string['previouslysubmitted'] = "Auparavant soumis comme";
-$string['student_analyze'] = "L'analyse peut être lancée par l'étudiant";
+$string['student_analyse'] = "L'analyse peut être lancée par l'étudiant";
 $string['student_help'] = "Vous pouvez analyser votre brouillon avec Compilatio Magister, afin de mesurer les similitudes présentes dans le texte de vos fichiers.<br/>
     Le contenu de votre brouillon ne sera pas utilisé par Compilatio comme matériel de comparaison pour les futures analyses effectuées.<br/>
     Votre enseignant aura cependant accès à ce rapport d'analyse.";
@@ -193,6 +193,7 @@ $string['send_all_documents'] = "Envoyer tous les documents";
 $string['reset_docs_in_error'] = 'Réinitialiser les documents en erreur';
 $string["compilatio_help_assign"] = "Obtenir de l&#39aide sur le plugin Compilatio";
 $string['hide_area'] = 'Masquer les informations Compilatio';
+$string['show_area'] = 'Afficher les informations Compilatio';
 
 // Detailed error status.
 $string['detailed_error_unsupported'] = "Ces documents n'ont pas pu être analysés par Compilatio car leur format n'est pas supporté.";
@@ -240,8 +241,8 @@ $string['export_csv'] = 'Exporter les données de cette activité au format CSV'
 $string['progress'] = "Progression";
 $string['results'] = "Résultats";
 $string['errors'] = "Erreurs";
-$string['analyzed_docs'] = '{$a} document(s) analysés.';
-$string['analyzing_docs'] = '{$a} document(s) en cours d\'analyse.';
+$string['analysed_docs'] = '{$a} document(s) analysés.';
+$string['analysing_docs'] = '{$a} document(s) en cours d\'analyse.';
 $string['queuing_docs'] = '{$a} document(s) en attente d\'analyse.';
 $string['stats_min'] = 'Minimum';
 $string['stats_max'] = 'Maximum';
@@ -278,11 +279,11 @@ $string["auto_diagnosis_title"] = "Auto-diagnostic";
 $string["api_key_valid"] = "La clé API enregistrée est valide.";
 $string["api_key_not_tested"] = "La clé API n'a pas pû être vérifiée car la connexion au service Compilatio à échouée.";
 $string["api_key_not_valid"] = "La clé API enregistrée est invalide. Elle est spécifique à la plateforme utilisée. Vous pouvez en obtenir une en contactant <a href='mailto:ent@compilatio.net'>ent@compilatio.net</a>.";
-$string['cron_check_never_called'] = "CRON n'a pas été exécuté depuis l'activation du plugin. Il est possible qu'il soit mal configuré.";
-$string['cron_check'] = 'CRON a été exécuté le {$a} pour la dernière fois.';
-$string['cron_check_not_ok'] = "Il n'a pas été exécuté depuis plus d'une heure.";
+$string['cron_check_never_called'] = "La tâche planifiée send_files du plugin n'a pas été exécuté depuis l'activation du plugin. Il est possible qu'il soit mal configuré.";
+$string['cron_check'] = 'La tâche planifiée send_files du plugin a été exécuté le {$a} pour la dernière fois.';
+$string['cron_check_not_ok'] = "La tâche planifiée send_files du plugin n'a pas été exécuté depuis plus d'une heure.";
 $string['cron_frequency'] = 'Il semblerait qu\'il soit exécuté toutes les {$a} minutes.';
-$string['cron_recommandation'] = "Nous recommandons d'utiliser un délai inférieur à 15 minutes entre chaque exécution de CRON.";
+$string['cron_recommandation'] = "Pour les tâches planifiées du plugin Compilatio, nous recommandons d'utiliser un délai inférieur à 15 minutes entre chaque exécution.";
 $string['webservice_ok'] = "Le serveur est capable de contacter le webservice.";
 $string['webservice_not_ok'] = "Le webservice n'a pas pu être contacté. Il est possible que votre pare-feu bloque la connexion.";
 $string['plugin_enabled'] = "Le plugin est activé pour la plateforme Moodle.";

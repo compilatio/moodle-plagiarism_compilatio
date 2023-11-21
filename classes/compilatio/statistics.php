@@ -186,19 +186,19 @@ class CompilatioStatistics {
         $output = "
             <div class='col'>
                 <h4 class='cmp-color-primary'>" . get_string('progress', 'plagiarism_compilatio') . "</h4>
-                <div class='position-relative cmp-box mx-2 my-3 p-3'>
+                <div class='position-relative cmp-box my-3 p-3'>
                     <h5 class='fw-bold cmp-color-green'>"
-                      . get_string('analyzed_docs', 'plagiarism_compilatio', $countbystatus['scored']->count ?? 0) .
+                      . get_string('analysed_docs', 'plagiarism_compilatio', $countbystatus['scored']->count ?? 0) .
                     "</h5>
                 </div>
 
-                <div class='cmp-box mx-2 my-3'>
+                <div class='cmp-box my-3'>
                     <h5 class='p-3 cmp-color-primary'>"
-                      . get_string('analyzing_docs', 'plagiarism_compilatio', $countbystatus['analyzing']->count ?? 0) .
+                      . get_string('analysing_docs', 'plagiarism_compilatio', $countbystatus['analysing']->count ?? 0) .
                     "</h5>
                 </div>
 
-                <div class='cmp-box mx-2 my-3'>
+                <div class='cmp-box my-3'>
                     <h5 class='p-3 cmp-color-primary'>"
                       . get_string('queuing_docs', 'plagiarism_compilatio', $countbystatus['queue']->count ?? 0) .
                     "</h5>
@@ -226,12 +226,12 @@ class CompilatioStatistics {
         $output .= "
             <div class='col'>
                 <h4 class='cmp-color-primary'>" . get_string('results', 'plagiarism_compilatio') . "</h4>
-                <div class='cmp-box mx-2 my-3 px-3 pt-3 pb-2'>
+                <div class='cmp-box my-3 px-3 pt-3 pb-2'>
                     <h5 class='cmp-color-primary'>" . get_string('stats_score', 'plagiarism_compilatio') . "</h5>
                     <div class='row'>{$yes}</div>
                 </div>
 
-                <div class='cmp-box mx-2 my-3 p-3'>
+                <div class='cmp-box my-3 p-3'>
                     <h5 class='cmp-color-primary'>" . get_string('stats_threshold', 'plagiarism_compilatio') . "</h5>
                     <div class='row mt-3 fw-bold cmp-color-secondary'>
                         <div class='col-4'>
@@ -265,7 +265,7 @@ class CompilatioStatistics {
                     ?? get_string('stats_error_unknown', 'plagiarism_compilatio');
                 $detailedstring = get_string('detailed_' . $status, 'plagiarism_compilatio', $stringvariable ?? null) ?? '';
 
-                $errors .= "<div class='position-relative cmp-box mx-2 my-3 p-3'>
+                $errors .= "<div class='position-relative cmp-box my-3 p-3'>
                         <h5 class='cmp-color-red'>{$stat->count} {$shortstring}</h5>
                         <small>{$detailedstring}</small>
                     </div>";

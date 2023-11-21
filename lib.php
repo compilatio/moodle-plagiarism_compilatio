@@ -193,12 +193,12 @@ function compilatio_get_unsent_documents($cmid) {
 
         foreach ($files as $file) {
             if ($file->get_filename() != '.') {
-                $compifile = $DB->get_records(
+                $countfiles = $DB->count_records(
                     'plagiarism_compilatio_file',
                     ['identifier' => $file->get_contenthash(), 'cm' => $cmid]
                 );
 
-                if (empty($compifile)) {
+                if ($countfiles == 0) {
                     array_push($notuploadedfiles, $file);
                 }
             }
@@ -277,7 +277,7 @@ function compilatio_delete_course_modules($cmconfigs) {
             $files = $DB->get_records('plagiarism_compilatio_file', ['cm' => $cmconfig->cmid]);
 
             $keepfileindexed = boolval(get_config('plagiarism_compilatio', 'keep_docs_indexed'));
-            compilatio_delete_files($files, true, $keepfileindexed);
+            compilatio_delete_files($files, $keepfileindexed);
 
             $compilatio->set_user_id($cmconfig->userid);
             $compilatio->delete_folder($cmconfig->folderid);
@@ -295,25 +295,21 @@ function compilatio_delete_course_modules($cmconfigs) {
  * @param array    $files
  * @param bool     $deletefilesmoodledb
  */
-function compilatio_delete_files($files, $deletefilesmoodledb = true, $keepfilesindexed = false) {
+function compilatio_delete_files($files, $keepfilesindexed = false) {
     if (is_array($files)) {
         global $DB;
         $compilatio = new CompilatioAPI();
 
         foreach ($files as $doc) {
             if (is_null($doc->externalid)) {
-                if ($deletefilesmoodledb) {
-                    $DB->delete_records('plagiarism_compilatio_file', ['id' => $doc->id]);
-                }
+                $DB->delete_records('plagiarism_compilatio_file', ['id' => $doc->id]);
             } else {
                 $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $doc->cm]);
                 $compilatio->set_user_id($userid);
 
                 if ($keepfilesindexed || $compilatio->set_indexing_state($doc->externalid, 0)) {
                     $compilatio->delete_document($doc->externalid);
-                    if ($deletefilesmoodledb) {
-                        $DB->delete_records('plagiarism_compilatio_file', ['id' => $doc->id]);
-                    }
+                    $DB->delete_records('plagiarism_compilatio_file', ['id' => $doc->id]); 
                 } else {
                     mtrace('Error deindexing document ' . $doc->externalid);
                 }

@@ -40,10 +40,9 @@ $docid = required_param('docId', PARAM_TEXT);
 $file = $DB->get_record('plagiarism_compilatio_file', ['id' => $docid]);
 
 if (!empty($file)) {
-    CompilatioAnalyses::check_analysis($file);
+    $file = CompilatioAnalyses::check_analysis($file);
 
-    $file = $DB->get_record('plagiarism_compilatio_file', ['id' => $docid]);
     $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $file->cm]);
 
-    echo CompilatioDocumentFrame::get_score($file->globalscore, $cmconfig, true);
+    echo CompilatioDocumentFrame::get_score($file, $cmconfig, true);
 }

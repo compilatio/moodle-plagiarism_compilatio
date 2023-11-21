@@ -40,7 +40,8 @@ $compilatio = new CompilatioAPI();
 $cmpuser = $compilatio->get_user($userid);
 
 if (
-    $cmpuser->origin == 'LMS-Moodle'
+    !empty($cmpuser)
+    && $cmpuser->origin == 'LMS-Moodle'
     && (
         $cmpuser->firstname !== $USER->firstname
         || $cmpuser->lastname !== $USER->lastname

@@ -68,20 +68,13 @@ class CompilatioAPI {
      */
     public function check_apikey() {
         $endpoint = '/api/private/authentication/check-api-key';
-
         $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
             $readonly = $response->data->user->current_api_key->read_only ?? false;
             set_config('read_only_apikey', (int) $readonly, 'plagiarism_compilatio');
 
-            $bundle = $response->data->user->current_bundle;
-
-            foreach ($bundle->accesses as $access) {
-                if ($access->resource == 'recipe') {
-                    $recipe = $access->name;
-                }
-            }
+            $recipe = $response->data->user->managed_bundle->name === 'magister-premium' ? 'anasim-premium' : 'anasim';
         }
 
         set_config('recipe', $recipe ?? 'anasim', 'plagiarism_compilatio');
@@ -529,7 +522,7 @@ class CompilatioAPI {
             'doc_id' => $docid,
             'recipe_name' => $this->recipe,
             'tags' => [
-                'stable'
+                'stable',
             ]
         ];
 

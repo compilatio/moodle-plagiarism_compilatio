@@ -204,7 +204,7 @@ class CompilatioDocumentFrame {
                 }
 
                 $documentframe =
-                    "<a href='{$href}' target='_blank' class='cmp-btn cmp-btn-doc cmp-btn-primary cursor-pointer'>"
+                    "<a href='{$href}' target='_blank' class='cmp-btn cmp-btn-doc cmp-btn-primary'>"
                         . CompilatioIcons::report() . get_string('report', 'core') .
                     "</a>";
             }
@@ -221,7 +221,7 @@ class CompilatioDocumentFrame {
                 $bgcolor = 'primary';
             } else if ($cantriggeranalysis || ($isstudentanalyse && !$isteacher)) {
                 $documentframe =
-                    "<div title='" . get_string('title_sent', 'plagiarism_compilatio') . "' class='cmp-btn cmp-btn-doc cmp-btn-primary cmp-start-btn cursor-pointer'>
+                    "<div title='" . get_string('title_sent', 'plagiarism_compilatio') . "' class='cmp-btn cmp-btn-doc cmp-btn-primary cmp-start-btn'>
                         <i class='cmp-icon-lg mr-2 fa fa-play-circle'></i>"
                         . get_string('btn_sent', "plagiarism_compilatio") .
                     "</div>";
@@ -231,14 +231,14 @@ class CompilatioDocumentFrame {
                 return '';
             }
 
-        } else if ($status == "queue" || $status == "analyzing") {
+        } else if ($status == "queue" || $status == "analysing") {
             $documentframe =
                 "<div title='" . get_string('title_' . $status, "plagiarism_compilatio") . "' class='cmp-btn-secondary'>
                     <i class='cmp-icon-lg mx-2 fa fa-spinner fa-spin'></i>"
                     . get_string('btn_' . $status, "plagiarism_compilatio") .
                 "</div>";
             $bgcolor = 'primary';
-        } else if (strpos($status, "error") === 0) {
+        } else if (isset($status) && strpos($status, "error") === 0) {
             if ($status == "error_too_large") {
                 $value = (get_config('plagiarism_compilatio', 'max_size') / 1024 / 1024);
             } else if ($status == "error_too_long") {
@@ -255,8 +255,8 @@ class CompilatioDocumentFrame {
             $bgcolor = 'error';
         } else if (isset($url) && ($cantriggeranalysis || ($isstudentanalyse && !$isteacher))) {
             $documentframe =
-                "<a href='" . $url . "' target='_self' title='" . get_string('title_unsent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-doc cmp-btn-primary cursor-pointer'>
-                    <i class='cmp-icon-lg mr-2 fa fa-play-circle'></i>"
+                "<a href='" . $url . "' target='_self' title='" . get_string('title_unsent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-doc cmp-btn-primary'>
+                    <i class='mr-2 fa fa-paper-plane'></i>"
                     . get_string('btn_unsent', "plagiarism_compilatio") .
                 "</a>";
         } else {
@@ -266,7 +266,7 @@ class CompilatioDocumentFrame {
         $info = '';
         if ($isstudentanalyse) {
             if ($isteacher) {
-                $info = "<div>" . get_string('student_analyze', 'plagiarism_compilatio') . "</div>";
+                $info = "<div>" . get_string('student_analyse', 'plagiarism_compilatio') . "</div>";
             } else {
                 $info = "<div>" . get_string('student_help', 'plagiarism_compilatio') . "</div>";
             }
@@ -288,7 +288,7 @@ class CompilatioDocumentFrame {
 
         $output = $info . "
             <div class='cmp-area cmp-border-" . $bgcolor . "'>
-                <img class='cmp-small-logo' src='" . new moodle_url("/plagiarism/compilatio/pix/c-net.svg") . "'>
+                <img class='cmp-small-logo' src='" . new moodle_url("/plagiarism/compilatio/pix/c.svg") . "'>
                 " . self::get_indexing_state($indexed) . $score . $documentframe . "
             </div>";
 
@@ -362,7 +362,7 @@ class CompilatioDocumentFrame {
                 }
             }
 
-            $html .= "<span data-toggle='tooltip' data-html='true'  title='{$tooltip}'>" . $icons . "</span>";
+            $html .= "<span id='cmp-score-icons' class='d-flex' data-toggle='tooltip' data-html='true' title='{$tooltip}'>" . $icons . "</span>";
         }
 
         return $html;

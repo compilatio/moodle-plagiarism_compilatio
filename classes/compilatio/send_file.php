@@ -47,7 +47,7 @@ class CompilatioSendFile {
      * @param object $filename  Filename for text content
      * @param object $content   Text content
      */
-    public static function send_file($cmid, $userid, $file = null, $filename = null, $content = null) {
+    public static function send_file($cmid, $userid, $file = null, $filename = null, $content = null, $indexed = null) {
 
         global $DB, $CFG;
 
@@ -165,6 +165,69 @@ class CompilatioSendFile {
 
             self::send_file($cmid, $userid, $file);
         }
+    }
+
+    public static function retrieve_and_send_file($cmpfile) {
+
+        global $DB;
+
+        $success = false;
+
+        if (preg_match('~.htm$~', $cmpfile->filename)) { // Text content.
+            $objectid = explode(".", explode("-", $cmpfile->filename)[1])[0];
+
+            $sql = "SELECT m.name FROM {course_modules} cm
+            JOIN {modules} m ON m.id = cm.module
+            WHERE cm.id = ?";
+            $modulename = $DB->get_field_sql($sql, [$cmpfile->cm]);
+
+            switch ($modulename) {
+                case 'assign':
+                    $content = $DB->get_field('assignsubmission_onlinetext', 'onlinetext', ['submission' => $objectid]);
+                    break;
+                case 'workshop':
+                    $content = $DB->get_field('workshop_submissions', 'content', ['id' => $objectid]);
+                    break;
+                case 'forum':
+                    $content = $DB->get_field('forum_posts', 'message', ['id' => $objectid]);
+                    break;
+                case 'quiz':
+                    $questionid = substr(explode('.', $cmpfile->filename)[0], strpos($cmpfile->filename, "Q") + 1);
+
+                    $sql = "SELECT responsesummary
+                    FROM {quiz_attempts} quiz
+                    JOIN {question_attempts} qa ON quiz.uniqueid = qa.questionusageid
+                    WHERE quiz.id = ? AND qa.questionid = ?";
+                    $content = $DB->get_field_sql($sql, [$objectid, $questionid]);
+                    break;
+            }
+
+            if (!empty($content)) {
+                $DB->delete_records('plagiarism_compilatio_file', ['id' => $cmpfile->id]);
+
+                $success = self::send_file($cmpfile->cm, $cmpfile->userid, null, $cmpfile->filename, $content);
+            }
+        } else { // File.
+            $module = get_coursemodule_from_id(null, $cmpfile->cm);
+
+            $modulecontext = context_module::instance($cmpfile->cm);
+            $contextid = $modulecontext->id;
+            $sql = 'SELECT * FROM {files} f WHERE f.contenthash= ? AND contextid = ?';
+            $f = $DB->get_record_sql($sql, [$cmpfile->identifier, $contextid]);
+
+            if (empty($f)) {
+                return;
+            }
+    
+            $fs = get_file_storage();
+            $file = $fs->get_file_by_id($f->id);
+
+            $DB->delete_records('plagiarism_compilatio_file', ['id' => $cmpfile->id]);
+
+            $success = self::send_file($cmpfile->cm, $cmpfile->userid, $file);
+        }
+
+        return $success;
     }
 
     /**

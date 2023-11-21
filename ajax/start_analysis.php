@@ -60,7 +60,7 @@ if ($status == 'queue') {
 
     $res->documentFrame =
         "<div title='" . get_string('title_' . $status, 'plagiarism_compilatio', $value ?? null) . "' class='cmp-btn-error'>
-            <i class='mx-2 fa fa-exclamation-triangle'></i>" . get_string('btn_error', 'plagiarism_compilatio') .
+            <i class='mx-2 fa fa-exclamation-triangle'></i>" . get_string('btn_' . $status, 'plagiarism_compilatio') .
         "</div>";
     $res->bgcolor = 'error';
 } else {

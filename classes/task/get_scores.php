@@ -62,7 +62,7 @@ class get_scores extends \core\task\scheduled_task {
         if ($plagiarismsettings = $compilatio->get_settings()) {
             mtrace('getting Compilatio similarity scores');
             // Get all files set that have been submitted.
-            $sql = "status = 'analyzing' OR status = 'queue'";
+            $sql = "status = 'analysing' OR status = 'queue'";
             $files = $DB->get_records_select('plagiarism_compilatio_file', $sql);
             if (!empty($files)) {
                 foreach ($files as $plagiarismfile) {

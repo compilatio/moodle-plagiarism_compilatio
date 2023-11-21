@@ -118,7 +118,7 @@ class CompilatioEventHandler {
                 $files = $DB->get_records_sql($sql, [$event['courseid'], $modulename]);
 
                 $keepfileindexed = boolval(get_config('plagiarism_compilatio', 'keep_docs_indexed'));
-                compilatio_delete_files($files, true, $keepfileindexed);
+                compilatio_delete_files($files, $keepfileindexed);
 
                 self::create_folder_if_not_set($event['courseid'], $modulename);
             }
@@ -257,22 +257,8 @@ class CompilatioEventHandler {
             $compilatio = new CompilatioAPI($plugincm->userid);
 
             foreach ($files as $file) {
-                $compilatio->delete_document($file->externalid);
-                // resend file
-                $compilatio->delete_analyse($file->externalid);
-                $compilatio->set_indexing_state($file->externalid, $plugincm->defaultindexing);
-
-
-                $file->status = 'sent';
-                $file->globalscore = 0;
-                $file->similarityscore = null;
-                $file->utlscore = null;
-                $file->aiscore = null;
-                $file->timesubmitted = time();
-                $file->indexed = $plugincm->defaultindexing;
-                $file->externalid = $id;
-
-                $DB->update_record('plagiarism_compilatio_file', $file);
+                compilatio_delete_files($files);
+                send_file_oskour($file);
             }
         }
     }
@@ -408,7 +394,7 @@ class CompilatioEventHandler {
 
         $attemptid = $event['objectid'];
 
-        $attempt = \quiz_attempt::create($attemptid);
+        $attempt = \mod_quiz\quiz_attempt::create($attemptid);
         $userid = $attempt->get_userid();
         $cmid = $attempt->get_cmid();
 

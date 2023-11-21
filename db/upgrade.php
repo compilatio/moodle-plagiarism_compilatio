@@ -209,6 +209,10 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         }
     }
 
+    if ($CFG->version >= 2020061500) {
+        unset_config('compilatio_use', 'plagiarism');
+    }
+
     if ($oldversion < 2021011100) {
 
         $url = get_config('plagiarism_compilatio', 'api');
@@ -337,7 +341,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                 $status = [
                     201 => 'sent',
                     202 => 'sent',
-                    203 => 'analyzing',
+                    203 => 'analysing',
                     404 => 'error_not_found',
                     412 => 'error_too_short',
                     413 => 'error_too_large',

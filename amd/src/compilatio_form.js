@@ -21,19 +21,15 @@ define(['jquery'], function($) {
 
             if (activated.val() == 0) {
                 tos.checked = true;
-                // TODO delete.
-                //tos.prop('checked', true);
                 tos.closest('.form-group').hide();
             }
 
             activated.on('change', function() {
                 if (this.value == 0) {
                     tos.checked = true;
-                    //tos.prop('checked', true);
                     tos.closest('.form-group').hide();
                 } else {
                     tos.checked = false;
-                    //tos.prop('checked', false);
                     tos.closest('.form-group').show();
                 }
             });
