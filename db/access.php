@@ -29,26 +29,26 @@ $capabilities = [
     'plagiarism/compilatio:enable' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-         'legacy' => [
-         'editingteacher' => CAP_ALLOW,
-         'manager' => CAP_ALLOW
-        ]
+        'legacy' => [
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
     ],
     'plagiarism/compilatio:triggeranalysis' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'legacy' => [
             'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        ]
+            'manager' => CAP_ALLOW,
+        ],
     ],
     'plagiarism/compilatio:viewreport' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-         'legacy' => [
-         'editingteacher' => CAP_ALLOW,
-         'teacher' => CAP_ALLOW,
-         'manager' => CAP_ALLOW
-        ]
+        'legacy' => [
+            'editingteacher' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
     ],
 ];

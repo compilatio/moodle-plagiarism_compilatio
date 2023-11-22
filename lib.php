@@ -293,7 +293,7 @@ function compilatio_delete_course_modules($cmconfigs) {
  * Remove entry(ies) in plagiarism_compilatio_file table
  *
  * @param array    $files
- * @param bool     $deletefilesmoodledb
+ * @param bool     $keepfilesindexed
  */
 function compilatio_delete_files($files, $keepfilesindexed = false) {
     if (is_array($files)) {
@@ -309,7 +309,7 @@ function compilatio_delete_files($files, $keepfilesindexed = false) {
 
                 if ($keepfilesindexed || $compilatio->set_indexing_state($doc->externalid, 0)) {
                     $compilatio->delete_document($doc->externalid);
-                    $DB->delete_records('plagiarism_compilatio_file', ['id' => $doc->id]); 
+                    $DB->delete_records('plagiarism_compilatio_file', ['id' => $doc->id]);
                 } else {
                     mtrace('Error deindexing document ' . $doc->externalid);
                 }

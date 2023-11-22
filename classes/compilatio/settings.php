@@ -226,7 +226,9 @@ class CompilatioSettings {
      *
      * @param object  $mform    Moodle form object
      * @param boolean $defaults if this is being loaded from defaults form or from inside a mod.
+     * @param boolean $needtermsofservice
      * @param string  $modulename
+     * @param string  $teacheremail
      */
     public static function get_form_elements($mform, $defaults = false, $needtermsofservice = false, $modulename = null, $teacheremail = null) {
         global $PAGE, $CFG, $DB, $USER;
@@ -277,8 +279,10 @@ class CompilatioSettings {
             $mform->hideIf('tos_info', 'activated', 'eq', '0');
         }
 
-        $analysistypes = ['manual' => get_string('analysistype_manual', 'plagiarism_compilatio'),
-            'planned' => get_string('analysistype_prog', 'plagiarism_compilatio')];
+        $analysistypes = [
+            'manual' => get_string('analysistype_manual', 'plagiarism_compilatio'),
+            'planned' => get_string('analysistype_prog', 'plagiarism_compilatio'),
+        ];
 
         if (get_config('plagiarism_compilatio', 'enable_analyses_auto') == '1') {
             $analysistypes['auto'] = get_string('analysistype_auto', 'plagiarism_compilatio');
@@ -324,11 +328,18 @@ class CompilatioSettings {
         $mform->addHelpButton('showstudentscore', 'showstudentscore', 'plagiarism_compilatio');
 
         if (get_config('plagiarism_compilatio', 'enable_show_reports') === '1') {
-            $mform->addElement('select', 'showstudentreport', get_string('showstudentreport', 'plagiarism_compilatio'), $showoptions);
+            $mform->addElement(
+                'select',
+                'showstudentreport',
+                get_string('showstudentreport', 'plagiarism_compilatio'),
+                $showoptions
+            );
             $mform->addHelpButton('showstudentreport', 'showstudentreport', 'plagiarism_compilatio');
 
-            $reporttypes = ['detailed' => get_string('detailed', 'plagiarism_compilatio'),
-                'certificate' => get_string('certificate', 'plagiarism_compilatio')];
+            $reporttypes = [
+                'detailed' => get_string('detailed', 'plagiarism_compilatio'),
+                'certificate' => get_string('certificate', 'plagiarism_compilatio'),
+            ];
             $mform->addElement('select', 'reporttype', get_string('reporttype', 'plagiarism_compilatio'), $reporttypes);
             $mform->addHelpButton('reporttype', 'reporttype', 'plagiarism_compilatio');
             $mform->setDefault('reporttype', 'detailed');

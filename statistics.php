@@ -53,21 +53,21 @@ if (count($rows) === 0) {
 
     $url = new moodle_url('/plagiarism/compilatio/CSV.php');
     echo html_writer::tag('legend', get_string('global_statistics', 'plagiarism_compilatio'), [
-        'class' => 'cmp-legend'
+        'class' => 'cmp-legend',
     ]);
     echo html_writer::tag('p', get_string('global_statistics_description', 'plagiarism_compilatio'));
     echo html_writer::tag('a', get_string('export_raw_csv', 'plagiarism_compilatio'), [
         'href' => $url,
-        'class' => 'mb-3 cmp-btn cmp-btn-primary'
+        'class' => 'mb-3 cmp-btn cmp-btn-primary',
     ]);
     echo html_writer::tag('legend', get_string('activities_statistics', 'plagiarism_compilatio'), [
-        'class' => 'cmp-legend'
+        'class' => 'cmp-legend',
     ]);
 
     // Bootstrap.
     echo html_writer::empty_tag('link', [
         'rel' => 'stylesheet',
-        'href' => 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.css'
+        'href' => 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.css',
     ]);
     echo html_writer::script('', 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.js');
     // Scripts function.
@@ -90,7 +90,7 @@ if (count($rows) === 0) {
         get_string('minimum', 'plagiarism_compilatio'),
         get_string('maximum', 'plagiarism_compilatio'),
         get_string('average', 'plagiarism_compilatio'),
-        get_string('stats_errors', 'plagiarism_compilatio')
+        get_string('stats_errors', 'plagiarism_compilatio'),
     ];
 
     $table->head  = $tableheadjs;
@@ -107,7 +107,7 @@ if (count($rows) === 0) {
         get_string('minimum', 'plagiarism_compilatio'),
         get_string('maximum', 'plagiarism_compilatio'),
         get_string('average', 'plagiarism_compilatio'),
-        get_string('stats_errors', 'plagiarism_compilatio')
+        get_string('stats_errors', 'plagiarism_compilatio'),
     ];
 
     $tablenojs->head = $tablehead;
@@ -120,7 +120,7 @@ if (count($rows) === 0) {
             $row['minimum_rate'],
             $row['maximum_rate'],
             $row['average_rate'],
-            $row['errors']
+            $row['errors'],
         ];
     }
 
@@ -128,7 +128,7 @@ if (count($rows) === 0) {
     $url = new moodle_url('/plagiarism/compilatio/CSV.php', ['raw' => 0]);
     echo html_writer::tag('a', get_string('export_global_csv', 'plagiarism_compilatio'), [
         'href' => $url,
-        'class' => 'mb-3 cmp-btn cmp-btn-primary'
+        'class' => 'mb-3 cmp-btn cmp-btn-primary',
     ]);
 }
 echo $OUTPUT->box_end();

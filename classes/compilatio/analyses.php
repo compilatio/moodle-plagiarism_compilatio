@@ -105,9 +105,15 @@ class CompilatioAnalyses {
                 $cmpfile->status = 'scored';
                 $cmpfile->globalscore = round($scores->displayed_similarity_percent ?? 0);
 
-                $cmpfile->similarityscore = isset($scores->similarity_percent) ? round($scores->similarity_percent) : null;
-                $cmpfile->utlscore = isset($scores->unrecognized_text_language_percent) ? round($scores->unrecognized_text_language_percent) : null;
-                $cmpfile->aiscore = isset($scores->ai_generated_percent) ? round($scores->ai_generated_percent) : null;
+                $cmpfile->similarityscore = isset($scores->similarity_percent)
+                    ? round($scores->similarity_percent)
+                    : null;
+                $cmpfile->utlscore = isset($scores->unrecognized_text_language_percent)
+                    ? round($scores->unrecognized_text_language_percent)
+                    : null;
+                $cmpfile->aiscore = isset($scores->ai_generated_percent)
+                    ? round($scores->ai_generated_percent)
+                    : null;
             } else if ($state == 'crashed' || $state == 'aborted' || $state == 'canceled') {
                 $cmpfile->status = 'error_analysis_failed';
             }

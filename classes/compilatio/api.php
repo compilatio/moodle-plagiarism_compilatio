@@ -183,7 +183,7 @@ class CompilatioAPI {
                 'timezone' => date_default_timezone_get(),
                 'lang' => $lang,
             ],
-            'origin' => 'LMS-Moodle'
+            'origin' => 'LMS-Moodle',
         ];
 
         $response = json_decode($this->build_curl($endpoint, 'post', json_encode($params)));
@@ -243,7 +243,7 @@ class CompilatioAPI {
         $params = [
             'firstname' => $firstname,
             'lastname' => $lastname,
-            'email' => $email
+            'email' => $email,
         ];
 
         $response = json_decode($this->build_curl($endpoint, 'patch', json_encode($params)));
@@ -270,20 +270,20 @@ class CompilatioAPI {
             'title' => $filename,
             'folder_id' => $folderid,
             'indexed' => $indexed,
-            'origin' => 'moodle'
+            'origin' => 'moodle',
         ];
 
         $params['depositor'] = [
             'firstname' => $this->sanitize($depositor->firstname),
             'lastname' => $this->sanitize($depositor->lastname),
-            'email_address' => $this->validate_email($depositor->email)
+            'email_address' => $this->validate_email($depositor->email),
         ];
 
         foreach ($authors as $author) {
             $params['authors'][] = [
                 'firstname' => $this->sanitize($author->firstname),
                 'lastname' => $this->sanitize($author->lastname),
-                'email_address' => $this->validate_email($author->email)
+                'email_address' => $this->validate_email($author->email),
             ];
         }
 
@@ -300,15 +300,17 @@ class CompilatioAPI {
     }
 
     private function sanitize($value) {
-        $forbiddenCharacters = [".","!","?",":","%","&","*","=","#","$","@","/","\\","<",">","(",")","[","]","{","}"];
+        $forbiddencharacters = [
+            ".", "!", "?", ":", "%", "&", "*", "=", "#", "$", "@", "/", "\\", "<", ">", "(", ")", "[", "]", "{", "}",
+        ];
 
         if (!is_string($value) || '' === $value) {
             return null;
         }
 
-        $value = trim($value, " \n\r\t\v\x00" . implode('', $forbiddenCharacters));
+        $value = trim($value, " \n\r\t\v\x00" . implode('', $forbiddencharacters));
 
-        return str_replace($forbiddenCharacters, '_', $value);
+        return str_replace($forbiddencharacters, '_', $value);
     }
 
     private function validate_email($email) {
@@ -373,7 +375,7 @@ class CompilatioAPI {
             'default_indexing' => $defaultindexing,
             'auto_analysis' => false,
             'scheduled_analysis_enabled' => false,
-            'origin' => 'LMS-Moodle'
+            'origin' => 'LMS-Moodle',
         ];
 
         if ($analysistype == 'auto') {
@@ -523,7 +525,7 @@ class CompilatioAPI {
             'recipe_name' => $this->recipe,
             'tags' => [
                 'stable',
-            ]
+            ],
         ];
 
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post', json_encode($params)));
@@ -591,7 +593,7 @@ class CompilatioAPI {
             'moodle_version' => $releasemoodle,
             'compilatio_plugin_version' => $releaseplugin,
             'language' => $language,
-            'cron_frequency' => $cronfrequency
+            'cron_frequency' => $cronfrequency,
         ];
 
         $response = json_decode($this->build_curl($endpoint, 'post', json_encode($params)));
@@ -743,7 +745,7 @@ class CompilatioAPI {
 
         $params = [
             CURLOPT_URL => $this->urlrest . $endpoint,
-            CURLOPT_RETURNTRANSFER => true
+            CURLOPT_RETURNTRANSFER => true,
         ];
 
         $header[] = 'X-Auth-Token: ' . $this->apikey;

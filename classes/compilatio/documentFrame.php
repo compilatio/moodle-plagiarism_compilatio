@@ -140,7 +140,7 @@ class CompilatioDocumentFrame {
                     'id' => $linkarray['cmid'],
                     'sendfile' => $fileid,
                     'action' => 'grading',
-                    'page' => optional_param('page', null, PARAM_INT)
+                    'page' => optional_param('page', null, PARAM_INT),
                 ];
                 $url = new moodle_url('/mod/assign/view.php', $urlparams);
                 $url = $url->__toString();
@@ -160,7 +160,7 @@ class CompilatioDocumentFrame {
             $isteacher,
             $url,
             $filename,
-            $domid
+            $domid,
         ]);
 
         return $output;
@@ -196,7 +196,14 @@ class CompilatioDocumentFrame {
         $bgcolor = 'primary';
         if ($status == 'scored') {
             if ($canviewreport) {
-                $href = "{$CFG->httpswwwroot}/plagiarism/compilatio/redirect_report.php?docid={$cmpfile->externalid}&cmid={$cmpfile->cm}&type={$config->reporttype}";
+
+                $params = [
+                    'docid' => $cmpfile->externalid,
+                    'cmid' => $cmpfile->cm,
+                    'type' => $config->reporttype,
+                ];
+
+                $href = "{$CFG->httpswwwroot}/plagiarism/compilatio/redirect_report.php?" . http_build_query($params);
 
                 // ADTD v2 document management.
                 if (isset($cmpfile->reporturl)) {
@@ -214,14 +221,20 @@ class CompilatioDocumentFrame {
         } else if ($status == 'sent') {
             if (($config->analysistype ?? null) == 'planned') {
                 $documentframe =
-                    "<div title='" . get_string('title_planned', 'plagiarism_compilatio', userdate($config->analysistime)) . "' class='cmp-btn-secondary'>
+                    "<div
+                        title='" . get_string('title_planned', 'plagiarism_compilatio', userdate($config->analysistime)) . "'
+                        class='cmp-btn-secondary'
+                    >
                         <i class='cmp-icon-lg mx-2 fa fa-clock-o'></i>"
                         . get_string('btn_planned', 'plagiarism_compilatio') .
                     "</div>";
                 $bgcolor = 'primary';
             } else if ($cantriggeranalysis || ($isstudentanalyse && !$isteacher)) {
                 $documentframe =
-                    "<div title='" . get_string('title_sent', 'plagiarism_compilatio') . "' class='cmp-btn cmp-btn-doc cmp-btn-primary cmp-start-btn'>
+                    "<div
+                        title='" . get_string('title_sent', 'plagiarism_compilatio') . "'
+                        class='cmp-btn cmp-btn-doc cmp-btn-primary cmp-start-btn'
+                    >
                         <i class='cmp-icon-lg mr-2 fa fa-play-circle'></i>"
                         . get_string('btn_sent', "plagiarism_compilatio") .
                     "</div>";
@@ -255,7 +268,12 @@ class CompilatioDocumentFrame {
             $bgcolor = 'error';
         } else if (isset($url) && ($cantriggeranalysis || ($isstudentanalyse && !$isteacher))) {
             $documentframe =
-                "<a href='" . $url . "' target='_self' title='" . get_string('title_unsent', "plagiarism_compilatio") . "' class='cmp-btn cmp-btn-doc cmp-btn-primary'>
+                "<a
+                    href='" . $url . "'
+                    target='_self'
+                    title='" . get_string('title_unsent', "plagiarism_compilatio") . "'
+                    class='cmp-btn cmp-btn-doc cmp-btn-primary'
+                >
                     <i class='mr-2 fa fa-paper-plane'></i>"
                     . get_string('btn_unsent', "plagiarism_compilatio") .
                 "</a>";
@@ -294,7 +312,10 @@ class CompilatioDocumentFrame {
 
         // Now check for differing filename and display info related to it.
         if (isset($filename, $cmpfile->filename) && $filename !== $cmpfile->filename) {
-            $output .= "<span class='cmp-prevsubmitted'>(" . get_string('previouslysubmitted', 'plagiarism_compilatio') . ': ' . $cmpfile->filename . ")</span>";
+            $output .=
+                "<span class='cmp-prevsubmitted'>
+                    (" . get_string('previouslysubmitted', 'plagiarism_compilatio') . ': ' . $cmpfile->filename . ")
+                </span>";
         }
 
         return $output;
@@ -362,7 +383,10 @@ class CompilatioDocumentFrame {
                 }
             }
 
-            $html .= "<span id='cmp-score-icons' class='d-flex' data-toggle='tooltip' data-html='true' title='{$tooltip}'>" . $icons . "</span>";
+            $html .=
+                "<span id='cmp-score-icons' class='d-flex' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
+                    " . $icons . "
+                </span>";
         }
 
         return $html;

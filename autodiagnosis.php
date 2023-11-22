@@ -129,13 +129,18 @@ if ($lastcron == null) {
         // We don't have data about frequency yet.
         if ($lastcron <= strtotime('-1 hour')) {
             // Cron hasn't been called within the previous hour.
-            $alerts[] = ['warning', get_string('cron_check', 'plagiarism_compilatio', userdate($lastcron)) . ' ' .
+            $alerts[] = [
+                'warning',
+                get_string('cron_check', 'plagiarism_compilatio', userdate($lastcron)) . ' ' .
                 get_string('cron_check_not_ok', 'plagiarism_compilatio') . ' ' .
-                get_string('cron_recommandation', 'plagiarism_compilatio')
+                get_string('cron_recommandation', 'plagiarism_compilatio'),
             ];
         } else {
-            $alerts[] = ['success', get_string('cron_check', 'plagiarism_compilatio', userdate($lastcron)) . ' ' .
-                get_string('cron_recommandation', 'plagiarism_compilatio')];
+            $alerts[] = [
+                'success',
+                get_string('cron_check', 'plagiarism_compilatio', userdate($lastcron)) . ' ' .
+                get_string('cron_recommandation', 'plagiarism_compilatio'),
+            ];
         }
     } else {
         if ($cronfrequency > 15 || $lastcron <= strtotime('-1 hour')) {// Warning.
@@ -148,13 +153,17 @@ if ($lastcron == null) {
 
             $alert .= get_string('cron_frequency', 'plagiarism_compilatio', $cronfrequency) . ' ';
 
-
-            $alerts[] = ['warning', $alert . get_string('cron_recommandation', 'plagiarism_compilatio')];
+            $alerts[] = [
+                'warning',
+                $alert . get_string('cron_recommandation', 'plagiarism_compilatio'),
+            ];
         } else {
             // Cron is called more than once every 15 minutes.
-            $alerts[] = ['success', get_string('cron_check', 'plagiarism_compilatio', userdate($lastcron)) . ' ' .
+            $alerts[] = [
+                'success',
+                get_string('cron_check', 'plagiarism_compilatio', userdate($lastcron)) . ' ' .
                 get_string('cron_frequency', 'plagiarism_compilatio', $cronfrequency) . ' ' .
-                get_string('cron_recommandation', 'plagiarism_compilatio')
+                get_string('cron_recommandation', 'plagiarism_compilatio'),
             ];
         }
     }

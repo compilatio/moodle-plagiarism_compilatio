@@ -85,25 +85,25 @@ class provider implements
 
         $collection->add_database_table('plagiarism_compilatio_file', [
             'userid'   => 'privacy:metadata:plagiarism_compilatio_file:userid',
-            'filename' => 'privacy:metadata:plagiarism_compilatio_file:filename'
+            'filename' => 'privacy:metadata:plagiarism_compilatio_file:filename',
         ], 'privacy:metadata:plagiarism_compilatio_file');
 
         $collection->add_database_table('plagiarism_compilatio_user', [
             'userid'       => 'privacy:metadata:plagiarism_compilatio_user:userid',
-            'compilatioid' => 'privacy:metadata:plagiarism_compilatio_user:compilatioid'
+            'compilatioid' => 'privacy:metadata:plagiarism_compilatio_user:compilatioid',
         ], 'privacy:metadata:plagiarism_compilatio_user');
 
         $collection->add_external_location_link('External Compilatio Document', [
             'authors'   => 'privacy:metadata:external_compilatio_document:authors',
             'depositor' => 'privacy:metadata:external_compilatio_document:depositor',
-            'filename'  => 'privacy:metadata:external_compilatio_document:filename'
+            'filename'  => 'privacy:metadata:external_compilatio_document:filename',
         ], 'privacy:metadata:external_compilatio_document');
 
         $collection->add_external_location_link('External Compilatio User', [
             'firstname' => 'privacy:metadata:external_compilatio_user:firstname',
             'lastname'  => 'privacy:metadata:external_compilatio_user:lastname',
             'email'     => 'privacy:metadata:external_compilatio_user:email',
-            'username'  => 'privacy:metadata:external_compilatio_user:username'
+            'username'  => 'privacy:metadata:external_compilatio_user:username',
         ], 'privacy:metadata:external_compilatio_user');
 
         return $collection;

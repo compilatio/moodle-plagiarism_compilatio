@@ -93,7 +93,7 @@ class CompilatioSendFile {
         $params = [
             "cm" => $cmid,
             "userid" => $userid,
-            "identifier" => $cmpfile->identifier
+            "identifier" => $cmpfile->identifier,
         ];
         if (!empty($DB->get_record("plagiarism_compilatio_file", $params))) {
             return false;
@@ -218,7 +218,7 @@ class CompilatioSendFile {
             if (empty($f)) {
                 return;
             }
-    
+
             $fs = get_file_storage();
             $file = $fs->get_file_by_id($f->id);
 
@@ -255,16 +255,16 @@ class CompilatioSendFile {
         return false;
     }
 
-    private static function set_depositor_and_authors ($userid, $cmid) {
+    private static function set_depositor_and_authors($userid, $cmid) {
         global $DB;
 
         $depositor = $DB->get_record("user", ["id" => $userid], 'firstname, lastname, email');
 
         if (empty($depositor)) {
             $depositor = (object) [
-                'firstname' => 'not_found', 
+                'firstname' => 'not_found',
                 'lastname' => 'not_found',
-                'email' => null
+                'email' => null,
             ];
         }
 

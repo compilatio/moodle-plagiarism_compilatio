@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/csv.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/icons.php');
 
 /**
  * CompilatioFrame class
@@ -117,14 +118,14 @@ class CompilatioFrame {
         if ($webservicestatus != null && $webservicestatus === '0') {
             $alerts[] = [
                 'class' => 'danger',
-                'content' => get_string('webservice_unreachable', 'plagiarism_compilatio')
+                'content' => get_string('webservice_unreachable', 'plagiarism_compilatio'),
             ];
         }
 
         if (get_config('plagiarism_compilatio', 'read_only_apikey') === '1') {
             $alerts[] = [
                 'class' => 'danger',
-                'content' => get_string('read_only_apikey', 'plagiarism_compilatio')
+                'content' => get_string('read_only_apikey', 'plagiarism_compilatio'),
             ];
         }
 
@@ -142,7 +143,7 @@ class CompilatioFrame {
             if ($countunsend !== 0) {
                 $alerts[] = [
                     'class' => 'danger',
-                    'content' => get_string('unsent_docs', 'plagiarism_compilatio')
+                    'content' => get_string('unsent_docs', 'plagiarism_compilatio'),
                 ];
                 $sendalldocs = true;
             }
@@ -204,13 +205,11 @@ class CompilatioFrame {
             }
         }
 
-        $output = "<div id='cmp-display-frame' style='display:none;' title='" . get_string('show_area', 'plagiarism_compilatio') . "'>
+        $output =
+            "<div id='cmp-display-frame' style='display:none;' title='" . get_string('show_area', 'plagiarism_compilatio') . "'>
                 <img src='" . new moodle_url("/plagiarism/compilatio/pix/c-net.svg") . "'>
                 <i class='cmp-icon ml-2 fa-2x fa fa-bars'></i>
-                <svg id='cmp-bell' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512' height='1em' style='display:none;'>
-                    <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                    <path fill='#616262' d='M224 0c-17.7 0-32 14.3-32 32V51.2C119 66 64 130.6 64 208v18.8c0 47-17.3 92.4-48.5 127.6l-7.4 8.3c-8.4 9.4-10.4 22.9-5.3 34.4S19.4 416 32 416H416c12.6 0 24-7.4 29.2-18.9s3.1-25-5.3-34.4l-7.4-8.3C401.3 319.2 384 273.9 384 226.8V208c0-77.4-55-142-128-156.8V32c0-17.7-14.3-32-32-32zm45.3 493.3c12-12 18.7-28.3 18.7-45.3H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7z'/>
-                </svg>
+                " . CompilatioIcons::bell() . "
             </div>";
 
         $output .= "<div id='cmp-container'>";
@@ -226,7 +225,13 @@ class CompilatioFrame {
             "' class='cmp-icon fa fa-question-circle'></i>";
 
         // Stat icon.
-        $output .= "<i id='show-stats' title='" . get_string('display_stats', 'plagiarism_compilatio') . "' class='cmp-icon fa fa-bar-chart'></i>";
+        $output .=
+            "<i
+                id='show-stats'
+                title='" . get_string('display_stats', 'plagiarism_compilatio') . "'
+                class='cmp-icon fa fa-bar-chart'
+            >
+            </i>";
 
         if ($plagiarismsettings['enable_search_tab']) {
             // Search icon.
@@ -237,7 +242,12 @@ class CompilatioFrame {
         // Alert icon.
         if (count($alerts) !== 0) {
             $output .= "<span>
-                <i id='cmp-show-notifications' title='" . get_string("display_notifications", "plagiarism_compilatio") . "' class='cmp-icon fa fa-bell'></i>
+                <i
+                    id='cmp-show-notifications'
+                    title='" . get_string("display_notifications", "plagiarism_compilatio") . "'
+                    class='cmp-icon fa fa-bell'
+                >
+                </i>
                 <span id='cmp-count-alerts' class='badge badge-pill badge-danger'>" . count($alerts) . "</span>
             </span>";
         }
@@ -245,7 +255,12 @@ class CompilatioFrame {
         // Display buttons.
         if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
             if ($startallanalyses) {
-                $output .= "<button id='cmp-start-btn' title='" . get_string('start_all_analysis', 'plagiarism_compilatio') . "' class='btn btn-primary cmp-action-btn mx-1'>
+                $output .=
+                    "<button
+                        id='cmp-start-btn'
+                        title='" . get_string('start_all_analysis', 'plagiarism_compilatio') . "'
+                        class='btn btn-primary cmp-action-btn mx-1'
+                    >
                         <i class='cmp-icon-lg fa fa-play-circle'></i>
                     </button>";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
@@ -253,7 +268,12 @@ class CompilatioFrame {
             }
 
             if ($sendalldocs) {
-                $output .= "<button id='cmp-send-btn' title='" . get_string('send_all_documents', 'plagiarism_compilatio') . "' class='btn btn-primary cmp-action-btn mx-1'>
+                $output .=
+                    "<button
+                        id='cmp-send-btn'
+                        title='" . get_string('send_all_documents', 'plagiarism_compilatio') . "'
+                        class='btn btn-primary cmp-action-btn mx-1'
+                    >
                         <i class='cmp-icon-lg fa fa-paper-plane'></i>
                     </button>";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'sendUnsentDocs',
@@ -261,7 +281,12 @@ class CompilatioFrame {
             }
 
             if ($resetdocsinerror) {
-                $output .= "<button id='cmp-reset-btn' title='" . get_string('reset_docs_in_error', 'plagiarism_compilatio') . "' class='btn btn-primary cmp-action-btn mx-1'>
+                $output .=
+                    "<button
+                        id='cmp-reset-btn'
+                        title='" . get_string('reset_docs_in_error', 'plagiarism_compilatio') . "'
+                        class='btn btn-primary cmp-action-btn mx-1'
+                    >
                         <i class='cmp-icon-lg fa fa-rotate-right'></i>
                     </button>";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'resetDocsInError',
@@ -269,7 +294,13 @@ class CompilatioFrame {
             }
         }
 
-        $output .= "<i id='cmp-hide-frame' title='" . get_string('hide_area', 'plagiarism_compilatio') . "' class='cmp-icon pl-3 fa fa-bars'></i>";
+        $output .=
+            "<i
+                id='cmp-hide-frame'
+                title='" . get_string('hide_area', 'plagiarism_compilatio') . "'
+                class='cmp-icon pl-3 fa fa-bars'
+            >
+            </i>";
 
         $output .= "</div>";
 

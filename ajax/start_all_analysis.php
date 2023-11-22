@@ -75,7 +75,7 @@ if (count($plagiarismfiles) === 0) {
     if ($countsuccess > 0) {
         $SESSION->compilatio_alerts[] = [
             'class' => 'info',
-            'content' => get_string('analysis_started', 'plagiarism_compilatio', $countsuccess)
+            'content' => get_string('analysis_started', 'plagiarism_compilatio', $countsuccess),
         ];
     }
 

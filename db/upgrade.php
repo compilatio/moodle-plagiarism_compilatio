@@ -88,7 +88,6 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                 }
                 if ($matches[1] == 'not expected') {
                     $table = new xmldb_table($tablename);
-                    //$dbman->drop_table($table);
                     $tablestodelete[] = $table;
                     echo("drop table '" . $tablename . "'");
                 }
@@ -113,7 +112,6 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                             echo("drop index '" . $k . "' => ");
                         }
                     }
-                    //$dbman->drop_field($table, $field);
                     $fieldstodelete[] = ['table' => $table, 'field' => $field];
                     echo("drop field '" . $matches[1] . "'");
                 } else {
@@ -273,7 +271,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
             'allow_analyses_auto'            => 'enable_analyses_auto',
             'allow_teachers_to_show_reports' => 'enable_show_reports',
             'allow_student_analyses'         => 'enable_student_analyses',
-            'allow_search_tab'               => 'enable_search_tab'
+            'allow_search_tab'               => 'enable_search_tab',
         ];
 
         foreach ($settings as $oldsetting => $newsetting) {
@@ -311,7 +309,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                 'analysistime'      => $config['compilatio_timeanalyse'],
                 'warningthreshold'  => $config['green_threshold'],
                 'criticalthreshold' => $config['orange_threshold'],
-                'defaultindexing'   => $config['indexing_state']
+                'defaultindexing'   => $config['indexing_state'],
             ];
 
             $DB->insert_record('plagiarism_compilatio_cm_cfg', $v3config);
@@ -351,10 +349,10 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                     418 => 'error_analysis_failed',
                     'Analyzed' => 'scored',
                     'In queue' => 'queue',
-                    'pending' => 'error_sending_failed'
+                    'pending' => 'error_sending_failed',
                 ];
 
-                if (preg_match('~^post-\d+-\d+-\d+.htm$~', $file->filename)) {  
+                if (preg_match('~^post-\d+-\d+-\d+.htm$~', $file->filename)) {
                     $filename = 'forum' . substr($file->filename, strrpos($file->filename, '-'));
                 } else {
                     $filename = $file->filename;
@@ -374,7 +372,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                     'utlscore'        => $file->utlscore ?? null,
                     'aiscore'         => $file->aiscore ?? null,
                     'timesubmitted'   => $file->timesubmitted,
-                    'reporturl'       => $reporturl
+                    'reporturl'       => $reporturl,
                 ];
 
                 $DB->insert_record('plagiarism_compilatio_file', $v3file);

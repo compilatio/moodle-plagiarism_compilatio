@@ -49,7 +49,7 @@ if ($countsuccess > 0) {
     $SESSION->compilatio_alerts = [
         [
             'class' => 'info',
-            'content' => get_string('document_sent', 'plagiarism_compilatio', $countsuccess)
-        ]
+            'content' => get_string('document_sent', 'plagiarism_compilatio', $countsuccess),
+        ],
     ];
 }

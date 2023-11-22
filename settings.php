@@ -56,7 +56,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         'enable_student_analyses',
         'enable_analyses_auto',
         'disable_ssl_verification',
-        'keep_docs_indexed'
+        'keep_docs_indexed',
     ];
 
     foreach ($elements as $elem) {

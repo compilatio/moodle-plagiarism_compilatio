@@ -46,18 +46,39 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
         $plugin->add_child($pluginwrapper);
 
         $compilatioconfigs = new backup_nested_element('compilatio_modules');
-        $compilatioconfig = new backup_nested_element('compilatio_module', ['id'],
-            ['folderid', 'userid', 'activated', 'showstudentreport', 'showstudentscore', 'studentanalyses',
-                'analysistype', 'analysistime', 'warningthreshold', 'criticalthreshold', 'defaultindexing']);
+        $compilatioconfig = new backup_nested_element('compilatio_module', ['id'], [
+            'folderid',
+            'userid',
+            'activated',
+            'showstudentreport',
+            'showstudentscore',
+            'studentanalyses',
+            'analysistype',
+            'analysistime',
+            'warningthreshold',
+            'criticalthreshold',
+            'defaultindexing',
+        ]);
         $pluginwrapper->add_child($compilatioconfigs);
         $compilatioconfigs->add_child($compilatioconfig);
         $compilatioconfig->set_source_table('plagiarism_compilatio_module', ['cmid' => backup::VAR_PARENTID]);
 
         // Now information about files to module.
         $compilatiofiles = new backup_nested_element('compilatio_files');
-        $compilatiofile = new backup_nested_element('compilatio_file', ['id'],
-            ['userid', 'identifier', 'filename', 'externalid',
-                'status', 'globalscore', 'aiscore', 'utlscore', 'similarityscore', 'timesubmitted', 'indexed', 'reporturl']);
+        $compilatiofile = new backup_nested_element('compilatio_file', ['id'], [
+            'userid',
+            'identifier',
+            'filename',
+            'externalid',
+            'status',
+            'globalscore',
+            'aiscore',
+            'utlscore',
+            'similarityscore',
+            'timesubmitted',
+            'indexed',
+            'reporturl',
+        ]);
 
         $pluginwrapper->add_child($compilatiofiles);
         $compilatiofiles->add_child($compilatiofile);
@@ -85,8 +106,10 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
         $compilatioconfig = new backup_nested_element('compilatio_config', ['id'], ['plugin', 'name', 'value']);
         $pluginwrapper->add_child($compilatioconfigs);
         $compilatioconfigs->add_child($compilatioconfig);
-        $compilatioconfig->set_source_table('config_plugins', ['name' => backup::VAR_PARENTID,
-            'plugin' => backup_helper::is_sqlparam('plagiarism_compilatio_course')]);
+        $compilatioconfig->set_source_table('config_plugins', [
+            'name' => backup::VAR_PARENTID,
+            'plugin' => backup_helper::is_sqlparam('plagiarism_compilatio_course'),
+        ]);
         return $plugin;
     }
 }

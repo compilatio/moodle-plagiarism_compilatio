@@ -304,7 +304,7 @@ class CompilatioEventHandler {
             if (trim($content) != "") {
                 $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
 
-                if (str_word_count(utf8_decode(strip_tags($content))) >= $nbmotsmin) {
+                if (str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) >= $nbmotsmin) {
                     CompilatioSendFile::send_file($cmid, $userid, null, $filename, $content);
                 }
             }
@@ -415,7 +415,7 @@ class CompilatioEventHandler {
 
                 // Online text content.
                 $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
-                if (str_word_count(utf8_decode(strip_tags($content))) >= $nbmotsmin) {
+                if (str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) >= $nbmotsmin) {
                     $question = "Q" . $answer->get_question_id();
                     $filename = "quiz-{$attemptid}-{$question}.htm";
 

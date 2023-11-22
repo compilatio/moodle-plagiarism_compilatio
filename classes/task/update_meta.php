@@ -25,6 +25,8 @@
 
 namespace plagiarism_compilatio\task;
 
+defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 /**
@@ -62,7 +64,7 @@ class update_meta extends \core\task\scheduled_task {
             phpversion(),
             $CFG->release,
             get_config('plagiarism_compilatio', 'version'),
-            $CFG->lang, 
+            $CFG->lang,
             get_config('plagiarism_compilatio', 'cron_frequency') ?? 0
         );
 
