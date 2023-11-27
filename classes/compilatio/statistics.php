@@ -39,14 +39,14 @@ class CompilatioStatistics {
 
         $sql = "SELECT cm,
                 course.id,
-                course.fullname 'course',
-                modules.name 'module_type',
+                course.fullname course,
+                modules.name module_type,
                 CONCAT(COALESCE(assign.name, ''), COALESCE(forum.name, ''), COALESCE(workshop.name, ''),
-                COALESCE(quiz.name, '')) 'module_name',
-                AVG(globalscore) 'avg',
-                MIN(globalscore) 'min',
-                MAX(globalscore) 'max',
-                COUNT(DISTINCT plagiarism_compilatio_file.id) 'count'
+                COALESCE(quiz.name, '')) module_name,
+                AVG(globalscore) avg,
+                MIN(globalscore) min,
+                MAX(globalscore) max,
+                COUNT(DISTINCT plagiarism_compilatio_file.id) count
             FROM {plagiarism_compilatio_file} plagiarism_compilatio_file
             JOIN {course_modules} course_modules
                 ON plagiarism_compilatio_file.cm = course_modules.id
@@ -71,7 +71,8 @@ class CompilatioStatistics {
 
         $results = [];
         foreach ($rows as $row) {
-            $query = "SELECT usr.id 'userid', usr.firstname 'firstname', usr.lastname 'lastname'
+            error_log(var_export($row,true));
+            $query = "SELECT usr.id userid, usr.firstname firstname, usr.lastname lastname
                 FROM {course} course
                 JOIN {context} context ON context.instanceid= course.id
                 JOIN {role_assignments} role_assignments ON role_assignments.contextid= context.id

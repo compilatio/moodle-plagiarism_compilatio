@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 el.setAttribute('data-sorter', 'compilatioUrlSorter');
                 break;
             case 2:
-                el.setAttribute('data-field', 'assign');
+                el.setAttribute('data-field', 'activity');
                 el.setAttribute('data-sortable', 'true');
                 el.setAttribute('data-sorter', 'compilatioUrlSorter');
                 break;
