@@ -70,7 +70,6 @@ class CompilatioDocumentFrame {
         if (!empty($linkarray['content'])) {
             $identifier = sha1($linkarray['content']);
         } else if (!empty($linkarray['file'])) {
-            $filename = $linkarray['file']->get_filename();
             $identifier = $linkarray['file']->get_contenthash();
         } else {
             return $output;
@@ -159,7 +158,6 @@ class CompilatioDocumentFrame {
             $canviewreport,
             $isteacher,
             $url,
-            $filename,
             $domid,
         ]);
 
@@ -177,8 +175,7 @@ class CompilatioDocumentFrame {
         $cmpfileid,
         $canviewreport,
         $isteacher,
-        $url,
-        $filename
+        $url
     ) {
 
         global $DB, $CFG;
@@ -309,14 +306,6 @@ class CompilatioDocumentFrame {
                 <img class='cmp-small-logo' src='" . new moodle_url("/plagiarism/compilatio/pix/c.svg") . "'>
                 " . self::get_indexing_state($indexed) . $score . $documentframe . "
             </div>";
-
-        // Now check for differing filename and display info related to it.
-        if (isset($filename, $cmpfile->filename) && $filename !== $cmpfile->filename) {
-            $output .=
-                "<span class='cmp-prevsubmitted'>
-                    (" . get_string('previouslysubmitted', 'plagiarism_compilatio') . ': ' . $cmpfile->filename . ")
-                </span>";
-        }
 
         return $output;
     }

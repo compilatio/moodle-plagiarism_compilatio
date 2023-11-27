@@ -39,7 +39,6 @@ $cmpfileid = required_param('cmpfileid', PARAM_RAW);
 $canviewreport = required_param('canviewreport', PARAM_BOOL);
 $isteacher = required_param('isteacher', PARAM_BOOL);
 $url = required_param('url', PARAM_RAW);
-$filename = required_param('filename', PARAM_RAW);
 
 echo CompilatioDocumentFrame::display_document_frame(
     $cantriggeranalysis,
@@ -47,6 +46,5 @@ echo CompilatioDocumentFrame::display_document_frame(
     $cmpfileid,
     $canviewreport,
     $isteacher,
-    $url,
-    $filename
+    $url
 );

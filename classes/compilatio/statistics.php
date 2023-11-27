@@ -71,7 +71,6 @@ class CompilatioStatistics {
 
         $results = [];
         foreach ($rows as $row) {
-            error_log(var_export($row,true));
             $query = "SELECT usr.id userid, usr.firstname firstname, usr.lastname lastname
                 FROM {course} course
                 JOIN {context} context ON context.instanceid= course.id

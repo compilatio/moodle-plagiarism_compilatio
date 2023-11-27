@@ -258,7 +258,7 @@ class CompilatioEventHandler {
 
             foreach ($files as $file) {
                 compilatio_delete_files($files);
-                send_file_oskour($file);
+                CompilatioSendFile::retrieve_and_send_file($file);
             }
         }
     }
@@ -394,7 +394,7 @@ class CompilatioEventHandler {
 
         $attemptid = $event['objectid'];
 
-        $attempt = \mod_quiz\quiz_attempt::create($attemptid);
+        $attempt = $CFG->version < 2023100900 ? \quiz_attempt::create($attemptid) : \mod_quiz\quiz_attempt::create($attemptid);
         $userid = $attempt->get_userid();
         $cmid = $attempt->get_cmid();
 
