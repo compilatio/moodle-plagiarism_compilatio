@@ -103,7 +103,8 @@ class CompilatioAnalyses {
                 $scores = $doc->light_reports->$recipe->scores;
 
                 $cmpfile->status = 'scored';
-                $cmpfile->globalscore = round($scores->displayed_similarity_percent ?? 0);
+                $globalscore = $recipe == 'anasim-premium' ? $scores->global_score_percent : $scores->displayed_similarity_percent;
+                $cmpfile->globalscore = round($globalscore ?? 0);
 
                 $cmpfile->similarityscore = isset($scores->similarity_percent)
                     ? round($scores->similarity_percent)

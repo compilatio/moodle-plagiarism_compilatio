@@ -207,7 +207,7 @@ class CompilatioFrame {
 
         $output =
             "<div id='cmp-display-frame' style='display:none;' title='" . get_string('show_area', 'plagiarism_compilatio') . "'>
-                <img src='" . new moodle_url("/plagiarism/compilatio/pix/c-net.svg") . "'>
+                <img src='" . new moodle_url("/plagiarism/compilatio/pix/c.svg") . "'>
                 <i class='cmp-icon ml-2 fa-2x fa fa-bars'></i>
                 " . CompilatioIcons::bell() . "
             </div>";

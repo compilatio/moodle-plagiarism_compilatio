@@ -526,6 +526,9 @@ class CompilatioAPI {
             'tags' => [
                 'stable',
             ],
+            'params' => [
+                'origin' => 'LMS-Moodle',
+            ],
         ];
 
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post', json_encode($params)));

@@ -64,8 +64,10 @@ if ($isteacher) {
     $lang = substr(current_language(), 0, 2);
     $lang = in_array($lang, ['fr', 'en', 'it', 'es', 'de', 'pt']) ? $lang : 'fr';
 
-    if (isset($doc->analyses->anasim->id)) {
-        $filepath = $compilatio->get_pdf_report($doc->analyses->anasim->id, $lang, $reporttype);
+    $recipe = get_config('plagiarism_compilatio', 'recipe');
+
+    if (isset($doc->analyses->$recipe->id)) {
+        $filepath = $compilatio->get_pdf_report($doc->analyses->$recipe->id, $lang, $reporttype);
 
         if (is_file($filepath)) {
             header('HTTP/1.1 200 OK');
