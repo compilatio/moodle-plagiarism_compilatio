@@ -118,12 +118,12 @@ $string['reporttype_help'] = "<p>There are 2 possible options :</p>
     <li><strong> Detailed report :</strong> The student will have access to the report PDF version.</li>
 </ul>";
 $string['thresholds_settings'] = "Limits :";
-$string['thresholds_description'] = "Indicate the threshold that you want to use, in order to facilitate the finding of analysis report (% of similarities) :";
+$string['thresholds_description'] = "Indicate the threshold that you want to use, in order to facilitate the finding of analysis report (% of suspicious texts) :";
 $string['numeric_threshold'] = "Threshold must be a number.";
 $string['green_threshold'] = "Green up to";
 $string['orange_threshold'] = "Orange up to";
 $string['red_threshold'] = "red otherwise";
-$string['similarity_percent'] = '% of similarities';
+$string['similarity_percent'] = '% of suspicious texts';
 $string['studentanalyses'] = "Allow students to analyse their documents";
 $string['studentanalyses_help'] = "This allows students to analyse their draft files with Compilatio Magister, before final submission to the teacher.";
 $string['activate_submissiondraft'] = 'To allow students to analyse their drafts, you must enable the <b>{$a}</b> option in the section';

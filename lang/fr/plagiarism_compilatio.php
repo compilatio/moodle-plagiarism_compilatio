@@ -117,13 +117,13 @@ $string['reporttype_help'] = "<p>Vous disposez de deux options :</p>
     <li><strong> Certificat d'analyse :</strong> L'étudiant aura accès au certificat d'analyse de son document.</li>
     <li><strong> Rapport détaillé :</strong> L'étudiant aura accès à la version PDF du rapport.</li>
 </ul>";
-$string['thresholds_settings'] = "Réglage des seuils d'affichage des taux de similitudes :";
-$string['thresholds_description'] = "Indiquez les seuils que vous souhaitez utiliser, afin de faciliter le repérage des rapports d’analyse (% de similitudes) : ";
+$string['thresholds_settings'] = "Réglage des seuils d'affichage des taux de textes suspects :";
+$string['thresholds_description'] = "Indiquez les seuils que vous souhaitez utiliser, afin de faciliter le repérage des rapports d’analyse (% de textes suspects) : ";
 $string['numeric_threshold'] = "Le seuil doit être numérique.";
 $string['green_threshold'] = "Vert jusqu'à";
 $string['orange_threshold'] = "Orange jusqu'à";
 $string['red_threshold'] = "rouge au delà";
-$string['similarity_percent'] = "% de similitudes";
+$string['similarity_percent'] = "% de textes suspects";
 $string['studentanalyses'] = "Permettre aux étudiants d'analyser leurs documents";
 $string['studentanalyses_help'] = "Ceci permet aux étudiants d'analyser leur fichiers en brouillon avec Compilatio Magister, avant le rendu final à l'enseignant.";
 $string['activate_submissiondraft'] = 'Pour permettre aux étudiants d\'analyser leurs brouillons, vous devez activer l\'option <b>{$a}</b> dans la partie';
@@ -139,7 +139,7 @@ $string['defaultupdated'] = "Les valeurs par défaut ont été mises à jour";
 $string['defaults_desc'] = "Les paramètres suivants sont utilisés comme valeurs par défaut dans les activités de Moodle intégrant Compilatio.";
 
 // Compilatio document frame.
-$string["title_score"] = 'Analyse terminée: {$a}% de similitudes.';
+$string["title_score"] = 'Analyse terminée: {$a}% de textes suspects.';
 $string["title_score_teacher"] = 'Si vous avez ignoré des sources dans le rapport, cliquez ici pour mettre à jour le score.';
 $string['btn_unsent'] = 'Envoyer';
 $string['title_unsent'] = "Envoyer le document à Compilatio";
