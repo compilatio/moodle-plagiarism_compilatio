@@ -193,9 +193,9 @@ $string['numeric_threshold'] = "Threshold must be a number.";
 $string['green_threshold'] = "Green up to";
 $string['orange_threshold'] = "Orange up to";
 $string['red_threshold'] = "red otherwise";
-$string['similarity_percent'] = '% of similarities';
+$string['similarity_percent'] = '% of suspicious texts';
 $string['thresholds_settings'] = "Limits :";
-$string['thresholds_description'] = "Indicate the threshold that you want to use, in order to facilitate the finding of analysis report (% of similarities) :";
+$string['thresholds_description'] = "Indicate the threshold that you want to use, in order to facilitate the finding of analysis report (% of suspicious texts) :";
 // Student submit.
 $string['compi_student_analyses'] = "Allow students to analyse their documents";
 $string['compi_student_analyses_help'] = "This allows students to analyse their draft files with Compilatio Magister, before final submission to the teacher.";
