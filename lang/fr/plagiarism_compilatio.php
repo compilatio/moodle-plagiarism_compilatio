@@ -34,6 +34,7 @@ $string['compilatioexplain'] = 'Pour obtenir des informations complémentaires s
 $string['apikey'] = 'Clé API';
 $string['apikey_help'] = "Code personnel fourni par Compilatio pour accéder à l'API";
 $string['enabledandworking'] = 'Le plugin Compilatio est actif et fonctionnel.';
+$string['wrong_apikey_type'] = 'La clé API saisie n\'est pas valide, si vous avez récemment mis à jour la version de votre plugin Compilatio contactez le support (support@compilatio.net) pour obtenir une nouvelle clé';
 $string['saved_config_failed'] = "<strong>La combinaison adresse - clé API est incorrecte. Le plugin est désactivé, merci de réessayer.<br/>
     La page d'<a href='autodiagnosis.php'>auto-diagnostic</a> peut vous aider à configurer ce plugin.</strong><br/>
     Erreur :";

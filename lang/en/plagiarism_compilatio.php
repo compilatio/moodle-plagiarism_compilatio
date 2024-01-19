@@ -34,6 +34,7 @@ $string['compilatioexplain'] = 'For more information on this plugin see: <a href
 $string['apikey'] = 'API key';
 $string['apikey_help'] = 'Personal code provided by Compilatio to access the API';
 $string['enabledandworking'] = 'The Compilatio plugin is enabled and working.';
+$string['wrong_apikey_type'] = 'The API key entered is not valid, if you have recently updated the version of your Compilatio plugin contact support (support@compilatio.net) to obtain a new key';
 $string['saved_config_failed'] = '<strong>The combination API key - adress entered is invalid. Compilatio is disabled, please try again.<br/>
     The <a href="autodiagnosis.php">auto-diagnosis</a> page can help you to configure this plugin.</strong><br/>
     Error :';

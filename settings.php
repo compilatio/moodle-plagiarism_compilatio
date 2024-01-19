@@ -145,6 +145,10 @@ if (!empty($plagiarismsettings['enabled'])) {
             . get_string('subscription', 'plagiarism_compilatio') . "<ul class='m-0'>" . $subscriptioninfos . '</ul>',
             'notifysuccess'
         );
+    } else if ($validapikey !== true && $validapikey == 'Forbidden') { 
+     // Disable compilatio as this config isn't correct.
+     set_config('enabled', 0, 'plagiarism_compilatio');
+     echo $OUTPUT->notification(get_string('wrong_apikey_type', 'plagiarism_compilatio'));
     } else {
         // Disable compilatio as this config isn't correct.
         set_config('enabled', 0, 'plagiarism_compilatio');
