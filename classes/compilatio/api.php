@@ -590,7 +590,7 @@ class CompilatioAPI {
      * @return mixed                    Return true if succeed, an error message otherwise
      */
     public function set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency) {
-        $endpoint = '/api/private/moodle-configuration/add';
+        $endpoint = '/api/private/moodle-configuration';
         $params = [
             'php_version' => $releasephp,
             'moodle_version' => $releasemoodle,
