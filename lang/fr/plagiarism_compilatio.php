@@ -165,8 +165,7 @@ $string['btn_error_too_long'] = 'Document trop long';
 $string['title_error_too_long'] = 'Ce document contient trop de mots pour être analysé. Taille maximale : {$a} mots';
 $string['btn_error_not_found'] = 'Document non trouvé';
 $string['title_error_not_found'] = "Ce document n'a pas été trouvé. Veuillez contacter votre administrateur de moodle. Erreur : document non trouvé pour cette clé API.";
-$string['ai_score_not_inclued'] = "non inclus dans l'abonnement";
-
+$string['ai_score_not_inclued'] = "non inclus dans votre abonnement";
 
 $string['tooltip_detailed_scores'] = '% de textes suspects, dont :';
 $string['similarityscore'] = 'Similitudes';

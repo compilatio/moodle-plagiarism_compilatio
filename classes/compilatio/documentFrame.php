@@ -387,7 +387,7 @@ class CompilatioDocumentFrame {
                     $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
                 }
 
-                
+
             }
             $score = "aiscore";
             $message = get_string('ai_score_not_inclued', 'plagiarism_compilatio');
