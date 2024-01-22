@@ -275,8 +275,9 @@ $string['goto_compilatio_service_status'] = "Voir l'état des services Compilati
 $string['helpcenter'] = "Accédez au centre d'aide Compilatio pour l'utilisation du plugin Compilatio dans Moodle.";
 $string['admin_goto_helpcenter'] = "Accédez au centre d'aide Compilatio pour voir des articles relatifs à l'administration du plugin Moodle.";
 $string['helpcenter_error'] = "Nous ne pouvons pas vous connecter automatiquement au centre d'aide. Veuillez ré-essayer ultérieurement ou vous y rendre directement grâce au lien suivant : ";
-$string['element_inclued_in_subsciption_Magister'] = "Votre abonnement comprend : <ul><li>la détection de similitudes</li><li>la détection d'obfuscation</li></ul> Votre abonnement ne comprend pas la détection de texte rédigé par IA.";
-$string['element_inclued_in_subsciption_Magister_plus'] = "Votre abonnement comprend : <ul><li>la détection de similitudes</li><li>la détection de texte rédigé par IA</li><li>la détection d'obfuscation</li></ul>";
+$string['element_included_in_subscription'] = "Votre abonnement comprend : <ul><li>la détection de similitudes</li><li>la détection d'obfuscation";
+$string['AI_included_in_subscription_Magister_plus'] = "la détection de texte rédigé par IA</li></ul>";
+$string['AI_not_included_in_subscription'] = "Votre abonnement ne comprend pas la détection de texte rédigé par IA.";
 
 
 // Auto diagnostic page.

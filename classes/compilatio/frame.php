@@ -311,11 +311,16 @@ class CompilatioFrame {
         $output .= "<div id='cmp-help' class='cmp-tabs-content'>
             <p>" . get_string('similarities_disclaimer', 'plagiarism_compilatio') . "</p>";
 
+        // Elements included in subscription
+        $output .= "<p>" . get_string('element_included_in_subscription', 'plagiarism_compilatio');
+
         if (get_config('plagiarism_compilatio', 'recipe') === 'anasim-premium') {
-            $output .= "<p>" . get_string('element_inclued_in_subsciption_Magister_plus', 'plagiarism_compilatio'). "</p>";
+            $output .= "<li>" . get_string('AI_included_in_subscription_Magister_plus', 'plagiarism_compilatio'). "</li></ul></p>";
         } else {
-            $output .= "<p>" . get_string('element_inclued_in_subsciption_Magister', 'plagiarism_compilatio'). "</p>";
+            $output .= "</ul>" . get_string('AI_not_included_in_subscription', 'plagiarism_compilatio'). "</p>";
         }
+
+
 
         if ($module == 'quiz') {
             $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');

@@ -274,8 +274,9 @@ $string['goto_compilatio_service_status'] = "See Compilatio services status.";
 $string['helpcenter'] = "Access the Compilatio Help Center for the using of Compilatio plugin in Moodle.";
 $string['admin_goto_helpcenter'] = "Access the Compilatio Help Center to see articles related to administration of the Moodle plugin.";
 $string['helpcenter_error'] = "We can't automatically connect you to the help centre. Please try again later or go there directly using the following link : ";
-$string['element_inclued_in_subsciption_Magister'] = "Your subscription includes: <ul><li>Similarity detection</li><li>Obfuscation detection</li></ul> Your subscription does not include AI text detection ";
-$string['element_inclued_in_subsciption_Magister_plus'] = "Your subscription includes: <ul><li>Similarity detection</li><li>IA text generation detection</li><li>Obfuscation detection</li></ul>";
+$string['element_included_in_subscription'] = "Your subscription includes: <ul><li>similarity detection</li><li>obfuscation detection";
+$string['AI_included_in_subscription_Magister_plus'] = "detection of text written by AI</li></ul>";
+$string['AI_not_included_in_subscription'] = "Your subscription does not include AI text detection.";
 
 // Auto diagnostic page.
 $string["auto_diagnosis_title"] = "Auto-diagnosis";
