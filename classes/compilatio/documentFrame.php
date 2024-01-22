@@ -177,7 +177,6 @@ class CompilatioDocumentFrame {
         $isteacher,
         $url
     ) {
-
         global $DB, $CFG;
 
         $cmpfile = $DB->get_record('plagiarism_compilatio_file', ['id' => $cmpfileid]);
@@ -306,7 +305,7 @@ class CompilatioDocumentFrame {
                 <img class='cmp-small-logo' src='" . new moodle_url("/plagiarism/compilatio/pix/c.svg") . "'>
                 " . self::get_indexing_state($indexed) . $score . $documentframe . "
             </div>";
-
+        error_log($output);
         return $output;
     }
 
@@ -371,6 +370,28 @@ class CompilatioDocumentFrame {
                     $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
                 }
             }
+
+            $html .=
+                "<span id='cmp-score-icons' class='d-flex' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
+                    " . $icons . "
+                </span>";
+        } else {
+            $scores = ['similarityscore', 'utlscore'];
+            $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
+            $icons = '';
+
+            foreach ($scores as $score) {
+                $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
+                $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
+                if (isset($cmpfile->$score)) {
+                    $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
+                }
+
+                
+            }
+            $score = "aiscore";
+            $message = get_string('ai_score_not_inclued', 'plagiarism_compilatio');
+            $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
 
             $html .=
                 "<span id='cmp-score-icons' class='d-flex' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
