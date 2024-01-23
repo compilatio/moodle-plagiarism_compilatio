@@ -36,6 +36,11 @@ require_login();
 global $DB, $SESSION;
 
 $cmid = required_param('cmid', PARAM_TEXT);
+//$selectedUsers = required_param('selectedUsers', PARAM_RAW);
+
+//Ajouter un if verifiant le tableau, en cas de empty: sql normal, sinon: ajouter une clause au where pour le userid
+
+
 
 $plugincm = compilatio_cm_use($cmid);
 
@@ -47,6 +52,8 @@ if ($plugincm->analysistype == 'manual') {
 
     $sql = "cm = ? AND status = 'sent'";
     $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_file', $sql, [$cmid]);
+
+    error_log("tetetet");
 
     foreach ($plagiarismfiles as $file) {
 

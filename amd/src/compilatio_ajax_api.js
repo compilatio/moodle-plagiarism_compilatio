@@ -23,10 +23,21 @@ define(['jquery'], function($) {
             startAllAnalysis.click(function() {
                 disableCompilatioButtons();
                 $("#cmp-notices").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
-                $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
-                {'cmid': cmid}, function() {
-                    window.location.reload();
+                
+                const checkboxes = $('td.c0 input');
+                var selectedusers = [];
+    
+                checkboxes.each(function(index, node) {
+                    if ($(node).prop('checked')) {
+                        selectedusers.push($(node).val());
+                    }
                 });
+        
+                $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
+                    {'cmid': cmid}, function() {
+                        window.location.reload();
+                    });
+                
             });
         });
     };
