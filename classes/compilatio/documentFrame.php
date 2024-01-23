@@ -358,46 +358,31 @@ class CompilatioDocumentFrame {
                 <i class='fa fa-circle'></i> {$cmpfile->globalscore}<small>%</small>
             </span>";
 
+        $scores = ['similarityscore', 'utlscore'];
         if (get_config('plagiarism_compilatio', 'recipe') === 'anasim-premium') {
-            $scores = ['similarityscore', 'utlscore', 'aiscore'];
-            $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
-            $icons = '';
-
-            foreach ($scores as $score) {
-                $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
-                $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
-                if (isset($cmpfile->$score)) {
-                    $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
-                }
-            }
-
-            $html .=
-                "<span id='cmp-score-icons' class='d-flex' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
-                    " . $icons . "
-                </span>";
-        } else {
-            $scores = ['similarityscore', 'utlscore'];
-            $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
-            $icons = '';
-
-            foreach ($scores as $score) {
-                $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
-                $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
-                if (isset($cmpfile->$score)) {
-                    $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
-                }
-
-
-            }
-            $score = "aiscore";
-            $message = get_string('ai_score_not_inclued', 'plagiarism_compilatio');
-            $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
-
-            $html .=
-                "<span id='cmp-score-icons' class='d-flex' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
-                    " . $icons . "
-                </span>";
+            array_push($scores, 'aiscore');
         }
+
+        $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
+        $icons = '';
+
+        foreach ($scores as $score) {
+            $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
+            $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
+            if (isset($cmpfile->$score)) {
+                $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
+            }
+        }
+        if (get_config('plagiarism_compilatio', 'recipe') !== 'anasim-premium') {
+            $message =  get_string('ai_score_not_inclued', 'plagiarism_compilatio');
+            $tooltip .= get_string('aiscore', 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
+        }
+
+        $html .=
+            "<span id='cmp-score-icons' class='d-flex' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
+                " . $icons . "
+            </span>";
+         
 
         return $html;
     }
