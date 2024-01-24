@@ -32,9 +32,11 @@ define(['jquery'], function($) {
                         selectedusers.push($(node).val());
                     }
                 });
+
+
         
                 $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
-                    {'cmid': cmid}, function() {
+                    {'cmid': cmid, 'selectedUsers': selectedusers.toString()}, function() {
                         window.location.reload();
                     });
                 

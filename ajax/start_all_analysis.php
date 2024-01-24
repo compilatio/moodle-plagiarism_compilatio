@@ -36,8 +36,10 @@ require_login();
 global $DB, $SESSION;
 
 $cmid = required_param('cmid', PARAM_TEXT);
-//$selectedUsers = required_param('selectedUsers', PARAM_RAW);
+$selectedUsers = required_param('selectedUsers', PARAM_TEXT);
 
+error_log(var_export(explode(',', $s), true));
+die;
 //Ajouter un if verifiant le tableau, en cas de empty: sql normal, sinon: ajouter une clause au where pour le userid
 
 
