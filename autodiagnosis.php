@@ -84,7 +84,7 @@ if (isset($plagiarismsettings['enable_mod_quiz'])) {
 
 // API key test.
 $compilatio = new CompilatioAPI();
-if ($compilatio->check_apikey()) {
+if ($compilatio->check_apikey() === true) {
     $apikeysuccess = true;
 } else {
     $apikeysuccess = false;

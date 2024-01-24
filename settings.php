@@ -153,7 +153,6 @@ if (!empty($plagiarismsettings['enabled'])) {
         } 
         // Disable compilatio as this config isn't correct.
         set_config('enabled', 0, 'plagiarism_compilatio');
-        echo $OUTPUT->notification(get_string('saved_config_failed', 'plagiarism_compilatio') . ' ' . $validapikey);
     }
 }
 
