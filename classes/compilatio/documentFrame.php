@@ -359,9 +359,9 @@ class CompilatioDocumentFrame {
             </span>";
 
         $scores = ['similarityscore', 'utlscore'];
-        if (get_config('plagiarism_compilatio', 'recipe') === 'anasim-premium') {
-            array_push($scores, 'aiscore');
-        }
+        $recipe = $recipe;
+        
+        $recipe === 'anasim-premium' ? array_push($scores, 'aiscore') : '';
 
         $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
         $icons = '';
@@ -373,10 +373,10 @@ class CompilatioDocumentFrame {
                 $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
             }
         }
-        if (get_config('plagiarism_compilatio', 'recipe') !== 'anasim-premium') {
-            $message =  get_string('ai_score_not_inclued', 'plagiarism_compilatio');
-            $tooltip .= get_string('aiscore', 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
-        }
+
+        $tooltip .= $recipe !== 'anasim-premium' 
+            ? get_string('aiscore', 'plagiarism_compilatio') . " : <b>" . get_string('ai_score_not_included', 'plagiarism_compilatio') . "</b><br>" 
+            : '';
 
         $html .=
             "<span id='cmp-score-icons' class='d-flex' data-toggle='tooltip' data-html='true' title='{$tooltip}'>

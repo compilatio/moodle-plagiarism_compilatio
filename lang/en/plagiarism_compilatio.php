@@ -165,13 +165,13 @@ $string['btn_error_too_long'] = 'Document too long';
 $string['title_error_too_long'] = 'This document contain too many words to be analysed. Maximum size : {$a} words';
 $string['btn_error_not_found'] = 'Document not found';
 $string['title_error_not_found'] = 'This document was not found. Please contact your moodle administrator. Error : document not found for this API key.';
-$string['ai_score_not_inclued'] = "not included in your subscription";
 
 $string['tooltip_detailed_scores'] = '% of suspect texts, including:';
 $string['similarityscore'] = 'Similarities';
 $string['utlscore'] = 'Language not recognised';
 $string['aiscore'] = 'AI-generated text';
 $string['unmeasured'] = 'not measured';
+$string['ai_score_not_included'] = "not included in your subscription";
 
 $string['previouslysubmitted'] = 'Previously submitted as';
 $string['student_analyse'] = "The analysis can be started by the student";
@@ -275,8 +275,8 @@ $string['helpcenter'] = "Access the Compilatio Help Center for the using of Comp
 $string['admin_goto_helpcenter'] = "Access the Compilatio Help Center to see articles related to administration of the Moodle plugin.";
 $string['helpcenter_error'] = "We can't automatically connect you to the help centre. Please try again later or go there directly using the following link : ";
 $string['element_included_in_subscription'] = "Your subscription includes: <ul><li>similarity detection</li><li>obfuscation detection";
-$string['AI_included_in_subscription_Magister_plus'] = "detection of text written by AI</li></ul>";
-$string['AI_not_included_in_subscription'] = "Your subscription does not include AI text detection.";
+$string['ai_included_in_subscription'] = "detection of text written by AI</li></ul>";
+$string['ai_not_included_in_subscription'] = "Your subscription does not include AI text detection.";
 
 // Auto diagnostic page.
 $string["auto_diagnosis_title"] = "Auto-diagnosis";

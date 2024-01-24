@@ -314,11 +314,9 @@ class CompilatioFrame {
         // Elements included in subscription
         $output .= "<p>" . get_string('element_included_in_subscription', 'plagiarism_compilatio');
 
-        if (get_config('plagiarism_compilatio', 'recipe') === 'anasim-premium') {
-            $output .= "<li>" . get_string('AI_included_in_subscription_Magister_plus', 'plagiarism_compilatio'). "</li></ul></p>";
-        } else {
-            $output .= "</ul>" . get_string('AI_not_included_in_subscription', 'plagiarism_compilatio'). "</p>";
-        }
+        $output .= get_config('plagiarism_compilatio', 'recipe') === 'anasim-premium'
+            ? "<li>" . get_string('ai_included_in_subscription', 'plagiarism_compilatio'). "</li></ul></p>"
+            : "</ul>" . get_string('ai_not_included_in_subscription', 'plagiarism_compilatio'). "</p>";
 
 
 
