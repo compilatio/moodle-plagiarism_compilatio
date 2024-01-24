@@ -195,6 +195,8 @@ $string['reset_docs_in_error'] = 'Réinitialiser les documents en erreur';
 $string["compilatio_help_assign"] = "Obtenir de l&#39aide sur le plugin Compilatio";
 $string['hide_area'] = 'Masquer les informations Compilatio';
 $string['show_area'] = 'Afficher les informations Compilatio';
+$string['start_selected_files_analysis'] = "Analyser les fichiers sélectionnés ";
+
 
 // Detailed error status.
 $string['detailed_error_unsupported'] = "Ces documents n'ont pas pu être analysés par Compilatio car leur format n'est pas supporté.";

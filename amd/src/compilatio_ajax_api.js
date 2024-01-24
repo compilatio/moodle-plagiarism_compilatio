@@ -17,32 +17,64 @@ define(['jquery'], function($) {
 
     var exports = {};
 
+    function startAnalysis(message, basepath, cmid, selectedusers) {
+        disableCompilatioButtons();
+        $("#cmp-notices").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");        
+        
+        $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
+            {'cmid': cmid, 'selectedUsers': selectedusers.toString()}, function() {
+                window.location.reload();
+            });
+    }
+
     exports.startAllAnalysis = function(basepath, cmid, message) {
         $(document).ready(function() {
             var startAllAnalysis = $('#cmp-start-btn');
             startAllAnalysis.click(function() {
-                disableCompilatioButtons();
-                $("#cmp-notices").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
-                
-                const checkboxes = $('td.c0 input');
-                var selectedusers = [];
-    
-                checkboxes.each(function(index, node) {
-                    if ($(node).prop('checked')) {
-                        selectedusers.push($(node).val());
-                    }
-                });
-
-
-        
-                $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
-                    {'cmid': cmid, 'selectedUsers': selectedusers.toString()}, function() {
-                        window.location.reload();
-                    });
-                
+                startAnalysis(message, basepath, cmid, null)
             });
         });
     };
+
+    exports.startSelectedFilesAnalysis = function(basepath, cmid, message) {
+    $(document).ready(function() {
+        
+        var startSelectedFilesAnalysis = $('#cmp-start-selected-btn');
+        startSelectedFilesAnalysis.hide();
+
+        const checkboxes = $('td.c0 input');
+        const selectAllCheckbox = $('#selectall');
+
+        checkboxes.add(selectAllCheckbox).on('change', function() {
+            var selectedusers = [];
+            checkboxes.each(function(index, node) {
+                if ($(node).prop('checked')) {
+                    selectedusers.push($(node).val());
+                }
+            });
+            if (selectAllCheckbox.prop('checked') || selectedusers.length > 0) {
+                startSelectedFilesAnalysis.show();
+            } else {
+                startSelectedFilesAnalysis.hide();
+            }
+        });
+
+        startSelectedFilesAnalysis.click(function() {
+            var selectedusers = [];
+
+            checkboxes.each(function(index, node) {
+                if ($(node).prop('checked')) {
+                    selectedusers.push($(node).val());
+                }
+            });
+
+            startAnalysis(message, basepath, cmid, selectedusers)
+        });
+    });
+};
+
+    
+    
 
     exports.sendUnsentDocs = function(basepath, cmid, message) {
         $(document).ready(function() {

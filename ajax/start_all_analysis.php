@@ -36,7 +36,7 @@ require_login();
 global $DB, $SESSION;
 
 $cmid = required_param('cmid', PARAM_TEXT);
-$selectedUsers = required_param('selectedUsers', PARAM_TEXT);
+$selectedUsers = optional_param('selectedUsers', "", PARAM_TEXT);
 
 
 //Ajouter un if verifiant le tableau, en cas de empty: sql normal, sinon: ajouter une clause au where pour le userid
@@ -49,6 +49,7 @@ $plugincm = compilatio_cm_use($cmid);
 $countsuccess = 0;
 $plagiarismfiles = $docsfailed = $docsinextraction = $SESSION->compilatio_alerts = [];
 
+
 if ($plugincm->analysistype == 'manual') {
     $sql = "cm = ? AND status = 'sent'";
     $sql .=  !empty($selectedUsers) ? " AND userid IN (" . $selectedUsers . ")" : "";
@@ -59,7 +60,6 @@ if ($plugincm->analysistype == 'manual') {
         if (compilatio_student_analysis($plugincm->studentanalyses, $cmid, $file->userid)) {
             continue;
         }
-
         $status = CompilatioAnalyses::start_analysis($file);
         if ($status == 'queue') {
             $countsuccess++;
