@@ -177,7 +177,6 @@ class CompilatioDocumentFrame {
         $isteacher,
         $url
     ) {
-
         global $DB, $CFG;
 
         $cmpfile = $DB->get_record('plagiarism_compilatio_file', ['id' => $cmpfileid]);
@@ -306,7 +305,7 @@ class CompilatioDocumentFrame {
                 <img class='cmp-small-logo' src='" . new moodle_url("/plagiarism/compilatio/pix/c.svg") . "'>
                 " . self::get_indexing_state($indexed) . $score . $documentframe . "
             </div>";
-
+        error_log($output);
         return $output;
     }
 
