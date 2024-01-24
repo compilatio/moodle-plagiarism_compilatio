@@ -144,11 +144,14 @@ if (!empty($plagiarismsettings['enabled'])) {
             '<p>' . get_string('enabledandworking', 'plagiarism_compilatio') . '</p>'
             . get_string('subscription', 'plagiarism_compilatio') . "<ul class='m-0'>" . $subscriptioninfos . '</ul>',
             'notifysuccess'
-        );
-    } else {
-        // Disable compilatio as this config isn't correct.
+        );        
+    } else {  
+        if ($validapikey == 'Forbidden'){
+            echo $OUTPUT->notification(get_string('wrong_apikey_type', 'plagiarism_compilatio'));
+        } else {
+            echo $OUTPUT->notification(get_string('saved_config_failed', 'plagiarism_compilatio') . ' ' . $validapikey);
+        } 
         set_config('enabled', 0, 'plagiarism_compilatio');
-        echo $OUTPUT->notification(get_string('saved_config_failed', 'plagiarism_compilatio') . ' ' . $validapikey);
     }
 }
 
