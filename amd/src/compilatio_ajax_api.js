@@ -42,17 +42,16 @@ define(['jquery'], function($) {
         var startSelectedFilesAnalysis = $('#cmp-start-selected-btn');
         startSelectedFilesAnalysis.hide();
 
-        const checkboxes = $('td.c0 input');
-        const selectAllCheckbox = $('#selectall');
+        const checkboxes = $('td.c0 input, #selectall');
 
-        checkboxes.add(selectAllCheckbox).on('change', function() {
+        checkboxes.on('change', function() {
             var selectedusers = [];
             checkboxes.each(function(index, node) {
                 if ($(node).prop('checked')) {
                     selectedusers.push($(node).val());
                 }
             });
-            if (selectAllCheckbox.prop('checked') || selectedusers.length > 0) {
+            if (selectedusers.length > 0) {
                 startSelectedFilesAnalysis.show();
             } else {
                 startSelectedFilesAnalysis.hide();
@@ -63,7 +62,7 @@ define(['jquery'], function($) {
             var selectedusers = [];
 
             checkboxes.each(function(index, node) {
-                if ($(node).prop('checked')) {
+                if ($(node).prop('checked') && $(node).val() != 'on') {
                     selectedusers.push($(node).val());
                 }
             });
