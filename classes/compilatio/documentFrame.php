@@ -359,7 +359,7 @@ class CompilatioDocumentFrame {
             </span>";
 
         $scores = ['similarityscore', 'utlscore'];
-        $recipe = $recipe;
+        $recipe = get_config('plagiarism_compilatio', 'recipe');
         
         $recipe === 'anasim-premium' ? array_push($scores, 'aiscore') : '';
 
