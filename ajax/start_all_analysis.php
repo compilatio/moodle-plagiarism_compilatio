@@ -38,8 +38,7 @@ global $DB, $SESSION;
 $cmid = required_param('cmid', PARAM_TEXT);
 $selectedUsers = required_param('selectedUsers', PARAM_TEXT);
 
-error_log(var_export(explode(',', $s), true));
-die;
+
 //Ajouter un if verifiant le tableau, en cas de empty: sql normal, sinon: ajouter une clause au where pour le userid
 
 
@@ -51,11 +50,9 @@ $countsuccess = 0;
 $plagiarismfiles = $docsfailed = $docsinextraction = $SESSION->compilatio_alerts = [];
 
 if ($plugincm->analysistype == 'manual') {
-
     $sql = "cm = ? AND status = 'sent'";
+    $sql .=  !empty($selectedUsers) ? " AND userid IN (" . $selectedUsers . ")" : "";
     $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_file', $sql, [$cmid]);
-
-    error_log("tetetet");
 
     foreach ($plagiarismfiles as $file) {
 
@@ -64,7 +61,6 @@ if ($plugincm->analysistype == 'manual') {
         }
 
         $status = CompilatioAnalyses::start_analysis($file);
-
         if ($status == 'queue') {
             $countsuccess++;
         } else if ($status == get_string('extraction_in_progress', 'plagiarism_compilatio')) {
