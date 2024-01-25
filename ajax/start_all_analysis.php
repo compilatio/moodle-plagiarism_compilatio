@@ -37,12 +37,6 @@ global $DB, $SESSION;
 
 $cmid = required_param('cmid', PARAM_TEXT);
 $selectedUsers = optional_param('selectedUsers', "", PARAM_TEXT);
-
-
-//Ajouter un if verifiant le tableau, en cas de empty: sql normal, sinon: ajouter une clause au where pour le userid
-
-
-
 $plugincm = compilatio_cm_use($cmid);
 
 // Counter incremented on success.
