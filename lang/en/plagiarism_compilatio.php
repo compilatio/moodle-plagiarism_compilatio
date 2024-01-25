@@ -239,6 +239,7 @@ $string["compilatio_depositor"] = 'The document in activity <b>{$a->modulename}<
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistics';
 $string["display_stats"] = "Display statistics about this activity";
+$string["display_stats_per_student"] = "Display statistics per student about this activity";
 $string['export_csv'] = 'Export data about this activity into a CSV file';
 $string['progress'] = "Progress";
 $string['results'] = "Results";
