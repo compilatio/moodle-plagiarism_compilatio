@@ -40,20 +40,16 @@ define(['jquery'], function($) {
         $(document).ready(function() {
             const startSelectedFilesAnalysis = $('#cmp-start-selected-btn').hide();
             const checkboxes = $('td.c0 input, #selectall');
-    
             function getSelectedUsers() {
                 return checkboxes.filter(':checked').map(function() {
                     return $(this).val() != 'on' ? $(this).val() : null;
                 }).get();
             }
-    
             function updateButtonVisibility() {
                 const selectedUsers = getSelectedUsers();
                 selectedUsers.length > 0 ? startSelectedFilesAnalysis.show() : startSelectedFilesAnalysis.hide();
             }
-    
             checkboxes.on('change', updateButtonVisibility);
-    
             startSelectedFilesAnalysis.click(function() {
                 console.log(getSelectedUsers());
                 startAnalysis(message, basepath, cmid, getSelectedUsers());
