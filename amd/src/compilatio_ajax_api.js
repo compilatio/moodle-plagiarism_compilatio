@@ -37,40 +37,30 @@ define(['jquery'], function($) {
     };
 
     exports.startSelectedFilesAnalysis = function(basepath, cmid, message) {
-    $(document).ready(function() {
-        
-        var startSelectedFilesAnalysis = $('#cmp-start-selected-btn');
-        startSelectedFilesAnalysis.hide();
-
-        const checkboxes = $('td.c0 input, #selectall');
-
-        checkboxes.on('change', function() {
-            var selectedusers = [];
-            checkboxes.each(function(index, node) {
-                if ($(node).prop('checked')) {
-                    selectedusers.push($(node).val());
-                }
-            });
-            if (selectedusers.length > 0) {
-                startSelectedFilesAnalysis.show();
-            } else {
-                startSelectedFilesAnalysis.hide();
+        $(document).ready(function() {
+            const startSelectedFilesAnalysis = $('#cmp-start-selected-btn').hide();
+            const checkboxes = $('td.c0 input, #selectall');
+    
+            function getSelectedUsers() {
+                return checkboxes.filter(':checked').map(function() {
+                    return $(this).val() != 'on' ? $(this).val() : null;
+                }).get();
             }
-        });
-
-        startSelectedFilesAnalysis.click(function() {
-            var selectedusers = [];
-
-            checkboxes.each(function(index, node) {
-                if ($(node).prop('checked') && $(node).val() != 'on') {
-                    selectedusers.push($(node).val());
-                }
+    
+            function updateButtonVisibility() {
+                const selectedUsers = getSelectedUsers();
+                selectedUsers.length > 0 ? startSelectedFilesAnalysis.show() : startSelectedFilesAnalysis.hide();
+            }
+    
+            checkboxes.on('change', updateButtonVisibility);
+    
+            startSelectedFilesAnalysis.click(function() {
+                console.log(getSelectedUsers());
+                startAnalysis(message, basepath, cmid, getSelectedUsers());
             });
-
-            startAnalysis(message, basepath, cmid, selectedusers)
         });
-    });
-};
+    };
+    
 
     
     

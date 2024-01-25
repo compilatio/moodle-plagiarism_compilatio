@@ -195,7 +195,7 @@ $string['reset_docs_in_error'] = 'Réinitialiser les documents en erreur';
 $string["compilatio_help_assign"] = "Obtenir de l&#39aide sur le plugin Compilatio";
 $string['hide_area'] = 'Masquer les informations Compilatio';
 $string['show_area'] = 'Afficher les informations Compilatio';
-$string['start_selected_files_analysis'] = "Analyser les fichiers sélectionnés ";
+$string['start_selected_files_analysis'] = "Analyser les documents sélectionnés ";
 
 
 // Detailed error status.
