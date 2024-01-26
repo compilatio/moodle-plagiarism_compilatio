@@ -94,7 +94,7 @@ class CompilatioFrame {
             unset($SESSION->compilatio_alerts);
         }
 
-        $startallanalyses = $sendalldocs = $resetdocsinerror = false;
+        $startallanalyses = $sendalldocs = $resetdocsinerror = $startselectedfilesanalyses = false;
 
         $analysistype = $DB->get_field('plagiarism_compilatio_cm_cfg', 'analysistype', ['cmid' => $cmid]);
 
@@ -102,7 +102,7 @@ class CompilatioFrame {
             $analysistype == 'manual'
                 && $DB->count_records('plagiarism_compilatio_file', ['status' => 'sent', 'cm' => $cmid]) !== 0
         ) {
-            $startallanalyses = true;
+            $startallanalyses = $startselectedfilesanalyses = true;
 
         } else if ($analysistype == 'planned') { // Display the date of analysis if its type is set on 'Planned'.
             $analysistime = $DB->get_field('plagiarism_compilatio_cm_cfg', 'analysistime', ['cmid' => $cmid]);
@@ -233,6 +233,17 @@ class CompilatioFrame {
             >
             </i>";
 
+        //stat per student quiz icon
+        if ($module == 'quiz') {
+            $output .=
+            "<i
+                id='show-stats-per-student'
+                title='" . get_string('display_stats_per_student', 'plagiarism_compilatio') . "'
+                class='cmp-icon fa fa-chalkboard-teacher'
+            >
+            </i>";
+        }
+
         if ($plagiarismsettings['enable_search_tab']) {
             // Search icon.
             $output .= "<i id='show-search' title='" . get_string('compilatio_search_tab', 'plagiarism_compilatio') .
@@ -261,9 +272,22 @@ class CompilatioFrame {
                         title='" . get_string('start_all_analysis', 'plagiarism_compilatio') . "'
                         class='btn btn-primary cmp-action-btn mx-1'
                     >
-                        <i class='cmp-icon-lg fa fa-play-circle'></i>
+                        <i class='fa fa-play-circle'></i>
                     </button>";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
+                    [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
+            }
+
+            if ($startselectedfilesanalyses) {
+                $output .=
+                    "<button
+                        id='cmp-start-selected-btn'
+                        title='" . get_string('start_selected_files_analysis', 'plagiarism_compilatio') . "'
+                        class='btn btn-primary cmp-action-btn mx-1'
+                    >
+                    <i class='fas fa-chevron-down'></i>
+                    </button>";
+                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startSelectedFilesAnalysis',
                     [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
             }
 
@@ -348,6 +372,13 @@ class CompilatioFrame {
                 . CompilatioStatistics::get_statistics($cmid) . $exportbutton .
                 "</div>
             </div>";
+
+        $output .= "
+        <div id='cmp-stats-per-student' class='cmp-tabs-content'>
+            <div class='row text-center'>"
+            . CompilatioStatistics::get_statistics_per_student($cmid) . $exportbutton .
+            "</div>
+        </div>";
 
         // Alerts tab.
         if (count($alerts) !== 0) {

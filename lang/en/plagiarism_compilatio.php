@@ -195,6 +195,7 @@ $string['reset_docs_in_error'] = 'Reset documents in error';
 $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
 $string['hide_area'] = 'Hide Compilatio informations';
 $string['show_area'] = 'Show Compilatio informations';
+$string['start_selected_files_analysis'] = "Analyse selected documents ";
 
 // Detailed error status.
 $string['detailed_error_unsupported'] = "These documents could not be analysed by Compilatio because their format is not supported.";
@@ -238,6 +239,7 @@ $string["compilatio_depositor"] = 'The document in activity <b>{$a->modulename}<
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistics';
 $string["display_stats"] = "Display statistics about this activity";
+$string["display_stats_per_student"] = "Display statistics per student about this activity";
 $string['export_csv'] = 'Export data about this activity into a CSV file';
 $string['progress'] = "Progress";
 $string['results'] = "Results";
@@ -279,7 +281,7 @@ $string['helpcenter_error'] = "We can't automatically connect you to the help ce
 $string["auto_diagnosis_title"] = "Auto-diagnosis";
 $string["api_key_valid"] = "Your API key is valid.";
 $string["api_key_not_tested"] = "Your API key haven't been verified because the connection to Compilatio has failed.";
-$string["api_key_not_valid"] = "Your API key is not valid. It is specific to the used platform. You can obtain one by contacting (ent@compilatio.net).";
+$string["api_key_not_valid"] = "Your API key is not valid. It is specific to the used platform. You can obtain one by contacting <a href='mailto:ent@compilatio.net'>ent@compilatio.net</a>.";
 $string['cron_check_never_called'] = 'Plugin scheduled tasks send_files has never been executed since the activation of the plugin. It may be misconfigured in your server.';
 $string['cron_check'] = 'Plugin scheduled tasks send_files has been executed on {$a} for the last time.';
 $string['cron_check_not_ok'] = 'Plugin scheduled tasks send_files hasn\'t been executed in the last hour.';

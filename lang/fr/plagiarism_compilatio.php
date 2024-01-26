@@ -195,6 +195,8 @@ $string['reset_docs_in_error'] = 'Réinitialiser les documents en erreur';
 $string["compilatio_help_assign"] = "Obtenir de l&#39aide sur le plugin Compilatio";
 $string['hide_area'] = 'Masquer les informations Compilatio';
 $string['show_area'] = 'Afficher les informations Compilatio';
+$string['start_selected_files_analysis'] = "Analyser les documents sélectionnés ";
+
 
 // Detailed error status.
 $string['detailed_error_unsupported'] = "Ces documents n'ont pas pu être analysés par Compilatio car leur format n'est pas supporté.";
@@ -238,6 +240,7 @@ $string["compilatio_depositor"] = 'Le document présent dans l\'activité <b>{$a
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistiques';
 $string["display_stats"] = "Afficher les statistiques de cette activité";
+$string["display_stats_per_student"] = "Afficher les statistiques par élève de cette activité";
 $string['export_csv'] = 'Exporter les données de cette activité au format CSV';
 $string['progress'] = "Progression";
 $string['results'] = "Résultats";
@@ -279,7 +282,7 @@ $string['helpcenter_error'] = "Nous ne pouvons pas vous connecter automatiquemen
 $string["auto_diagnosis_title"] = "Auto-diagnostic";
 $string["api_key_valid"] = "La clé API enregistrée est valide.";
 $string["api_key_not_tested"] = "La clé API n'a pas pû être vérifiée car la connexion au service Compilatio à échouée.";
-$string["api_key_not_valid"] = "La clé API enregistrée est invalide. Elle est spécifique à la plateforme utilisée. Vous pouvez en obtenir une en contactant (ent@compilatio.net).";
+$string["api_key_not_valid"] = "La clé API enregistrée est invalide. Elle est spécifique à la plateforme utilisée. Vous pouvez en obtenir une en contactant <a href='mailto:ent@compilatio.net'>ent@compilatio.net</a>.";
 $string['cron_check_never_called'] = "La tâche planifiée send_files du plugin n'a pas été exécuté depuis l'activation du plugin. Il est possible qu'il soit mal configuré.";
 $string['cron_check'] = 'La tâche planifiée send_files du plugin a été exécuté le {$a} pour la dernière fois.';
 $string['cron_check_not_ok'] = "La tâche planifiée send_files du plugin n'a pas été exécuté depuis plus d'une heure.";
