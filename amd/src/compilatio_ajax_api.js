@@ -121,8 +121,8 @@ define(['jquery'], function($) {
                         refreshScoreBtn.find('i').removeClass('fa-refresh').addClass('fa-circle');
                     });
                     refreshScoreBtn.click(function() {
+                        $('#cmp-' + domid + ' #cmp-score-icons').remove();
                         refreshScoreBtn.empty();
-                        $('#cmp-score-icons').remove();
                         $.post(basepath + '/plagiarism/compilatio/ajax/update_score.php', {'docId': cmpfileid}, function(res) {
                             refreshScoreBtn.replaceWith(res);
                         });

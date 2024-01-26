@@ -280,7 +280,7 @@ $string['helpcenter_error'] = "We can't automatically connect you to the help ce
 $string["auto_diagnosis_title"] = "Auto-diagnosis";
 $string["api_key_valid"] = "Your API key is valid.";
 $string["api_key_not_tested"] = "Your API key haven't been verified because the connection to Compilatio has failed.";
-$string["api_key_not_valid"] = "Your API key is not valid. It is specific to the used platform. You can obtain one by contacting <a href='mailto:ent@compilatio.net'>ent@compilatio.net</a>.";
+$string["api_key_not_valid"] = "Your API key is not valid. It is specific to the used platform. You can obtain one by contacting (ent@compilatio.net).";
 $string['cron_check_never_called'] = 'Plugin scheduled tasks send_files has never been executed since the activation of the plugin. It may be misconfigured in your server.';
 $string['cron_check'] = 'Plugin scheduled tasks send_files has been executed on {$a} for the last time.';
 $string['cron_check_not_ok'] = 'Plugin scheduled tasks send_files hasn\'t been executed in the last hour.';
