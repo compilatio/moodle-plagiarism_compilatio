@@ -240,6 +240,7 @@ $string["compilatio_depositor"] = 'Le document présent dans l\'activité <b>{$a
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistiques';
 $string["display_stats"] = "Afficher les statistiques de cette activité";
+$string["display_stats_per_student"] = "Afficher les statistiques par élève de cette activité";
 $string['export_csv'] = 'Exporter les données de cette activité au format CSV';
 $string['progress'] = "Progression";
 $string['results'] = "Résultats";

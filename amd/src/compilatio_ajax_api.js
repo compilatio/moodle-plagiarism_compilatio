@@ -234,6 +234,9 @@ define(['jquery'], function($) {
             $('#show-stats').on('click', function() {
                 tabClick($(this), $('#cmp-stats'));
             });
+            $('#show-stats-per-student').on('click', function() {
+                tabClick($(this), $('#cmp-stats-per-student'));
+            });
             $('#show-help').on('click', function() {
                 tabClick($(this), $('#cmp-help'));
             });
@@ -241,8 +244,8 @@ define(['jquery'], function($) {
                 tabClick($(this), $('#cmp-search'));
             });
 
-            var tabs = $('#cmp-show-notifications, #show-stats, #show-help, #show-search');
-            var elements = $('#cmp-notifications, #cmp-stats, #cmp-help, #cmp-home, #cmp-search');
+            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search');
+            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-home, #cmp-search');
 
             /**
              * TabClick
