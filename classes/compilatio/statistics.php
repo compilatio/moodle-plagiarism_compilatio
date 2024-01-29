@@ -359,119 +359,85 @@ class CompilatioStatistics {
      */
     public static function get_statistics_per_student($cmid) {
 
-        //trouver comment récupérer l'id du quiz en cours et le passer dans la requete. Actuellement, on recupère tout des id des élèves qui ont fini un des quiz du module de cours en court.
+        //trouver comment récupérer l'id du quiz en cours et le passer dans la requete. Actuellement, on recupère tout des id des élèves qui ont fini un des quiz du module de cours en cours.
 
         global $DB, $PAGE;
+        $compilatio = new CompilatioAPI();
 
-        $sql = "SELECT userid
-        FROM mdl_quiz_attempts 
+
+        $sql = "SELECT mdl_user.*
+        FROM mdl_user
+        INNER JOIN mdl_quiz_attempts on mdl_quiz_attempts.userid = mdl_user.id
         INNER JOIN mdl_quiz ON mdl_quiz.id = mdl_quiz_attempts.quiz 
         INNER JOIN mdl_course ON mdl_course.id = mdl_quiz.course 
         INNER JOIN mdl_course_modules on mdl_course_modules.course = mdl_course.id 
-        WHERE mdl_course_modules.id = ?  AND mdl_quiz_attempts.state = 'finished' AND mdl_quiz.id != '10'";
+        WHERE mdl_course_modules.id = ?  
+            AND mdl_quiz_attempts.state = 'finished' 
+            AND mdl_course_modules.instance = mdl_quiz.id";
 
         $usersSumbitedTest = $DB->get_records_sql($sql, [$cmid]);
 
-        error_log(var_export($usersSumbitedTest, true));
-        /*
-        $sql = "SELECT status, COUNT(DISTINCT id) AS count FROM {plagiarism_compilatio_file}  WHERE cm = ? GROUP BY status";
-        $countbystatus = $DB->get_records_sql($sql, [$cmid]);
+        $sql = "SELECT mdl_quiz_slots.*
+        FROM mdl_quiz_slots
+        INNER JOIN mdl_quiz ON mdl_quiz.id = mdl_quiz_slots.quizid
+        INNER JOIN mdl_course ON mdl_course.id = mdl_quiz.course 
+        INNER JOIN mdl_course_modules on mdl_course_modules.course = mdl_course.id 
+        WHERE mdl_course_modules.id = ? 
+        AND mdl_course_modules.instance = mdl_quiz.id";
+
+        $questionsOnQuiz = $DB->get_records_sql($sql, [$cmid]);
 
         $output = "
             <div class='col'>
-                <h4 class='cmp-color-primary'>" . get_string('progress', 'plagiarism_compilatio') . "</h4>
-                <div class='position-relative cmp-box my-3 p-3'>
-                    <h5 class='fw-bold cmp-color-green'>"
-                      . get_string('analysed_docs', 'plagiarism_compilatio', $countbystatus['scored']->count ?? 0) .
-                    "</h5>
-                </div>
+                <h4 class='cmp-color-primary'>" . get_string('results_by_student', 'plagiarism_compilatio') . "</h4>
+                <i id='previous-student' title='" . get_string('previous_student', 'plagiarism_compilatio') .
+                "' class='cmp-icon-md fa fa-chevron-left'></i>
+                <select class='form-select' aria-label='Default select example'>"; 
+                    foreach ($usersSumbitedTest as $userSumbitedTest => $user) {
+                        $output .= '<option value="' . $user->id  . '">' . $user->lastname .' '. $user->firstname . '</option>';
+                    }
+        $output .=  "</select> 
+                <i id='next-student' title='" . get_string('next_student', 'plagiarism_compilatio') .
+                "' class='cmp-icon-md fa fa-chevron-right'></i>
+                <div class='mx-top p-3 '>
+                    <div class='card border-0 shadow-sm'>
+                        <div class='card-body'>
+                            <div class='row'>
+                                <table class='table table-hover'>
+                                    <tr class='table-secondary'>
+                                        <th class='container text-center'>". get_string('question', 'plagiarism_compilatio') ."</th>
+                                        <th class='container text-center text-nowrap'>". get_string('suspect_total_words_quiz', 'plagiarism_compilatio') ."</th>
+                                        <th class='container text-center'>". get_string('score', 'plagiarism_compilatio') ."</th>
+                                        <th class='container text-center'>toto</th>
+                                        <th class='container text-center'>tata</th>
+                                    </tr>";
+                                    
+                                    foreach ($questionsOnQuiz as $question){
+                                    $output .= "<tr>
+                                        <td class='container text-center'>" . get_string('question', 'plagiarism_compilatio') . ' ' . $question->slot ."</td>
+                                        <td class='container text-center'>" . get_string('word', 'plagiarism_compilatio') . " / " . '' . get_string('word', 'plagiarism_compilatio') . " </td>
+                                        <td class='container text-center'>etion</td>
+                                        <td>". '' ."</td>
+                                        <td></td>
+                                    </tr>";
 
-                <div class='cmp-box my-3'>
-                    <h5 class='p-3 cmp-color-primary'>"
-                      . get_string('analysing_docs', 'plagiarism_compilatio', $countbystatus['analysing']->count ?? 0) .
-                    "</h5>
-                </div>
+                                    }
 
-                <div class='cmp-box my-3'>
-                    <h5 class='p-3 cmp-color-primary'>"
-                      . get_string('queuing_docs', 'plagiarism_compilatio', $countbystatus['queue']->count ?? 0) .
-                    "</h5>
-                </div>
-            </div>";
-
-        if (isset($countbystatus['scored']->count) && $countbystatus['scored']->count > 0) {
-            $plagiarismvalues = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
-            $warningthreshold = $plagiarismvalues->warningthreshold ?? 10;
-            $criticalthreshold = $plagiarismvalues->criticalthreshold ?? 25;
-
-            $from = "SELECT COUNT(DISTINCT pcf.id) FROM {plagiarism_compilatio_file} pcf WHERE pcf.cm=?";
-
-            $countgreen = $DB->count_records_sql(
-                $from . " AND status = 'scored' AND globalscore <= $warningthreshold",
-                [$cmid]
-            );
-            $countorange = $DB->count_records_sql(
-                $from . " AND status = 'scored' AND globalscore > $warningthreshold AND globalscore <= $criticalthreshold",
-                [$cmid]
-            );
-            $countred = $DB->count_records_sql(
-                $from . " AND status = 'scored' AND globalscore > $criticalthreshold",
-                [$cmid]
-            );
-
-            $scorestats = $DB->get_record_sql(
-                "SELECT ROUND(AVG(globalscore)) avg, MIN(globalscore) min, MAX(globalscore) max
-                    FROM {plagiarism_compilatio_file} pcf
-                    WHERE pcf.cm=? AND status='scored'",
-                [$cmid]
-            );
-
-            $yes = '';
-            $elements = ['min', 'avg', 'max'];
-            foreach ($elements as $elem) {
-                if ($scorestats->$elem <= $warningthreshold) {
-                    $color = 'green';
-                } else if ($scorestats->$elem <= $criticalthreshold) {
-                    $color = 'orange';
-                } else {
-                    $color = 'red';
-                }
-                $yes .= "<div class='col-4'>
-                        <div class='pt-1 pb-2 fw-bold cmp-color-secondary'>"
-                            . get_string('stats_' . $elem, 'plagiarism_compilatio') .
-                        "</div>
-                        <h3 class='cmp-color-" . $color . "'>" . $scorestats->$elem . " <small>%</small></h3>
-                    </div>";
-            }
-
-            $output .= "
-                <div class='col'>
-                    <h4 class='cmp-color-primary'>" . get_string('results', 'plagiarism_compilatio') . "</h4>
-                    <div class='cmp-box my-3 px-3 pt-3 pb-2'>
-                        <h5 class='cmp-color-primary'>" . get_string('stats_score', 'plagiarism_compilatio') . "</h5>
-                        <div class='row'>{$yes}</div>
-                    </div>
-
-                    <div class='cmp-box my-3 p-3'>
-                        <h5 class='cmp-color-primary'>" . get_string('stats_threshold', 'plagiarism_compilatio') . "</h5>
-                        <div class='row mt-3 fw-bold cmp-color-secondary'>
-                            <div class='col-4'>
-                                <h3 class='fw-bold cmp-color-green'>" . $countgreen . "</h3>
-                                <small>< " . $warningthreshold . " %</small>
-                            </div>
-                            <div class='col-4'>
-                                <h3 class='fw-bold cmp-color-orange'>" . $countorange . "</h3>
-                                <small>" . $warningthreshold . " % - " . $criticalthreshold . " %</small>
-                            </div>
-                            <div class='col-4'>
-                                <h3 class='fw-bold cmp-color-red'>" . $countred . "</h3>
-                                <small>> " . $criticalthreshold . " %</small>
+                                    $output .= "<tr class='table-secondary'>
+                                        <th class='container text-center'>". get_string('total', 'plagiarism_compilatio') ."</th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                     </div>
-                </div>";
-        }
-
+                </div>
+            </div>";
+        
+        /*
         $errors = '';
         foreach ($countbystatus as $status => $stat) {
             if (strpos($status, 'error') === 0) {
@@ -501,6 +467,6 @@ class CompilatioStatistics {
                 </div>";
         }
 
-        return $output;
-    }*/
+        
+    }*/return $output;
 }}

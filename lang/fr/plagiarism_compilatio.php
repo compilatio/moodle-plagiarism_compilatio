@@ -254,6 +254,15 @@ $string['stats_avg'] = 'Moyen';
 $string['stats_score'] = 'Pourcentage de similitudes';
 $string['stats_error_unknown'] = ' erreurs inconnues';
 $string['stats_threshold'] = 'Nombre de documents par seuil';
+$string['results_by_student'] = 'Résultat par élève';
+$string['previous_student'] = 'Élève précédent';
+$string['next_student'] = 'Élève suivant';
+$string['suspect_total_words_quiz'] = 'mots suspect/<br> mots totaux';
+$string['question'] = 'Question';
+$string['score'] = 'Score';
+$string['word'] = 'mot(s)';
+$string['total'] = 'Total';
+
 
 // Global Statistics.
 $string["no_statistics_yet"] = "Aucun document n'a encore été analysé.";
@@ -282,7 +291,7 @@ $string['helpcenter_error'] = "Nous ne pouvons pas vous connecter automatiquemen
 $string["auto_diagnosis_title"] = "Auto-diagnostic";
 $string["api_key_valid"] = "La clé API enregistrée est valide.";
 $string["api_key_not_tested"] = "La clé API n'a pas pû être vérifiée car la connexion au service Compilatio à échouée.";
-$string["api_key_not_valid"] = "La clé API enregistrée est invalide. Elle est spécifique à la plateforme utilisée. Vous pouvez en obtenir une en contactant <a href='mailto:ent@compilatio.net'>ent@compilatio.net</a>.";
+$string["api_key_not_valid"] = "La clé API enregistrée est invalide. Elle est spécifique à la plateforme utilisée. Vous pouvez en obtenir une en contactant (ent@compilatio.net).";
 $string['cron_check_never_called'] = "La tâche planifiée send_files du plugin n'a pas été exécuté depuis l'activation du plugin. Il est possible qu'il soit mal configuré.";
 $string['cron_check'] = 'La tâche planifiée send_files du plugin a été exécuté le {$a} pour la dernière fois.';
 $string['cron_check_not_ok'] = "La tâche planifiée send_files du plugin n'a pas été exécuté depuis plus d'une heure.";
