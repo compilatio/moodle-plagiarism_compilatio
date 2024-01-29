@@ -40,27 +40,22 @@ define(['jquery'], function($) {
         $(document).ready(function() {
             const startSelectedFilesAnalysis = $('#cmp-start-selected-btn').hide();
             const checkboxes = $('td.c0 input, #selectall');
-            function getSelectedUsers() {
+            function getSelectedLines() {
                 return checkboxes.filter(':checked').map(function() {
                     return $(this).val() != 'on' ? $(this).val() : null;
                 }).get();
             }
             function updateButtonVisibility() {
-                const selectedUsers = getSelectedUsers();
+                const selectedUsers = getSelectedLines();
                 selectedUsers.length > 0 ? startSelectedFilesAnalysis.show() : startSelectedFilesAnalysis.hide();
             }
             checkboxes.on('change', updateButtonVisibility);
             startSelectedFilesAnalysis.click(function() {
-                console.log(getSelectedUsers());
-                startAnalysis(message, basepath, cmid, getSelectedUsers());
+                startAnalysis(message, basepath, cmid, getSelectedLines());
             });
         });
     };
     
-
-    
-    
-
     exports.sendUnsentDocs = function(basepath, cmid, message) {
         $(document).ready(function() {
             var sendUnsentDocs = $('#cmp-send-btn');

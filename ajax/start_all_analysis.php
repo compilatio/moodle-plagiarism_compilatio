@@ -36,18 +36,27 @@ require_login();
 global $DB, $SESSION;
 
 $cmid = required_param('cmid', PARAM_TEXT);
-$selectedUsers = optional_param('selectedUsers', "", PARAM_TEXT);
+$selectedLines = optional_param('selectedUsers', "", PARAM_TEXT);
 $plugincm = compilatio_cm_use($cmid);
-
+$module = get_coursemodule_from_id(null, $cmid);
 // Counter incremented on success.
 $countsuccess = 0;
 $plagiarismfiles = $docsfailed = $docsinextraction = $SESSION->compilatio_alerts = [];
 
 
 if ($plugincm->analysistype == 'manual') {
-    $sql = "cm = ? AND status = 'sent'";
-    $sql .=  !empty($selectedUsers) ? " AND userid IN (" . $selectedUsers . ")" : "";
-    $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_file', $sql, [$cmid]);
+    if($module->modname == "quiz"){
+        $sql = "SELECT cmpFile.* 
+        FROM {plagiarism_compilatio_file} cmpFile
+        INNER JOIN {user} ON {user}.id = cmpFile.userid 
+        INNER JOIN {quiz_attempts} ON {quiz_attempts}.userid = {user}.id 
+        WHERE {quiz_attempts}.id IN ('".$selectedLines."') AND cmpFile.status='sent' AND cmpFile.cm = ?";
+        $plagiarismfiles = $DB->get_records_sql($sql, [$cmid]);
+    } else {
+        $sql = "cm = ? AND status = 'sent'";
+        $sql .=  !empty($selectedLines) ? " AND userid IN (" . $selectedLines . ")" : "";
+        $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_file', $sql, [$cmid]);
+    }
 
     foreach ($plagiarismfiles as $file) {
 
