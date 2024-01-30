@@ -257,11 +257,12 @@ $string['stats_threshold'] = 'Nombre de documents par seuil';
 $string['results_by_student'] = 'Résultat par élève';
 $string['previous_student'] = 'Élève précédent';
 $string['next_student'] = 'Élève suivant';
-$string['suspect_total_words_quiz'] = 'mots suspect/<br> mots totaux';
+$string['total_words_quiz'] = 'Mots totaux';
 $string['question'] = 'Question';
 $string['score'] = 'Score';
 $string['word'] = 'mot(s)';
 $string['total'] = 'Total';
+$string['no_students_finished_quiz'] = 'Aucun élève n\'a fini le quiz';
 
 
 // Global Statistics.

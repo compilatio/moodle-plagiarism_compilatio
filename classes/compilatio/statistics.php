@@ -26,6 +26,7 @@
 /**
  * CompilatioStatistics class
  */
+
 class CompilatioStatistics {
     /**
      * Get global plagiarism statistics
@@ -359,114 +360,149 @@ class CompilatioStatistics {
      */
     public static function get_statistics_per_student($cmid) {
 
-        //trouver comment récupérer l'id du quiz en cours et le passer dans la requete. Actuellement, on recupère tout des id des élèves qui ont fini un des quiz du module de cours en cours.
-
         global $DB, $PAGE;
         $compilatio = new CompilatioAPI();
 
-
-        $sql = "SELECT mdl_user.*
-        FROM mdl_user
-        INNER JOIN mdl_quiz_attempts on mdl_quiz_attempts.userid = mdl_user.id
-        INNER JOIN mdl_quiz ON mdl_quiz.id = mdl_quiz_attempts.quiz 
-        INNER JOIN mdl_course ON mdl_course.id = mdl_quiz.course 
-        INNER JOIN mdl_course_modules on mdl_course_modules.course = mdl_course.id 
-        WHERE mdl_course_modules.id = ?  
-            AND mdl_quiz_attempts.state = 'finished' 
-            AND mdl_course_modules.instance = mdl_quiz.id";
+        $sql = "SELECT {user}.*
+        FROM {user}
+        INNER JOIN {quiz_attempts} on {quiz_attempts}.userid = {user}.id
+        INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz 
+        INNER JOIN {course} ON {course}.id = {quiz}.course 
+        INNER JOIN {course_modules} on {course_modules}.course = {course}.id 
+        WHERE {course_modules}.id = ?  
+            AND {quiz_attempts}.state = 'finished' 
+            AND {course_modules}.instance = {quiz}.id";
 
         $usersSumbitedTest = $DB->get_records_sql($sql, [$cmid]);
 
-        $sql = "SELECT mdl_quiz_slots.*
-        FROM mdl_quiz_slots
-        INNER JOIN mdl_quiz ON mdl_quiz.id = mdl_quiz_slots.quizid
-        INNER JOIN mdl_course ON mdl_course.id = mdl_quiz.course 
-        INNER JOIN mdl_course_modules on mdl_course_modules.course = mdl_course.id 
-        WHERE mdl_course_modules.id = ? 
-        AND mdl_course_modules.instance = mdl_quiz.id";
+        $sql = "SELECT distinct {question_attempts}.slot, {question_attempts}.questionsummary
+        FROM {question_attempts}
+        INNER JOIN {question_usages} on {question_usages}.id = {question_attempts}.questionusageid
+        INNER JOIN {quiz_attempts} on {quiz_attempts}.id = {question_usages}.id
+        INNER JOIN {quiz} on {quiz}.id = {quiz_attempts}.quiz
+        INNER JOIN {course} on {course}.id = {quiz}.course
+        INNER JOIN {course_modules} on {course_modules}.course = {course}.id
+            AND {course_modules}.instance = {quiz}.id
+            AND {course_modules}.id = ?";
 
         $questionsOnQuiz = $DB->get_records_sql($sql, [$cmid]);
 
+
+
         $output = "
-            <div class='col'>
-                <h4 class='cmp-color-primary'>" . get_string('results_by_student', 'plagiarism_compilatio') . "</h4>
-                <i id='previous-student' title='" . get_string('previous_student', 'plagiarism_compilatio') .
-                "' class='cmp-icon-md fa fa-chevron-left'></i>
-                <select class='form-select' aria-label='Default select example'>"; 
-                    foreach ($usersSumbitedTest as $userSumbitedTest => $user) {
-                        $output .= '<option value="' . $user->id  . '">' . $user->lastname .' '. $user->firstname . '</option>';
+        <div class='col'>
+            <h4 class='cmp-color-primary'>" . get_string('results_by_student', 'plagiarism_compilatio') . "</h4>
+            <i id='previous-student' title='" . get_string('previous_student', 'plagiarism_compilatio') ."' class='cmp-icon-md fa fa-chevron-left'></i>
+            <select class='form-select' aria-label='Default select example' id='student-select'>";
+
+        foreach ($usersSumbitedTest as $userSumbitedTest => $user) {
+        $output .= '<option value="' . $user->id . '">' . $user->lastname . ' ' . $user->firstname . '</option>';
+        }
+
+        $output .= "</select> 
+            <i id='next-student' title='" . get_string('next_student', 'plagiarism_compilatio') . "' class='cmp-icon-md fa fa-chevron-right'></i>
+            <div class='mx-top p-3 '>
+                <div class='card border-0 shadow-sm'>
+                    <div class='card-body'>
+                        <div class='row'>";
+        if(!empty($usersSumbitedTest)){
+            $output.= "<table class='table table-hover'>
+                <tr class='table-secondary'>
+                    <th class='container text-center'>" . get_string('question', 'plagiarism_compilatio') . "</th>
+                    <th class='container text-center text-nowrap'>" . get_string('total_words_quiz', 'plagiarism_compilatio') . "</th>
+                    <th class='container text-center'>" . get_string('score', 'plagiarism_compilatio') . "</th>
+                    <th class='container text-center'></th>
+                    <th class='container text-center'></th>
+                </tr>";
+            $totalWordQuiz = 0;
+            $globalScoreQuiz = 0;
+            $compteurDivision = 1;
+            foreach ($questionsOnQuiz as $question) {
+                $output .= "<tr>
+                <td class='container text-center'>" . get_string('question', 'plagiarism_compilatio') . ' ' . $question->slot . "</td>";
+
+                $sql = "SELECT {plagiarism_compilatio_file}.*, mdl_question_attempts.responsesummary
+                FROM {plagiarism_compilatio_file}
+                INNER JOIN {course_modules} ON {course_modules}.id = {plagiarism_compilatio_file}.cm
+                INNER JOIN {course} ON {course}.id = {course_modules}.course
+                INNER JOIN {quiz} ON {quiz}.course = {course}.id
+                INNER JOIN {quiz_attempts} ON {quiz_attempts}.quiz = {quiz}.id
+                INNER JOIN {question_attempts} ON {question_attempts}.id = {quiz_attempts}.id
+                WHERE {plagiarism_compilatio_file}.cm = ?
+                AND {plagiarism_compilatio_file}.userid = ?
+                AND {plagiarism_compilatio_file}.status = 'scored'
+                AND {question_attempts}.slot = ?
+                AND {course_modules}.instance = {quiz}.id";
+
+                $cmpfile = $DB->get_record_sql($sql, [$cmid, $user->id, $question->slot]);                
+
+                $totalWordRepsonse = count(explode(" ", $cmpfile->responsesummary));
+                $totalWordQuiz += $totalWordRepsonse;
+                $output .="<td class='container text-center'>" . $totalWordRepsonse . ' ' . get_string('word', 'plagiarism_compilatio') . " </td>";
+            
+                
+                error_log(var_export($cmpfile, true));
+                $globalScoreQuiz += $cmpfile->globalscore != false ? $cmpfile->globalscore->globalscore : 0;
+                $compteurDivision += $cmpfile->globalscore != false ? 1 : 0;
+
+                $output .= "<td class='container text-center'>"; 
+                if($cmpfile->globalscore != false){
+                    $output .= $cmpfile->globalscore ."</td>
+                <td>";
+
+                if ($cmpfile->globalscore <= $config->warningthreshold ?? 10) {
+                    $color = 'green';
+                } else if ($cmpfile->globalscore <= $config->criticalthreshold ?? 25) {
+                    $color = 'orange';
+                } else {
+                    $color = 'red';
+                }
+                                
+                $scores = ['similarityscore', 'utlscore', 'aiscore'];
+                $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
+                $icons = '';
+
+                foreach ($scores as $score) {
+                    $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
+                    $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
+                    if (isset($cmpfile->$score)) {
+                        $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
                     }
-        $output .=  "</select> 
-                <i id='next-student' title='" . get_string('next_student', 'plagiarism_compilatio') .
-                "' class='cmp-icon-md fa fa-chevron-right'></i>
-                <div class='mx-top p-3 '>
-                    <div class='card border-0 shadow-sm'>
-                        <div class='card-body'>
-                            <div class='row'>
-                                <table class='table table-hover'>
-                                    <tr class='table-secondary'>
-                                        <th class='container text-center'>". get_string('question', 'plagiarism_compilatio') ."</th>
-                                        <th class='container text-center text-nowrap'>". get_string('suspect_total_words_quiz', 'plagiarism_compilatio') ."</th>
-                                        <th class='container text-center'>". get_string('score', 'plagiarism_compilatio') ."</th>
-                                        <th class='container text-center'>toto</th>
-                                        <th class='container text-center'>tata</th>
-                                    </tr>";
-                                    
-                                    foreach ($questionsOnQuiz as $question){
-                                    $output .= "<tr>
-                                        <td class='container text-center'>" . get_string('question', 'plagiarism_compilatio') . ' ' . $question->slot ."</td>
-                                        <td class='container text-center'>" . get_string('word', 'plagiarism_compilatio') . " / " . '' . get_string('word', 'plagiarism_compilatio') . " </td>
-                                        <td class='container text-center'>etion</td>
-                                        <td>". '' ."</td>
-                                        <td></td>
-                                    </tr>";
-
-                                    }
-
-                                    $output .= "<tr class='table-secondary'>
-                                        <th class='container text-center'>". get_string('total', 'plagiarism_compilatio') ."</th>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>";
-        
-        /*
-        $errors = '';
-        foreach ($countbystatus as $status => $stat) {
-            if (strpos($status, 'error') === 0) {
-                if ($status == 'error_too_large') {
-                    $stringvariable = (get_config('plagiarism_compilatio', 'max_size') / 1024 / 1024);
-                } else if ($status == 'error_too_long') {
-                    $stringvariable = get_config('plagiarism_compilatio', 'max_word');
-                } else if ($status == 'error_too_short') {
-                    $stringvariable = get_config('plagiarism_compilatio', 'min_word');
                 }
 
-                $shortstring = get_string('short_' . $status, 'plagiarism_compilatio')
-                    ?? get_string('stats_error_unknown', 'plagiarism_compilatio');
-                $detailedstring = get_string('detailed_' . $status, 'plagiarism_compilatio', $stringvariable ?? null) ?? '';
+                $output .=
+                    "<span id='cmp-score-icons' class='d-flex' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
+                        " . $icons . "
+                    </span>";
 
-                $errors .= "<div class='position-relative cmp-box my-3 p-3'>
-                        <h5 class='cmp-color-red'>{$stat->count} {$shortstring}</h5>
-                        <small>{$detailedstring}</small>
-                    </div>";
+            } else { 
+                $output .="not analysed <td>";
+            } 
+            $output .="</td>
+                    <td></td>
+                </tr>";
             }
-        }
-        if (!empty($errors)) {
-            $output .= "
-                <div class='col'>
-                    <h4 class='cmp-color-primary'>" . get_string('errors', 'plagiarism_compilatio') . "</h4>
-                    {$errors}
-                </div>";
-        }
 
+            $output .= "<tr class='table-secondary'>
+                            <th class='container text-center'>" . get_string('total', 'plagiarism_compilatio') . "</th>
+                            <td>" . $totalWordQuiz . ' ' . get_string('word', 'plagiarism_compilatio') . "</td>
+                            <td>" . round($globalScoreQuiz / $compteurDivision) ."% </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            </div>
+            </div>
+            </div>";
+        } else {
+            $output .= "<h4 class='mx-auto'>". get_string('no_students_finished_quiz', 'plagiarism_compilatio') ."</h4>
+            </div></div></div></div></div>";
+        }
         
-    }*/return $output;
-}}
+    return $output;
+}
+}
+
+

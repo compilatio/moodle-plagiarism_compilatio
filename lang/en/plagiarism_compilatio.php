@@ -256,11 +256,12 @@ $string['stats_threshold'] = 'Number of documents per threshold';
 $string['results_by_student'] = 'Results by student';
 $string['previous_student'] = 'Previous student';
 $string['next_student'] = 'Next student';
-$string['suspect_total_words_quiz'] = 'words suspect/<br> total words';
+$string['total_words_quiz'] = 'Total words';
 $string['question'] = 'Question';
 $string['score'] = 'Score';
 $string['word'] = 'word(s)';
 $string['total'] = 'Total';
+$string['no_students_finished_quiz'] = 'No students finished the quiz';
 
 
 // Global Statistics.
