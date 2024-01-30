@@ -22,9 +22,9 @@ define(['jquery'], function($) {
         $("#cmp-notices").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");        
         
         $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
-            {'cmid': cmid, 'selectedUsers': selectedusers.toString()}, function() {
-                window.location.reload();
-            });
+        {'cmid': cmid, 'selectedUsers': selectedusers !== null ? selectedusers.toString() : ''}, function() {
+            window.location.reload();
+        });
     }
 
     exports.startAllAnalysis = function(basepath, cmid, message) {
@@ -32,13 +32,14 @@ define(['jquery'], function($) {
             var startAllAnalysis = $('#cmp-start-btn');
             startAllAnalysis.click(function() {
                 startAnalysis(message, basepath, cmid, null)
+                console.log(cmid);
             });
         });
     };
 
-    exports.startSelectedFilesAnalysis = function(basepath, cmid, message) {
+    exports.startAnalysesOnSelectedFiles = function(basepath, cmid, message) {
         $(document).ready(function() {
-            const startSelectedFilesAnalysis = $('#cmp-start-selected-btn').hide();
+            const startAnalysesOnSelectedFiles = $('#cmp-start-selected-btn').hide();
             const checkboxes = $('td.c0 input, #selectall');
             function getSelectedLines() {
                 return checkboxes.filter(':checked').map(function() {
@@ -47,10 +48,10 @@ define(['jquery'], function($) {
             }
             function updateButtonVisibility() {
                 const selectedUsers = getSelectedLines();
-                selectedUsers.length > 0 ? startSelectedFilesAnalysis.show() : startSelectedFilesAnalysis.hide();
+                selectedUsers.length > 0 ? startAnalysesOnSelectedFiles.show() : startAnalysesOnSelectedFiles.hide();
             }
             checkboxes.on('change', updateButtonVisibility);
-            startSelectedFilesAnalysis.click(function() {
+            startAnalysesOnSelectedFiles.click(function() {
                 startAnalysis(message, basepath, cmid, getSelectedLines());
             });
         });

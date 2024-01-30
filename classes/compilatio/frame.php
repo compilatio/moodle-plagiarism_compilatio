@@ -94,7 +94,7 @@ class CompilatioFrame {
             unset($SESSION->compilatio_alerts);
         }
 
-        $startallanalyses = $sendalldocs = $resetdocsinerror = $startselectedfilesanalyses = false;
+        $startallanalyses = $sendalldocs = $resetdocsinerror = $startanalysesonselectedlines = false;
 
         $analysistype = $DB->get_field('plagiarism_compilatio_cm_cfg', 'analysistype', ['cmid' => $cmid]);
 
@@ -102,7 +102,7 @@ class CompilatioFrame {
             $analysistype == 'manual'
                 && $DB->count_records('plagiarism_compilatio_file', ['status' => 'sent', 'cm' => $cmid]) !== 0
         ) {
-            $startallanalyses = $startselectedfilesanalyses = true;
+            $startallanalyses = $startanalysesonselectedlines = true;
 
         } else if ($analysistype == 'planned') { // Display the date of analysis if its type is set on 'Planned'.
             $analysistime = $DB->get_field('plagiarism_compilatio_cm_cfg', 'analysistime', ['cmid' => $cmid]);
@@ -267,16 +267,16 @@ class CompilatioFrame {
                     [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
             }
 
-            if ($startselectedfilesanalyses) {
+            if ($startanalysesonselectedlines) {
                 $output .=
                     "<button
                         id='cmp-start-selected-btn'
                         title='" . get_string('start_selected_files_analysis', 'plagiarism_compilatio') . "'
-                        class='btn btn-primary cmp-action-btn mx-1'
+                        class='btn btn-secondary cmp-action-btn'
                     >
                     <i class='fas fa-chevron-down'></i>
                     </button>";
-                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startSelectedFilesAnalysis',
+                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedFiles',
                     [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
             }
 
