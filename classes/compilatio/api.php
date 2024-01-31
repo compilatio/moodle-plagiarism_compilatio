@@ -327,7 +327,7 @@ class CompilatioAPI {
     public function get_document($docid) {
         $endpoint = '/api/private/document/' . $docid;
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
-
+        error_log(var_export($response, true));
         $error = $this->get_error_response($response, 200);
         if ($error === false) {
             return $response->data->document;

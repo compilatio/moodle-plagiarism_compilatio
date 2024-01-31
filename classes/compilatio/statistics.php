@@ -363,7 +363,7 @@ class CompilatioStatistics {
         global $DB, $PAGE;
         $compilatio = new CompilatioAPI();
 
-        $sql = "SELECT {user}.*
+        $sql = "SELECT {user}.id, {user}.lastname, {user}.firstname
         FROM {user}
         INNER JOIN {quiz_attempts} on {quiz_attempts}.userid = {user}.id
         INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz 
@@ -375,7 +375,7 @@ class CompilatioStatistics {
 
         $usersSumbitedTest = $DB->get_records_sql($sql, [$cmid]);
 
-        $sql = "SELECT distinct {question_attempts}.*, {question}.id
+        /*$sql = "SELECT distinct {question_attempts}.*
         FROM {question_attempts}
         INNER JOIN {question_usages} on {question_usages}.id = {question_attempts}.questionusageid
         INNER JOIN {question} on {question}.id = {question_attempts}.questionid
@@ -383,12 +383,11 @@ class CompilatioStatistics {
         INNER JOIN {quiz} on {quiz}.id = {quiz_attempts}.quiz
         INNER JOIN {course} on {course}.id = {quiz}.course
         INNER JOIN {course_modules} on {course_modules}.course = {course}.id
-            AND {course_modules}.instance = {quiz}.id
-            AND {course_modules}.id = ?";
+        WHERE {course_modules}.id = ?";
 
         $questionsOnQuiz = $DB->get_records_sql($sql, [$cmid]);
-
-        error_log(var_export($questionsOnQuiz,true));
+        error_log(var_export($questionsOnQuiz, true)); */
+        
 
         $output = "
         <div class='col'>
@@ -415,35 +414,50 @@ class CompilatioStatistics {
                     <th class='container text-center'></th>
                     <th class='container text-center'></th>
                 </tr>";
+
+            $sql = "SELECT {quiz_attempts}.id, {quiz_attempts}.userid
+                FROM {quiz_attempts}
+                INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz
+                INNER JOIN {course_modules} ON {course_modules}.instance = {quiz}.id
+                WHERE {course_modules}.id = ? 
+                AND {quiz_attempts}.userid = ?";
+
+            $attemptid = $DB->get_record_sql($sql, [$cmid, $user->id]);
+        
+
+            error_log(var_export(\quiz_attempt::create($attemptid->id), true));
+            
+
+
             $totalWordQuiz = 0;
             $globalScoreQuiz = 0;
             $compteurDivision = 1;
-            foreach ($questionsOnQuiz as $question) {
+            /*foreach ($questionsOnQuiz as $question) {
                 $output .= "<tr>
                 <td class='container text-center'>" . get_string('question', 'plagiarism_compilatio') . ' ' . $question->slot . "</td>";
 
-                $sql = "SELECT {plagiarism_compilatio_file}.*, mdl_question_attempts.responsesummary
-                FROM {plagiarism_compilatio_file}
-                INNER JOIN {course_modules} ON {course_modules}.id = {plagiarism_compilatio_file}.cm
-                INNER JOIN {course} ON {course}.id = {course_modules}.course
-                INNER JOIN {quiz} ON {quiz}.course = {course}.id
-                INNER JOIN {quiz_attempts} ON {quiz_attempts}.quiz = {quiz}.id
-                INNER JOIN {question_attempts} ON {question_attempts}.id = {quiz_attempts}.id
-                WHERE {plagiarism_compilatio_file}.cm = ?
-                AND {plagiarism_compilatio_file}.userid = ?
+                $sql = "SELECT {question}.id, {question_attempts}.slot, {question_attempts}.id, {plagiarism_compilatio_file}.*
+                FROM {question_attempts}
+                INNER JOIN {question_usages} on {question_usages}.id = {question_attempts}.questionusageid
+                INNER JOIN {question} on {question}.id = {question_attempts}.questionid
+                INNER JOIN {quiz_attempts} on {quiz_attempts}.id = {question_usages}.id
+                INNER JOIN {quiz} on {quiz}.id = {quiz_attempts}.quiz
+                INNER JOIN {course} on {course}.id = {quiz}.course
+                INNER JOIN {course_modules} on {course_modules}.course = {course}.id
+                INNER JOIN {plagiarism_compilatio_file} on {plagiarism_compilatio_file}.cm = {course_modules}.id
+                WHERE {plagiarism_compilatio_file}.userid = ?
+                AND {course_modules}.id = ?
+                AND {question_attempts}.id = ?
                 AND {plagiarism_compilatio_file}.status = 'scored'
-                AND {question_attempts}.slot = ?
-                AND {course_modules}.instance = {quiz}.id";
+                AND {question}.id = ?";
 
-                $cmpfile = $DB->get_record_sql($sql, [$cmid, $user->id, $question->slot]);                
+                $cmpfile = $DB->get_records_sql($sql, [$user->id, $cmid, $question->id, $question->questionid]);                
 
                 $totalWordRepsonse = count(explode(" ", $cmpfile->responsesummary));
                 $totalWordQuiz += $totalWordRepsonse;
                 $output .="<td class='container text-center'>" . $totalWordRepsonse . ' ' . get_string('word', 'plagiarism_compilatio') . " </td>";
             
-                
-                //error_log(var_export($cmpfile, true));
-                $globalScoreQuiz += $cmpfile->globalscore != false ? $cmpfile->globalscore->globalscore : 0;
+                $globalScoreQuiz += $cmpfile->globalscore != false ? $cmpfile->globalscore : 0;
                 $compteurDivision += $cmpfile->globalscore != false ? 1 : 0;
 
                 $output .= "<td class='container text-center'>"; 
@@ -482,7 +496,7 @@ class CompilatioStatistics {
             $output .="</td>
                     <td></td>
                 </tr>";
-            }
+            }*/
 
             $output .= "<tr class='table-secondary'>
                             <th class='container text-center'>" . get_string('total', 'plagiarism_compilatio') . "</th>
