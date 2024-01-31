@@ -375,9 +375,10 @@ class CompilatioStatistics {
 
         $usersSumbitedTest = $DB->get_records_sql($sql, [$cmid]);
 
-        $sql = "SELECT distinct {question_attempts}.slot, {question_attempts}.questionsummary
+        $sql = "SELECT distinct {question_attempts}.*, {question}.id
         FROM {question_attempts}
         INNER JOIN {question_usages} on {question_usages}.id = {question_attempts}.questionusageid
+        INNER JOIN {question} on {question}.id = {question_attempts}.questionid
         INNER JOIN {quiz_attempts} on {quiz_attempts}.id = {question_usages}.id
         INNER JOIN {quiz} on {quiz}.id = {quiz_attempts}.quiz
         INNER JOIN {course} on {course}.id = {quiz}.course
@@ -387,7 +388,7 @@ class CompilatioStatistics {
 
         $questionsOnQuiz = $DB->get_records_sql($sql, [$cmid]);
 
-
+        error_log(var_export($questionsOnQuiz,true));
 
         $output = "
         <div class='col'>
@@ -441,7 +442,7 @@ class CompilatioStatistics {
                 $output .="<td class='container text-center'>" . $totalWordRepsonse . ' ' . get_string('word', 'plagiarism_compilatio') . " </td>";
             
                 
-                error_log(var_export($cmpfile, true));
+                //error_log(var_export($cmpfile, true));
                 $globalScoreQuiz += $cmpfile->globalscore != false ? $cmpfile->globalscore->globalscore : 0;
                 $compteurDivision += $cmpfile->globalscore != false ? 1 : 0;
 
