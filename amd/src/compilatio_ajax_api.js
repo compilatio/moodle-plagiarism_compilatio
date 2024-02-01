@@ -39,7 +39,8 @@ define(['jquery'], function($) {
 
     exports.startAnalysesOnSelectedFiles = function(basepath, cmid, message) {
         $(document).ready(function() {
-            const startAnalysesOnSelectedFiles = $('#cmp-start-selected-btn').hide();
+            const multipleanalysisoptions = $('#show-multiple-analyse-options').hide();
+            const startAnalysesOnSelectedFiles = $('#cmp-start-selected-btn');
             const checkboxes = $('td.c0 input, #selectall');
             function getSelectedLines() {
                 return checkboxes.filter(':checked').map(function() {
@@ -48,7 +49,7 @@ define(['jquery'], function($) {
             }
             function updateButtonVisibility() {
                 const selectedUsers = getSelectedLines();
-                selectedUsers.length > 0 ? startAnalysesOnSelectedFiles.show() : startAnalysesOnSelectedFiles.hide();
+                selectedUsers.length > 0 ? multipleanalysisoptions.show() : multipleanalysisoptions.hide();
             }
             checkboxes.on('change', updateButtonVisibility);
             startAnalysesOnSelectedFiles.click(function() {
@@ -239,9 +240,12 @@ define(['jquery'], function($) {
             $('#show-search').on('click', function() {
                 tabClick($(this), $('#cmp-search'));
             });
+            $('#show-multiple-analyse-options').on('click', function() {
+                tabClick($(this), $('#cmp-multiple-analyse-options'));
+            });
 
-            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search');
-            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-home, #cmp-search');
+            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search, #show-multiple-analyse-options');
+            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-home, #cmp-search, #cmp-multiple-analyse-options');
 
             /**
              * TabClick

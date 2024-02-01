@@ -94,7 +94,7 @@ class CompilatioFrame {
             unset($SESSION->compilatio_alerts);
         }
 
-        $startallanalyses = $sendalldocs = $resetdocsinerror = $startanalysesonselectedlines = false;
+        $startallanalyses = $sendalldocs = $resetdocsinerror = $multipleanalysesoptionss = false;
 
         $analysistype = $DB->get_field('plagiarism_compilatio_cm_cfg', 'analysistype', ['cmid' => $cmid]);
 
@@ -102,7 +102,7 @@ class CompilatioFrame {
             $analysistype == 'manual'
                 && $DB->count_records('plagiarism_compilatio_file', ['status' => 'sent', 'cm' => $cmid]) !== 0
         ) {
-            $startallanalyses = $startanalysesonselectedlines = true;
+            $startallanalyses = $multipleanalysesoptionss = true;
 
         } else if ($analysistype == 'planned') { // Display the date of analysis if its type is set on 'Planned'.
             $analysistime = $DB->get_field('plagiarism_compilatio_cm_cfg', 'analysistime', ['cmid' => $cmid]);
@@ -259,7 +259,8 @@ class CompilatioFrame {
                     "<button
                         id='cmp-start-btn'
                         title='" . get_string('start_all_analysis', 'plagiarism_compilatio') . "'
-                        class='btn btn-primary cmp-action-btn mx-1'
+                        class='btn btn-primary cmp-action-btn mx-1 '
+                        data-toggle='tooltip'
                     >
                         <i class='fa fa-play-circle'></i>
                     </button>";
@@ -267,17 +268,19 @@ class CompilatioFrame {
                     [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
             }
 
-            if ($startanalysesonselectedlines) {
-                $output .=
-                    "<button
-                        id='cmp-start-selected-btn'
-                        title='" . get_string('start_selected_files_analysis', 'plagiarism_compilatio') . "'
-                        class='btn btn-secondary cmp-action-btn'
+            if ($multipleanalysesoptionss) {
+                $output .="
+                    <button 
+                        id='show-multiple-analyse-options' 
+                        class='btn btn-secondary cmp-action-btn mx-1' 
+                        data-toggle='tooltip'
+                        title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'
                     >
-                    <i class='fas fa-chevron-down'></i>
-                    </button>";
+                        <i  class='fa fa-chevron-down'></i>
+                    </button>
+                    ";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedFiles',
-                    [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
+                [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
             }
 
             if ($sendalldocs) {
@@ -432,6 +435,31 @@ class CompilatioFrame {
             </div>";
         }
         $output .= "</div>";
+
+        // Display multiple analysis options
+        $output .= "<div id='cmp-multiple-analyse-options' class='cmp-tabs-content'>
+                <h5>" . get_string('other_analysis_options', 'plagiarism_compilatio') . "</h5>
+                <div class='ml-2'>
+                    <div class='row mt-3'>
+                        <button
+                            id='cmp-start-btn'
+                            class='btn btn-primary cmp-action-btn mx-1'
+                        >
+                            <i class='fa fa-play-circle'></i>
+                        </button>
+                        <h7 class='mt-2'>" . get_string('start_all_analysis', 'plagiarism_compilatio') . "</h7>
+                    </div>
+                    <div class='row'>
+                        <button
+                            id='cmp-start-selected-btn'
+                            class='btn btn-primary cmp-action-btn mx-1 mt-1'
+                        >
+                            <i class='fa fa-check-double'></i>
+                        </button>
+                        <h7 class='mt-2'>" . get_string('start_selected_files_analysis', 'plagiarism_compilatio') . "</h7>
+                    </div>
+                </div>
+            </div>";
 
         // Display timed analysis date.
         if (isset($analysisdate)) {

@@ -237,6 +237,9 @@ $string["compilatio_iddocument"] = "Identifiant du document";
 $string["compilatio_search_notfound"] = "Aucun document n'a été trouvé pour cet identifiant parmi les documents chargés sur votre plateforme Moodle.";
 $string["compilatio_depositor"] = 'Le document présent dans l\'activité <b>{$a->modulename}</b> à été rendu par l\'utilisateur Moodle <b>{$a->lastname} {$a->firstname}</b>.';
 
+// Other analysis options
+$string["other_analysis_options"] = 'Autres options d\'analyse';
+
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistiques';
 $string["display_stats"] = "Afficher les statistiques de cette activité";
