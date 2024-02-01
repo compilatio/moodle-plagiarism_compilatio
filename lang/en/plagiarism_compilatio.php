@@ -195,7 +195,8 @@ $string['reset_docs_in_error'] = 'Reset documents in error';
 $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
 $string['hide_area'] = 'Hide Compilatio informations';
 $string['show_area'] = 'Show Compilatio informations';
-$string['start_selected_files_analysis'] = "Analyse selected documents ";
+$string['start_selected_files_analysis'] = 'Analyse selected documents ';
+$string['access_report'] = 'Access report';
 
 // Detailed error status.
 $string['detailed_error_unsupported'] = "These documents could not be analysed by Compilatio because their format is not supported.";
@@ -214,6 +215,7 @@ $string["short_error_unsupported"] = 'documents unsupported.';
 $string["short_error_too_short"] = 'documents too short.';
 $string["short_error_too_long"] = 'documents too long.';
 $string["short_error_too_large"] = 'documents too large.';
+$string["not_analysed"] = 'not analysed';
 
 // Notifications tab.
 $string["display_notifications"] = "Display notifications";

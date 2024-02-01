@@ -196,7 +196,7 @@ $string["compilatio_help_assign"] = "Obtenir de l&#39aide sur le plugin Compilat
 $string['hide_area'] = 'Masquer les informations Compilatio';
 $string['show_area'] = 'Afficher les informations Compilatio';
 $string['start_selected_files_analysis'] = "Analyser les documents sélectionnés ";
-
+$string['access_report'] = 'Accéder au rapport';
 
 // Detailed error status.
 $string['detailed_error_unsupported'] = "Ces documents n'ont pas pu être analysés par Compilatio car leur format n'est pas supporté.";
@@ -215,6 +215,8 @@ $string["short_error_unsupported"] = 'documents non supportés.';
 $string["short_error_too_short"] = 'documents trop courts.';
 $string["short_error_too_long"] = 'documents trop longs.';
 $string["short_error_too_large"] = 'documents trop volumineux';
+$string["not_analysed"] = 'non analysé';
+
 
 // Notifications tab.
 $string["display_notifications"] = "Afficher les notifications";
