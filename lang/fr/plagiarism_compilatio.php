@@ -265,6 +265,7 @@ $string['score'] = 'Score';
 $string['word'] = 'mot(s)';
 $string['total'] = 'Total';
 $string['no_students_finished_quiz'] = 'Aucun élève n\'a fini le quiz';
+$string['select_a_student'] = 'Sélectionner un élève';
 
 
 // Global Statistics.

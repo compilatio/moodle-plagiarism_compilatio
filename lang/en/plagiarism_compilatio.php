@@ -264,6 +264,7 @@ $string['score'] = 'Score';
 $string['word'] = 'word(s)';
 $string['total'] = 'Total';
 $string['no_students_finished_quiz'] = 'No students finished the quiz';
+$string['select_a_student'] = 'Select a student';
 
 
 // Global Statistics.
