@@ -555,7 +555,7 @@ class CompilatioStatistics {
             $userList[] = $user->id;
             $output .= '<option value="' . $user->id . '">' . $user->lastname . ' ' . $user->firstname . '</option>';
             }
-
+            
             
 
             $output .= "</select> 
