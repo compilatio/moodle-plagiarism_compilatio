@@ -555,9 +555,6 @@ class CompilatioStatistics {
             $userList[] = $user->id;
             $output .= '<option value="' . $user->id . '">' . $user->lastname . ' ' . $user->firstname . '</option>';
             }
-            
-            
-
             $output .= "</select> 
                 <i id='next-student' title='" . get_string('next_student', 'plagiarism_compilatio') . "' class='cmp-icon-lg fa fa-chevron-right'></i>
                 <div class='mx-top p-3 '>

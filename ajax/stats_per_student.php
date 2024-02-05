@@ -24,16 +24,12 @@
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
-
-require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 require_login();
 
-global $DB, $SESSION;
+global $DB;
 
 $selectedStudent = required_param('selectedStudent', PARAM_TEXT);
 $cmid = required_param('cmid', PARAM_TEXT);

@@ -64,10 +64,6 @@ define(['jquery'], function($) {
             });
         });
     }
-    
-    
-    
-    
 
     exports.startAllAnalysis = function(basepath, cmid, message) {
         $(document).ready(function() {
