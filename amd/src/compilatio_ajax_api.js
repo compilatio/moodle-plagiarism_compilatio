@@ -31,8 +31,7 @@ define(['jquery'], function($) {
         $(document).ready(function() {
             var startAllAnalysis = $('#cmp-start-btn');
             startAllAnalysis.click(function() {
-                startAnalysis(message, basepath, cmid, null)
-                console.log(cmid);
+                startAnalysis(message, basepath, cmid, null);
             });
         });
     };

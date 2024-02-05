@@ -436,7 +436,7 @@ class CompilatioFrame {
         }
         $output .= "</div>";
 
-        // Display multiple analysis options
+        // Display multiple analysis options.
         $output .= "<div id='cmp-multiple-analyse-options' class='cmp-tabs-content'>
                 <h5>" . get_string('other_analysis_options', 'plagiarism_compilatio') . "</h5>
                 <div class='ml-2'>
