@@ -233,7 +233,7 @@ class CompilatioFrame {
             >
             </i>";
 
-        //stat per student quiz icon
+        // Stat per student quiz icon.
         if ($module == 'quiz') {
             $output .=
             "<i

@@ -31,10 +31,12 @@ require_login();
 
 global $DB;
 
-$selectedStudent = required_param('selectedStudent', PARAM_TEXT);
+$selectedstudent = required_param('selectedstudent', PARAM_TEXT);
 $cmid = required_param('cmid', PARAM_TEXT);
-
-$user = $DB->get_record('user', ['id'=> $selectedStudent]);
-$output = CompilatioStatistics::get_statistics_by_id($user, $cmid);
-
+if (is_numeric($selectedstudent)) {
+    $user = $DB->get_record('user', ['id' => $selectedstudent]);
+    $output = CompilatioStatistics::get_statistics_by_id($user, $cmid);
+} else {
+    $output = "";
+}
 echo $output;

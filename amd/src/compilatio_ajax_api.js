@@ -27,19 +27,18 @@ define(['jquery'], function($) {
             });
     }
 
-    exports.getSelectedStudent = function(basepath, cmid, users) {
+    exports.getSelectedStudent = function(basepath, cmid) {
         $(document).ready(function(){
             const dropdown = $('#student-select');
             const statisticsContainer = $('#statistics-container');
-    
+            
             dropdown.on('change', function() {
-                const selectedStudent = $(this).val();    
+                const selectedstudent = $(this).val();
                 $.ajax({
                     type: 'POST',
                     url: basepath + '/plagiarism/compilatio/ajax/stats_per_student.php',  
-                    data: { selectedStudent: selectedStudent, cmid: cmid },
+                    data: { selectedstudent: selectedstudent, cmid: cmid },
                     success: function(response) {
-                        // Update the content of statistics-container with the response
                         statisticsContainer.html(response);
                     },
                     error: function(error) {
@@ -47,21 +46,24 @@ define(['jquery'], function($) {
                     }
                 });
             });
-    
-            // Ajoutez des événements de clic aux chevrons
-            $('#previous-student').on('click', function() {
-                const currentIndex = dropdown.prop('selectedIndex');
-                if (currentIndex > 0) {
-                    dropdown.prop('selectedIndex', currentIndex - 1).change();
-                }
-            });
-    
-            $('#next-student').on('click', function() {
-                const currentIndex = dropdown.prop('selectedIndex');
-                if (currentIndex < dropdown.find('option').length - 1) {
-                    dropdown.prop('selectedIndex', currentIndex + 1).change();
-                }
-            });
+
+        $('#previous-student').on('click', function() {
+            const currentIndex = dropdown.prop('selectedIndex');
+            if (currentIndex > 0) {
+                dropdown.prop('selectedIndex', currentIndex - 1).change();
+            } else {
+                dropdown.prop('selectedIndex', dropdown.find('option').length - 1).change();
+            }
+        });
+
+        $('#next-student').on('click', function() {
+            const currentIndex = dropdown.prop('selectedIndex');
+            if (currentIndex < dropdown.find('option').length - 1) {
+                dropdown.prop('selectedIndex', currentIndex + 1).change();
+            } else {
+                dropdown.prop('selectedIndex', 0).change();
+            }
+        });
         });
     }
 
