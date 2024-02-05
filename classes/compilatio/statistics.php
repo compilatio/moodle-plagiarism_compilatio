@@ -392,15 +392,16 @@ class CompilatioStatistics {
             $totalWordQuiz = 0;
             $globalScoreQuiz = 0;
             $compteurDivision = 0;
+            $questionsnotanalysed = 0;
 
-            $output.= "<table class='table table-light table-hover align-middle rounded-lg shadow-sm border-primary'>
+            $output.= "<table class='table table-light table-hover align-middle rounded-lg shadow-lg border-primary'>
                 <thead>
                     <tr>
-                        <th class='container text-center'>" . get_string('question', 'plagiarism_compilatio') . "</th>
-                        <th class='container text-center text-nowrap'>" . get_string('total_words_quiz', 'plagiarism_compilatio') . "</th>
-                        <th class='container text-center'>" . get_string('score', 'plagiarism_compilatio') . "</th>
-                        <th class='container text-center'></th>
-                        <th class='container text-center'></th>
+                        <th class='container text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . "</th>
+                        <th class='container text-center text-nowrap align-middle'>" . get_string('total_words_quiz_on_suspect', 'plagiarism_compilatio') . "</th>
+                        <th class='container text-center align-middle'>" . get_string('score', 'plagiarism_compilatio') . "</th>
+                        <th class='container text-center align-middle'></th>
+                        <th class='container text-center align-middle'></th>
                     </tr>
                 </thead>
                 <tbody style='background-color: white;'>";
@@ -410,65 +411,62 @@ class CompilatioStatistics {
                 $answer = $attempt->get_question_attempt($slot);
                 $content = $answer->get_response_summary();
 
-                $output .= "<tr>
-                <td class='container text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . ' ' . $slot . "</td>";           
-
-                $totalWordQuiz += $totalWordQuestion = CompilatioStatistics::wordCount($content);
-
-                $output .="<td class='container text-center align-middle'>" . $totalWordQuestion . ' ' . get_string('word', 'plagiarism_compilatio') . " </td>";
+                $output .= "<tr class='font-weight-light'>
+                <td class='container text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . ' ' . $slot . "</td>";    
 
                 $sql = "SELECT {plagiarism_compilatio_file}.*
-                    FROM {plagiarism_compilatio_file}
-                    WHERE {plagiarism_compilatio_file}.cm = ?
-                    AND {plagiarism_compilatio_file}.userid = ?
-                    AND {plagiarism_compilatio_file}.identifier = ?
-                    ";
-                $cmpfile = $DB->get_record_sql($sql, [$cmid, $user->id, sha1($content)]);
+                        FROM {plagiarism_compilatio_file}
+                        WHERE {plagiarism_compilatio_file}.cm = ?
+                        AND {plagiarism_compilatio_file}.userid = ?
+                        AND {plagiarism_compilatio_file}.identifier = ?
+                        ";
+                $cmpfile = $DB->get_record_sql($sql, [$cmid, $user->id, sha1($content)]);     
+                error_log(var_export($cmpfile, true));
+                if($cmpfile->status == 'scored'){
+                    if ($cmpfile->globalscore != false || $cmpfile->globalscore == 0) {
+                        $totalWordQuiz += $totalWordQuestion = CompilatioStatistics::wordCount($content);
+                        $globalScoreQuiz += $cmpfile->status == 'scored' ? $cmpfile->globalscore : 0;
+                        $suspectwordsquestion = round($cmpfile->globalscore * $totalWordQuestion / 100);
+                        $output .="<td class='container text-center align-middle '>" . $suspectwordsquestion . ' ' . get_string('word', 'plagiarism_compilatio') . ' / <br>' . $totalWordQuestion . ' ' . get_string('word', 'plagiarism_compilatio') . " </td>";
 
-                $output .= "<td class='container text-center align-middle'>";
+                        $output .= "<td class='container text-center align-middle'>";
 
-                if ($cmpfile->globalscore != false) {
-                    $output .= $cmpfile->globalscore . "%</td><td class='align-middle'>";
-
-                    $globalScoreQuiz += $cmpfile->status == 'scored' ? $cmpfile->globalscore : 0;
-                    $compteurDivision += $cmpfile->status == 'scored' ? 1 : 0;
+                        $output .= $cmpfile->globalscore . "%</td><td class='align-middle'>";
                     
-                    $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmpfile->cm]);
-
-                    if ($cmpfile->globalscore <= $config->warningthreshold ?? 10) {
-                        $color = 'green';
-                    } else if ($cmpfile->globalscore <= $config->criticalthreshold ?? 25) {
-                        $color = 'orange';
-                    } else {
-                        $color = 'red';
-                    }
-                                    
-                    $scores = ['similarityscore', 'utlscore', 'aiscore'];
-                    $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
-                    $icons = '';
-
-                    foreach ($scores as $score) {
-                        $message = isset($cmpfile->$score) ?$cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
-                        $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
-                        if (isset($cmpfile->$score)) {
-                            $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
-                        }
-                    }
-
-                    $output .=
-                        "<span id='cmp-score-icons' class='d-flex' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
-                            " . $icons . "
-                        </span>";
-
-                } else { 
-                    $output .= get_string('not_analysed', 'plagiarism_compilatio');
-                }
-
-                $output .="</td>
-                        <td class='align-middle'>";
+                        $compteurDivision += $cmpfile->status == 'scored' ? 1 : 0;
                         
-                if ($cmpfile->status == 'scored') {
-        
+                        $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmpfile->cm]);
+
+                        if ($cmpfile->globalscore <= $config->warningthreshold ?? 10) {
+                            $color = 'green';
+                        } else if ($cmpfile->globalscore <= $config->criticalthreshold ?? 25) {
+                            $color = 'orange';
+                        } else {
+                            $color = 'red';
+                        }
+                                        
+                        $scores = ['similarityscore', 'utlscore', 'aiscore'];
+                        $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
+                        $icons = '';
+
+                        foreach ($scores as $score) {
+                            $message = isset($cmpfile->$score) ?$cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
+                            $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
+                            if (isset($cmpfile->$score)) {
+                                $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
+                            }
+                        }
+
+                        $output .=
+                            "<span id='cmp-score-icons' class='d-flex' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
+                                " . $icons . "
+                            </span>";
+
+                    }
+
+                    $output .="</td>
+                            <td class='align-middle'>";
+            
                     $params = [
                         'docid' => $cmpfile->externalid,
                         'cmid' => $cmpfile->cm,
@@ -482,11 +480,13 @@ class CompilatioStatistics {
                     }
 
                     $output .=
-                        "<a href='{$href}' target='_blank'>
-                            <span class='text-primary text-nowrap'>" . get_string('access_report', 'plagiarism_compilatio') ."</span>
+                        "<a href='{$href}' target='_blank' style='text-decoration:none'>
+                            <span class='text-primary text-nowrap font-weight-bold' style='color: #5A51E7 !important'>" . get_string('access_report', 'plagiarism_compilatio') ."</span>
                         </a>";
+                } else {
+                    $output .="<td colspan='2'><span class='font-italic'>". get_string("not_analysed", 'plagiarism_compilatio')." </span></td>";
+                    $questionsnotanalysed ++; 
                 }
-
                 $output .= "</td></tr>";
             }
 
@@ -494,25 +494,32 @@ class CompilatioStatistics {
 
             $compteur = $compteurDivision == 0 ? 1 : $compteurDivision;
             $globalScoreQuiz = round($globalScoreQuiz / $compteur);
-
+            $suspectwordsQuiz = round($globalScoreQuiz * $totalWordQuiz / 100);
             $output .= "<tfoot class='table-group-divider'><tr>
-                            <th class='container text-center align-middle'>" . get_string('total', 'plagiarism_compilatio') . "</th>
-                            <td class='align-middle'>" . $totalWordQuiz . ' ' . get_string('word', 'plagiarism_compilatio') . "</td>
-                            <td class='align-middle'>";
-            $output .= $compteurDivision != 0 ? $globalScoreQuiz  . "%" : get_string('not_analysed', 'plagiarism_compilatio');
-            $output .= "</td><td class='align-middle'>";
-            
-            if ($globalScoreQuiz <= $config->warningthreshold ?? 10) {
-                $color = 'green';
-            } else if ($globalScoreQuiz <= $config->criticalthreshold ?? 25) {
-                $color = 'orange';
-            } else {
-                $color = 'red';
-            }
+                            <th class='container text-center align-middle'>" . get_string('total', 'plagiarism_compilatio') . "</th>";
+            error_log(var_export($questionsnotanalysed, true));
+            error_log(var_export(count($attempt->get_slots()), true));
 
-            $output .= $compteurDivision != 0 ? "<span class='cmp-similarity cmp-color-{$color}' style='cursor: auto;'>
-            <i class='fa fa-circle'></i>
-            </span>" : '';
+            if($questionsnotanalysed != count($attempt->get_slots())){
+                $output .= "<td class='align-middle font-weight-light'>" . $suspectwordsQuiz . ' ' . get_string('word', 'plagiarism_compilatio') . '/<br> ' . $totalWordQuiz . ' ' . get_string('word', 'plagiarism_compilatio') . "</td>
+                            <td class='align-middle font-weight-light'>";
+                $output .= $compteurDivision != 0 ? $globalScoreQuiz  . "%" : get_string('not_analysed', 'plagiarism_compilatio');
+                $output .= "</td><td class='align-middle'>";
+                
+                if ($globalScoreQuiz <= $config->warningthreshold ?? 10) {
+                    $color = 'green';
+                } else if ($globalScoreQuiz <= $config->criticalthreshold ?? 25) {
+                    $color = 'orange';
+                } else {
+                    $color = 'red';
+                }
+
+                $output .= $compteurDivision != 0 ? "<span class='cmp-similarity cmp-color-{$color}' style='cursor: auto;'>
+                <i class='fa fa-circle'></i>
+                </span>" : '';
+            } else {
+                $output .= "<td class='font-italic font-weight-light' colspan='2'>". get_string('not_analysed', 'plagiarism_compilatio');
+            }
             $output .= "</td></tr></tfoot>";
         }
             return $output;
@@ -543,7 +550,7 @@ class CompilatioStatistics {
 
         $output = "
         <div class='col ml-6'>
-            <h4 class='cmp-color-primary'>" . get_string('results_by_student', 'plagiarism_compilatio') . "</h4>";
+            <h4 class='cmp-color-primary font-weight-normal'>" . get_string('results_by_student', 'plagiarism_compilatio') . "</h4>";
 
         if(!empty($usersSumbitedTest)){
         
@@ -552,8 +559,8 @@ class CompilatioStatistics {
             <option>". get_string('select_a_student', 'plagiarism_compilatio') . "</option>";
 
             foreach ($usersSumbitedTest as $userSumbitedTest => $user) {
-            $userList[] = $user->id;
-            $output .= '<option value="' . $user->id . '">' . $user->lastname . ' ' . $user->firstname . '</option>';
+                $userList[] = $user->id;
+                $output .= '<option value="' . $user->id . '">' . $user->lastname . ' ' . $user->firstname . '</option>';
             }
             $output .= "</select> 
                 <i id='next-student' title='" . get_string('next_student', 'plagiarism_compilatio') . "' class='cmp-icon-lg fa fa-chevron-right'></i>
