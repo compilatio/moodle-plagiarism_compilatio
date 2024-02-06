@@ -375,9 +375,8 @@ class CompilatioFrame {
 
         $output .= "
         <div id='cmp-stats-per-student' class='cmp-tabs-content'>
-            <div class='row text-center'>"
-            . CompilatioStatistics::get_statistics_per_student($cmid) . $exportbutton .
-            "</div>
+            <div class='text-center'>"
+            . CompilatioStatistics::get_statistics_per_student($cmid) . "</div>
         </div>";
 
         // Alerts tab.

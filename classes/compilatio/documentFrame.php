@@ -342,13 +342,11 @@ class CompilatioDocumentFrame {
      * @return string                Return the HTML
      */
     public static function get_score($cmpfile, $config, $isteacher) {
-        if ($cmpfile->globalscore <= $config->warningthreshold ?? 10) {
-            $color = 'green';
-        } else if ($cmpfile->globalscore <= $config->criticalthreshold ?? 25) {
-            $color = 'orange';
-        } else {
-            $color = 'red';
-        }
+        $color = $cmpfile->globalscore <= $config->warningthreshold ?? 10 
+            ? 'green'
+            : ($cmpfile->globalscore <= $config->criticalthreshold ?? 25
+            ? 'orange'
+            : 'red');
 
         $title = get_string('title_score', 'plagiarism_compilatio', $cmpfile->globalscore);
         $title .= $isteacher ? ' ' . get_string('title_score_teacher', 'plagiarism_compilatio') : '';

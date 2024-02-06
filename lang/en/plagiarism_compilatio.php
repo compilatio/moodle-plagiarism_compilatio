@@ -265,7 +265,9 @@ $string['word'] = 'words';
 $string['total'] = 'Total';
 $string['no_students_finished_quiz'] = 'No students finished the quiz';
 $string['select_a_student'] = 'Select a student';
-
+$string['response_type'] = 'Response type';
+$string['file'] = 'File';
+$string['text'] = 'Text';
 
 // Global Statistics.
 $string["no_statistics_yet"] = 'No documents have been analysed yet.';
