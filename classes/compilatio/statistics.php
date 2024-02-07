@@ -373,7 +373,7 @@ class CompilatioStatistics {
                 AND {quiz_attempts}.userid = ?";
 
         $attemptid = $DB->get_record_sql($sql, [$cmid, $user->id]);
-        $attempt = \quiz_attempt::create($attemptid->id);
+        $attempt = mod_quiz\quiz_attempt::create($attemptid->id);
 
         $totalwordquiz = 0;
         $globalscorequiz = 0;
@@ -382,13 +382,14 @@ class CompilatioStatistics {
 
         $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
-        $output .= "<table class='table table-light align-middle rounded-lg shadow-lg'>
+        $output .= "<div style='max-height: 400px; overflow-y: auto;'>
+            <table class='table table-light align-middle rounded-lg shadow-sm'>
             <thead>
                 <tr>
                     <th class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . "</th>
                     <th class='text-center align-middle'>" . get_string('response_type', 'plagiarism_compilatio') . "</th>
-                    <th class='text-center align-middle' style='white-space: nowrap;'>" . get_string('total_words_quiz_on_suspect', 'plagiarism_compilatio') . "</th>
-                    <th class='text-center align-middle' style='white-space: nowrap;'>" . get_string('score', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle'>" . get_string('total_words_quiz_on_suspect', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle'>" . get_string('score', 'plagiarism_compilatio') . "</th>
                     <th class='text-center align-middle'></th>
                 </tr>
             </thead>
@@ -403,7 +404,9 @@ class CompilatioStatistics {
             $compifiles = [];
 
             $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
-            $wordcount = str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8'));
+            $wordcount = $content !== null 
+                ? str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8'))
+                : 0;
             if ($wordcount >= $nbmotsmin) {
                 $sql = "SELECT * FROM {plagiarism_compilatio_file} cmpfile
                     WHERE cmpfile.cm = ? AND cmpfile.userid = ? AND cmpfile.identifier = ?";
@@ -452,9 +455,9 @@ class CompilatioStatistics {
             <td class='align-middle font-weight-light'>";
             $output .= $compteurdivision != 0 ? $globalscorequiz  . "%" : get_string('not_analysed', 'plagiarism_compilatio');
 
-            $color = $cmpfile->globalscore <= $config->warningthreshold ?? 10 
+            $color = $globalscorequiz <= $config->warningthreshold ?? 10 
                 ? 'green'
-                : ($cmpfile->globalscore <= $config->criticalthreshold ?? 25
+                : ($globalscorequiz <= $config->criticalthreshold ?? 25
                 ? 'orange'
                 : 'red');
 
@@ -464,7 +467,7 @@ class CompilatioStatistics {
         } else {
             $output .= "<td class='font-italic font-weight-light' colspan='4'>" . get_string('not_analysed', 'plagiarism_compilatio');
         }
-        $output .= "</td></tr></tfoot>";
+        $output .= "</td></tr></tfoot></table></div>";
     }
     return $output;
 }
@@ -483,7 +486,7 @@ class CompilatioStatistics {
 
         if ($cmpfile->status == 'scored') {
             $output .= "<td class='text-center align-middle'>" . $suspectwordsquestion . ' ' . get_string('word', 'plagiarism_compilatio') . ' / <br>' . $totalwordquestion . ' ' . get_string('word', 'plagiarism_compilatio') . " </td>";
-            $output .= "<td class='text-center align-middle' style='white-space: nowrap;'>". CompilatioDocumentFrame::get_score($cmpfile, $config, true) . "</td>";
+            $output .= "<td class='text-center align-middle'>". CompilatioDocumentFrame::get_score($cmpfile, $config, true) . "</td>";
 
 
 

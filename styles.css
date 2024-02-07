@@ -307,3 +307,9 @@ a.cmp-btn-primary:hover {
     height: 22px;
     margin: 6px;
 }
+
+/* Ajoutez ces styles CSS pour aligner les icônes */
+.cmp-score-icons-container {
+    display: flex;
+    align-items: center;
+}
