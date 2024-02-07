@@ -268,6 +268,7 @@ $string['select_a_student'] = 'Select a student';
 $string['response_type'] = 'Response type';
 $string['file'] = 'File';
 $string['text'] = 'Text';
+$string['no_document_to_display'] = 'No documents to display';
 
 // Global Statistics.
 $string["no_statistics_yet"] = 'No documents have been analysed yet.';

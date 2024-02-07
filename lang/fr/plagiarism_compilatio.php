@@ -269,6 +269,8 @@ $string['select_a_student'] = 'Sélectionner un élève';
 $string['response_type'] = 'Type de réponse';
 $string['file'] = 'Fichier';
 $string['text'] = 'Texte';
+$string['no_document_to_display'] = 'Aucun document à afficher';
+
 
 // Global Statistics.
 $string["no_statistics_yet"] = "Aucun document n'a encore été analysé.";

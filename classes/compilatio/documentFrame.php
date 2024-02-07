@@ -212,7 +212,7 @@ class CompilatioDocumentFrame {
                     "</a>";
             }
 
-            $score = self::get_score($cmpfile, $config, $isteacher);
+            $score = self::get_score($cmpfile, $config, $isteacher, false);
 
         } else if ($status == 'sent') {
             if (($config->analysistype ?? null) == 'planned') {
@@ -341,25 +341,25 @@ class CompilatioDocumentFrame {
      * @param  mixed  $indexingstate Indexing state
      * @return string                Return the HTML
      */
-    public static function get_score($cmpfile, $config, $isteacher) {
+    public static function get_score($cmpfile, $config, $isteacher, $wrapping) {
         $color = $cmpfile->globalscore <= ($config->warningthreshold ?? 10)
             ? 'green'
             : ($cmpfile->globalscore <= ($config->criticalthreshold ?? 25)
                 ? 'orange'
                 : 'red');
-    
+
         $title = get_string('title_score', 'plagiarism_compilatio', $cmpfile->globalscore);
         $title .= $isteacher ? ' ' . get_string('title_score_teacher', 'plagiarism_compilatio') : '';
-    
-        $html = "<span title='{$title}' class='cmp-similarity cmp-color-{$color}'>
+
+        $html = "<span title='{$title}' class='cmp-similarity cmp-color-{$color} align-middle'>
                     <i class='fa fa-circle'></i> {$cmpfile->globalscore}<small>%</small>
                 </span>";
-    
+
         if (get_config('plagiarism_compilatio', 'recipe') === 'anasim-premium') {
             $scores = ['similarityscore', 'utlscore', 'aiscore'];
             $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
             $icons = '';
-    
+
             foreach ($scores as $score) {
                 $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
                 $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
@@ -367,18 +367,15 @@ class CompilatioDocumentFrame {
                     $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
                 }
             }
-    
-            $html .=
-                "<div class='cmp-score-icons-container'>
-                    <span id='cmp-score-icons' class='d-flex' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
-                        " . $icons . "
-                    </span>
-                </div>";
+
+            $html .= "<span id='cmp-score-icons' class='" . ($wrapping === false ? "d-flex" : "flex-nowrap") . "' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
+                        {$icons}
+                    </span>";
         }
-    
+
         return $html;
     }
-    
+
     /**
      * Complete linkarray informations for quizzes
      *
