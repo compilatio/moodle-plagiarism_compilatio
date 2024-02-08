@@ -35,7 +35,7 @@ $selectedstudent = required_param('selectedstudent', PARAM_TEXT);
 $cmid = required_param('cmid', PARAM_TEXT);
 if (is_numeric($selectedstudent)) {
     $user = $DB->get_record('user', ['id' => $selectedstudent]);
-    $output = CompilatioStatistics::get_statistics_by_id($user, $cmid);
+    $output = CompilatioStatistics::get_statistics_by_id($user, $cmid)['output'];
 } else {
     $output = "";
 }

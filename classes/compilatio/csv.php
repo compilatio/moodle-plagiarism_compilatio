@@ -141,5 +141,66 @@ class CompilatioCsv {
         exit(0);
 
     }
+    
+    public static function generate_cm_csv_per_student($cmid, $userssumbitedtest){
+        global $DB;
 
+        $cmpcm = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
+
+        // Get the name of the activity in order to generate header line and the filename.
+        $sql = "
+            SELECT activity.name
+            FROM {course_modules} cm
+            JOIN {" . 'quiz' . "} activity ON cm.course = activity.course
+                AND cm.instance = activity.id
+            WHERE cm.id =?";
+
+        $name = "";
+        $record = $DB->get_record_sql($sql, [$cmid]);
+        if ($record != null) {
+            $name = $record->name;
+        }
+
+        $date = userdate(time());
+        // Sanitize date for CSV.
+        $date = str_replace(",", "", $date);
+        // Create CSV first line.
+        $head = '"' . $name . " - " . $date . "\",\n";
+        // Sanitize filename.
+        $name = preg_replace("/[^a-z0-9\.]/", "", strtolower($name));
+
+        $filename = "compilatio_moodle_" . $name . "_statistics_per_students_" . date("Y_m_d") . ".csv";
+        // Add the first line to the content : "{Name of the module} - {date}".
+        $csv = $head;
+        $line = [];
+        $line["eleve"] = get_string('student', "plagiarism_compilatio");
+        $line["question"] = get_string('question', "plagiarism_compilatio");
+        $line["suspectwords/totalwords"] = get_string('total_words_quiz_on_suspect', "plagiarism_compilatio");
+        $line["tot"] = '%tot';
+        $line["sim"] = '%sim';
+        $line["IA"] = '%IA';
+        $line["utl"] = '%UTL';
+
+        $csv .= '"' . implode('","', $line) . "\"\n";
+        $c = 0;
+        foreach ($userssumbitedtest as $user) {
+            $datas = CompilatioStatistics::get_question_data($cmid, $user);
+            foreach ($datas as $question) {
+                $line = [];
+                $line["name"]= $user->lastname . ' ' . $user->firstname;
+                $line["question"] = 'Q' . $question['question_number'];
+                $line["suspect/totalwords"] = $question['suspect_words'] . '/' . $question['cmpfile']->wordcount;
+                $line["%tot"] = $question['cmpfile']->globalscore != null ? $question['cmpfile']->globalscore : get_string('not_analysed', "plagiarism_compilatio");
+                $line["%sim"] = $question['cmpfile']->similarityscore != null ? $question['cmpfile']->similarityscore : get_string('not_analysed', "plagiarism_compilatio");
+                $line["*IA"] = $question['cmpfile']->utlscore != null ? $question['cmpfile']->utlscore : get_string('not_analysed', "plagiarism_compilatio");
+                $line["%UTL"] = $question['cmpfile']->aiscore != null ? $question['cmpfile']->aiscore : get_string('not_analysed', "plagiarism_compilatio");
+
+                $csv .= '"' . implode('","', $line) . "\"\n";
+            }
+        }
+
+        self::get_header($filename, $csv);
+
+        exit(0);
+    }
 }

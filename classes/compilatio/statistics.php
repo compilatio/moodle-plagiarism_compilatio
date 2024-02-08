@@ -399,6 +399,7 @@ class CompilatioStatistics {
 
             $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmid]);
             $compilatio = new CompilatioAPI($userid);
+            error_log(var_export($attempt->get_slots, true));
 
             foreach ($attempt->get_slots() as $slot) {
 
@@ -448,7 +449,17 @@ class CompilatioStatistics {
                         $output .= self::get_truc($cmpfile, $index, count($compifiles), $slot);
                         $questionsnotanalysed++;
                     }
+                    
+                    $questionInfo = array(
+                        'question_number' => $slot,
+                        'suspect_words' => $suspectwordsquestion != null ? $suspectwordsquestion : 'xx',
+                        'cmpfile' => $cmpfile
+                    );
+            
+                    $questionData[] = $questionInfo;
                 }
+
+               
             }
 
             $output .= "</tbody>";
@@ -477,7 +488,17 @@ class CompilatioStatistics {
             }
             $output .= "</td></tr></tfoot></table></div>";
         }
-        return $output;
+
+        return array(
+            'output' => $output,
+            'question_data' => $questionData,
+        );
+    }
+
+    public static function get_question_data($cmid, $user) {
+        return !empty(self::get_statistics_by_id($user, $cmid)['question_data']) 
+            ? self::get_statistics_by_id($user, $cmid)['question_data'] 
+            : array();
     }
 
     public static function get_truc($cmpfile, $index, $count, $slot, $config = null, $suspectwordsquestion = null, $totalwordquestion = null) {
@@ -549,9 +570,16 @@ class CompilatioStatistics {
 
         $userssumbitedtest = $DB->get_records_sql($sql, [$cmid]);
 
-        $exportbutton = "<a title='" . get_string("export_csv_per_student", "plagiarism_compilatio") . "' class='cmp-icon pr-3' style='position: absolute; right: 0; top: 0;' href=''>
+        $url = $PAGE->url;
+        $url->param('cmp_csv_export_per_student', true);
+        $exportbutton = "<a title='" . get_string("export_csv_per_student", "plagiarism_compilatio") . "' class='cmp-icon pr-3' style='position: absolute; right: 0; top: 0;' href='". $url ."'>
                 <i class='fa fa-download'></i>
             </a>";
+
+        $export = optional_param('cmp_csv_export_per_student', '', PARAM_BOOL);
+        if ($export) {
+            CompilatioCsv::generate_cm_csv_per_student($cmid, $userssumbitedtest);
+        }
 
         $output = "
         <div style='position: relative;'>
