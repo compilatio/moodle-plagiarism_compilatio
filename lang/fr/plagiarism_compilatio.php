@@ -244,6 +244,7 @@ $string['tabs_title_stats'] = 'Statistiques';
 $string["display_stats"] = "Afficher les statistiques de cette activité";
 $string["display_stats_per_student"] = "Afficher les statistiques par élève de cette activité";
 $string['export_csv'] = 'Exporter les données de cette activité au format CSV';
+$string['export_csv_per_student'] = 'Exporter les données de l\'analyse des résultat de cet élève dans un fichier CSV';
 $string['progress'] = "Progression";
 $string['results'] = "Résultats";
 $string['errors'] = "Erreurs";

@@ -243,6 +243,7 @@ $string['tabs_title_stats'] = 'Statistics';
 $string["display_stats"] = "Display statistics about this activity";
 $string["display_stats_per_student"] = "Display statistics per student about this activity";
 $string['export_csv'] = 'Export data about this activity into a CSV file';
+$string['export_csv_per_student'] = 'Export data about this student\'s review into a CSV file';
 $string['progress'] = "Progress";
 $string['results'] = "Results";
 $string['errors'] = "Errors";

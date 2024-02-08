@@ -549,7 +549,7 @@ class CompilatioStatistics {
 
         $userssumbitedtest = $DB->get_records_sql($sql, [$cmid]);
 
-        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") . "' class='cmp-icon pr-3' style='position: absolute; right: 0; top: 0;' href=''>
+        $exportbutton = "<a title='" . get_string("export_csv_per_student", "plagiarism_compilatio") . "' class='cmp-icon pr-3' style='position: absolute; right: 0; top: 0;' href=''>
                 <i class='fa fa-download'></i>
             </a>";
 
