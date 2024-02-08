@@ -449,17 +449,16 @@ class CompilatioStatistics {
                         $output .= self::get_truc($cmpfile, $index, count($compifiles), $slot);
                         $questionsnotanalysed++;
                     }
-                    
-                    $questionInfo = array(
+
+                    $questioninfo = array(
                         'question_number' => $slot,
                         'suspect_words' => $suspectwordsquestion != null ? $suspectwordsquestion : 'xx',
                         'cmpfile' => $cmpfile
                     );
             
-                    $questionData[] = $questionInfo;
+                    $questiondata[] = $questioninfo;
                 }
 
-               
             }
 
             $output .= "</tbody>";
@@ -491,13 +490,13 @@ class CompilatioStatistics {
 
         return array(
             'output' => $output,
-            'question_data' => $questionData,
+            'question_data' => $questiondata,
         );
     }
 
     public static function get_question_data($cmid, $user) {
-        return !empty(self::get_statistics_by_id($user, $cmid)['question_data']) 
-            ? self::get_statistics_by_id($user, $cmid)['question_data'] 
+        return !empty(self::get_statistics_by_id($user, $cmid)['question_data'])
+            ? self::get_statistics_by_id($user, $cmid)['question_data']
             : array();
     }
 

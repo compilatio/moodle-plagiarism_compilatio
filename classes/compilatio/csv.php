@@ -141,8 +141,8 @@ class CompilatioCsv {
         exit(0);
 
     }
-    
-    public static function generate_cm_csv_per_student($cmid, $userssumbitedtest){
+
+    public static function generate_cm_csv_per_student($cmid, $userssumbitedtest) {
         global $DB;
 
         $cmpcm = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
@@ -187,7 +187,7 @@ class CompilatioCsv {
             $datas = CompilatioStatistics::get_question_data($cmid, $user);
             foreach ($datas as $question) {
                 $line = [];
-                $line["name"]= $user->lastname . ' ' . $user->firstname;
+                $line["name"] = $user->lastname . ' ' . $user->firstname;
                 $line["question"] = 'Q' . $question['question_number'];
                 $line["suspect/totalwords"] = $question['suspect_words'] . '/' . $question['cmpfile']->wordcount;
                 $line["%tot"] = $question['cmpfile']->globalscore != null ? $question['cmpfile']->globalscore : get_string('not_analysed', "plagiarism_compilatio");
