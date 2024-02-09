@@ -399,7 +399,6 @@ class CompilatioStatistics {
 
             $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmid]);
             $compilatio = new CompilatioAPI($userid);
-            error_log(var_export($attempt->get_slots, true));
 
             foreach ($attempt->get_slots() as $slot) {
 
@@ -455,7 +454,7 @@ class CompilatioStatistics {
                         'suspect_words' => $suspectwordsquestion != null ? $suspectwordsquestion : 'xx',
                         'cmpfile' => $cmpfile
                     );
-            
+
                     $questiondata[] = $questioninfo;
                 }
 
