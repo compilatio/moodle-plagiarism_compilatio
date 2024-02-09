@@ -359,128 +359,135 @@ class CompilatioStatistics {
      * @param  string $cmid Course module ID
      * @return string       HTML containing the statistics for this student
      */
-    public static function get_statistics_by_id($user, $cmid) {
-
-        global $DB, $PAGE, $CFG;
+    public static function get_statistics_by_student($studentid, $cmid) {
+        global $DB;
+        
         $output = "";
 
-        if ($user !== null) {
-            $sql = "SELECT {quiz_attempts}.id
-                    FROM {quiz_attempts}
-                    INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz
-                    INNER JOIN {course_modules} ON {course_modules}.instance = {quiz}.id
-                    WHERE {course_modules}.id = ?
-                    AND {quiz_attempts}.userid = ?";
+        $sql = "SELECT {quiz_attempts}.id
+                FROM {quiz_attempts}
+                INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz
+                INNER JOIN {course_modules} ON {course_modules}.instance = {quiz}.id
+                WHERE {course_modules}.id = ?
+                AND {quiz_attempts}.userid = ?";
 
-            $attemptid = $DB->get_record_sql($sql, [$cmid, $user->id]);
-            $attempt = mod_quiz\quiz_attempt::create($attemptid->id);
+        $attemptid = $DB->get_field_sql($sql, [$cmid, $studentid]);
+        $attempt = mod_quiz\quiz_attempt::create($attemptid);
 
-            $totalwordquiz = 0;
-            $globalscorequiz = 0;
-            $compteurdivision = 0;
-            $questionsnotanalysed = 0;
+        $totalwordquiz = 0;
+        $globalscorequiz = 0;
+        $compteurdivision = 0;//todo rename
+        $questionsnotanalysed = 0;
 
-            $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
+        $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
-            $output .= "<div style='max-height: 400px; overflow-y: auto;'>
-                <table class='table table-light align-middle rounded-lg shadow-sm'>
-                <thead>
-                    <tr>
-                        <th class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . "</th>
-                        <th class='text-center align-middle'>" . get_string('response_type', 'plagiarism_compilatio') . "</th>
-                        <th class='text-center align-middle'>" . get_string('total_words_quiz_on_suspect', 'plagiarism_compilatio') . "</th>
-                        <th class='text-center align-middle'>" . get_string('score', 'plagiarism_compilatio') . "</th>
-                        <th class='text-center align-middle'></th>
-                    </tr>
-                </thead>
-                <tbody style='background-color: white;'>";
+        //todo style
+        $output .= "<div style='max-height: 400px; overflow-y: auto;'>
+            <table class='table table-light align-middle rounded-lg shadow-sm'>
+            <thead>
+                <tr>
+                    <th class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle'>" . get_string('response_type', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle'>" . get_string('total_words_quiz_on_suspect', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle'>" . get_string('score', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle'></th>
+                </tr>
+            </thead>
+            <tbody style='background-color: white;'>";
 
-            $context = context_module::instance($cmid);
+        $context = context_module::instance($cmid);
 
-            $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmid]);
-            $compilatio = new CompilatioAPI($userid);
+        $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmid]);
+        $compilatio = new CompilatioAPI($userid);
 
-            foreach ($attempt->get_slots() as $slot) {
+        $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
 
-                $answer = $attempt->get_question_attempt($slot);
-                $content = $answer->get_response_summary();
+        foreach ($attempt->get_slots() as $slot) {
 
-                $compifiles = [];
+            $answer = $attempt->get_question_attempt($slot);
+            $content = $answer->get_response_summary();
 
-                $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
-                $wordcount = $content !== null
-                    ? str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8'))
-                    : 0;
-                if ($wordcount >= $nbmotsmin) {
-                    $sql = "SELECT * FROM {plagiarism_compilatio_file} cmpfile
-                        WHERE cmpfile.cm = ? AND cmpfile.userid = ? AND cmpfile.identifier = ?";
-                    $cmpfile = $DB->get_record_sql($sql, [$cmid, $user->id, sha1($content)]);
-                    if (!empty($cmpfile)) {
-                        $cmpfile->wordcount = $wordcount;
-                        $compifiles[] = $cmpfile;
-                    }
-                }
+            $cmpfiles = [];
 
-                $files = $answer->get_last_qt_files('attachments', $context->id);
-                foreach ($files as $file) {
-                    $sql = "SELECT * FROM {plagiarism_compilatio_file}
-                        WHERE cm = ? AND userid = ? AND identifier = ?";
-                    $cmpfile = $DB->get_record_sql($sql, [$cmid, $user->id, $file->get_contenthash()]);
-                    if (!empty($cmpfile)) {
-                        $compifiles[] = $cmpfile;
-                        $document = $compilatio->get_document($cmpfile->externalid);
-                        $cmpfile->wordcount = $document->words_count;
-                    }
-                }
-
-                if (count($compifiles) === 0) {
-                    return '<span>'.get_string('no_document_to_display', 'plagiarism_compilatio').'</span>';
-                }
-
-                foreach ($compifiles as $index => $cmpfile) {
-                    if ($cmpfile->status == 'scored') {
-                        $totalwordquiz += $totalwordquestion = $cmpfile->wordcount ?? 0;
-                        $globalscorequiz += $cmpfile->status == 'scored' ? $cmpfile->globalscore : 0;
-                        $suspectwordsquestion = round($cmpfile->globalscore * $totalwordquestion / 100);
-                        $compteurdivision += $cmpfile->status == 'scored' ? 1 : 0;
-                        $output .= self::get_truc($cmpfile, $index, count($compifiles), $slot, $config, $suspectwordsquestion, $totalwordquestion);
-                    } else {
-                        $output .= self::get_truc($cmpfile, $index, count($compifiles), $slot);
-                        $questionsnotanalysed++;
-                    }
+            $wordcount = $content !== null
+                ? str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8'))
+                : 0;
+            if ($wordcount >= $nbmotsmin) {
+                $sql = "SELECT * FROM {plagiarism_compilatio_file} cmpfile
+                    WHERE cmpfile.cm = ? AND cmpfile.userid = ? AND cmpfile.identifier = ?";
+                $cmpfile = $DB->get_record_sql($sql, [$cmid, $studentid, sha1($content)]); //TODO record no sql
+                if (!empty($cmpfile)) {
+                    $cmpfile->wordcount = $wordcount;
+                    $cmpfiles[] = $cmpfile;
                 }
             }
 
-            $output .= "</tbody>";
-
-            $compteur = $compteurdivision == 0 ? 1 : $compteurdivision;
-            $globalscorequiz = round($globalscorequiz / $compteur);
-            $suspectwordsquiz = round($globalscorequiz * $totalwordquiz / 100);
-            $output .= "<tfoot class='table-group-divider'><tr>
-                            <th class='container text-center align-middle'>" . get_string('total', 'plagiarism_compilatio') . "</th> <td></td>";
-            if ($questionsnotanalysed < count($attempt->get_slots())) {
-                $output .= "<td class='align-middle font-weight-light' style='white-space: nowrap;'>" . $suspectwordsquiz . ' ' . get_string('word', 'plagiarism_compilatio') . '/<br> ' . $totalwordquiz . ' ' . get_string('word', 'plagiarism_compilatio') . "</td>
-                <td class='align-middle font-weight-light'>";
-                $output .= $compteurdivision != 0 ? $globalscorequiz  . "%" : get_string('not_analysed', 'plagiarism_compilatio');
-
-                $color = $globalscorequiz <= $config->warningthreshold ?? 10
-                    ? 'green'
-                    : ($globalscorequiz <= $config->criticalthreshold ?? 25
-                    ? 'orange'
-                    : 'red');
-
-                $output .= $compteurdivision != 0 ? "<span class='cmp-similarity cmp-color-{$color}' style='cursor: auto;'>
-                <i class='fa fa-circle'></i>
-                </span>" : '';
-            } else {
-                $output .= "<td class='font-italic font-weight-light' colspan='4' class='align-middle'>" . get_string('not_analysed', 'plagiarism_compilatio');
+            $files = $answer->get_last_qt_files('attachments', $context->id);
+            foreach ($files as $file) {
+                $sql = "SELECT * FROM {plagiarism_compilatio_file}
+                    WHERE cm = ? AND userid = ? AND identifier = ?"; //todo
+                $cmpfile = $DB->get_record_sql($sql, [$cmid, $studentid, $file->get_contenthash()]);
+                if (!empty($cmpfile)) {
+                    $cmpfiles[] = $cmpfile;
+                    $document = $compilatio->get_document($cmpfile->externalid);
+                    $cmpfile->wordcount = $document->words_count;
+                }
             }
-            $output .= "</td></tr></tfoot></table></div>";
+
+            $cmpfilescount = count($cmpfiles);
+
+            if ($cmpfilescount === 0) {
+                return '<span>' . get_string('no_document_to_display', 'plagiarism_compilatio') . '</span>';
+            }
+
+            foreach ($cmpfiles as $index => $cmpfile) {
+                if ($cmpfile->status == 'scored') {
+                    $totalwordquiz += $cmpfile->wordcount;
+                    $globalscorequiz += $cmpfile->globalscore;
+                    $suspectwordsquestion = round($cmpfile->globalscore * $cmpfile->wordcount / 100);
+                    $compteurdivision++;
+                    $output .= self::get_table_row($cmpfile, $index, $cmpfilescount, $slot, $config, $suspectwordsquestion, $cmpfile->wordcount);
+                } else {
+                    $output .= self::get_table_row($cmpfile, $index, $cmpfilescount, $slot);
+                    $questionsnotanalysed++;
+                }
+            }
         }
+
+        $output .= "</tbody>";
+
+        $compteur = $compteurdivision == 0 ? 1 : $compteurdivision;
+        $globalscorequiz = round($globalscorequiz / $compteur);
+        $suspectwordsquiz = round($globalscorequiz * $totalwordquiz / 100);
+        $output .= "<tfoot class='table-group-divider'><tr>
+                        <th class='container text-center align-middle'>" . get_string('total', 'plagiarism_compilatio') . "</th> <td></td>";
+        if ($questionsnotanalysed < count($attempt->get_slots())) {
+            $output .= "<td class='align-middle font-weight-light' style='white-space: nowrap;'>"
+                    . $suspectwordsquiz . ' ' . get_string('word', 'plagiarism_compilatio') . '/<br> ' . $totalwordquiz . ' ' . get_string('word', 'plagiarism_compilatio') . "</td>
+                <td class='align-middle font-weight-light'>";
+            $output .= $compteurdivision != 0 ? $globalscorequiz  . "%" : get_string('not_analysed', 'plagiarism_compilatio');
+
+            $color = $globalscorequiz <= $config->warningthreshold ?? 10
+                ? 'green'
+                : ($globalscorequiz <= $config->criticalthreshold ?? 25
+                ? 'orange'
+                : 'red');
+
+            $output .= $compteurdivision != 0 
+                ? "<span class='cmp-similarity cmp-color-{$color}' style='cursor: auto;'>
+                        <i class='fa fa-circle'></i>
+                    </span>"
+                : '';
+        } else {
+            $output .= "<td class='font-italic font-weight-light' colspan='4' class='align-middle'>" . get_string('not_analysed', 'plagiarism_compilatio');
+        }
+
+        $output .= "</td></tr></tfoot></table></div>";
+    
         return $output;
     }
 
-    public static function get_truc($cmpfile, $index, $count, $slot, $config = null, $suspectwordsquestion = null, $totalwordquestion = null) {
+    public static function get_table_row($cmpfile, $index, $count, $slot, $config = null, $suspectwordsquestion = null, $wordcount = null) {
         global $DB, $CFG;
 
         $output = "<tr class='font-weight-light'>";
@@ -496,7 +503,8 @@ class CompilatioStatistics {
         $output .= "</td>";
 
         if ($cmpfile->status == 'scored') {
-            $output .= "<td class='text-center align-middle text-nowrap'>" . $suspectwordsquestion . ' ' . get_string('word', 'plagiarism_compilatio') . ' / <br>' . $totalwordquestion . ' ' . get_string('word', 'plagiarism_compilatio') . " </td>";
+            $output .= "<td class='text-center align-middle text-nowrap'>"
+                . $suspectwordsquestion . ' ' . get_string('word', 'plagiarism_compilatio') . ' / <br>' . $wordcount . ' ' . get_string('word', 'plagiarism_compilatio') . " </td>";
             $output .= "<td class='text-center text-nowrap align-middle'>". CompilatioDocumentFrame::get_score($cmpfile, $config, true, true) . "</td>";
 
             $output .= "<td class='align-middle'>";
@@ -532,36 +540,36 @@ class CompilatioStatistics {
      * @param  string $cmid Course module ID
      * @return string       HTML containing the statistics per student
      */
-    public static function get_statistics_per_student($cmid) {
+    public static function get_quiz_students_statistics($cmid) {
 
         global $DB, $PAGE, $CFG;
         $compilatio = new CompilatioAPI();
 
         $sql = "SELECT {user}.id, {user}.lastname, {user}.firstname
-        FROM {user}
-        INNER JOIN {quiz_attempts} on {quiz_attempts}.userid = {user}.id
-        INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz
-        INNER JOIN {course} ON {course}.id = {quiz}.course
-        INNER JOIN {course_modules} on {course_modules}.course = {course}.id
-        WHERE {course_modules}.id = ?
-            AND {quiz_attempts}.state = 'finished'
-            AND {course_modules}.instance = {quiz}.id";
+            FROM {user}
+            INNER JOIN {quiz_attempts} on {quiz_attempts}.userid = {user}.id
+            INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz
+            INNER JOIN {course} ON {course}.id = {quiz}.course
+            INNER JOIN {course_modules} on {course_modules}.course = {course}.id
+            WHERE {course_modules}.id = ?
+                AND {quiz_attempts}.state = 'finished'
+                AND {course_modules}.instance = {quiz}.id";
 
-        $userssumbitedtest = $DB->get_records_sql($sql, [$cmid]);
+        $studentattemptsubmitted = $DB->get_records_sql($sql, [$cmid]);
 
         $exportbutton = "<a title='" . get_string("export_csv_per_student", "plagiarism_compilatio") . "' class='cmp-icon pr-3' style='position: absolute; right: 0; top: 0;' href=''>
                 <i class='fa fa-download'></i>
             </a>";
 
         $output = "
-        <div style='position: relative;'>
-            <h4 class='cmp-color-primary font-weight-normal'>" . get_string('results_by_student', 'plagiarism_compilatio') . "</h4>";
+            <div style='position: relative;'>
+                <h4 class='cmp-color-primary font-weight-normal'>" . get_string('results_by_student', 'plagiarism_compilatio') . "</h4>";
 
-        if (!empty($userssumbitedtest)) {
+        if (!empty($studentattemptsubmitted)) {
             $output .= "<i id='previous-student' title='" . get_string('previous_student', 'plagiarism_compilatio') ."' class='cmp-icon-lg fa fa-chevron-left'></i>
-            <select class='custom-select' aria-label='Default select example' id='student-select'>
-            <option>". get_string('select_a_student', 'plagiarism_compilatio') . "</option>";
-            foreach ($userssumbitedtest as $usersumbitedtest => $user) {
+                <select class='custom-select' id='student-select'>
+                <option>". get_string('select_a_student', 'plagiarism_compilatio') . "</option>";
+            foreach ($studentattemptsubmitted as $user) {
                 $userlist[] = $user->id;
                 $output .= '<option value="' . $user->id . '">' . $user->lastname . ' ' . $user->firstname . '</option>';
             }

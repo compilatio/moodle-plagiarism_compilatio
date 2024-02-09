@@ -47,23 +47,26 @@ define(['jquery'], function($) {
                 });
             });
 
-        $('#previous-student').on('click', function() {
-            const currentIndex = dropdown.prop('selectedIndex');
-            if (currentIndex > 0) {
-                dropdown.prop('selectedIndex', currentIndex - 1).change();
-            } else {
-                dropdown.prop('selectedIndex', dropdown.find('option').length - 1).change();
-            }
-        });
+            $('#previous-student').on('click', function() {
+                changeSelectedTruc(dropdown.prop('selectedIndex'), -1)
+            });
 
-        $('#next-student').on('click', function() {
-            const currentIndex = dropdown.prop('selectedIndex');
-            if (currentIndex < dropdown.find('option').length - 1) {
-                dropdown.prop('selectedIndex', currentIndex + 1).change();
-            } else {
-                dropdown.prop('selectedIndex', 0).change();
+            $('#next-student').on('click', function() {
+                changeSelectedTruc(dropdown.prop('selectedIndex'), 1)
+            });
+
+            function changeSelectedTruc (selectedIndex, direction) {
+                var newIndex = selectedIndex + direction;
+                const maxIndex = dropdown.find('option').length - 1;
+
+                if (newIndex == -1) {
+                    newIndex = maxIndex;
+                } else if (newIndex > maxIndex) {
+                    newIndex = 0;
+                }
+
+                dropdown.prop('selectedIndex', newIndex).change();
             }
-        });
         });
     }
 
