@@ -123,7 +123,7 @@ class CompilatioCsv {
             } else {
                 $line["stats_score"] = get_string("title_" . $file->status, "plagiarism_compilatio");
             }
--
+
             if ($csv === $head) {
                 // Translate headers, using the key of the array as the key for translation :.
                 $headers = array_keys($line);
@@ -176,10 +176,10 @@ class CompilatioCsv {
         $line["student"] = get_string('student', "plagiarism_compilatio");
         $line["question"] = get_string('question', "plagiarism_compilatio");
         $line["suspectwords/totalwords"] = get_string('total_words/suspect_words', "plagiarism_compilatio");
-        $line["tot"] = '%tot';
-        $line["sim"] = '%sim';
-        $line["IA"] = '%IA';
-        $line["utl"] = '%UTL';
+        $line["tot"] = get_string('total', 'plagiarism_compilatio');
+        $line["sim"] = get_string('similarityscore', 'plagiarism_compilatio');
+        $line["utl"] = get_string('utlscore', 'plagiarism_compilatio');
+        $line["IA"] = get_string('aiscore', 'plagiarism_compilatio');
 
         $csv .= '"' . implode('","', $line) . "\"\n";
         foreach ($userssumbitedtest as $user) {
@@ -189,19 +189,21 @@ class CompilatioCsv {
                 $line["name"] = $user->lastname . ' ' . $user->firstname;
                 $line["question"] = 'Q' . $question['question_number'];
                 $line["suspect/totalwords"] = $question['suspect_words'] . '/' . $question['cmpfile']->wordcount;
-                $line["%tot"] = $question['cmpfile']->globalscore != null ? $question['cmpfile']->globalscore : get_string('not_analysed', "plagiarism_compilatio");
-                $line["%sim"] = $question['cmpfile']->similarityscore != null ? $question['cmpfile']->similarityscore : get_string('not_analysed', "plagiarism_compilatio");
-                $line["*IA"] = $question['cmpfile']->utlscore != null ? $question['cmpfile']->utlscore : get_string('not_analysed', "plagiarism_compilatio");
-                $line["%UTL"] = $question['cmpfile']->aiscore != null ? $question['cmpfile']->aiscore : get_string('not_analysed', "plagiarism_compilatio");
+                $line[get_string('total', 'plagiarism_compilatio')] = $question['cmpfile']->globalscore != null ?
+                 $question['cmpfile']->globalscore :
+                  get_string('not_analysed', "plagiarism_compilatio");
 
-                if ($csv === $head) {
-                    // Translate headers, using the key of the array as the key for translation :.
-                    $headers = array_keys($line);
-                    $headerstranslated = array_map(function($item) {
-                        return get_string($item, "plagiarism_compilatio");
-                    }, $headers);
-                    $csv .= '"' . implode('","', $headerstranslated) . "\"\n";
-                }
+                $line[get_string('similarityscore', 'plagiarism_compilatio')] = $question['cmpfile']->similarityscore != null 
+                ? $question['cmpfile']->similarityscore 
+                : get_string('not_analysed', "plagiarism_compilatio");
+
+                $line[get_string('utlscore', 'plagiarism_compilatio')] = $question['cmpfile']->aiscore != null 
+                ? $question['cmpfile']->aiscore 
+                : get_string('not_analysed', "plagiarism_compilatio");
+
+                $line[get_string('aiscore', 'plagiarism_compilatio')] = $question['cmpfile']->utlscore != null 
+                ? $question['cmpfile']->utlscore 
+                : get_string('not_analysed', "plagiarism_compilatio");
 
                 $csv .= '"' . implode('","', $line) . "\"\n";
             }

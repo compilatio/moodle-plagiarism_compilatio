@@ -272,7 +272,7 @@ $string['response_type'] = 'Type de réponse';
 $string['file'] = 'Fichier';
 $string['text'] = 'Texte';
 $string['no_document_to_display'] = 'Aucun document à afficher';
-$string['student'] = 'Student';
+$string['student'] = 'Élève';
 
 
 // Global Statistics.
