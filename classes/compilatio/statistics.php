@@ -381,7 +381,6 @@ class CompilatioStatistics {
 
         $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
-        //todo style
         $output .= "<div class='cmp-table-height'>
             <table class='table table-light align-middle rounded-lg shadow-sm'>
             <thead>
