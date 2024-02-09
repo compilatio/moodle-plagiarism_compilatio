@@ -215,14 +215,14 @@ class CompilatioFrame {
         $output .= "<div id='cmp-container'>";
 
         // Display the tabs.
-        $output .= "<div id='cmp-tabs'>";
+        $output .= "<div id='cmp-tabs' data-toggle='tooltip'>";
 
         // Display logo.
-        $output .= "<img id='cmp-logo' src='" . new moodle_url('/plagiarism/compilatio/pix/compilatio.png') . "'>";
+        $output .= "<img id='cmp-logo' src='" . new moodle_url('/plagiarism/compilatio/pix/compilatio.png') . "' data-toggle='tooltip'>";
 
         // Help icon.
         $output .= "<i id='show-help' title='" . get_string('compilatio_help_assign', 'plagiarism_compilatio') .
-            "' class='cmp-icon fa fa-question-circle'></i>";
+            "' class='cmp-icon fa fa-question-circle' data-toggle='tooltip'></i>";
 
         // Stat icon.
         $output .=
@@ -230,13 +230,14 @@ class CompilatioFrame {
                 id='show-stats'
                 title='" . get_string('display_stats', 'plagiarism_compilatio') . "'
                 class='cmp-icon fa fa-bar-chart'
+                data-toggle='tooltip'
             >
             </i>";
 
         if ($plagiarismsettings['enable_search_tab']) {
             // Search icon.
             $output .= "<i id='show-search' title='" . get_string('compilatio_search_tab', 'plagiarism_compilatio') .
-                "' class='cmp-icon fa fa-search fa-2x'></i>";
+                "' class='cmp-icon fa fa-search fa-2x' data-toggle='tooltip'></i>";
         }
 
         // Alert icon.
@@ -246,6 +247,7 @@ class CompilatioFrame {
                     id='cmp-show-notifications'
                     title='" . get_string("display_notifications", "plagiarism_compilatio") . "'
                     class='cmp-icon fa fa-bell'
+                    data-toggle='tooltip'
                 >
                 </i>
                 <span id='cmp-count-alerts' class='badge badge-pill badge-danger'>" . count($alerts) . "</span>
@@ -354,7 +356,7 @@ class CompilatioFrame {
         // Stats tab.
         $url = $PAGE->url;
         $url->param('cmp_csv_export', true);
-        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") . "' class='cmp-icon pr-3' href='$url'>
+        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") . "' class='cmp-icon pr-3' href='$url' data-toggle='tooltip' >
                 <i class='fa fa-download'></i>
             </a>";
 
