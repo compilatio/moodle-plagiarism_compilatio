@@ -368,7 +368,8 @@ class CompilatioDocumentFrame {
                 }
             }
 
-            $html .= "<span id='cmp-score-icons' class='" . ($wrapping === false ? "d-flex" : "flex-nowrap") . "' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
+            $html .= "<span id='cmp-score-icons' class='" . ($wrapping === false ? "d-flex" : "flex-nowrap") .
+            "' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
                         {$icons}
                     </span>";
         }

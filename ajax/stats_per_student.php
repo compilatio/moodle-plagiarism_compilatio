@@ -34,7 +34,7 @@ global $DB;
 $selectedstudent = required_param('selectedstudent', PARAM_TEXT);
 $cmid = required_param('cmid', PARAM_TEXT);
 
-$output = is_numeric($selectedstudent) 
+$output = is_numeric($selectedstudent)
     ? CompilatioStatistics::get_statistics_by_student($selectedstudent, $cmid)
     : $output = "";
 

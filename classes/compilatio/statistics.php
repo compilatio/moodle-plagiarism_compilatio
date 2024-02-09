@@ -361,7 +361,7 @@ class CompilatioStatistics {
      */
     public static function get_statistics_by_student($studentid, $cmid) {
         global $DB;
-        
+
         $output = "";
 
         $sql = "SELECT {quiz_attempts}.id
@@ -469,7 +469,7 @@ class CompilatioStatistics {
                 ? 'orange'
                 : 'red');
 
-            $output .= $divisioncounter != 0 
+            $output .= $divisioncounter != 0
                 ? "<span class='cmp-similarity cmp-color-{$color} cmp-cursor-auto'>
                         <i class='fa fa-circle'></i>
                     </span>"
@@ -479,7 +479,7 @@ class CompilatioStatistics {
         }
 
         $output .= "</td></tr></tfoot></table></div>";
-    
+
         return $output;
     }
 
