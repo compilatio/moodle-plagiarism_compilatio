@@ -261,6 +261,7 @@ $string['results_by_student'] = 'Résultat par élève';
 $string['previous_student'] = 'Élève précédent';
 $string['next_student'] = 'Élève suivant';
 $string['total_words_quiz_on_suspect'] = 'mots suspect/<br> mots totaux';
+$string['total_words/suspect_words'] = 'nombre de mots suspect / nombre de mots';
 $string['question'] = 'Question';
 $string['score'] = 'Score';
 $string['word'] = 'mots';

@@ -260,6 +260,7 @@ $string['results_by_student'] = 'Results by student';
 $string['previous_student'] = 'Previous student';
 $string['next_student'] = 'Next student';
 $string['total_words_quiz_on_suspect'] = 'words suspect/ <br>total words';
+$string['total_words/suspect_words'] = 'words suspect / total words';
 $string['question'] = 'Question';
 $string['score'] = 'Score';
 $string['word'] = 'words';

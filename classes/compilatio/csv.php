@@ -123,7 +123,7 @@ class CompilatioCsv {
             } else {
                 $line["stats_score"] = get_string("title_" . $file->status, "plagiarism_compilatio");
             }
-
+-
             if ($csv === $head) {
                 // Translate headers, using the key of the array as the key for translation :.
                 $headers = array_keys($line);
@@ -173,16 +173,15 @@ class CompilatioCsv {
         // Add the first line to the content : "{Name of the module} - {date}".
         $csv = $head;
         $line = [];
-        $line["eleve"] = get_string('student', "plagiarism_compilatio");
+        $line["student"] = get_string('student', "plagiarism_compilatio");
         $line["question"] = get_string('question', "plagiarism_compilatio");
-        $line["suspectwords/totalwords"] = get_string('total_words_quiz_on_suspect', "plagiarism_compilatio");
+        $line["suspectwords/totalwords"] = get_string('total_words/suspect_words', "plagiarism_compilatio");
         $line["tot"] = '%tot';
         $line["sim"] = '%sim';
         $line["IA"] = '%IA';
         $line["utl"] = '%UTL';
 
         $csv .= '"' . implode('","', $line) . "\"\n";
-        $c = 0;
         foreach ($userssumbitedtest as $user) {
             $datas = CompilatioStatistics::get_question_data($cmid, $user);
             foreach ($datas as $question) {
@@ -194,6 +193,15 @@ class CompilatioCsv {
                 $line["%sim"] = $question['cmpfile']->similarityscore != null ? $question['cmpfile']->similarityscore : get_string('not_analysed', "plagiarism_compilatio");
                 $line["*IA"] = $question['cmpfile']->utlscore != null ? $question['cmpfile']->utlscore : get_string('not_analysed', "plagiarism_compilatio");
                 $line["%UTL"] = $question['cmpfile']->aiscore != null ? $question['cmpfile']->aiscore : get_string('not_analysed', "plagiarism_compilatio");
+
+                if ($csv === $head) {
+                    // Translate headers, using the key of the array as the key for translation :.
+                    $headers = array_keys($line);
+                    $headerstranslated = array_map(function($item) {
+                        return get_string($item, "plagiarism_compilatio");
+                    }, $headers);
+                    $csv .= '"' . implode('","', $headerstranslated) . "\"\n";
+                }
 
                 $csv .= '"' . implode('","', $line) . "\"\n";
             }
