@@ -218,6 +218,7 @@ $string["short_error_too_large"] = 'documents too large.';
 $string["not_analysed"] = 'not analysed';
 
 // Notifications tab.
+$string["notifications"] = "Notifications";
 $string["display_notifications"] = "Display notifications";
 $string['no_document_available_for_analysis'] = 'No documents were available for analysis';
 $string["analysis_started"] = '{$a} analysis have been requested.';

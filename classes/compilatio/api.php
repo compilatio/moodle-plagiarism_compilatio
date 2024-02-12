@@ -301,7 +301,7 @@ class CompilatioAPI {
 
     private function sanitize($value) {
         $forbiddencharacters = [
-            ".", "!", "?", ":", "%", "&", "*", "=", "#", "$", "@", "/", "\\", "<", ">", "(", ")", "[", "]", "{", "}",
+            ".", "!", "?", " => ", "%", "&", "*", "=", "#", "$", "@", "/", "\\", "<", ">", "(", ")", "[", "]", "{", "}",
         ];
 
         if (!is_string($value) || '' === $value) {
@@ -651,6 +651,247 @@ class CompilatioAPI {
         if ($this->get_error_response($response, 200) === false) {
             return $response->data->alerts;
         }
+        return [];
+    }
+
+    /**
+     * Get a list of Compilatio marketing notifications.
+     *
+     * @return  array   Return an array of marketing notifications
+     */
+    public function get_marketing_notifications($lang) {
+        $endpoint = '/api/private/marketing-notifications/' . $lang;
+
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
+
+        if ($this->get_error_response($response, 200) === false) {
+
+
+
+
+
+
+
+
+
+
+
+
+            $test = [
+                (object) [
+                    "id" =>  "4b78a5c0f6c5672a0297a72e8a8258b062f33356",
+                    "content_by_language" =>   [
+                        (object) [
+                            "title" =>  "Quelques mots sur Compilatio Magister",
+                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio Magister : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
+                            </span>
+                            <span class="margin-small"> Vous disposez de cet accès personnel à Compilatio Magister pour prévenir et détecter le plagiat. Cet outil vous permet de gagner du temps : 
+                            </span>
+                            <span class="margin-small">☑️ en accédant à des <span class="text-bold">ressources pédagogiques</span> via le bouton "Boîte à Outils"
+                            </span>
+                            <span class="margin-medium">☑️ en contrôlant automatiquement les <span class="text-bold">textes suspects</span> dans les rendus de vos étudiants
+                            </span>
+                            
+                            <span class="margin-small"><span class="color-service"><span class="text-bold">Avec l\'analyse Compilatio Magister vous obtenez :</span></span></span>
+                            
+                            <span class="margin-small"> - le <span class="text-bold">pourcentage de similitudes</span> avec possibilité de l\'affiner,
+                            </span>
+                            <span class="margin-small"> - l\'<span class="text-bold">emplacement des similitudes</span> avec indication dans le texte et sa proportion,
+                            </span>
+                            <span class="margin-small"> - la <span class="text-bold">provenance des sources</span> et comparaison du texte avec la source en face-à-face,
+                            </span>
+                            <span class="margin-small"> - le pourcentage et l\'emplacement des <span class="text-bold">passages de “langue non-reconnue”</span> indiquant une potentielle tentative de manipulation du texte pour tromper l\'algorithme Compilatio.
+                            </span>
+                            <span class="margin-medium"> - un <span class="text-bold">rapport d\'analyse</span> faisant la synthèse des résultats
+                            </span>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/playlist?list=PL_SC6KCETQBpowEvsQKfacaEzKW7g9Y2p" class="margin-medium button text-center">Découvrez les tutos vidéos </a>
+                            
+                            <span class="margin-medium">Et aussi le guide d\'utilisation en version PDF <a target="_blank" rel="noopener noreferrer" href="https://content.compilatio.net/documents/brochure/FR_COMPILATIO-MAGISTER_Prise-en-main.pdf">ici</a>',
+                            "language" =>  "fr"
+                        ],
+                        (object) [
+                            "title" =>  "A few words about Compilatio Magister",
+                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio Magister : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
+                            </span>
+                            <span class="margin-small"> Vous disposez de cet accès personnel à Compilatio Magister pour prévenir et détecter le plagiat. Cet outil vous permet de gagner du temps : 
+                            </span>
+                            <span class="margin-small">☑️ en accédant à des <span class="text-bold">ressources pédagogiques</span> via le bouton "Boîte à Outils"
+                            </span>
+                            <span class="margin-medium">☑️ en contrôlant automatiquement les <span class="text-bold">textes suspects</span> dans les rendus de vos étudiants
+                            </span>
+                            
+                            <span class="margin-small"><span class="color-service"><span class="text-bold">Avec l\'analyse Compilatio Magister vous obtenez :</span></span></span>
+                            
+                            <span class="margin-small"> - le <span class="text-bold">pourcentage de similitudes</span> avec possibilité de l\'affiner,
+                            </span>
+                            <span class="margin-small"> - l\'<span class="text-bold">emplacement des similitudes</span> avec indication dans le texte et sa proportion,
+                            </span>
+                            <span class="margin-small"> - la <span class="text-bold">provenance des sources</span> et comparaison du texte avec la source en face-à-face,
+                            </span>
+                            <span class="margin-small"> - le pourcentage et l\'emplacement des <span class="text-bold">passages de “langue non-reconnue”</span> indiquant une potentielle tentative de manipulation du texte pour tromper l\'algorithme Compilatio.
+                            </span>
+                            <span class="margin-medium"> - un <span class="text-bold">rapport d\'analyse</span> faisant la synthèse des résultats
+                            </span>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/playlist?list=PL_SC6KCETQBpowEvsQKfacaEzKW7g9Y2p" class="margin-medium button text-center">Découvrez les tutos vidéos </a>
+                            
+                            <span class="margin-medium">Et aussi le guide d\'utilisation en version PDF <a target="_blank" rel="noopener noreferrer" href="https://content.compilatio.net/documents/brochure/FR_COMPILATIO-MAGISTER_Prise-en-main.pdf">ici</a>',
+                            "language" =>  "en"
+                        ]
+                    ],
+                    "bundle_names" =>  [
+                        "magister-standard"
+                    ],
+                    "activation_period" =>  (object) [
+                        "start" =>  "2024-02-06 16:18:00",
+                        "end" =>  "2025-05-06 17:18:00"
+                    ]
+                ],
+                (object) [
+                    "id" =>  "4b78a5c0f6c5672e8a8258b062f33356",
+                    "content_by_language" =>  [
+                        (object) [
+                            "title" =>  "Quelques mots sur un piano",
+                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio C NUL ! : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
+                            </span>
+                            <span class="margin-small"> Vous disposez de cet accès personnel à Compilatio Magister pour prévenir et détecter le plagiat. Cet outil vous permet de gagner du temps : 
+                            </span>
+                            <span class="margin-small">☑️ en accédant à des <span class="text-bold">ressources pédagogiques</span> via le bouton "Boîte à Outils"
+                            </span>
+                            <span class="margin-medium">☑️ en contrôlant automatiquement les <span class="text-bold">textes suspects</span> dans les rendus de vos étudiants
+                            </span>
+                            
+                            <span class="margin-small"><span class="color-service"><span class="text-bold">Avec l\'analyse Compilatio Magister vous obtenez :</span></span></span>
+                            
+                            <span class="margin-small"> - le <span class="text-bold">pourcentage de similitudes</span> avec possibilité de l\'affiner,
+                            </span>
+                            <span class="margin-small"> - l\'<span class="text-bold">emplacement des similitudes</span> avec indication dans le texte et sa proportion,
+                            </span>
+                            <span class="margin-small"> - la <span class="text-bold">provenance des sources</span> et comparaison du texte avec la source en face-à-face,
+                            </span>
+                            <span class="margin-small"> - le pourcentage et l\'emplacement des <span class="text-bold">passages de “langue non-reconnue”</span> indiquant une potentielle tentative de manipulation du texte pour tromper l\'algorithme Compilatio.
+                            </span>
+                            <span class="margin-medium"> - un <span class="text-bold">rapport d\'analyse</span> faisant la synthèse des résultats
+                            </span>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/playlist?list=PL_SC6KCETQBpowEvsQKfacaEzKW7g9Y2p" class="margin-medium button text-center">Découvrez les tutos vidéos </a>
+                            
+                            <span class="margin-medium">Et aussi le guide d\'utilisation en version PDF <a target="_blank" rel="noopener noreferrer" href="https://content.compilatio.net/documents/brochure/FR_COMPILATIO-MAGISTER_Prise-en-main.pdf">ici</a>',
+                            "language" =>  "fr"
+                        ],
+                        (object) [
+                            "title" =>  "A few words about Compilatio Magister",
+                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio C NUL : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
+                            </span>
+                            <span class="margin-small"> Vous disposez de cet accès personnel à Compilatio Magister pour prévenir et détecter le plagiat. Cet outil vous permet de gagner du temps : 
+                            </span>
+                            <span class="margin-small">☑️ en accédant à des <span class="text-bold">ressources pédagogiques</span> via le bouton "Boîte à Outils"
+                            </span>
+                            <span class="margin-medium">☑️ en contrôlant automatiquement les <span class="text-bold">textes suspects</span> dans les rendus de vos étudiants
+                            </span>
+                            
+                            <span class="margin-small"><span class="color-service"><span class="text-bold">Avec l\'analyse Compilatio Magister vous obtenez :</span></span></span>
+                            
+                            <span class="margin-small"> - le <span class="text-bold">pourcentage de similitudes</span> avec possibilité de l\'affiner,
+                            </span>
+                            <span class="margin-small"> - l\'<span class="text-bold">emplacement des similitudes</span> avec indication dans le texte et sa proportion,
+                            </span>
+                            <span class="margin-small"> - la <span class="text-bold">provenance des sources</span> et comparaison du texte avec la source en face-à-face,
+                            </span>
+                            <span class="margin-small"> - le pourcentage et l\'emplacement des <span class="text-bold">passages de “langue non-reconnue”</span> indiquant une potentielle tentative de manipulation du texte pour tromper l\'algorithme Compilatio.
+                            </span>
+                            <span class="margin-medium"> - un <span class="text-bold">rapport d\'analyse</span> faisant la synthèse des résultats
+                            </span>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/playlist?list=PL_SC6KCETQBpowEvsQKfacaEzKW7g9Y2p" class="margin-medium button text-center">Découvrez les tutos vidéos </a>
+                            
+                            <span class="margin-medium">Et aussi le guide d\'utilisation en version PDF <a target="_blank" rel="noopener noreferrer" href="https://content.compilatio.net/documents/brochure/FR_COMPILATIO-MAGISTER_Prise-en-main.pdf">ici</a>',
+                            "language" =>  "en"
+                        ]
+                    ],
+                    "bundle_names" =>  [
+                        "magister-standard"
+                    ],
+                    "activation_period" =>  (object) [
+                        "start" =>  "2024-05-06 16:18:00",
+                        "end" =>  "2025-05-06 17:18:00"
+                    ]
+                ],
+                (object) [
+                    "id" =>  "4b78a5c0f6c5672a0297a72e8a822f33356",
+                    "content_by_language" =>  [
+                        (object) [
+                            "title" =>  "Quelques mots sur ta maman",
+                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio C SUPER : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
+                            </span>
+                            <span class="margin-small"> Vous disposez de cet accès personnel à Compilatio Magister pour prévenir et détecter le plagiat. Cet outil vous permet de gagner du temps : 
+                            </span>
+                            <span class="margin-small">☑️ en accédant à des <span class="text-bold">ressources pédagogiques</span> via le bouton "Boîte à Outils"
+                            </span>
+                            <span class="margin-medium">☑️ en contrôlant automatiquement les <span class="text-bold">textes suspects</span> dans les rendus de vos étudiants
+                            </span>
+                            
+                            <span class="margin-small"><span class="color-service"><span class="text-bold">Avec l\'analyse Compilatio Magister vous obtenez :</span></span></span>
+                            
+                            <span class="margin-small"> - le <span class="text-bold">pourcentage de similitudes</span> avec possibilité de l\'affiner,
+                            </span>
+                            <span class="margin-small"> - l\'<span class="text-bold">emplacement des similitudes</span> avec indication dans le texte et sa proportion,
+                            </span>
+                            <span class="margin-small"> - la <span class="text-bold">provenance des sources</span> et comparaison du texte avec la source en face-à-face,
+                            </span>
+                            <span class="margin-small"> - le pourcentage et l\'emplacement des <span class="text-bold">passages de “langue non-reconnue”</span> indiquant une potentielle tentative de manipulation du texte pour tromper l\'algorithme Compilatio.
+                            </span>
+                            <span class="margin-medium"> - un <span class="text-bold">rapport d\'analyse</span> faisant la synthèse des résultats
+                            </span>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/playlist?list=PL_SC6KCETQBpowEvsQKfacaEzKW7g9Y2p" class="margin-medium button text-center">Découvrez les tutos vidéos </a>
+                            
+                            <span class="margin-medium">Et aussi le guide d\'utilisation en version PDF <a target="_blank" rel="noopener noreferrer" href="https://content.compilatio.net/documents/brochure/FR_COMPILATIO-MAGISTER_Prise-en-main.pdf">ici</a>',
+                            "language" =>  "fr"
+                        ],
+                        (object) [
+                            "title" =>  "A few words about Compilatio Magister",
+                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio C SUPER : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
+                            </span>
+                            <span class="margin-small"> Vous disposez de cet accès personnel à Compilatio Magister pour prévenir et détecter le plagiat. Cet outil vous permet de gagner du temps : 
+                            </span>
+                            <span class="margin-small">☑️ en accédant à des <span class="text-bold">ressources pédagogiques</span> via le bouton "Boîte à Outils"
+                            </span>
+                            <span class="margin-medium">☑️ en contrôlant automatiquement les <span class="text-bold">textes suspects</span> dans les rendus de vos étudiants
+                            </span>
+                            
+                            <span class="margin-small"><span class="color-service"><span class="text-bold">Avec l\'analyse Compilatio Magister vous obtenez :</span></span></span>
+                            
+                            <span class="margin-small"> - le <span class="text-bold">pourcentage de similitudes</span> avec possibilité de l\'affiner,
+                            </span>
+                            <span class="margin-small"> - l\'<span class="text-bold">emplacement des similitudes</span> avec indication dans le texte et sa proportion,
+                            </span>
+                            <span class="margin-small"> - la <span class="text-bold">provenance des sources</span> et comparaison du texte avec la source en face-à-face,
+                            </span>
+                            <span class="margin-small"> - le pourcentage et l\'emplacement des <span class="text-bold">passages de “langue non-reconnue”</span> indiquant une potentielle tentative de manipulation du texte pour tromper l\'algorithme Compilatio.
+                            </span>
+                            <span class="margin-medium"> - un <span class="text-bold">rapport d\'analyse</span> faisant la synthèse des résultats
+                            </span>
+                            <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/playlist?list=PL_SC6KCETQBpowEvsQKfacaEzKW7g9Y2p" class="margin-medium button text-center">Découvrez les tutos vidéos </a>
+                            
+                            <span class="margin-medium">Et aussi le guide d\'utilisation en version PDF <a target="_blank" rel="noopener noreferrer" href="https://content.compilatio.net/documents/brochure/FR_COMPILATIO-MAGISTER_Prise-en-main.pdf">ici</a>',
+                            "language" =>  "en"
+                        ]
+                    ],
+                    "bundle_names" =>  [
+                        "magister-standard"
+                    ],
+                    "activation_period" =>  (object) [
+                        "start" =>  "2024-03-06 16:18:00",
+                        "end" =>  "2025-05-06 17:18:00"
+                    ]
+                ],
+            ];
+
+            return $test;
+
+
+
+
+            //return $response->data->notifications;
+        }
+        
         return [];
     }
 

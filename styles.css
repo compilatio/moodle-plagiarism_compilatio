@@ -307,3 +307,49 @@ a.cmp-btn-primary:hover {
     height: 22px;
     margin: 6px;
 }
+
+/* Compilatio notifications */
+#cmp-notifications {
+    color: #374151;
+}
+
+#cmp-notifications .title {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 600;
+}
+
+#cmp-notifications .color-service {
+    color: #006fbf !important;
+}
+
+#cmp-notifications .margin-small {
+    margin-bottom: 0.5rem;
+}
+
+#cmp-notifications .margin-medium {
+    margin-bottom: 1.25rem;
+}
+
+#cmp-notifications .margin-large {
+    margin-bottom: 2.5rem;
+}
+
+#cmp-notifications .text-bold {
+    font-weight: 600;
+}
+
+#cmp-notifications .text-italic {
+    font-style: italic;
+}
+
+#cmp-notifications .text-center {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+#cmp-notifications a:not(.btn) {
+    text-decoration-line: underline;
+    color: #374151;
+}

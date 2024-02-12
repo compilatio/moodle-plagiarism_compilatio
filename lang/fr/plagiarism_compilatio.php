@@ -219,6 +219,7 @@ $string["not_analysed"] = 'non analysé';
 
 
 // Notifications tab.
+$string["notifications"] = "Notifications";
 $string["display_notifications"] = "Afficher les notifications";
 $string['no_document_available_for_analysis'] = "Aucun document n'était disponible pour analyse.";
 $string["analysis_started"] = '{$a} analyses démandées.';

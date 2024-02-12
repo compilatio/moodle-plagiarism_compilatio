@@ -216,9 +216,33 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.compilatioTabs = function(alertsCount, docid) {
+    exports.getNotifications = function(basepath, userid) {
         $(document).ready(function() {
+            $.post(basepath + '/plagiarism/compilatio/ajax/get_notifications.php', {
+                'userid': userid,
+                'read': localStorage.getItem("notifications-read") ?? '[]',
+                'ignored': localStorage.getItem("notifications-ignored") ?? '[]'
+            }, function(res) {
+                res = JSON.parse(res);
+                console.log(res)
 
+                $('.cmp-notif-title').on('click', function() {
+                    $('#cmp-notifications').show();
+                    $('#cmp-notif-titles').hide();
+                    $('#cmp-notif-content-' + $(this).attr('id').split("-").pop()).show();
+                    //$(this).parent().hide();
+                });
+    
+                $('.cmp-show-notifs').on('click', function() {
+                    $('#cmp-notif-titles').show();
+                    $('.cmp-notif-content').hide();
+                });
+            });
+        });
+    };
+
+    exports.compilatioTabs = function(docid) {
+        $(document).ready(function() {
             if ($('.moove.secondary-navigation')[0]) {
                 $('#cmp-container').css('margin-top', '140px');
                 $('#cmp-display-frame').css('margin-top', '140px');
@@ -233,9 +257,6 @@ define(['jquery'], function($) {
             if (localStorage.getItem("cmp-container-displayed") == 0) {
                 $('#cmp-container').hide();
                 $('#cmp-display-frame').show();
-            }
-            if (alertsCount > 0) {
-                $('#cmp-bell').show();
             }
             $('#cmp-display-frame').on('click', function() {
                 localStorage.setItem("cmp-container-displayed", 1);
