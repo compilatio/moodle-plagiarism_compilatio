@@ -374,10 +374,10 @@ class CompilatioFrame {
             </div>";
 
         $output .= "
-        <div id='cmp-stats-per-student' class='cmp-tabs-content'>
-            <div class='text-center'>"
-            . CompilatioStatistics::get_statistics_per_student($cmid) . "</div>
-        </div>";
+            <div id='cmp-stats-per-student' class='cmp-tabs-content'>
+                <div class='text-center'>"
+                . CompilatioStatistics::get_statistics_per_student($cmid) . "</div>
+            </div>";
 
         // Alerts tab.
         if (count($alerts) !== 0) {
