@@ -147,7 +147,7 @@ class CompilatioDocumentFrame {
                 return '';
             }
         }
-
+        
         $output .= "<div id='cmp-" . $domid . "'></div>";
 
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'displayDocumentFrame', [
@@ -305,7 +305,6 @@ class CompilatioDocumentFrame {
                 <img class='cmp-small-logo' src='" . new moodle_url("/plagiarism/compilatio/pix/c.svg") . "'>
                 " . self::get_indexing_state($indexed) . $score . $documentframe . "
             </div>";
-        error_log($output);
         return $output;
     }
 
