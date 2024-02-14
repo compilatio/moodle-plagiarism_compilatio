@@ -74,27 +74,28 @@ define(['jquery'], function($) {
         $(document).ready(function() {
             var startAllAnalysis = $('#cmp-start-btn');
             startAllAnalysis.click(function() {
-                startAnalysis(message, basepath, cmid, null)
+                startAnalysis(message, basepath, cmid, null);
             });
         });
     };
 
-    exports.startSelectedFilesAnalysis = function(basepath, cmid, message) {
+    exports.startAnalysesOnSelectedFiles = function(basepath, cmid, message) {
         $(document).ready(function() {
-            const startSelectedFilesAnalysis = $('#cmp-start-selected-btn').hide();
+            const multipleanalysisoptions = $('#show-multiple-analyse-options').hide();
+            const startAnalysesOnSelectedFiles = $('#cmp-start-selected-btn');
             const checkboxes = $('td.c0 input, #selectall');
-            function getSelectedUsers() {
+            function getSelectedLines() {
                 return checkboxes.filter(':checked').map(function() {
                     return $(this).val() != 'on' ? $(this).val() : null;
                 }).get();
             }
             function updateButtonVisibility() {
-                const selectedUsers = getSelectedUsers();
-                selectedUsers.length > 0 ? startSelectedFilesAnalysis.show() : startSelectedFilesAnalysis.hide();
+                const selectedUsers = getSelectedLines();
+                selectedUsers.length > 0 ? multipleanalysisoptions.show() : multipleanalysisoptions.hide();
             }
             checkboxes.on('change', updateButtonVisibility);
-            startSelectedFilesAnalysis.click(function() {
-                startAnalysis(message, basepath, cmid, getSelectedUsers());
+            startAnalysesOnSelectedFiles.click(function() {
+                startAnalysis(message, basepath, cmid, getSelectedLines());
             });
         });
     };
@@ -281,9 +282,12 @@ define(['jquery'], function($) {
             $('#show-search').on('click', function() {
                 tabClick($(this), $('#cmp-search'));
             });
+            $('#show-multiple-analyse-options').on('click', function() {
+                tabClick($(this), $('#cmp-multiple-analyse-options'));
+            });
 
-            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search');
-            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-home, #cmp-search');
+            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search, #show-multiple-analyse-options');
+            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-home, #cmp-search, #cmp-multiple-analyse-options');
 
             /**
              * TabClick
