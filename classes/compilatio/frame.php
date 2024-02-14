@@ -311,6 +311,15 @@ class CompilatioFrame {
         $output .= "<div id='cmp-help' class='cmp-tabs-content'>
             <p>" . get_string('similarities_disclaimer', 'plagiarism_compilatio') . "</p>";
 
+        // Elements included in subscription
+        $output .= "<p>" . get_string('element_included_in_subscription', 'plagiarism_compilatio');
+
+        $output .= get_config('plagiarism_compilatio', 'recipe') === 'anasim-premium'
+            ? "<li>" . get_string('ai_included_in_subscription', 'plagiarism_compilatio'). "</li></ul></p>"
+            : "</ul>" . get_string('ai_not_included_in_subscription', 'plagiarism_compilatio'). "</p>";
+
+
+
         if ($module == 'quiz') {
             $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
             $output .= "<p><b>" . get_string('quiz_help', 'plagiarism_compilatio', $nbmotsmin) . "</b></p>";
