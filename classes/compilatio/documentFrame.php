@@ -370,21 +370,15 @@ class CompilatioDocumentFrame {
                 $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
             }
         }
-      
-        $html .= "<span id='cmp-score-icons' class='" . ($wrapping === false ? "d-flex" : "flex-nowrap") .
-              "' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
-                          {$icons}
-                      </span>";
 
         $tooltip .= $recipe !== 'anasim-premium' 
             ? get_string('aiscore', 'plagiarism_compilatio') . " : <b>" . get_string('ai_score_not_included', 'plagiarism_compilatio') . "</b><br>" 
             : '';
 
-        $html .=
-            "<span id='cmp-score-icons' class='d-flex' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
-                " . $icons . "
-            </span>";
-         
+        $html .= "<span id='cmp-score-icons' class='" . ($wrapping === false ? "d-flex" : "flex-nowrap") .
+            "' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
+                        {$icons}
+                </span>";
 
         return $html;
     }

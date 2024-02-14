@@ -175,7 +175,7 @@ class CompilatioCsv {
 
         $csv .= '"' . implode('","', $line) . "\"\n";
         foreach ($userssubmittedtest as $user) {
-            $datas = CompilatioStatistics::get_question_data($cmid, $user);
+            $datas = CompilatioStatistics::get_question_data($cmid, $user->id);
             foreach ($datas as $question) {
                 $line = [];
                 $line["name"] = $user->lastname . ' ' . $user->firstname;
