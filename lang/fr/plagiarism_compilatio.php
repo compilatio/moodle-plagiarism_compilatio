@@ -197,7 +197,7 @@ $string["compilatio_help_assign"] = "Obtenir de l&#39aide sur le plugin Compilat
 $string['hide_area'] = 'Masquer les informations Compilatio';
 $string['show_area'] = 'Afficher les informations Compilatio';
 $string['start_selected_files_analysis'] = "Analyser les documents sélectionnés ";
-
+$string['access_report'] = 'Accéder au rapport';
 
 // Detailed error status.
 $string['detailed_error_unsupported'] = "Ces documents n'ont pas pu être analysés par Compilatio car leur format n'est pas supporté.";
@@ -216,6 +216,8 @@ $string["short_error_unsupported"] = 'documents non supportés.';
 $string["short_error_too_short"] = 'documents trop courts.';
 $string["short_error_too_long"] = 'documents trop longs.';
 $string["short_error_too_large"] = 'documents trop volumineux';
+$string["not_analysed"] = 'non analysé';
+
 
 // Notifications tab.
 $string["display_notifications"] = "Afficher les notifications";
@@ -246,6 +248,7 @@ $string['tabs_title_stats'] = 'Statistiques';
 $string["display_stats"] = "Afficher les statistiques de cette activité";
 $string["display_stats_per_student"] = "Afficher les statistiques par élève de cette activité";
 $string['export_csv'] = 'Exporter les données de cette activité au format CSV';
+$string['export_csv_per_student'] = 'Exporter les données de l\'analyse des résultat de cet élève dans un fichier CSV';
 $string['progress'] = "Progression";
 $string['results'] = "Résultats";
 $string['errors'] = "Erreurs";
@@ -258,6 +261,21 @@ $string['stats_avg'] = 'Moyen';
 $string['stats_score'] = 'Pourcentage de similitudes';
 $string['stats_error_unknown'] = ' erreurs inconnues';
 $string['stats_threshold'] = 'Nombre de documents par seuil';
+$string['results_by_student'] = 'Résultat par élève';
+$string['previous_student'] = 'Élève précédent';
+$string['next_student'] = 'Élève suivant';
+$string['total_words_quiz_on_suspect'] = 'mots suspect/<br> mots totaux';
+$string['question'] = 'Question';
+$string['score'] = 'Score';
+$string['word'] = 'mots';
+$string['total'] = 'Total';
+$string['no_students_finished_quiz'] = 'Aucun élève n\'a fini le quiz';
+$string['select_a_student'] = 'Sélectionner un élève';
+$string['response_type'] = 'Type de réponse';
+$string['file'] = 'Fichier';
+$string['text'] = 'Texte';
+$string['no_document_to_display'] = 'Aucun document à afficher';
+
 
 // Global Statistics.
 $string["no_statistics_yet"] = "Aucun document n'a encore été analysé.";

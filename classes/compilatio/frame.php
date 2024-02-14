@@ -234,6 +234,17 @@ class CompilatioFrame {
             >
             </i>";
 
+        // Stat per student quiz icon.
+        if ($module == 'quiz') {
+            $output .=
+            "<i
+                id='show-stats-per-student'
+                title='" . get_string('display_stats_per_student', 'plagiarism_compilatio') . "'
+                class='cmp-icon fa fa-chalkboard-teacher'
+            >
+            </i>";
+        }
+
         if ($plagiarismsettings['enable_search_tab']) {
             // Search icon.
             $output .= "<i id='show-search' title='" . get_string('compilatio_search_tab', 'plagiarism_compilatio') .
@@ -269,7 +280,6 @@ class CompilatioFrame {
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
                     [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
             }
-
             if ($multipleanalysesoptionss) {
                 $output .="
                     <button 
@@ -374,6 +384,11 @@ class CompilatioFrame {
                 <div class='row text-center'>"
                 . CompilatioStatistics::get_statistics($cmid) . $exportbutton .
                 "</div>
+            </div>";
+
+        $output .= "
+            <div id='cmp-stats-per-student' class='cmp-tabs-content'>
+                <div class='text-center'>" . CompilatioStatistics::get_quiz_students_statistics($cmid) . "</div>
             </div>";
 
         // Alerts tab.

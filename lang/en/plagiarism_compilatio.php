@@ -196,7 +196,8 @@ $string['reset_docs_in_error'] = 'Reset documents in error';
 $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
 $string['hide_area'] = 'Hide Compilatio informations';
 $string['show_area'] = 'Show Compilatio informations';
-$string['start_selected_files_analysis'] = "Analyse selected documents ";
+$string['start_selected_files_analysis'] = 'Analyse selected documents ';
+$string['access_report'] = 'Access report';
 
 // Detailed error status.
 $string['detailed_error_unsupported'] = "These documents could not be analysed by Compilatio because their format is not supported.";
@@ -215,6 +216,7 @@ $string["short_error_unsupported"] = 'documents unsupported.';
 $string["short_error_too_short"] = 'documents too short.';
 $string["short_error_too_long"] = 'documents too long.';
 $string["short_error_too_large"] = 'documents too large.';
+$string["not_analysed"] = 'not analysed';
 
 // Notifications tab.
 $string["display_notifications"] = "Display notifications";
@@ -245,6 +247,7 @@ $string['tabs_title_stats'] = 'Statistics';
 $string["display_stats"] = "Display statistics about this activity";
 $string["display_stats_per_student"] = "Display statistics per student about this activity";
 $string['export_csv'] = 'Export data about this activity into a CSV file';
+$string['export_csv_per_student'] = 'Export data about this student\'s review into a CSV file';
 $string['progress'] = "Progress";
 $string['results'] = "Results";
 $string['errors'] = "Errors";
@@ -257,6 +260,20 @@ $string['stats_avg'] = 'Average';
 $string['stats_score'] = 'Similarities percentage';
 $string['stats_error_unknown'] = ' unknown errors';
 $string['stats_threshold'] = 'Number of documents per threshold';
+$string['results_by_student'] = 'Results by student';
+$string['previous_student'] = 'Previous student';
+$string['next_student'] = 'Next student';
+$string['total_words_quiz_on_suspect'] = 'words suspect/ <br>total words';
+$string['question'] = 'Question';
+$string['score'] = 'Score';
+$string['word'] = 'words';
+$string['total'] = 'Total';
+$string['no_students_finished_quiz'] = 'No students finished the quiz';
+$string['select_a_student'] = 'Select a student';
+$string['response_type'] = 'Response type';
+$string['file'] = 'File';
+$string['text'] = 'Text';
+$string['no_document_to_display'] = 'No documents to display';
 
 // Global Statistics.
 $string["no_statistics_yet"] = 'No documents have been analysed yet.';

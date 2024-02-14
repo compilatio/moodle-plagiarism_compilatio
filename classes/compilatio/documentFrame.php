@@ -212,7 +212,7 @@ class CompilatioDocumentFrame {
                     "</a>";
             }
 
-            $score = self::get_score($cmpfile, $config, $isteacher);
+            $score = self::get_score($cmpfile, $config, $isteacher, false);
 
         } else if ($status == 'sent') {
             if (($config->analysistype ?? null) == 'planned') {
@@ -341,21 +341,19 @@ class CompilatioDocumentFrame {
      * @param  mixed  $indexingstate Indexing state
      * @return string                Return the HTML
      */
-    public static function get_score($cmpfile, $config, $isteacher) {
-        if ($cmpfile->globalscore <= $config->warningthreshold ?? 10) {
-            $color = 'green';
-        } else if ($cmpfile->globalscore <= $config->criticalthreshold ?? 25) {
-            $color = 'orange';
-        } else {
-            $color = 'red';
-        }
+    public static function get_score($cmpfile, $config, $isteacher, $wrapping) {
+        $color = $cmpfile->globalscore <= ($config->warningthreshold ?? 10)
+            ? 'green'
+            : ($cmpfile->globalscore <= ($config->criticalthreshold ?? 25)
+                ? 'orange'
+                : 'red');
 
         $title = get_string('title_score', 'plagiarism_compilatio', $cmpfile->globalscore);
         $title .= $isteacher ? ' ' . get_string('title_score_teacher', 'plagiarism_compilatio') : '';
 
-        $html = "<span title='{$title}' class='cmp-similarity cmp-color-{$color}'>
-                <i class='fa fa-circle'></i> {$cmpfile->globalscore}<small>%</small>
-            </span>";
+        $html = "<span title='{$title}' class='cmp-similarity cmp-color-{$color} align-middle'>
+                    <i class='fa fa-circle'></i> {$cmpfile->globalscore}<small>%</small>
+                </span>";
 
         $scores = ['similarityscore', 'utlscore'];
         $recipe = get_config('plagiarism_compilatio', 'recipe');
@@ -372,6 +370,11 @@ class CompilatioDocumentFrame {
                 $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
             }
         }
+      
+        $html .= "<span id='cmp-score-icons' class='" . ($wrapping === false ? "d-flex" : "flex-nowrap") .
+              "' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
+                          {$icons}
+                      </span>";
 
         $tooltip .= $recipe !== 'anasim-premium' 
             ? get_string('aiscore', 'plagiarism_compilatio') . " : <b>" . get_string('ai_score_not_included', 'plagiarism_compilatio') . "</b><br>" 

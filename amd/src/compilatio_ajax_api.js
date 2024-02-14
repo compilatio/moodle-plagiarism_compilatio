@@ -22,8 +22,51 @@ define(['jquery'], function($) {
         $("#cmp-notices").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");        
         
         $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
-        {'cmid': cmid, 'selectedUsers': selectedusers !== null ? selectedusers.toString() : ''}, function() {
-            window.location.reload();
+            {'cmid': cmid, 'selectedUsers': selectedusers.toString()}, function() {
+                window.location.reload();
+            });
+    }
+
+    exports.getSelectedStudent = function(basepath, cmid) {
+        $(document).ready(function(){
+            const dropdown = $('#student-select');
+            const statisticsContainer = $('#statistics-container');
+            
+            dropdown.on('change', function() {
+                const selectedstudent = $(this).val();
+                $.ajax({
+                    type: 'POST',
+                    url: basepath + '/plagiarism/compilatio/ajax/stats_per_student.php',  
+                    data: { selectedstudent: selectedstudent, cmid: cmid },
+                    success: function(response) {
+                        statisticsContainer.html(response);
+                    },
+                    error: function(error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+
+            $('#previous-student').on('click', function() {
+                changeSelectedTruc(dropdown.prop('selectedIndex'), -1)
+            });
+
+            $('#next-student').on('click', function() {
+                changeSelectedTruc(dropdown.prop('selectedIndex'), 1)
+            });
+
+            function changeSelectedTruc (selectedIndex, direction) {
+                var newIndex = selectedIndex + direction;
+                const maxIndex = dropdown.find('option').length - 1;
+
+                if (newIndex == -1) {
+                    newIndex = maxIndex;
+                } else if (newIndex > maxIndex) {
+                    newIndex = 0;
+                }
+
+                dropdown.prop('selectedIndex', newIndex).change();
+            }
         });
     }
 

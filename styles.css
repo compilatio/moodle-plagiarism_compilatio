@@ -307,3 +307,46 @@ a.cmp-btn-primary:hover {
     height: 22px;
     margin: 6px;
 }
+
+/* Compilatio CSV download logo position */
+.cmp-relative-postion {
+     position: relative;
+}
+
+/* Compilatio CSV download logo position */
+.cmp-position-absolute-right {
+    position: absolute;
+    right: 0; 
+    top: 0;
+}
+
+/* Compilatio links color CSV download */
+.cmp-links-color {
+    color: #5A51E7 !important;
+}
+
+/* Compilatio links no underline CSV download */
+.cmp-no-decoration {
+    text-decoration: none;
+}
+
+/* Compilatio cursor shape auto */
+.cmp-cursor-auto {
+    cursor: auto;
+}
+
+/* Compilatio text no wrap */
+.cmp-nowrap {
+    white-space: nowrap;
+}
+
+/* Compilatio background color white */
+.cmp-bckgrnd-white {
+    background-color: white;
+}
+
+/* Compilatio max table height and Y slider */
+.cmp-table-height {
+    max-height: 400px;
+    overflow-y: auto;
+}
