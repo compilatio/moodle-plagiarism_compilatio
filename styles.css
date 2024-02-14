@@ -9,6 +9,11 @@
     font-weight: 500;
 }
 
+.cmp-cursor-pointer {
+    cursor: pointer;
+}
+
+
 /* Colors */
 .cmp-color-green {
     color: #38ba7d;
@@ -126,59 +131,55 @@ Compilatio frame area
   font-weight: bold;
 }
 
-#cmp-container {
-    position: fixed;
-    right: 3rem;
-    z-index: 999;
-    flex: 1 0 auto;
-    display: flex;
-    flex-direction: column;
+#cmp-navbar {
     overflow: hidden;
     padding: 0.5rem 1rem 0.5rem 1rem;
     background-color: #F5F6F8;
     border: 1px solid #EBEBF0;
-    border-radius: 4px;
-    margin: 70px 0 0.5rem 0;
+    border-radius: 5px;
     color: #444;
-    max-width: 750px;
 }
 
-#cmp-notices {
-    position: relative;
-    top: 0.5rem;
-}
-#cmp-notices > .cmp-alert > .fa-times {
-    cursor: pointer;
+#cmp-container {
+    position: fixed;
+    right: 3rem;
+    z-index: 999;
+    margin: 70px 0 0.5rem 0;
+    max-width: 750px;
 }
 
 .cmp-alert {
   display: flex;
   padding: 0.75rem;
-  margin: 0.5rem;
-  background-color: #fff;
+  margin-top: 0.5rem;
+  background-color: #F5F6F8;
   border-left: 6px solid #7f7f84;
   border-radius: 5px;
   align-items: center;
 }
 .cmp-alert-success {
-  border-color: #38ba7d;
-  color: #38ba7d;
+    border-color: #38ba7d;
+    color: #38ba7d;
 }
 .cmp-alert-info {
-  border-color: #006fbf;
-  color: #006fbf;
+    border-color: #006fbf;
+    color: #006fbf;
+}
+.cmp-alert-notifications {
+    border-color: #006fbf;
+    font-weight: bold;
 }
 .cmp-alert-warning {
-  border-color: #FEAF20;
-  color: #FEAF20;
+    border-color: #FEAF20;
+    color: #FEAF20;
 }
 .cmp-alert-danger {
-  border-color: #d73814;
-  color: #d73814;
+    border-color: #d73814;
+    color: #d73814;
 }
 .cmp-alert-icon {
-  margin-right: 1rem;
-  margin-block: auto;
+    margin-right: 1rem;
+    margin-block: auto;
 }
 .cmp-md > p {
     margin: 0;
@@ -306,6 +307,62 @@ a.cmp-btn-primary:hover {
 .cmp-small-logo {
     height: 22px;
     margin: 6px;
+}
+
+/* Compilatio notifications */
+#cmp-notifications {
+    color: #374151;
+}
+
+#cmp-notifications .title {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 600;
+}
+
+#cmp-notifications .color-service {
+    color: #006fbf !important;
+}
+
+#cmp-notifications .margin-small {
+    margin-bottom: 0.5rem;
+}
+
+#cmp-notifications .margin-medium {
+    margin-bottom: 1.25rem;
+}
+
+#cmp-notifications .margin-large {
+    margin-bottom: 2.5rem;
+}
+
+#cmp-notifications .text-bold {
+    font-weight: 600;
+}
+
+#cmp-notifications .text-italic {
+    font-style: italic;
+}
+
+#cmp-notifications .text-center {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+#cmp-notifications .list-disc {
+    list-style-type: disc;
+    list-style-position: inside;
+}
+
+#cmp-notifications .list-decimal {
+    list-style-type: decimal;
+    list-style-position: inside;
+}
+
+#cmp-notifications a:not(.btn) {
+    text-decoration-line: underline;
+    color: #374151;
 }
 
 /* Compilatio CSV download logo position */

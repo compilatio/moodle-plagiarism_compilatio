@@ -219,6 +219,10 @@ $string["short_error_too_large"] = 'documents too large.';
 $string["not_analysed"] = 'not analysed';
 
 // Notifications tab.
+$string["notifications"] = "Notifications";
+$string["see_all_notifications"] = "See all notifications";
+$string["open"] = "Open";
+$string["no_notification"] = "No notification";
 $string["display_notifications"] = "Display notifications";
 $string['no_document_available_for_analysis'] = 'No documents were available for analysis';
 $string["analysis_started"] = '{$a} analysis have been requested.';
@@ -264,16 +268,19 @@ $string['results_by_student'] = 'Results by student';
 $string['previous_student'] = 'Previous student';
 $string['next_student'] = 'Next student';
 $string['total_words_quiz_on_suspect'] = 'words suspect/ <br>total words';
+$string['total_words/suspect_words'] = 'words suspect / total words';
 $string['question'] = 'Question';
 $string['score'] = 'Score';
 $string['word'] = 'words';
 $string['total'] = 'Total';
+$string['globalscore'] = 'Total';
 $string['no_students_finished_quiz'] = 'No students finished the quiz';
 $string['select_a_student'] = 'Select a student';
 $string['response_type'] = 'Response type';
 $string['file'] = 'File';
 $string['text'] = 'Text';
 $string['no_document_to_display'] = 'No documents to display';
+$string['student'] = 'Student';
 
 // Global Statistics.
 $string["no_statistics_yet"] = 'No documents have been analysed yet.';

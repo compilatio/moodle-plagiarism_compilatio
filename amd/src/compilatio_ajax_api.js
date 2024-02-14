@@ -19,7 +19,7 @@ define(['jquery'], function($) {
 
     function startAnalysis(message, basepath, cmid, selectedusers) {
         disableCompilatioButtons();
-        $("#cmp-notices").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");        
+        $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");        
         
         $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
             {'cmid': cmid, 'selectedUsers': selectedusers.toString()}, function() {
@@ -105,7 +105,7 @@ define(['jquery'], function($) {
             var sendUnsentDocs = $('#cmp-send-btn');
             sendUnsentDocs.click(function() {
                 disableCompilatioButtons();
-                $("#cmp-notices").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
+                $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
                 $.post(basepath + '/plagiarism/compilatio/ajax/send_unsent_docs.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
@@ -119,7 +119,7 @@ define(['jquery'], function($) {
             var resetDocsInError = $('#cmp-reset-btn');
             resetDocsInError.click(function() {
                 disableCompilatioButtons();
-                $("#cmp-notices").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
+                $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
                 $.post(basepath + '/plagiarism/compilatio/ajax/reset_docs_in_error.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
@@ -220,12 +220,69 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.compilatioTabs = function(alertsCount, docid) {
+    exports.getNotifications = function(basepath, userid) {
         $(document).ready(function() {
+            $.post(basepath + '/plagiarism/compilatio/ajax/get_notifications.php', {
+                'userid': userid,
+                'read': JSON.parse(localStorage.getItem("notifications-read")) ?? [],
+                'ignored': JSON.parse(localStorage.getItem("notifications-ignored")) ?? [],
+            }, function(notifications) {
+                notifications = JSON.parse(notifications);
 
+                $('#cmp-count-notifications').html(notifications.count == 0 ? '' : notifications.count);
+                $('#cmp-notifications').html(notifications.content);
+
+                $('#cmp-alerts').append(notifications.floating);
+
+                $('.cmp-notifications-title').on('click', function() {
+                    let count = $('#cmp-count-notifications').html();
+                    count--;
+                    $('#cmp-count-notifications').html(count <= 0 ? '' : count);
+
+                    ignoreNotifications()
+
+                    $('#cmp-show-notifications').toggleClass('active');
+
+                    $('#cmp-notifications').show();
+                    $('#cmp-notifications-titles').hide();
+
+                    let notifId = $(this).attr('id').split("-").pop();
+                    $('#cmp-notifications-content-' + notifId).show();
+
+                    $('#cmp-notifications-' + notifId).children().first().removeClass('text-primary')
+
+                    let notificationsRead = JSON.parse(localStorage.getItem("notifications-read")) ?? []
+                    if (!notificationsRead.includes(notifId)) {
+                        notificationsRead.push(notifId)
+                        localStorage.setItem("notifications-read", JSON.stringify(notificationsRead))
+                    }
+                });
+    
+                $('.cmp-show-notifications').on('click', function() {
+                    $('#cmp-notifications-titles').show();
+                    $('.cmp-notifications-content').hide();
+                });
+
+                $('#cmp-ignore-notifications').on('click', function() {
+                    ignoreNotifications()
+                });
+
+                $('#cmp-show-notifications').on('click', function() {
+                    ignoreNotifications()
+                });
+
+                function ignoreNotifications() {
+                    $('.cmp-alert-notifications').remove();
+                    localStorage.setItem("notifications-ignored", JSON.stringify(notifications.ids))
+                }
+            });
+        });
+    };
+
+    exports.compilatioTabs = function(docid) {
+        $(document).ready(function() {
             if ($('.moove.secondary-navigation')[0]) {
                 $('#cmp-container').css('margin-top', '140px');
-                $('#cmp-display-frame').css('margin-top', '140px');
             }
 
             // Convert markdown to HTML.
@@ -233,29 +290,10 @@ define(['jquery'], function($) {
                 $(this).html(markdown($.trim($(this).text())))
             });
 
-            // Display or hide Compilatio container
-            if (localStorage.getItem("cmp-container-displayed") == 0) {
-                $('#cmp-container').hide();
-                $('#cmp-display-frame').show();
-            }
-            if (alertsCount > 0) {
-                $('#cmp-bell').show();
-            }
-            $('#cmp-display-frame').on('click', function() {
-                localStorage.setItem("cmp-container-displayed", 1);
-                $(this).hide();
-                $('#cmp-container').show();
-            });
-            $('#cmp-hide-frame').on('click', function() {
-                localStorage.setItem("cmp-container-displayed", 0);
-                $('#cmp-container').hide();
-                $('#cmp-display-frame').show();
-            });
-
             $('#cmp-tabs').show();
 
-            $('#cmp-notices > .cmp-alert > .fa-times').on('click', function() {
-                $('#cmp-notices').empty()
+            $('#cmp-alerts > .cmp-alert > .fa-times').on('click', function() {
+                $('#cmp-alert-' + $(this).attr('id').split("-").pop()).parent().remove()
             });
 
             var selectedElement = '';

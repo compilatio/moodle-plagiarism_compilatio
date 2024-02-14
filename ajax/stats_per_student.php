@@ -15,12 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Start analysis for all document in course module
+ * Get stats per student
  *
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param string $_POST['cmid']
+ * @param string $_POST['selectedstudent']
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
@@ -36,6 +37,6 @@ $cmid = required_param('cmid', PARAM_TEXT);
 
 $output = is_numeric($selectedstudent)
     ? CompilatioStatistics::get_statistics_by_student($selectedstudent, $cmid)
-    : $output = "";
+    : "";
 
 echo $output;

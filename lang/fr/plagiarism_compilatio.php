@@ -220,6 +220,10 @@ $string["not_analysed"] = 'non analysé';
 
 
 // Notifications tab.
+$string["notifications"] = "Notifications";
+$string["see_all_notifications"] = "Voir toutes les notifications";
+$string["open"] = "Ouvrir";
+$string["no_notification"] = "Aucune notification";
 $string["display_notifications"] = "Afficher les notifications";
 $string['no_document_available_for_analysis'] = "Aucun document n'était disponible pour analyse.";
 $string["analysis_started"] = '{$a} analyses démandées.';
@@ -265,16 +269,19 @@ $string['results_by_student'] = 'Résultat par élève';
 $string['previous_student'] = 'Élève précédent';
 $string['next_student'] = 'Élève suivant';
 $string['total_words_quiz_on_suspect'] = 'mots suspect/<br> mots totaux';
+$string['total_words/suspect_words'] = 'nombre de mots suspect / nombre de mots';
 $string['question'] = 'Question';
 $string['score'] = 'Score';
 $string['word'] = 'mots';
 $string['total'] = 'Total';
+$string['globalscore'] = 'Total';
 $string['no_students_finished_quiz'] = 'Aucun élève n\'a fini le quiz';
 $string['select_a_student'] = 'Sélectionner un élève';
 $string['response_type'] = 'Type de réponse';
 $string['file'] = 'Fichier';
 $string['text'] = 'Texte';
 $string['no_document_to_display'] = 'Aucun document à afficher';
+$string['student'] = 'Élève';
 
 
 // Global Statistics.
