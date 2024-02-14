@@ -55,10 +55,10 @@ foreach ($notifications as $index => $notification) {
 
             $status = in_array($notification->id, $ignored) ? 'ignored' : 'unread';
             in_array($notification->id, $read) ? $status = 'read' : null;
-            
+
             $status !== 'read' ? $countbadge++ : null;
 
-            $titles .= "<div id='cmp-notifications-" . $notification->id . "' class='cmp-notifications-title'>
+            $titles .= "<div id='cmp-notifications-" . $notification->id . "' class='cmp-notifications-title cmp-cursor-pointer'>
                     <div class='text-bold " . ($status !== 'read' ? 'text-primary' : '') . "'>"
                     . $content->title .
                     "</div>"
@@ -66,20 +66,26 @@ foreach ($notifications as $index => $notification) {
                 "</div>";
 
             $titles .= $index !== (count($notifications) - 1) ? "<hr class='my-2'>" : '';
-    
-            $contents .= "<div id='cmp-notifications-content-" . $notification->id . "' class='cmp-notifications-content' style='display: none;'>
-                    <div class='cmp-show-notifications mb-2'>
-                        <i class='fa-solid fa-arrow-left mr-2'></i>Voir toutes les notifications
+
+            $contents .= "
+                <div id='cmp-notifications-content-" . $notification->id . "' class='cmp-notifications-content' style='display: none;'>
+                    <div class='cmp-show-notifications mb-2 cmp-cursor-pointer'>
+                        <i class='fa-solid fa-arrow-left mr-2'></i>" . get_string('see_all_notifications', 'plagiarism_compilatio') . "
                     </div>
                     <div class='d-flex flex-column'>" . $body . "</div>
                 </div>";
-    
-    
+
             if ($floatingnotification == '' && $status == 'unread') {
-                $floatingnotification = "<div class='d-flex cmp-alert cmp-alert-notifications'>
+                $floatingnotification = "
+                    <div class='d-flex cmp-alert cmp-alert-notifications'>
                         <i class='cmp-alert-icon text-primary fa-lg fa fa-bell'></i>
-                        <span>" . $content->title . "</span>
-                        <span id='cmp-notifications-" . $notification->id . "' class='cmp-notifications-title ml-auto text-primary cmp-cursor-pointer'>Ouvrir</span>
+                        <span class='mr-2'>" . $content->title . "</span>
+                        <span
+                            id='cmp-notifications-" . $notification->id . "'
+                            class='cmp-notifications-title ml-auto text-primary cmp-cursor-pointer'
+                        >"
+                            . get_string('open', 'plagiarism_compilatio') .
+                        "</span>
                         <i id='cmp-ignore-notifications' class='my-auto ml-3 fa fa-times cmp-cursor-pointer'></i>
                     </div>";
             }
@@ -87,13 +93,15 @@ foreach ($notifications as $index => $notification) {
     }
 }
 
+$titles = empty($titles) ? '<span>' . get_string('no_notification', 'plagiarism_compilatio') . '</span>' : $titles;
+
 $result = [
     'floating' => $floatingnotification,
     'content' => "<div id='cmp-notifications-titles'><h4>" . get_string("notifications", "plagiarism_compilatio") . "</h4>"
                 . $titles .
             "</div>" . $contents,
     'count' => $countbadge,
-    'ids' => $notificationsids
+    'ids' => $notificationsids,
 ];
 
 echo json_encode($result);

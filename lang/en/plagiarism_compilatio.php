@@ -219,6 +219,9 @@ $string["not_analysed"] = 'not analysed';
 
 // Notifications tab.
 $string["notifications"] = "Notifications";
+$string["see_all_notifications"] = "See all notifications";
+$string["open"] = "Open";
+$string["no_notification"] = "No notification";
 $string["display_notifications"] = "Display notifications";
 $string['no_document_available_for_analysis'] = 'No documents were available for analysis';
 $string["analysis_started"] = '{$a} analysis have been requested.';
@@ -266,6 +269,7 @@ $string['question'] = 'Question';
 $string['score'] = 'Score';
 $string['word'] = 'words';
 $string['total'] = 'Total';
+$string['globalscore'] = 'Total';
 $string['no_students_finished_quiz'] = 'No students finished the quiz';
 $string['select_a_student'] = 'Select a student';
 $string['response_type'] = 'Response type';

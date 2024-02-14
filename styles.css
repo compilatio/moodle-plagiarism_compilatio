@@ -131,32 +131,28 @@ Compilatio frame area
   font-weight: bold;
 }
 
-#cmp-container {
-    position: fixed;
-    right: 3rem;
-    z-index: 999;
-    flex: 1 0 auto;
-    display: flex;
-    flex-direction: column;
+#cmp-navbar {
     overflow: hidden;
     padding: 0.5rem 1rem 0.5rem 1rem;
     background-color: #F5F6F8;
     border: 1px solid #EBEBF0;
-    border-radius: 4px;
-    margin: 70px 0 0.5rem 0;
+    border-radius: 5px;
     color: #444;
+}
+
+#cmp-container {
+    position: fixed;
+    right: 3rem;
+    z-index: 999;
+    margin: 70px 0 0.5rem 0;
     max-width: 750px;
 }
 
-#cmp-notices {
-    position: relative;
-    top: 0.5rem;
-}
 .cmp-alert {
   display: flex;
   padding: 0.75rem;
-  margin: 0.5rem;
-  background-color: #fff;
+  margin-top: 0.5rem;
+  background-color: #F5F6F8;
   border-left: 6px solid #7f7f84;
   border-radius: 5px;
   align-items: center;

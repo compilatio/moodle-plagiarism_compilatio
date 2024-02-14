@@ -447,15 +447,14 @@ class CompilatioStatistics {
                     } else {
                         $output .= self::get_truc($cmpfile, $index, count($compifiles), $slot);
                         $questionsnotanalysed++;
+                        $suspectwordsquestion = 'xx';
                     }
 
-                    $questioninfo = array(
+                    $questiondata[] = [
                         'question_number' => $slot,
-                        'suspect_words' => isset($suspectwordsquestion) ? $suspectwordsquestion : 'xx',
-                        'cmpfile' => $cmpfile
-                    );
-
-                    $questiondata[] = $questioninfo;
+                        'suspect_words' => $suspectwordsquestion,
+                        'cmpfile' => $cmpfile,
+                    ];
                 }
 
             }
@@ -468,8 +467,11 @@ class CompilatioStatistics {
             $output .= "<tfoot class='table-group-divider'><tr>
                             <th class='container text-center align-middle'>" . get_string('total', 'plagiarism_compilatio') . "</th> <td></td>";
             if ($questionsnotanalysed < count($attempt->get_slots())) {
-                $output .= "<td class='align-middle font-weight-light' style='white-space: nowrap;'>" . $suspectwordsquiz . ' ' . get_string('word', 'plagiarism_compilatio') . '/<br> ' . $totalwordquiz . ' ' . get_string('word', 'plagiarism_compilatio') . "</td>
-                <td class='align-middle font-weight-light'>";
+                $output .= "
+                    <td class='align-middle font-weight-light' style='white-space: nowrap;'>"
+                        . $suspectwordsquiz . ' ' . get_string('word', 'plagiarism_compilatio') . '/<br> ' . $totalwordquiz . ' ' . get_string('word', 'plagiarism_compilatio') .
+                    "</td>
+                    <td class='align-middle font-weight-light'>";
                 $output .= $compteurdivision != 0 ? $globalscorequiz  . "%" : get_string('not_analysed', 'plagiarism_compilatio');
 
                 $color = $globalscorequiz <= $config->warningthreshold ?? 10
@@ -487,16 +489,14 @@ class CompilatioStatistics {
             $output .= "</td></tr></tfoot></table></div>";
         }
 
-        return array(
+        return [
             'output' => $output,
-            'question_data' => $questiondata,
-        );
+            'question_data' => $questiondata ?? [],
+        ];
     }
 
     public static function get_question_data($cmid, $user) {
-        return !empty(self::get_statistics_by_id($user, $cmid)['question_data'])
-            ? self::get_statistics_by_id($user, $cmid)['question_data']
-            : array();
+        return self::get_statistics_by_id($user, $cmid)['question_data'];
     }
 
     public static function get_truc($cmpfile, $index, $count, $slot, $config = null, $suspectwordsquestion = null, $totalwordquestion = null) {

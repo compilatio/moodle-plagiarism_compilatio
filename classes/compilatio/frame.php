@@ -204,14 +204,8 @@ class CompilatioFrame {
             }
         }
 
-        $output =
-            "<div id='cmp-display-frame' style='display:none;' title='" . get_string('show_area', 'plagiarism_compilatio') . "'>
-                <img src='" . new moodle_url("/plagiarism/compilatio/pix/c.svg") . "'>
-                <i class='cmp-icon ml-2 fa-2x fa fa-bars'></i>
-                " . CompilatioIcons::bell() . "
-            </div>";
-
-        $output .= "<div id='cmp-container'>";
+        $output = "<div id='cmp-container'>";
+        $output .= "<div class='d-flex'><div id='cmp-navbar' class='ml-auto'>";
 
         // Display the tabs.
         $output .= "<div id='cmp-tabs'>";
@@ -222,7 +216,7 @@ class CompilatioFrame {
         // Help icon.
         $output .= "<i id='show-help' title='" . get_string('compilatio_help_assign', 'plagiarism_compilatio') .
             "' class='cmp-icon fa fa-question-circle'></i>";
-        
+
         // Stat icon.
         $output .=
             "<i
@@ -248,7 +242,7 @@ class CompilatioFrame {
             $output .= "<i id='show-search' title='" . get_string('compilatio_search_tab', 'plagiarism_compilatio') .
                 "' class='cmp-icon fa fa-search fa-2x'></i>";
         }
-
+        
         // Notification icon.
         $output .= "<span>
             <i
@@ -314,14 +308,6 @@ class CompilatioFrame {
                     [$CFG->httpswwwroot, $cmid, get_string('reset_docs_in_error_in_progress', 'plagiarism_compilatio')]);
             }
         }
-
-        $output .=
-            "<i
-                id='cmp-hide-frame'
-                title='" . get_string('hide_area', 'plagiarism_compilatio') . "'
-                class='cmp-icon pl-3 fa fa-bars'
-            >
-            </i>";
 
         $output .= "</div>";
 
@@ -409,9 +395,16 @@ class CompilatioFrame {
 
         $output .= "</div>";
 
-        $output .= "<div id='cmp-notices'>";
+        // Display timed analysis date.
+        if (isset($analysisdate)) {
+            $output .= "<span class='border-top pt-2 mt-2 text-center font-italic'>$analysisdate</span>";
+        }
 
-        foreach ($alerts as $alert) {
+        $output .= "</div></div>";
+
+        // Alerts.
+        $output .= "<div class='d-flex'><div id='cmp-alerts' class='ml-auto mt-1'>";
+        foreach ($alerts as $index => $alert) {
             if (isset($alert['content'])) {
                 switch ($alert['class']) {
                     case 'info':
@@ -430,21 +423,18 @@ class CompilatioFrame {
 
                 $output .= "
                     <div class='cmp-alert cmp-alert-" . $alert['class'] . "'>
-                        <i class='cmp-alert-icon fa-lg fa " . $icon . "'></i>" . $alert['content'] .
-                        "<i class='cmp-cursor-pointer ml-auto my-auto fa fa-times'></i>
+                        <span class='mr-1 d-flex'>
+                            <i class='cmp-alert-icon fa-lg fa " . $icon . "'></i>" . $alert['content'] .
+                        "</span>
+                        <i id='cmp-alert-" . $index . "' class='cmp-cursor-pointer ml-auto my-auto fa fa-times'></i>
                     </div>";
             } else {
                 $output .= $alert;
             }
         }
+        $output .= "</div></div>";
 
-        $output .= "</div>";
-
-        // Display timed analysis date.
-        if (isset($analysisdate)) {
-            $output .= "<span class='border-top pt-2 mt-2 text-center font-italic'>$analysisdate</span>";
-        }
-
+        // Close container.
         $output .= "</div>";
 
         $output .= "<script src=" . $CFG->wwwroot . "/plagiarism/compilatio/js/drawdown.min.js></script>";

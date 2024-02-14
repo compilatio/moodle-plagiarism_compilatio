@@ -85,11 +85,7 @@ class CompilatioCsv {
                 AND cm.instance = activity.id
             WHERE cm.id =?";
 
-        $name = "";
-        $record = $DB->get_record_sql($sql, [$cmid]);
-        if ($record != null) {
-            $name = $record->name;
-        }
+        $record = $DB->get_field_sql($sql, [$cmid]);
 
         $date = userdate(time());
         // Sanitize date for CSV.
@@ -142,7 +138,7 @@ class CompilatioCsv {
 
     }
 
-    public static function generate_cm_csv_per_student($cmid, $userssumbitedtest) {
+    public static function generate_cm_csv_per_student($cmid, $userssubmittedtest) {
         global $DB;
 
         $cmpcm = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
@@ -151,15 +147,11 @@ class CompilatioCsv {
         $sql = "
             SELECT activity.name
             FROM {course_modules} cm
-            JOIN {" . 'quiz' . "} activity ON cm.course = activity.course
+            JOIN {quiz} activity ON cm.course = activity.course
                 AND cm.instance = activity.id
             WHERE cm.id =?";
 
-        $name = "";
-        $record = $DB->get_record_sql($sql, [$cmid]);
-        if ($record != null) {
-            $name = $record->name;
-        }
+        $name = $DB->get_field_sql($sql, [$cmid]);
 
         $date = userdate(time());
         // Sanitize date for CSV.
@@ -182,28 +174,21 @@ class CompilatioCsv {
         $line["IA"] = get_string('aiscore', 'plagiarism_compilatio');
 
         $csv .= '"' . implode('","', $line) . "\"\n";
-        foreach ($userssumbitedtest as $user) {
+        foreach ($userssubmittedtest as $user) {
             $datas = CompilatioStatistics::get_question_data($cmid, $user);
             foreach ($datas as $question) {
                 $line = [];
                 $line["name"] = $user->lastname . ' ' . $user->firstname;
                 $line["question"] = 'Q' . $question['question_number'];
                 $line["suspect/totalwords"] = $question['suspect_words'] . '/' . $question['cmpfile']->wordcount;
-                $line[get_string('total', 'plagiarism_compilatio')] = $question['cmpfile']->globalscore != null ?
-                 $question['cmpfile']->globalscore :
-                  get_string('not_analysed', "plagiarism_compilatio");
 
-                $line[get_string('similarityscore', 'plagiarism_compilatio')] = $question['cmpfile']->similarityscore != null 
-                ? $question['cmpfile']->similarityscore 
-                : get_string('not_analysed', "plagiarism_compilatio");
+                $scores = ['globalscore', 'similarityscore', 'utlscore', 'aiscore'];
 
-                $line[get_string('utlscore', 'plagiarism_compilatio')] = $question['cmpfile']->aiscore != null 
-                ? $question['cmpfile']->aiscore 
-                : get_string('not_analysed', "plagiarism_compilatio");
-
-                $line[get_string('aiscore', 'plagiarism_compilatio')] = $question['cmpfile']->utlscore != null 
-                ? $question['cmpfile']->utlscore 
-                : get_string('not_analysed', "plagiarism_compilatio");
+                foreach ($scores as $score) {
+                    $line[get_string($score, 'plagiarism_compilatio')] = $question['cmpfile']->status == 'scored'
+                        ? (isset($question['cmpfile']->$score) ? $question['cmpfile']->$score : get_string('unmeasured', 'plagiarism_compilatio'))
+                        : get_string('not_analysed', "plagiarism_compilatio");
+                }
 
                 $csv .= '"' . implode('","', $line) . "\"\n";
             }

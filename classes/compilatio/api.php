@@ -656,15 +656,15 @@ class CompilatioAPI {
 
 
 
-            return (object) [
+            /*return (object) [
                 0 => 
                 (object) array(
                     'id' => '16474c512ca942bdbe2833722f1c7963ae6b9e93',
                     'text' => 'magister.alert.incident_analyses_too_long',
                     'activation_period' => 
                     (object) array(
-                        'start' => '2024-02-13 01:05:04',
-                        'end' => '2024-02-13 23:19:24',
+                        'start' => '2024-02-14 01:05:04',
+                        'end' => '2024-03-14 23:19:24',
                     ),
                 ),
                 12 => 
@@ -673,12 +673,12 @@ class CompilatioAPI {
                     'text' => 'common.alert.public_page_not_available',
                     'activation_period' => 
                     (object) array(
-                        'start' => '2024-02-13 01:05:04',
-                        'end' => '2024-02-13 23:19:24',
+                        'start' => '2024-02-14 01:05:04',
+                        'end' => '2024-03-13 23:19:24',
                         'duration' => 860,
                     ),
                 ),
-            ];
+            ];*/
 
 
 
@@ -716,7 +716,7 @@ class CompilatioAPI {
                     "content_by_language" =>   [
                         (object) [
                             "title" =>  "Quelques mots sur Compilatio Magister",
-                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio Magister : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
+                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio Magister FR : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
                             </span>
                             <span class="margin-small"> Vous disposez de cet accès personnel à Compilatio Magister pour prévenir et détecter le plagiat. Cet outil vous permet de gagner du temps : 
                             </span>
@@ -744,7 +744,7 @@ class CompilatioAPI {
                         ],
                         (object) [
                             "title" =>  "A few words about Compilatio Magister",
-                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio Magister : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
+                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio Magister EN : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
                             </span>
                             <span class="margin-small"> Vous disposez de cet accès personnel à Compilatio Magister pour prévenir et détecter le plagiat. Cet outil vous permet de gagner du temps : 
                             </span>
@@ -783,8 +783,8 @@ class CompilatioAPI {
                     "id" =>  "4b78a5c0f6c5672e8a8258b062f33356",
                     "content_by_language" =>  [
                         (object) [
-                            "title" =>  "Quelques mots sur un piano",
-                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio C NUL ! : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
+                            "title" =>  "Quelques mots sur toi",
+                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio les meilleurs : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
                             </span>
                             <span class="margin-small"> Vous disposez de cet accès personnel à Compilatio Magister pour prévenir et détecter le plagiat. Cet outil vous permet de gagner du temps : 
                             </span>
@@ -811,8 +811,8 @@ class CompilatioAPI {
                             "language" =>  "fr"
                         ],
                         (object) [
-                            "title" =>  "A few words about Compilatio Magister",
-                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio C NUL : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
+                            "title" =>  "A few words about you",
+                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio best team ever : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
                             </span>
                             <span class="margin-small"> Vous disposez de cet accès personnel à Compilatio Magister pour prévenir et détecter le plagiat. Cet outil vous permet de gagner du temps : 
                             </span>
@@ -851,8 +851,8 @@ class CompilatioAPI {
                     "id" =>  "4b78a5c0f6c5672a0297a72e8a822f33356",
                     "content_by_language" =>  [
                         (object) [
-                            "title" =>  "Quelques mots sur ta maman",
-                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio C SUPER : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
+                            "title" =>  "Quelques mots sur moi",
+                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio c\'incroyable wow : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
                             </span>
                             <span class="margin-small"> Vous disposez de cet accès personnel à Compilatio Magister pour prévenir et détecter le plagiat. Cet outil vous permet de gagner du temps : 
                             </span>
@@ -879,8 +879,8 @@ class CompilatioAPI {
                             "language" =>  "fr"
                         ],
                         (object) [
-                            "title" =>  "A few words about Compilatio Magister",
-                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio C SUPER : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
+                            "title" =>  "A few words about me",
+                            "body" =>  '<span class="title color-service margin-medium text-center">Compilatio is incredible wow : sensibilisez vos étudiants avec un détecteur de similitudes et des ressources antiplagiat
                             </span>
                             <span class="margin-small"> Vous disposez de cet accès personnel à Compilatio Magister pour prévenir et détecter le plagiat. Cet outil vous permet de gagner du temps : 
                             </span>
