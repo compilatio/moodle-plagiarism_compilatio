@@ -9,6 +9,11 @@
     font-weight: 500;
 }
 
+.cmp-cursor-pointer {
+    cursor: pointer;
+}
+
+
 /* Colors */
 .cmp-color-green {
     color: #38ba7d;
@@ -147,10 +152,6 @@ Compilatio frame area
     position: relative;
     top: 0.5rem;
 }
-#cmp-notices > .cmp-alert > .fa-times {
-    cursor: pointer;
-}
-
 .cmp-alert {
   display: flex;
   padding: 0.75rem;
@@ -161,24 +162,28 @@ Compilatio frame area
   align-items: center;
 }
 .cmp-alert-success {
-  border-color: #38ba7d;
-  color: #38ba7d;
+    border-color: #38ba7d;
+    color: #38ba7d;
 }
 .cmp-alert-info {
-  border-color: #006fbf;
-  color: #006fbf;
+    border-color: #006fbf;
+    color: #006fbf;
+}
+.cmp-alert-notifications {
+    border-color: #006fbf;
+    font-weight: bold;
 }
 .cmp-alert-warning {
-  border-color: #FEAF20;
-  color: #FEAF20;
+    border-color: #FEAF20;
+    color: #FEAF20;
 }
 .cmp-alert-danger {
-  border-color: #d73814;
-  color: #d73814;
+    border-color: #d73814;
+    color: #d73814;
 }
 .cmp-alert-icon {
-  margin-right: 1rem;
-  margin-block: auto;
+    margin-right: 1rem;
+    margin-block: auto;
 }
 .cmp-md > p {
     margin: 0;
@@ -347,6 +352,16 @@ a.cmp-btn-primary:hover {
     margin-left: auto;
     margin-right: auto;
     text-align: center;
+}
+
+#cmp-notifications .list-disc {
+    list-style-type: disc;
+    list-style-position: inside;
+}
+
+#cmp-notifications .list-decimal {
+    list-style-type: decimal;
+    list-style-position: inside;
 }
 
 #cmp-notifications a:not(.btn) {

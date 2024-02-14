@@ -649,6 +649,39 @@ class CompilatioAPI {
         $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
+
+
+
+
+
+
+
+            return (object) [
+                0 => 
+                (object) array(
+                    'id' => '16474c512ca942bdbe2833722f1c7963ae6b9e93',
+                    'text' => 'magister.alert.incident_analyses_too_long',
+                    'activation_period' => 
+                    (object) array(
+                        'start' => '2024-02-13 01:05:04',
+                        'end' => '2024-02-13 23:19:24',
+                    ),
+                ),
+                12 => 
+                (object) array(
+                    'id' => 'a51e00caaea5c91cbf54cbf793746a65b2dea840',
+                    'text' => 'common.alert.public_page_not_available',
+                    'activation_period' => 
+                    (object) array(
+                        'start' => '2024-02-13 01:05:04',
+                        'end' => '2024-02-13 23:19:24',
+                        'duration' => 860,
+                    ),
+                ),
+            ];
+
+
+
             return $response->data->alerts;
         }
         return [];

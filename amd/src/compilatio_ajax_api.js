@@ -220,23 +220,57 @@ define(['jquery'], function($) {
         $(document).ready(function() {
             $.post(basepath + '/plagiarism/compilatio/ajax/get_notifications.php', {
                 'userid': userid,
-                'read': localStorage.getItem("notifications-read") ?? '[]',
-                'ignored': localStorage.getItem("notifications-ignored") ?? '[]'
-            }, function(res) {
-                res = JSON.parse(res);
-                console.log(res)
+                'read': JSON.parse(localStorage.getItem("notifications-read")) ?? [],
+                'ignored': JSON.parse(localStorage.getItem("notifications-ignored")) ?? [],
+            }, function(notifications) {
+                notifications = JSON.parse(notifications);
 
-                $('.cmp-notif-title').on('click', function() {
+                $('#cmp-count-notifications').html(notifications.count == 0 ? '' : notifications.count);
+                $('#cmp-notifications').html(notifications.content);
+
+                $('#cmp-notices').html(notifications.floating);
+
+                $('.cmp-notifications-title').on('click', function() {
+                    let count = $('#cmp-count-notifications').html();
+                    count--;
+                    $('#cmp-count-notifications').html(count <= 0 ? '' : count);
+
+                    ignoreNotifications()
+
+                    $('#cmp-show-notifications').toggleClass('active');
+
                     $('#cmp-notifications').show();
-                    $('#cmp-notif-titles').hide();
-                    $('#cmp-notif-content-' + $(this).attr('id').split("-").pop()).show();
-                    //$(this).parent().hide();
+                    $('#cmp-notifications-titles').hide();
+
+                    let notifId = $(this).attr('id').split("-").pop();
+                    $('#cmp-notifications-content-' + notifId).show();
+
+                    $('#cmp-notifications-' + notifId).children().first().removeClass('text-primary')
+
+                    let notificationsRead = JSON.parse(localStorage.getItem("notifications-read")) ?? []
+                    if (!notificationsRead.includes(notifId)) {
+                        notificationsRead.push(notifId)
+                        localStorage.setItem("notifications-read", JSON.stringify(notificationsRead))
+                    }
                 });
     
-                $('.cmp-show-notifs').on('click', function() {
-                    $('#cmp-notif-titles').show();
-                    $('.cmp-notif-content').hide();
+                $('.cmp-show-notifications').on('click', function() {
+                    $('#cmp-notifications-titles').show();
+                    $('.cmp-notifications-content').hide();
                 });
+
+                $('#cmp-ignore-notifications').on('click', function() {
+                    ignoreNotifications()
+                });
+
+                $('#cmp-show-notifications').on('click', function() {
+                    ignoreNotifications()
+                });
+
+                function ignoreNotifications() {
+                    $('#cmp-notices').html('');
+                    localStorage.setItem("notifications-ignored", JSON.stringify(notifications.ids))
+                }
             });
         });
     };

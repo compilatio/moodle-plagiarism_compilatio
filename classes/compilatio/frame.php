@@ -86,10 +86,10 @@ class CompilatioFrame {
         $SESSION->compilatio_plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_file', $sql, [$cmid]);
         $filesids = array_keys($SESSION->compilatio_plagiarismfiles);
 
-        $alerts = $notices = [];
+        $alerts = [];
 
         if (isset($SESSION->compilatio_alerts)) {
-            $notices = $SESSION->compilatio_alerts;
+            $alerts = $SESSION->compilatio_alerts;
             unset($SESSION->compilatio_alerts);
         }
 
@@ -222,7 +222,7 @@ class CompilatioFrame {
         // Help icon.
         $output .= "<i id='show-help' title='" . get_string('compilatio_help_assign', 'plagiarism_compilatio') .
             "' class='cmp-icon fa fa-question-circle'></i>";
-
+        
         // Stat icon.
         $output .=
             "<i
@@ -248,6 +248,17 @@ class CompilatioFrame {
             $output .= "<i id='show-search' title='" . get_string('compilatio_search_tab', 'plagiarism_compilatio') .
                 "' class='cmp-icon fa fa-search fa-2x'></i>";
         }
+
+        // Notification icon.
+        $output .= "<span>
+            <i
+                id='cmp-show-notifications'
+                title='" . get_string("display_notifications", "plagiarism_compilatio") . "'
+                class='cmp-icon fa fa-bell'
+            >
+            </i>
+            <span style='position: relative; top: 0px; left: -19px;' id='cmp-count-notifications' class='badge badge-pill badge-primary'></span>
+        </span>";
 
         // Display buttons.
         if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
@@ -365,32 +376,8 @@ class CompilatioFrame {
                 . CompilatioStatistics::get_statistics_per_student($cmid) . "</div>
             </div>";
 
-        /*
-        foreach ($alerts as $alert) {
-            if (isset($alert['content'])) {
-                switch ($alert['class']) {
-                    case 'info':
-                        $icon = 'fa-bell';
-                        break;
-                    case 'warning':
-                        $icon = 'fa-exclamation-circle';
-                        break;
-                    case 'danger':
-                        $icon = 'fa-exclamation-triangle';
-                        break;
-                    case 'success':
-                        $icon = 'fa-check-circle';
-                        break;
-                }
-
-                $output .= "
-                    <div class='cmp-alert cmp-alert-" . $alert['class'] . "'>
-                    <i class='cmp-alert-icon fa-lg fa " . $icon . "'></i>" . $alert['content'] .
-                    "</div>";
-            } else {
-                $output .= $alert;
-            }
-        }*/
+        // Notifications tab.
+        $output .= "<div id='cmp-notifications' class='cmp-tabs-content'></div>";
 
         $docid = optional_param('docId', null, PARAM_RAW);
 
@@ -423,11 +410,34 @@ class CompilatioFrame {
         $output .= "</div>";
 
         $output .= "<div id='cmp-notices'>";
-        foreach ($notices as $notice) {
-            $output .= "<div class='d-flex cmp-alert cmp-alert-" . $notice['class'] . "'>"
-                . $notice['content'] . "<i class='ml-auto my-auto fa fa-times'></i>
-            </div>";
+
+        foreach ($alerts as $alert) {
+            if (isset($alert['content'])) {
+                switch ($alert['class']) {
+                    case 'info':
+                        $icon = 'fa-bell';
+                        break;
+                    case 'warning':
+                        $icon = 'fa-exclamation-circle';
+                        break;
+                    case 'danger':
+                        $icon = 'fa-exclamation-triangle';
+                        break;
+                    case 'success':
+                        $icon = 'fa-check-circle';
+                        break;
+                }
+
+                $output .= "
+                    <div class='cmp-alert cmp-alert-" . $alert['class'] . "'>
+                        <i class='cmp-alert-icon fa-lg fa " . $icon . "'></i>" . $alert['content'] .
+                        "<i class='cmp-cursor-pointer ml-auto my-auto fa fa-times'></i>
+                    </div>";
+            } else {
+                $output .= $alert;
+            }
         }
+
         $output .= "</div>";
 
         // Display timed analysis date.
