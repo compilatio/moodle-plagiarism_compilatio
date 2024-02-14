@@ -172,6 +172,7 @@ $string['similarityscore'] = 'Similarities';
 $string['utlscore'] = 'Language not recognised';
 $string['aiscore'] = 'AI-generated text';
 $string['unmeasured'] = 'not measured';
+$string['ai_score_not_included'] = "not included in your subscription";
 
 $string['previouslysubmitted'] = 'Previously submitted as';
 $string['student_analyse'] = "The analysis can be started by the student";
@@ -195,6 +196,8 @@ $string['reset_docs_in_error'] = 'Reset documents in error';
 $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
 $string['hide_area'] = 'Hide Compilatio informations';
 $string['show_area'] = 'Show Compilatio informations';
+$string['start_selected_files_analysis'] = 'Analyse selected documents ';
+$string['access_report'] = 'Access report';
 
 // Detailed error status.
 $string['detailed_error_unsupported'] = "These documents could not be analysed by Compilatio because their format is not supported.";
@@ -213,8 +216,13 @@ $string["short_error_unsupported"] = 'documents unsupported.';
 $string["short_error_too_short"] = 'documents too short.';
 $string["short_error_too_long"] = 'documents too long.';
 $string["short_error_too_large"] = 'documents too large.';
+$string["not_analysed"] = 'not analysed';
 
 // Notifications tab.
+$string["notifications"] = "Notifications";
+$string["see_all_notifications"] = "See all notifications";
+$string["open"] = "Open";
+$string["no_notification"] = "No notification";
 $string["display_notifications"] = "Display notifications";
 $string['no_document_available_for_analysis'] = 'No documents were available for analysis';
 $string["analysis_started"] = '{$a} analysis have been requested.';
@@ -235,10 +243,15 @@ $string["compilatio_iddocument"] = "Document identifier";
 $string["compilatio_search_notfound"] = "No document was found for this identifier among the documents loaded on your Moodle platform.";
 $string["compilatio_depositor"] = 'The document in activity <b>{$a->modulename}</b> was submitted by the Moodle user <b>{$a->lastname} {$a->firstname}</b>.';
 
+// Other analysis options
+$string["other_analysis_options"] = 'Other analysis options';
+
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistics';
 $string["display_stats"] = "Display statistics about this activity";
+$string["display_stats_per_student"] = "Display statistics per student about this activity";
 $string['export_csv'] = 'Export data about this activity into a CSV file';
+$string['export_csv_per_student'] = 'Export data about this student\'s review into a CSV file';
 $string['progress'] = "Progress";
 $string['results'] = "Results";
 $string['errors'] = "Errors";
@@ -251,6 +264,23 @@ $string['stats_avg'] = 'Average';
 $string['stats_score'] = 'Similarities percentage';
 $string['stats_error_unknown'] = ' unknown errors';
 $string['stats_threshold'] = 'Number of documents per threshold';
+$string['results_by_student'] = 'Results by student';
+$string['previous_student'] = 'Previous student';
+$string['next_student'] = 'Next student';
+$string['total_words_quiz_on_suspect'] = 'words suspect/ <br>total words';
+$string['total_words/suspect_words'] = 'words suspect / total words';
+$string['question'] = 'Question';
+$string['score'] = 'Score';
+$string['word'] = 'words';
+$string['total'] = 'Total';
+$string['globalscore'] = 'Total';
+$string['no_students_finished_quiz'] = 'No students finished the quiz';
+$string['select_a_student'] = 'Select a student';
+$string['response_type'] = 'Response type';
+$string['file'] = 'File';
+$string['text'] = 'Text';
+$string['no_document_to_display'] = 'No documents to display';
+$string['student'] = 'Student';
 
 // Global Statistics.
 $string["no_statistics_yet"] = 'No documents have been analysed yet.';
@@ -274,6 +304,9 @@ $string['goto_compilatio_service_status'] = "See Compilatio services status.";
 $string['helpcenter'] = "Access the Compilatio Help Center for the using of Compilatio plugin in Moodle.";
 $string['admin_goto_helpcenter'] = "Access the Compilatio Help Center to see articles related to administration of the Moodle plugin.";
 $string['helpcenter_error'] = "We can't automatically connect you to the help centre. Please try again later or go there directly using the following link : ";
+$string['element_included_in_subscription'] = "Your subscription includes: <ul><li>similarity detection</li><li>obfuscation detection";
+$string['ai_included_in_subscription'] = "detection of text written by AI</li></ul>";
+$string['ai_not_included_in_subscription'] = "Your subscription does not include AI text detection.";
 
 // Auto diagnostic page.
 $string["auto_diagnosis_title"] = "Auto-diagnosis";

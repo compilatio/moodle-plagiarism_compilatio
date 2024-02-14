@@ -17,26 +17,95 @@ define(['jquery'], function($) {
 
     var exports = {};
 
+    function startAnalysis(message, basepath, cmid, selectedusers) {
+        disableCompilatioButtons();
+        $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");        
+        
+        $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
+            {'cmid': cmid, 'selectedUsers': selectedusers.toString()}, function() {
+                window.location.reload();
+            });
+    }
+
+    exports.getSelectedStudent = function(basepath, cmid) {
+        $(document).ready(function(){
+            const dropdown = $('#student-select');
+            const statisticsContainer = $('#statistics-container');
+            
+            dropdown.on('change', function() {
+                const selectedstudent = $(this).val();
+                $.ajax({
+                    type: 'POST',
+                    url: basepath + '/plagiarism/compilatio/ajax/stats_per_student.php',  
+                    data: { selectedstudent: selectedstudent, cmid: cmid },
+                    success: function(response) {
+                        statisticsContainer.html(response);
+                    },
+                    error: function(error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+
+            $('#previous-student').on('click', function() {
+                changeSelectedTruc(dropdown.prop('selectedIndex'), -1)
+            });
+
+            $('#next-student').on('click', function() {
+                changeSelectedTruc(dropdown.prop('selectedIndex'), 1)
+            });
+
+            function changeSelectedTruc (selectedIndex, direction) {
+                var newIndex = selectedIndex + direction;
+                const maxIndex = dropdown.find('option').length - 1;
+
+                if (newIndex == -1) {
+                    newIndex = maxIndex;
+                } else if (newIndex > maxIndex) {
+                    newIndex = 0;
+                }
+
+                dropdown.prop('selectedIndex', newIndex).change();
+            }
+        });
+    }
+
     exports.startAllAnalysis = function(basepath, cmid, message) {
         $(document).ready(function() {
             var startAllAnalysis = $('#cmp-start-btn');
             startAllAnalysis.click(function() {
-                disableCompilatioButtons();
-                $("#cmp-notices").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
-                $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
-                {'cmid': cmid}, function() {
-                    window.location.reload();
-                });
+                startAnalysis(message, basepath, cmid, null);
             });
         });
     };
 
+    exports.startAnalysesOnSelectedFiles = function(basepath, cmid, message) {
+        $(document).ready(function() {
+            const multipleanalysisoptions = $('#show-multiple-analyse-options').hide();
+            const startAnalysesOnSelectedFiles = $('#cmp-start-selected-btn');
+            const checkboxes = $('td.c0 input, #selectall');
+            function getSelectedLines() {
+                return checkboxes.filter(':checked').map(function() {
+                    return $(this).val() != 'on' ? $(this).val() : null;
+                }).get();
+            }
+            function updateButtonVisibility() {
+                const selectedUsers = getSelectedLines();
+                selectedUsers.length > 0 ? multipleanalysisoptions.show() : multipleanalysisoptions.hide();
+            }
+            checkboxes.on('change', updateButtonVisibility);
+            startAnalysesOnSelectedFiles.click(function() {
+                startAnalysis(message, basepath, cmid, getSelectedLines());
+            });
+        });
+    };
+    
     exports.sendUnsentDocs = function(basepath, cmid, message) {
         $(document).ready(function() {
             var sendUnsentDocs = $('#cmp-send-btn');
             sendUnsentDocs.click(function() {
                 disableCompilatioButtons();
-                $("#cmp-notices").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
+                $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
                 $.post(basepath + '/plagiarism/compilatio/ajax/send_unsent_docs.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
@@ -50,7 +119,7 @@ define(['jquery'], function($) {
             var resetDocsInError = $('#cmp-reset-btn');
             resetDocsInError.click(function() {
                 disableCompilatioButtons();
-                $("#cmp-notices").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
+                $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
                 $.post(basepath + '/plagiarism/compilatio/ajax/reset_docs_in_error.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
@@ -141,22 +210,79 @@ define(['jquery'], function($) {
         });
     }
 
-    exports.displayDocumentFrame = function(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid) {
+    exports.displayDocumentFrame = function(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, domid) {
         $(document).ready(function() {
-            displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid);
+            displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, domid);
 
             setInterval(function() {
-                displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, filename, domid);
+                displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, domid);
             }, 3 * 60000);
         });
     };
 
-    exports.compilatioTabs = function(alertsCount, docid) {
+    exports.getNotifications = function(basepath, userid) {
         $(document).ready(function() {
+            $.post(basepath + '/plagiarism/compilatio/ajax/get_notifications.php', {
+                'userid': userid,
+                'read': JSON.parse(localStorage.getItem("notifications-read")) ?? [],
+                'ignored': JSON.parse(localStorage.getItem("notifications-ignored")) ?? [],
+            }, function(notifications) {
+                notifications = JSON.parse(notifications);
 
+                $('#cmp-count-notifications').html(notifications.count == 0 ? '' : notifications.count);
+                $('#cmp-notifications').html(notifications.content);
+
+                $('#cmp-alerts').append(notifications.floating);
+
+                $('.cmp-notifications-title').on('click', function() {
+                    let count = $('#cmp-count-notifications').html();
+                    count--;
+                    $('#cmp-count-notifications').html(count <= 0 ? '' : count);
+
+                    ignoreNotifications()
+
+                    $('#cmp-show-notifications').toggleClass('active');
+
+                    $('#cmp-notifications').show();
+                    $('#cmp-notifications-titles').hide();
+
+                    let notifId = $(this).attr('id').split("-").pop();
+                    $('#cmp-notifications-content-' + notifId).show();
+
+                    $('#cmp-notifications-' + notifId).children().first().removeClass('text-primary')
+
+                    let notificationsRead = JSON.parse(localStorage.getItem("notifications-read")) ?? []
+                    if (!notificationsRead.includes(notifId)) {
+                        notificationsRead.push(notifId)
+                        localStorage.setItem("notifications-read", JSON.stringify(notificationsRead))
+                    }
+                });
+    
+                $('.cmp-show-notifications').on('click', function() {
+                    $('#cmp-notifications-titles').show();
+                    $('.cmp-notifications-content').hide();
+                });
+
+                $('#cmp-ignore-notifications').on('click', function() {
+                    ignoreNotifications()
+                });
+
+                $('#cmp-show-notifications').on('click', function() {
+                    ignoreNotifications()
+                });
+
+                function ignoreNotifications() {
+                    $('.cmp-alert-notifications').remove();
+                    localStorage.setItem("notifications-ignored", JSON.stringify(notifications.ids))
+                }
+            });
+        });
+    };
+
+    exports.compilatioTabs = function(docid) {
+        $(document).ready(function() {
             if ($('.moove.secondary-navigation')[0]) {
                 $('#cmp-container').css('margin-top', '140px');
-                $('#cmp-display-frame').css('margin-top', '140px');
             }
 
             // Convert markdown to HTML.
@@ -164,29 +290,10 @@ define(['jquery'], function($) {
                 $(this).html(markdown($.trim($(this).text())))
             });
 
-            // Display or hide Compilatio container
-            if (localStorage.getItem("cmp-container-displayed") == 0) {
-                $('#cmp-container').hide();
-                $('#cmp-display-frame').show();
-            }
-            if (alertsCount > 0) {
-                $('#cmp-bell').show();
-            }
-            $('#cmp-display-frame').on('click', function() {
-                localStorage.setItem("cmp-container-displayed", 1);
-                $(this).hide();
-                $('#cmp-container').show();
-            });
-            $('#cmp-hide-frame').on('click', function() {
-                localStorage.setItem("cmp-container-displayed", 0);
-                $('#cmp-container').hide();
-                $('#cmp-display-frame').show();
-            });
-
             $('#cmp-tabs').show();
 
-            $('#cmp-notices > .cmp-alert > .fa-times').on('click', function() {
-                $('#cmp-notices').empty()
+            $('#cmp-alerts > .cmp-alert > .fa-times').on('click', function() {
+                $('#cmp-alert-' + $(this).attr('id').split("-").pop()).parent().remove()
             });
 
             var selectedElement = '';
@@ -204,15 +311,21 @@ define(['jquery'], function($) {
             $('#show-stats').on('click', function() {
                 tabClick($(this), $('#cmp-stats'));
             });
+            $('#show-stats-per-student').on('click', function() {
+                tabClick($(this), $('#cmp-stats-per-student'));
+            });
             $('#show-help').on('click', function() {
                 tabClick($(this), $('#cmp-help'));
             });
             $('#show-search').on('click', function() {
                 tabClick($(this), $('#cmp-search'));
             });
+            $('#show-multiple-analyse-options').on('click', function() {
+                tabClick($(this), $('#cmp-multiple-analyse-options'));
+            });
 
-            var tabs = $('#cmp-show-notifications, #show-stats, #show-help, #show-search');
-            var elements = $('#cmp-notifications, #cmp-stats, #cmp-help, #cmp-home, #cmp-search');
+            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search, #show-multiple-analyse-options');
+            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-home, #cmp-search, #cmp-multiple-analyse-options');
 
             /**
              * TabClick

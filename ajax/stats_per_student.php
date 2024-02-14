@@ -15,34 +15,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Update similarity score state for a document
+ * Get stats per student
  *
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @param   string $_POST['docId']
- * @return  boolean
+ * @param string $_POST['cmid']
+ * @param string $_POST['selectedstudent']
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/documentFrame.php');
 
 require_login();
-global $DB, $USER;
 
-$docid = required_param('docId', PARAM_TEXT);
+global $DB;
 
-$file = $DB->get_record('plagiarism_compilatio_file', ['id' => $docid]);
+$selectedstudent = required_param('selectedstudent', PARAM_TEXT);
+$cmid = required_param('cmid', PARAM_TEXT);
 
-if (!empty($file)) {
-    $file = CompilatioAnalyses::check_analysis($file);
+$output = is_numeric($selectedstudent)
+    ? CompilatioStatistics::get_statistics_by_student($selectedstudent, $cmid)['output']
+    : "";
 
-    $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $file->cm]);
-
-    echo CompilatioDocumentFrame::get_score($file, $cmconfig, true, false);
-}
+echo $output;

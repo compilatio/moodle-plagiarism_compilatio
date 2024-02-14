@@ -172,6 +172,7 @@ $string['similarityscore'] = 'Similitudes';
 $string['utlscore'] = 'Langue non reconnue';
 $string['aiscore'] = 'Texte généré par IA';
 $string['unmeasured'] = 'non mesuré';
+$string['ai_score_not_included'] = "non inclus dans votre abonnement";
 
 $string['previouslysubmitted'] = "Auparavant soumis comme";
 $string['student_analyse'] = "L'analyse peut être lancée par l'étudiant";
@@ -195,6 +196,8 @@ $string['reset_docs_in_error'] = 'Réinitialiser les documents en erreur';
 $string["compilatio_help_assign"] = "Obtenir de l&#39aide sur le plugin Compilatio";
 $string['hide_area'] = 'Masquer les informations Compilatio';
 $string['show_area'] = 'Afficher les informations Compilatio';
+$string['start_selected_files_analysis'] = "Analyser les documents sélectionnés ";
+$string['access_report'] = 'Accéder au rapport';
 
 // Detailed error status.
 $string['detailed_error_unsupported'] = "Ces documents n'ont pas pu être analysés par Compilatio car leur format n'est pas supporté.";
@@ -213,8 +216,14 @@ $string["short_error_unsupported"] = 'documents non supportés.';
 $string["short_error_too_short"] = 'documents trop courts.';
 $string["short_error_too_long"] = 'documents trop longs.';
 $string["short_error_too_large"] = 'documents trop volumineux';
+$string["not_analysed"] = 'non analysé';
+
 
 // Notifications tab.
+$string["notifications"] = "Notifications";
+$string["see_all_notifications"] = "Voir toutes les notifications";
+$string["open"] = "Ouvrir";
+$string["no_notification"] = "Aucune notification";
 $string["display_notifications"] = "Afficher les notifications";
 $string['no_document_available_for_analysis'] = "Aucun document n'était disponible pour analyse.";
 $string["analysis_started"] = '{$a} analyses démandées.';
@@ -235,10 +244,15 @@ $string["compilatio_iddocument"] = "Identifiant du document";
 $string["compilatio_search_notfound"] = "Aucun document n'a été trouvé pour cet identifiant parmi les documents chargés sur votre plateforme Moodle.";
 $string["compilatio_depositor"] = 'Le document présent dans l\'activité <b>{$a->modulename}</b> à été rendu par l\'utilisateur Moodle <b>{$a->lastname} {$a->firstname}</b>.';
 
+// Other analysis options
+$string["other_analysis_options"] = 'Autres options d\'analyse';
+
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistiques';
 $string["display_stats"] = "Afficher les statistiques de cette activité";
+$string["display_stats_per_student"] = "Afficher les statistiques par élève de cette activité";
 $string['export_csv'] = 'Exporter les données de cette activité au format CSV';
+$string['export_csv_per_student'] = 'Exporter les données de l\'analyse des résultat de cet élève dans un fichier CSV';
 $string['progress'] = "Progression";
 $string['results'] = "Résultats";
 $string['errors'] = "Erreurs";
@@ -251,6 +265,24 @@ $string['stats_avg'] = 'Moyen';
 $string['stats_score'] = 'Pourcentage de similitudes';
 $string['stats_error_unknown'] = ' erreurs inconnues';
 $string['stats_threshold'] = 'Nombre de documents par seuil';
+$string['results_by_student'] = 'Résultat par élève';
+$string['previous_student'] = 'Élève précédent';
+$string['next_student'] = 'Élève suivant';
+$string['total_words_quiz_on_suspect'] = 'mots suspect/<br> mots totaux';
+$string['total_words/suspect_words'] = 'nombre de mots suspect / nombre de mots';
+$string['question'] = 'Question';
+$string['score'] = 'Score';
+$string['word'] = 'mots';
+$string['total'] = 'Total';
+$string['globalscore'] = 'Total';
+$string['no_students_finished_quiz'] = 'Aucun élève n\'a fini le quiz';
+$string['select_a_student'] = 'Sélectionner un élève';
+$string['response_type'] = 'Type de réponse';
+$string['file'] = 'Fichier';
+$string['text'] = 'Texte';
+$string['no_document_to_display'] = 'Aucun document à afficher';
+$string['student'] = 'Élève';
+
 
 // Global Statistics.
 $string["no_statistics_yet"] = "Aucun document n'a encore été analysé.";
@@ -274,6 +306,10 @@ $string['goto_compilatio_service_status'] = "Voir l'état des services Compilati
 $string['helpcenter'] = "Accédez au centre d'aide Compilatio pour l'utilisation du plugin Compilatio dans Moodle.";
 $string['admin_goto_helpcenter'] = "Accédez au centre d'aide Compilatio pour voir des articles relatifs à l'administration du plugin Moodle.";
 $string['helpcenter_error'] = "Nous ne pouvons pas vous connecter automatiquement au centre d'aide. Veuillez ré-essayer ultérieurement ou vous y rendre directement grâce au lien suivant : ";
+$string['element_included_in_subscription'] = "Votre abonnement comprend : <ul><li>la détection de similitudes</li><li>la détection d'obfuscation";
+$string['ai_included_in_subscription'] = "la détection de texte rédigé par IA</li></ul>";
+$string['ai_not_included_in_subscription'] = "Votre abonnement ne comprend pas la détection de texte rédigé par IA.";
+
 
 // Auto diagnostic page.
 $string["auto_diagnosis_title"] = "Auto-diagnostic";

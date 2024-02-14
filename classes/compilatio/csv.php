@@ -85,11 +85,7 @@ class CompilatioCsv {
                 AND cm.instance = activity.id
             WHERE cm.id =?";
 
-        $name = "";
-        $record = $DB->get_record_sql($sql, [$cmid]);
-        if ($record != null) {
-            $name = $record->name;
-        }
+        $record = $DB->get_field_sql($sql, [$cmid]);
 
         $date = userdate(time());
         // Sanitize date for CSV.
@@ -142,4 +138,64 @@ class CompilatioCsv {
 
     }
 
+    public static function generate_cm_csv_per_student($cmid, $userssubmittedtest) {
+        global $DB;
+
+        $cmpcm = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
+
+        // Get the name of the activity in order to generate header line and the filename.
+        $sql = "
+            SELECT activity.name
+            FROM {course_modules} cm
+            JOIN {quiz} activity ON cm.course = activity.course
+                AND cm.instance = activity.id
+            WHERE cm.id =?";
+
+        $name = $DB->get_field_sql($sql, [$cmid]);
+
+        $date = userdate(time());
+        // Sanitize date for CSV.
+        $date = str_replace(",", "", $date);
+        // Create CSV first line.
+        $head = '"' . $name . " - " . $date . "\",\n";
+        // Sanitize filename.
+        $name = preg_replace("/[^a-z0-9\.]/", "", strtolower($name));
+
+        $filename = "compilatio_moodle_" . $name . "_statistics_per_students_" . date("Y_m_d") . ".csv";
+        // Add the first line to the content : "{Name of the module} - {date}".
+        $csv = $head;
+        $line = [];
+        $line["student"] = get_string('student', "plagiarism_compilatio");
+        $line["question"] = get_string('question', "plagiarism_compilatio");
+        $line["suspectwords/totalwords"] = get_string('total_words/suspect_words', "plagiarism_compilatio");
+        $line["tot"] = get_string('total', 'plagiarism_compilatio');
+        $line["sim"] = get_string('similarityscore', 'plagiarism_compilatio');
+        $line["utl"] = get_string('utlscore', 'plagiarism_compilatio');
+        $line["IA"] = get_string('aiscore', 'plagiarism_compilatio');
+
+        $csv .= '"' . implode('","', $line) . "\"\n";
+        foreach ($userssubmittedtest as $user) {
+            $datas = CompilatioStatistics::get_question_data($cmid, $user->id);
+            foreach ($datas as $question) {
+                $line = [];
+                $line["name"] = $user->lastname . ' ' . $user->firstname;
+                $line["question"] = 'Q' . $question['question_number'];
+                $line["suspect/totalwords"] = $question['suspect_words'] . '/' . $question['cmpfile']->wordcount;
+
+                $scores = ['globalscore', 'similarityscore', 'utlscore', 'aiscore'];
+
+                foreach ($scores as $score) {
+                    $line[get_string($score, 'plagiarism_compilatio')] = $question['cmpfile']->status == 'scored'
+                        ? (isset($question['cmpfile']->$score) ? $question['cmpfile']->$score : get_string('unmeasured', 'plagiarism_compilatio'))
+                        : get_string('not_analysed', "plagiarism_compilatio");
+                }
+
+                $csv .= '"' . implode('","', $line) . "\"\n";
+            }
+        }
+
+        self::get_header($filename, $csv);
+
+        exit(0);
+    }
 }

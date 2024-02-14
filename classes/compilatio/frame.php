@@ -87,24 +87,23 @@ class CompilatioFrame {
         $filesids = array_keys($SESSION->compilatio_plagiarismfiles);
 
         $alerts = [];
-        $notices = [];
 
         if (isset($SESSION->compilatio_alerts)) {
-            $notices = $SESSION->compilatio_alerts;
+            $alerts = $SESSION->compilatio_alerts;
             unset($SESSION->compilatio_alerts);
         }
 
-        $startallanalyses = $sendalldocs = $resetdocsinerror = false;
+        $startallanalyses = $sendalldocs = $resetdocsinerror = $multipleanalysesoptionss = false;
 
-        $analysistype = $DB->get_field('plagiarism_compilatio_cm_cfg', 'analysistype', ['cmid' => $cmid]);
+        $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
         if (
-            $analysistype == 'manual'
+            $cmconfig->analysistype == 'manual'
                 && $DB->count_records('plagiarism_compilatio_file', ['status' => 'sent', 'cm' => $cmid]) !== 0
         ) {
-            $startallanalyses = true;
+            $startallanalyses = $multipleanalysesoptionss = true;
 
-        } else if ($analysistype == 'planned') { // Display the date of analysis if its type is set on 'Planned'.
+        } else if ($cmconfig->analysistype == 'planned') { // Display the date of analysis if its type is set on 'Planned'.
             $analysistime = $DB->get_field('plagiarism_compilatio_cm_cfg', 'analysistime', ['cmid' => $cmid]);
             $date = userdate($analysistime);
             if ($analysistime > time()) {
@@ -152,9 +151,9 @@ class CompilatioFrame {
         }
 
         $compilatio = new CompilatioAPI();
+        $language = substr(current_language(), 0, 2);
 
         foreach ($compilatio->get_alerts() as $alert) {
-            $language = substr(current_language(), 0, 2);
             $translation = $compilatio->get_translation($language, $alert->text);
 
             if (empty($translation)) {
@@ -205,24 +204,18 @@ class CompilatioFrame {
             }
         }
 
-        $output =
-            "<div id='cmp-display-frame' style='display:none;' title='" . get_string('show_area', 'plagiarism_compilatio') . "'>
-                <img src='" . new moodle_url("/plagiarism/compilatio/pix/c.svg") . "'>
-                <i class='cmp-icon ml-2 fa-2x fa fa-bars'></i>
-                " . CompilatioIcons::bell() . "
-            </div>";
-
-        $output .= "<div id='cmp-container'>";
+        $output = "<div id='cmp-container'>";
+        $output .= "<div class='d-flex'><div id='cmp-navbar' class='ml-auto'>";
 
         // Display the tabs.
-        $output .= "<div id='cmp-tabs'>";
+        $output .= "<div id='cmp-tabs' data-toggle='tooltip'>";
 
         // Display logo.
-        $output .= "<img id='cmp-logo' src='" . new moodle_url('/plagiarism/compilatio/pix/compilatio.png') . "'>";
+        $output .= "<img id='cmp-logo' src='" . new moodle_url('/plagiarism/compilatio/pix/compilatio.png') . "' data-toggle='tooltip'>";
 
         // Help icon.
         $output .= "<i id='show-help' title='" . get_string('compilatio_help_assign', 'plagiarism_compilatio') .
-            "' class='cmp-icon fa fa-question-circle'></i>";
+            "' class='cmp-icon fa fa-question-circle' data-toggle='tooltip'></i>";
 
         // Stat icon.
         $output .=
@@ -230,27 +223,37 @@ class CompilatioFrame {
                 id='show-stats'
                 title='" . get_string('display_stats', 'plagiarism_compilatio') . "'
                 class='cmp-icon fa fa-bar-chart'
+                data-toggle='tooltip'
             >
             </i>";
+
+        // Stat per student quiz icon.
+        if ($module == 'quiz') {
+            $output .=
+            "<i
+                id='show-stats-per-student'
+                title='" . get_string('display_stats_per_student', 'plagiarism_compilatio') . "'
+                class='cmp-icon fa fa-chalkboard-teacher'
+            >
+            </i>";
+        }
 
         if ($plagiarismsettings['enable_search_tab']) {
             // Search icon.
             $output .= "<i id='show-search' title='" . get_string('compilatio_search_tab', 'plagiarism_compilatio') .
-                "' class='cmp-icon fa fa-search fa-2x'></i>";
+                "' class='cmp-icon fa fa-search fa-2x' data-toggle='tooltip'></i>";
         }
-
-        // Alert icon.
-        if (count($alerts) !== 0) {
-            $output .= "<span>
-                <i
-                    id='cmp-show-notifications'
-                    title='" . get_string("display_notifications", "plagiarism_compilatio") . "'
-                    class='cmp-icon fa fa-bell'
-                >
-                </i>
-                <span id='cmp-count-alerts' class='badge badge-pill badge-danger'>" . count($alerts) . "</span>
-            </span>";
-        }
+    
+        // Notification icon.
+        $output .= "<span>
+            <i
+                id='cmp-show-notifications'
+                title='" . get_string("display_notifications", "plagiarism_compilatio") . "'
+                class='cmp-icon fa fa-bell'
+            >
+            </i>
+            <span style='position: relative; top: 0px; left: -19px;' id='cmp-count-notifications' class='badge badge-pill badge-primary'></span>
+        </span>";
 
         // Display buttons.
         if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
@@ -259,12 +262,27 @@ class CompilatioFrame {
                     "<button
                         id='cmp-start-btn'
                         title='" . get_string('start_all_analysis', 'plagiarism_compilatio') . "'
-                        class='btn btn-primary cmp-action-btn mx-1'
+                        class='btn btn-primary cmp-action-btn mx-1 '
+                        data-toggle='tooltip'
                     >
-                        <i class='cmp-icon-lg fa fa-play-circle'></i>
+                        <i class='fa fa-play-circle'></i>
                     </button>";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
                     [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
+            }
+            if ($multipleanalysesoptionss) {
+                $output .="
+                    <button 
+                        id='show-multiple-analyse-options' 
+                        class='btn btn-secondary cmp-action-btn mx-1' 
+                        data-toggle='tooltip'
+                        title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'
+                    >
+                        <i  class='fa fa-chevron-down'></i>
+                    </button>
+                    ";
+                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedFiles',
+                [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
             }
 
             if ($sendalldocs) {
@@ -294,14 +312,6 @@ class CompilatioFrame {
             }
         }
 
-        $output .=
-            "<i
-                id='cmp-hide-frame'
-                title='" . get_string('hide_area', 'plagiarism_compilatio') . "'
-                class='cmp-icon pl-3 fa fa-bars'
-            >
-            </i>";
-
         $output .= "</div>";
 
         // Home tab.
@@ -310,6 +320,15 @@ class CompilatioFrame {
         // Help tab.
         $output .= "<div id='cmp-help' class='cmp-tabs-content'>
             <p>" . get_string('similarities_disclaimer', 'plagiarism_compilatio') . "</p>";
+
+        // Elements included in subscription
+        $output .= "<p>" . get_string('element_included_in_subscription', 'plagiarism_compilatio');
+
+        $output .= get_config('plagiarism_compilatio', 'recipe') === 'anasim-premium'
+            ? "<li>" . get_string('ai_included_in_subscription', 'plagiarism_compilatio'). "</li></ul></p>"
+            : "</ul>" . get_string('ai_not_included_in_subscription', 'plagiarism_compilatio'). "</p>";
+
+
 
         if ($module == 'quiz') {
             $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
@@ -338,7 +357,7 @@ class CompilatioFrame {
         // Stats tab.
         $url = $PAGE->url;
         $url->param('cmp_csv_export', true);
-        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") . "' class='cmp-icon pr-3' href='$url'>
+        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") . "' class='cmp-icon pr-3' href='$url' data-toggle='tooltip' >
                 <i class='fa fa-download'></i>
             </a>";
 
@@ -349,38 +368,14 @@ class CompilatioFrame {
                 "</div>
             </div>";
 
-        // Alerts tab.
-        if (count($alerts) !== 0) {
-            $output .= "<div id='cmp-notifications' class='cmp-tabs-content'>";
+        $output .= "
+            <div id='cmp-stats-per-student' class='cmp-tabs-content'>
+                <div class='text-center'>"
+                . CompilatioStatistics::get_quiz_students_statistics($cmid) . "</div>
+            </div>";
 
-            foreach ($alerts as $alert) {
-                if (isset($alert['content'])) {
-                    switch ($alert['class']) {
-                        case 'info':
-                            $icon = 'fa-bell';
-                            break;
-                        case 'warning':
-                            $icon = 'fa-exclamation-circle';
-                            break;
-                        case 'danger':
-                            $icon = 'fa-exclamation-triangle';
-                            break;
-                        case 'success':
-                            $icon = 'fa-check-circle';
-                            break;
-                    }
-
-                    $output .= "
-                        <div class='cmp-alert cmp-alert-" . $alert['class'] . "'>
-                        <i class='cmp-alert-icon fa-lg fa " . $icon . "'></i>" . $alert['content'] .
-                        "</div>";
-                } else {
-                    $output .= $alert;
-                }
-            }
-
-            $output .= "</div>";
-        }
+        // Notifications tab.
+        $output .= "<div id='cmp-notifications' class='cmp-tabs-content'></div>";
 
         $docid = optional_param('docId', null, PARAM_RAW);
 
@@ -412,23 +407,78 @@ class CompilatioFrame {
 
         $output .= "</div>";
 
-        $output .= "<div id='cmp-notices'>";
-        foreach ($notices as $notice) {
-            $output .= "<div class='d-flex cmp-alert cmp-alert-" . $notice['class'] . "'>"
-                . $notice['content'] . "<i class='ml-auto my-auto fa fa-times'></i>
+        // Display multiple analysis options.
+        $output .= "<div id='cmp-multiple-analyse-options' class='cmp-tabs-content'>
+                <h5>" . get_string('other_analysis_options', 'plagiarism_compilatio') . "</h5>
+                <div class='ml-2'>
+                    <div class='row mt-3'>
+                        <button
+                            id='cmp-start-btn'
+                            class='btn btn-primary cmp-action-btn mx-1'
+                        >
+                            <i class='fa fa-play-circle'></i>
+                        </button>
+                        <h7 class='mt-2'>" . get_string('start_all_analysis', 'plagiarism_compilatio') . "</h7>
+                    </div>
+                    <div class='row'>
+                        <button
+                            id='cmp-start-selected-btn'
+                            class='btn btn-primary cmp-action-btn mx-1 mt-1'
+                        >
+                            <i class='fa fa-check-double'></i>
+                        </button>
+                        <h7 class='mt-2'>" . get_string('start_selected_files_analysis', 'plagiarism_compilatio') . "</h7>
+                    </div>
+                </div>
             </div>";
-        }
-        $output .= "</div>";
 
         // Display timed analysis date.
         if (isset($analysisdate)) {
             $output .= "<span class='border-top pt-2 mt-2 text-center font-italic'>$analysisdate</span>";
         }
 
+        $output .= "</div></div>";
+
+        // Alerts.
+        $output .= "<div class='d-flex'><div id='cmp-alerts' class='ml-auto mt-1'>";
+        foreach ($alerts as $index => $alert) {
+            if (isset($alert['content'])) {
+                switch ($alert['class']) {
+                    case 'info':
+                        $icon = 'fa-bell';
+                        break;
+                    case 'warning':
+                        $icon = 'fa-exclamation-circle';
+                        break;
+                    case 'danger':
+                        $icon = 'fa-exclamation-triangle';
+                        break;
+                    case 'success':
+                        $icon = 'fa-check-circle';
+                        break;
+                }
+
+                $output .= "
+                    <div class='cmp-alert cmp-alert-" . $alert['class'] . "'>
+                        <span class='mr-1 d-flex'>
+                            <i class='cmp-alert-icon fa-lg fa " . $icon . "'></i>" . $alert['content'] .
+                        "</span>
+                        <i id='cmp-alert-" . $index . "' class='cmp-cursor-pointer ml-auto my-auto fa fa-times'></i>
+                    </div>";
+            } else {
+                $output .= $alert;
+            }
+        }
+        $output .= "</div></div>";
+
+        // Close container.
         $output .= "</div>";
 
         $output .= "<script src=" . $CFG->wwwroot . "/plagiarism/compilatio/js/drawdown.min.js></script>";
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', [count($alerts), $docid]);
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', [$docid]);
+
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'getNotifications',
+            [$CFG->httpswwwroot, $cmconfig->userid]);
 
         return $output;
     }
