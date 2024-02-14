@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/documentFrame.php');
 
 require_login();
-global $DB;
+global $DB, $USER;
 
 $docid = required_param('docId', PARAM_TEXT);
 
@@ -43,6 +43,5 @@ if (!empty($file)) {
     $file = CompilatioAnalyses::check_analysis($file);
 
     $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $file->cm]);
-
     echo CompilatioDocumentFrame::get_score($file, $cmconfig, true);
 }
