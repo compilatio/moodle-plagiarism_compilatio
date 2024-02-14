@@ -172,6 +172,7 @@ $string['similarityscore'] = 'Similitudes';
 $string['utlscore'] = 'Langue non reconnue';
 $string['aiscore'] = 'Texte généré par IA';
 $string['unmeasured'] = 'non mesuré';
+$string['ai_score_not_included'] = "non inclus dans votre abonnement";
 
 $string['previouslysubmitted'] = "Auparavant soumis comme";
 $string['student_analyse'] = "L'analyse peut être lancée par l'étudiant";
@@ -243,6 +244,9 @@ $string["compilatio_iddocument"] = "Identifiant du document";
 $string["compilatio_search_notfound"] = "Aucun document n'a été trouvé pour cet identifiant parmi les documents chargés sur votre plateforme Moodle.";
 $string["compilatio_depositor"] = 'Le document présent dans l\'activité <b>{$a->modulename}</b> à été rendu par l\'utilisateur Moodle <b>{$a->lastname} {$a->firstname}</b>.';
 
+// Other analysis options
+$string["other_analysis_options"] = 'Autres options d\'analyse';
+
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistiques';
 $string["display_stats"] = "Afficher les statistiques de cette activité";
@@ -302,6 +306,10 @@ $string['goto_compilatio_service_status'] = "Voir l'état des services Compilati
 $string['helpcenter'] = "Accédez au centre d'aide Compilatio pour l'utilisation du plugin Compilatio dans Moodle.";
 $string['admin_goto_helpcenter'] = "Accédez au centre d'aide Compilatio pour voir des articles relatifs à l'administration du plugin Moodle.";
 $string['helpcenter_error'] = "Nous ne pouvons pas vous connecter automatiquement au centre d'aide. Veuillez ré-essayer ultérieurement ou vous y rendre directement grâce au lien suivant : ";
+$string['element_included_in_subscription'] = "Votre abonnement comprend : <ul><li>la détection de similitudes</li><li>la détection d'obfuscation";
+$string['ai_included_in_subscription'] = "la détection de texte rédigé par IA</li></ul>";
+$string['ai_not_included_in_subscription'] = "Votre abonnement ne comprend pas la détection de texte rédigé par IA.";
+
 
 // Auto diagnostic page.
 $string["auto_diagnosis_title"] = "Auto-diagnostic";
