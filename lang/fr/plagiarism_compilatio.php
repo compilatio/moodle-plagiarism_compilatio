@@ -173,6 +173,7 @@ $string['utlscore'] = 'Langue non reconnue';
 $string['aiscore'] = 'Texte généré par IA';
 $string['unmeasured'] = 'non mesuré';
 $string['ai_score_not_included'] = "non inclus dans votre abonnement";
+$string['excluded_from_score'] = "Exclus du score:";
 
 $string['previouslysubmitted'] = "Auparavant soumis comme";
 $string['student_analyse'] = "L'analyse peut être lancée par l'étudiant";

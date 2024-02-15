@@ -57,7 +57,6 @@ if ($plugincm->analysistype == 'manual') {
         $sql .= !empty($selectedlines) ? " AND userid IN (" . $selectedlines . ")" : "";
         $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_file', $sql, [$cmid]);
     }
-    error_log(var_export($plagiarismfiles, true));
 
     foreach ($plagiarismfiles as $file) {
 
