@@ -48,39 +48,6 @@
 /*
 Compilatio frame area
 */
-#cmp-display-frame {
-    position: fixed;
-    margin-top: 70px;
-    right: 3rem;
-    border-radius: 4px;
-    background-color: #F5F6F8;
-    border: 1px solid #EBEBF0;
-    padding: 0.5rem;
-    z-index: 998;
-    display: flex;
-    cursor: pointer;
-}
-
-#cmp-display-frame > * {
-    margin-top: auto;
-    margin-bottom: auto;
-}
-
-#cmp-display-frame > img {
-    height: 27px;
-}
-
-#cmp-bell {
-    position: absolute;
-    top: -8px;
-    right: -7px;
-    z-index:999;
-}
-
-#cmp-hide-frame {
-    margin: auto 0 auto auto !important;
-}
-
 #cmp-logo {
     width: 175px;
     cursor: pointer;
@@ -143,7 +110,7 @@ Compilatio frame area
 #cmp-container {
     position: fixed;
     right: 3rem;
-    z-index: 999;
+    z-index: 9;
     margin: 70px 0 0.5rem 0;
     max-width: 750px;
 }
