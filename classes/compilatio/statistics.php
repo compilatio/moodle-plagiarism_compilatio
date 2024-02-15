@@ -382,7 +382,7 @@ class CompilatioStatistics {
         $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
         $output .= "<div class='cmp-table-height'>
-            <table class='table table-light align-middle rounded-lg shadow-sm'>
+            <table class='table align-middle rounded-lg shadow-sm'>
             <thead>
                 <tr>
                     <th class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . "</th>
@@ -459,11 +459,11 @@ class CompilatioStatistics {
         $globalscorequiz = round($globalscorequiz / $compteur);
         $suspectwordsquiz = round($globalscorequiz * $totalwordquiz / 100);
         $output .= "<tfoot class='table-group-divider'><tr>
-                        <th class='container text-center align-middle'>" . get_string('total', 'plagiarism_compilatio') . "</th> <td></td>";
+                        <th class='container text-center align-baseline'>" . get_string('total', 'plagiarism_compilatio') . "</th> <td></td>";
         if ($questionsnotanalysed < count($attempt->get_slots())) {
-            $output .= "<td class='align-middle font-weight-light cmp-nowrap'>"
+            $output .= "<td class='align-baseline font-weight-light cmp-nowrap'>"
                     . $suspectwordsquiz . ' ' . get_string('word', 'plagiarism_compilatio') . '/<br> ' . $totalwordquiz . ' ' . get_string('word', 'plagiarism_compilatio') . "</td>
-                <td class='align-middle font-weight-light'>";
+                <td class='align-baseline font-weight-light'>";
             $output .= $divisioncounter != 0 ? $globalscorequiz  . "%" : get_string('not_analysed', 'plagiarism_compilatio');
 
             $color = $globalscorequiz <= $config->warningthreshold ?? 10
@@ -478,7 +478,7 @@ class CompilatioStatistics {
                     </span>"
                 : '';
         } else {
-            $output .= "<td class='font-italic font-weight-light' colspan='4' class='align-middle'>" . get_string('not_analysed', 'plagiarism_compilatio');
+            $output .= "<td class='font-italic font-weight-light' colspan='4' class='align-baseline'>" . get_string('not_analysed', 'plagiarism_compilatio');
         }
 
         $output .= "</td></tr></tfoot></table></div>";
@@ -512,21 +512,21 @@ class CompilatioStatistics {
         $output = "<tr class='font-weight-light'>";
 
         $output .= $index == 0
-            ? "<td rowspan='" . $count . "' class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . ' ' . $slot . "</td>"
+            ? "<td rowspan='" . $count . "' class='text-center align-baseline'>" . get_string('question', 'plagiarism_compilatio') . ' ' . $slot . "</td>"
             : '';
 
-        $output .= "<td class='text-center align-middle'>";
+        $output .= "<td class='text-center align-baseline'>";
         $output .= preg_match('~.htm$~', $cmpfile->filename)
                 ? get_string('text', 'plagiarism_compilatio')
                 : get_string('file', 'plagiarism_compilatio') .'<br><small>'. $cmpfile->filename .'</small>';
         $output .= "</td>";
 
         if ($cmpfile->status == 'scored') {
-            $output .= "<td class='text-center align-middle text-nowrap'>"
+            $output .= "<td class='text-center align-baseline text-nowrap'>"
                 . $suspectwordsquestion . ' ' . get_string('word', 'plagiarism_compilatio') . ' / <br>' . $wordcount . ' ' . get_string('word', 'plagiarism_compilatio') . " </td>";
-            $output .= "<td class='text-center text-nowrap align-middle'>". CompilatioDocumentFrame::get_score($cmpfile, $config, true, true) . "</td>";
+            $output .= "<td class='text-center text-nowrap align-baseline'>". CompilatioDocumentFrame::get_score($cmpfile, $config, true, true) . "</td>";
 
-            $output .= "<td class='align-middle'>";
+            $output .= "<td class='align-baseline'>";
 
             $params = [
                 'docid' => $cmpfile->externalid,
@@ -545,9 +545,9 @@ class CompilatioStatistics {
                     <span class='text-primary text-nowrap font-weight-bold cmp-links-color'>" . get_string('access_report', 'plagiarism_compilatio') . "</span>
                 </a>";
         } else if (strpos($cmpfile->status, "error") === 0) {
-            $output .= "<td colspan='4' class='align-middle'><span class='font-italic'>" . get_string('btn_' . $cmpfile->status, "plagiarism_compilatio") . " </span></td>";
+            $output .= "<td colspan='4' class='align-baseline'><span class='font-italic'>" . get_string('btn_' . $cmpfile->status, "plagiarism_compilatio") . " </span></td>";
         } else {
-            $output .= "<td colspan='4' class='align-middle'><span class='font-italic'>" . get_string("not_analysed", 'plagiarism_compilatio') . " </span></td>";
+            $output .= "<td colspan='4' class='align-baseline'><span class='font-italic'>" . get_string("not_analysed", 'plagiarism_compilatio') . " </span></td>";
         }
 
         return $output .= "</td></tr>";
