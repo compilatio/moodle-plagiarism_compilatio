@@ -387,7 +387,7 @@ class CompilatioStatistics {
                 <tr>
                     <th class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . "</th>
                     <th class='text-center align-middle'>" . get_string('response_type', 'plagiarism_compilatio') . "</th>
-                    <th class='text-center align-middle'>" . get_string('total_words_quiz_on_suspect', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle text-nowrap'>" . get_string('suspect_words_quiz_on_total', 'plagiarism_compilatio') . "</th>
                     <th class='text-center align-middle'>" . get_string('score', 'plagiarism_compilatio') . "</th>
                     <th class='text-center align-middle'></th>
                 </tr>
