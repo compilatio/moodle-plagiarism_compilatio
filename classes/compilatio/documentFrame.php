@@ -407,24 +407,6 @@ class CompilatioDocumentFrame {
                 $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
                 $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
                 $icons .= CompilatioIcons::$score(null);
-            if(!in_array($score, $ignoredscoresname)){
-                $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
-                $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
-                if (isset($cmpfile->$score)) {
-                    $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
-                }
-            } else {
-                $ignoredscoresname['ignoredscore'][] = $score;
-            }
-        }
-        error_log(var_export($cmpfile, true));
-
-        if(!empty($ignoredscoresname['ignoredscore'])){
-            $tooltip .= 'Ignorer du score : <br>';
-
-            foreach ($ignoredscoresname['ignoredscore'] as $score) {
-                $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
-                $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
             }
         }
 
