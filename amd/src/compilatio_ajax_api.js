@@ -295,14 +295,9 @@ define(['jquery'], function($) {
                 $('#cmp-alert-' + $(this).attr('id').split("-").pop()).parent().remove()
             });
 
-            var selectedElement = '';
             if (docid) {
-                selectedElement = '#cmp-search';
-            } else {
-                selectedElement = '#cmp-home';
+                $('#cmp-search').show();
             }
-
-            $(selectedElement).show();
 
             $('#cmp-show-notifications').on('click', function() {
                 tabClick($(this), $('#cmp-notifications'));
@@ -321,7 +316,7 @@ define(['jquery'], function($) {
             });
 
             var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search');
-            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-home, #cmp-search');
+            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-search');
 
             /**
              * TabClick
@@ -338,17 +333,18 @@ define(['jquery'], function($) {
                     tabs.not(tabClicked).removeClass('active');
 
                     tabClicked.toggleClass('active');
+                } else {
+                    elements.hide();
+                    tabs.removeClass('active');
                 }
 
-                if ($('#cmp-stats').hasClass('active')) {
+                if ($('#show-stats').hasClass('active')) {
                     $('#cmp-container').css('max-width', 'none');
                 }
             }
 
             $('#cmp-logo').on('click', function() {
-                var elementClicked = $('#cmp-home');
-                elementClicked.show();
-                elements.not(elementClicked).hide();
+                elements.hide();
                 tabs.removeClass('active');
             });
         });

@@ -148,7 +148,7 @@ class CompilatioDocumentFrame {
             }
         }
 
-        $output .= "<div id='cmp-" . $domid . "'></div>";
+        $output .= "<div id='cmp-" . $domid . "' class='cmp-test' style='overflow-x: scroll;'></div>";
 
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'displayDocumentFrame', [
             $CFG->httpswwwroot,

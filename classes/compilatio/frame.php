@@ -234,6 +234,7 @@ class CompilatioFrame {
                 id='show-stats-per-student'
                 title='" . get_string('display_stats_per_student', 'plagiarism_compilatio') . "'
                 class='cmp-icon fa fa-chalkboard-teacher'
+                data-toggle='tooltip'
             >
             </i>";
         }
@@ -330,9 +331,6 @@ class CompilatioFrame {
         }
 
         $output .= "</div>";
-
-        // Home tab.
-        $output .= "<div id='cmp-home'></div>";
 
         // Help tab.
         $output .= "<div id='cmp-help' class='cmp-tabs-content'>
