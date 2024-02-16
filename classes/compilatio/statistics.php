@@ -382,14 +382,14 @@ class CompilatioStatistics {
         $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
         $output .= "<div class='cmp-table-height'>
-            <table class='table table-light align-middle rounded-lg shadow-sm'>
+            <table class='table mb-0 align-middle rounded-lg cmp-bckgrnd-grey table-hover'>
             <thead>
                 <tr>
-                    <th class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . "</th>
-                    <th class='text-center align-middle'>" . get_string('response_type', 'plagiarism_compilatio') . "</th>
-                    <th class='text-center align-middle text-nowrap'>" . get_string('suspect_words_quiz_on_total', 'plagiarism_compilatio') . "</th>
-                    <th class='text-center align-middle'>" . get_string('score', 'plagiarism_compilatio') . "</th>
-                    <th class='text-center align-middle'></th>
+                    <th class='text-center align-middle cmp-border-none'>" . get_string('question', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle cmp-border-none'>" . get_string('response_type', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle cmp-border-none text-nowrap'>" . get_string('total_words_quiz_on_suspect', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle cmp-border-none'>" . get_string('score', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle cmp-border-none'></th>
                 </tr>
             </thead>
             <tbody class='cmp-bckgrnd-white'>";
@@ -458,10 +458,10 @@ class CompilatioStatistics {
         $compteur = $divisioncounter == 0 ? 1 : $divisioncounter;
         $globalscorequiz = round($globalscorequiz / $compteur);
         $suspectwordsquiz = round($globalscorequiz * $totalwordquiz / 100);
-        $output .= "<tfoot class='table-group-divider'><tr>
-                        <th class='container text-center align-middle'>" . get_string('total', 'plagiarism_compilatio') . "</th> <td></td>";
+        $output .= "<tfoot class='table-group-divider cmp-bckgrnd-grey'><tr>
+                        <th class='container text-center align-middle' style='border-bottom-left-radius: 10px;'>" . get_string('total', 'plagiarism_compilatio') . "</th> <td></td>";
         if ($questionsnotanalysed < count($attempt->get_slots())) {
-            $output .= "<td class='align-middle font-weight-light cmp-nowrap'>"
+            $output .= "<td class='align-middle font-weight-light cmp-whitespace-nowrap'>"
                     . $suspectwordsquiz . ' ' . get_string('word', 'plagiarism_compilatio') . '/<br> ' . $totalwordquiz . ' ' . get_string('word', 'plagiarism_compilatio') . "</td>
                 <td class='align-middle font-weight-light'>";
             $output .= $divisioncounter != 0 ? $globalscorequiz  . "%" : get_string('not_analysed', 'plagiarism_compilatio');
@@ -481,7 +481,7 @@ class CompilatioStatistics {
             $output .= "<td class='font-italic font-weight-light' colspan='4' class='align-middle'>" . get_string('not_analysed', 'plagiarism_compilatio');
         }
 
-        $output .= "</td></tr></tfoot></table></div>";
+        $output .= "</td><td style='border-bottom-right-radius: 10px;'></td></tr></tfoot></table></div>";
 
         return [
             'output' => $output,
@@ -601,7 +601,7 @@ class CompilatioStatistics {
             }
             $output .= "</select>
                 <i id='next-student' title='" . get_string('next_student', 'plagiarism_compilatio') . "' class='cmp-icon-lg fa fa-chevron-right'></i>
-                <div class='mx-top p-3 row'>
+                <div class='p-3 row'>
                     <div id='statistics-container'></div>
                 </div>";
         } else {
