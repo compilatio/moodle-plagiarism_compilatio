@@ -392,8 +392,8 @@ a.cmp-btn-primary:hover {
     cursor: auto;
 }
 
-/* Compilatio text no wrap */
-.cmp-nowrap {
+/* Compilatio whitespace no wrap */
+.cmp-whitespace-nowrap {
     white-space: nowrap;
 }
 
@@ -401,9 +401,16 @@ a.cmp-btn-primary:hover {
 .cmp-bckgrnd-white {
     background-color: white;
 }
+.cmp-bckgrnd-grey {
+    background-color: rgb(231, 231, 231);
+}
 
 /* Compilatio max table height and Y slider */
 .cmp-table-height {
     max-height: 400px;
     overflow-y: auto;
 }
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+    background-color: rgb(243, 242, 242);
+  }

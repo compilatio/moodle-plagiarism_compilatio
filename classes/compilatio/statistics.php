@@ -382,12 +382,12 @@ class CompilatioStatistics {
         $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
         $output .= "<div class='cmp-table-height'>
-            <table class='table align-middle rounded-lg shadow-sm cmp-bckgrnd-white table-hover'>
+            <table class='table align-middle rounded-lg shadow-sm cmp-bckgrnd-grey table-hover'>
             <thead>
                 <tr>
                     <th class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . "</th>
                     <th class='text-center align-middle'>" . get_string('response_type', 'plagiarism_compilatio') . "</th>
-                    <th class='text-center align-middle'>" . get_string('total_words_quiz_on_suspect', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle text-nowrap'>" . get_string('total_words_quiz_on_suspect', 'plagiarism_compilatio') . "</th>
                     <th class='text-center align-middle'>" . get_string('score', 'plagiarism_compilatio') . "</th>
                     <th class='text-center align-middle'></th>
                 </tr>
@@ -458,10 +458,10 @@ class CompilatioStatistics {
         $compteur = $divisioncounter == 0 ? 1 : $divisioncounter;
         $globalscorequiz = round($globalscorequiz / $compteur);
         $suspectwordsquiz = round($globalscorequiz * $totalwordquiz / 100);
-        $output .= "<tfoot class='table-group-divider cmp-bckgrnd-white'><tr>
+        $output .= "<tfoot class='table-group-divider cmp-bckgrnd-grey'><tr>
                         <th class='container text-center align-baseline'>" . get_string('total', 'plagiarism_compilatio') . "</th> <td></td>";
         if ($questionsnotanalysed < count($attempt->get_slots())) {
-            $output .= "<td class='align-baseline font-weight-light cmp-nowrap'>"
+            $output .= "<td class='align-baseline font-weight-light cmp-whitespace-nowrap'>"
                     . $suspectwordsquiz . ' ' . get_string('word', 'plagiarism_compilatio') . '/<br> ' . $totalwordquiz . ' ' . get_string('word', 'plagiarism_compilatio') . "</td>
                 <td class='align-baseline font-weight-light'>";
             $output .= $divisioncounter != 0 ? $globalscorequiz  . "%" : get_string('not_analysed', 'plagiarism_compilatio');
