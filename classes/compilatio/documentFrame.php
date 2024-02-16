@@ -353,24 +353,8 @@ class CompilatioDocumentFrame {
                 ? 'orange'
                 : 'red');
 
-        $ignoredscores = $compilatio->get_document($cmpfile->externalid)->light_reports->{'anasim-premium'}->ignored_types;
-        $ignoredscoresname['cmpscorename'] = [];
-        $ignoredscoresname['ignoredscore'] = null;
+        $ignoredscores = empty($cmpfile->ignoredscores) ? [] : explode(',', $cmpfile->ignoredscores);
 
-        foreach ($ignoredscores as $ignored) {
-            switch ($ignored) {
-                case 'ai_generated':
-                    $ignoredscoresname['cmpscorename'][] = 'aiscore';
-                    break;
-                case 'unrecognized_text_language':
-                    $ignoredscoresname['cmpscorename'][] = 'utlscore';
-                    break;
-                case 'exact':
-                    $ignoredscoresname['cmpscorename'][] = 'similarityscore';
-                    break;
-            }
-        }
-        $ignoredscoresname['cmpscorename'][] = null;
         $title = get_string('title_score', 'plagiarism_compilatio', $cmpfile->globalscore);
         $title .= $isteacher ? ' ' . get_string('title_score_teacher', 'plagiarism_compilatio') : '';
 
@@ -383,28 +367,28 @@ class CompilatioDocumentFrame {
         
         $recipe === 'anasim-premium' ? array_push($scores, 'aiscore') : '';
 
+        $scores = array_diff($scores, $ignoredscores);
+
         $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
         $icons = '';
 
         foreach ($scores as $score) {
-            if(!in_array($score, $ignoredscoresname['cmpscorename'])){
-                $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
-                $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
-                if (isset($cmpfile->$score)) {
-                    $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
-                }
-            } else {
-                $ignoredscoresname['ignoredscore'][] = $score;
+            $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
+            $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
+            if (isset($cmpfile->$score)) {
+                $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
             }
         }
 
-        if(!empty($ignoredscoresname['ignoredscore'])){
+        if(!empty($ignoredscores)){
+            error_log(var_export($ignoredscores,true));
             $tooltip .= "<b>" . get_string('excluded_from_score', 'plagiarism_compilatio') . ' </b>';
 
-            foreach ($ignoredscoresname['ignoredscore'] as $score) {
+            foreach ($ignoredscores as $score) {
                 $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
                 $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
-                $icons .= CompilatioIcons::$score(null);
+                $icon = 'ignored' . $score;
+                $icons .= CompilatioIcons::$icon();
             }
         }
 
@@ -416,7 +400,7 @@ class CompilatioDocumentFrame {
             "' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
                         {$icons}
                 </span>";
-        error_log(var_export($ignoredscoresname, true));
+
         return $html;
     }
 

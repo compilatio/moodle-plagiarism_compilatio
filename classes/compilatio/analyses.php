@@ -115,6 +115,21 @@ class CompilatioAnalyses {
                 $cmpfile->aiscore = isset($scores->ai_generated_percent)
                     ? round($scores->ai_generated_percent)
                     : null;
+            
+                $scoresmapping = [
+                    'ai_generated' => 'aiscore',
+                    'unrecognized_text_language' => 'utlscore',
+                    'exact' => 'similarityscore',
+                ];
+
+                $ignoredscores = [];
+
+                foreach ($doc->light_reports->$recipe->ignored_types as $ignoredtype) {
+                    isset($scoresmapping[$ignoredtype]) ? $ignoredscores[] = $scoresmapping[$ignoredtype] : null;
+                }
+
+                $cmpfile->ignoredscores = implode(',', $ignoredscores);
+
             } else if ($state == 'crashed' || $state == 'aborted' || $state == 'canceled') {
                 $cmpfile->status = 'error_analysis_failed';
             }
