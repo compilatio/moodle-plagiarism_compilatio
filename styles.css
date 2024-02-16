@@ -414,3 +414,7 @@ a.cmp-btn-primary:hover {
 .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
     background-color: rgb(243, 242, 242);
   }
+
+.cmp-border-none {
+    border: none !important;
+}
