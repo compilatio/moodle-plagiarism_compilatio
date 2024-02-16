@@ -273,6 +273,7 @@ class CompilatioFrame {
                     <i
                         class='fas fa-ellipsis-v fa-lg ml-1'
                         data-toggle='dropdown'
+                        role='button'
                         title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'
                     >
                     </i>
@@ -295,6 +296,7 @@ class CompilatioFrame {
                     ";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
                 [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio'), null]);
+
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedFiles',
                 [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio'), null]);
             }
