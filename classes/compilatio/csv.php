@@ -167,11 +167,11 @@ class CompilatioCsv {
         $line = [];
         $line["student"] = get_string('student', "plagiarism_compilatio");
         $line["question"] = get_string('question', "plagiarism_compilatio");
-        $line["suspectwords/totalwords"] = get_string('total_words/suspect_words', "plagiarism_compilatio");
-        $line["tot"] = get_string('total', 'plagiarism_compilatio');
-        $line["sim"] = get_string('similarityscore', 'plagiarism_compilatio');
-        $line["utl"] = get_string('utlscore', 'plagiarism_compilatio');
-        $line["IA"] = get_string('aiscore', 'plagiarism_compilatio');
+        $line["suspectwords/totalwords"] = get_string('suspect_words/total_words', "plagiarism_compilatio");
+        $line["tot"] = get_string('total', 'plagiarism_compilatio') . ' (%)';
+        $line["sim"] = get_string('similarityscore', 'plagiarism_compilatio') . ' (%)';
+        $line["utl"] = get_string('utlscore', 'plagiarism_compilatio') . ' (%)';
+        $line["IA"] = get_string('aiscore', 'plagiarism_compilatio') . ' (%)';
 
         $csv .= '"' . implode('","', $line) . "\"\n";
         foreach ($userssubmittedtest as $user) {

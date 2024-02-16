@@ -43,7 +43,6 @@ $module = get_coursemodule_from_id(null, $cmid);
 $countsuccess = 0;
 $plagiarismfiles = $docsfailed = $docsinextraction = $SESSION->compilatio_alerts = [];
 
-
 if ($plugincm->analysistype == 'manual') {
     if ($module->modname == "quiz" && !empty($selectedlines)) {
         $sql = "SELECT cmpFile.* 
@@ -57,7 +56,6 @@ if ($plugincm->analysistype == 'manual') {
         $sql .= !empty($selectedlines) ? " AND userid IN (" . $selectedlines . ")" : "";
         $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_file', $sql, [$cmid]);
     }
-    error_log(var_export($plagiarismfiles, true));
 
     foreach ($plagiarismfiles as $file) {
 
