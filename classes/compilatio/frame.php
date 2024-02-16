@@ -250,6 +250,7 @@ class CompilatioFrame {
                 id='cmp-show-notifications'
                 title='" . get_string("display_notifications", "plagiarism_compilatio") . "'
                 class='cmp-icon fa fa-bell'
+                data-toggle='tooltip'
             >
             </i>
             <span style='position: relative; top: 0px; left: -19px;' id='cmp-count-notifications' class='badge badge-pill badge-primary'></span>
@@ -271,7 +272,7 @@ class CompilatioFrame {
                 $output .="
                 <div class='dropdown'>
                     <i
-                        class='fas fa-ellipsis-v fa-lg ml-1'
+                        class='fas fa-ellipsis-v fa-lg p-2'
                         data-toggle='dropdown'
                         role='button'
                         title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'
