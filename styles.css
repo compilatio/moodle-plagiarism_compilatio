@@ -56,7 +56,7 @@ Compilatio frame area
     background-color: #F5F6F8;
     border: 1px solid #EBEBF0;
     padding: 0.5rem;
-    z-index: 998;
+    z-index: 10;
     display: flex;
     cursor: pointer;
 }
@@ -132,7 +132,6 @@ Compilatio frame area
 }
 
 #cmp-navbar {
-    overflow: hidden;
     padding: 0.5rem 1rem 0.5rem 1rem;
     background-color: #F5F6F8;
     border: 1px solid #EBEBF0;
@@ -143,7 +142,7 @@ Compilatio frame area
 #cmp-container {
     position: fixed;
     right: 3rem;
-    z-index: 999;
+    z-index: 10;
     margin: 70px 0 0.5rem 0;
     max-width: 750px;
 }
