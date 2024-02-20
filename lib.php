@@ -139,7 +139,10 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
                         // If content and file not submitted, try to get the content.
                         if (empty($linkarray['content']) && empty($linkarray['file'])) {
                             $courseid = $DB->get_field('course_modules', 'course', array('id' => $linkarray['cmid']));
-                            $quizfilename = "quiz-" . $courseid . "-" . $linkarray['cmid'] . "-" . $attempt->get_usage_id() . "-Q" . $attempt->get_question_id() . ".htm";
+
+                            $attemptid = $DB->get_field('quiz_attempts', 'id', ['uniqueid' => $attempt->get_usage_id()]);
+
+                            $quizfilename = "quiz-" . $courseid . "-" . $linkarray['cmid'] . "-" . $attemptid . "-Q" . $attempt->get_question_id() . ".htm";
                             $linkarray['content'] = $attempt->get_response_summary();
                         }
                     }
