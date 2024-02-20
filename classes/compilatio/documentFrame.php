@@ -381,8 +381,7 @@ class CompilatioDocumentFrame {
         }
 
         if(!empty($ignoredscores)){
-            error_log(var_export($ignoredscores,true));
-            $tooltip .= "<b>" . get_string('excluded_from_score', 'plagiarism_compilatio') . ' </b>';
+            $tooltip .= "<b>" . get_string('excluded_from_score', 'plagiarism_compilatio') . ' </b><br>';
 
             foreach ($ignoredscores as $score) {
                 $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
