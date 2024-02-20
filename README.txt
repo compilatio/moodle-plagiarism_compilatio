@@ -11,6 +11,7 @@ CHANGES
 - Fix deprecation warnings for Moodle 4.3
 - Fix warning in function compilatio_update_news (null value in foreach)
 - Fix display of loading icon for documents being analyzed
+- Fix Compilatio frame for documents not displayed in quizzes
 
 CHANGELOG : https://support.compilatio.net/hc/en-us/articles/360019664658
 
