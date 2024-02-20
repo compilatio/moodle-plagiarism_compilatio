@@ -360,7 +360,7 @@ class CompilatioStatistics {
      * @return string       HTML containing the statistics for this student
      */
     public static function get_statistics_by_student($studentid, $cmid) {
-        global $DB;
+        global $CFG, $DB;
 
         $output = "";
 
@@ -372,7 +372,7 @@ class CompilatioStatistics {
                 AND {quiz_attempts}.userid = ?";
 
         $attemptid = $DB->get_field_sql($sql, [$cmid, $studentid]);
-        $attempt = mod_quiz\quiz_attempt::create($attemptid);
+        $attempt = $CFG->version < 2023100900 ? \quiz_attempt::create($attemptid) : \mod_quiz\quiz_attempt::create($attemptid);
 
         $totalwordquiz = 0;
         $globalscorequiz = 0;

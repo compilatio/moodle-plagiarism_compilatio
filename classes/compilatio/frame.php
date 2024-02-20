@@ -254,7 +254,7 @@ class CompilatioFrame {
                 data-toggle='tooltip'
             >
             </i>
-            <span style='position: relative; top: 0px; left: -19px;' id='cmp-count-notifications' class='badge badge-pill badge-primary'></span>
+            <span id='cmp-count-notifications' class='badge badge-pill badge-primary'></span>
         </span>";
 
         // Display buttons.

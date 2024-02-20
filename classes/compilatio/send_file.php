@@ -177,8 +177,8 @@ class CompilatioSendFile {
             $objectid = explode(".", explode("-", $cmpfile->filename)[1])[0];
 
             $sql = "SELECT m.name FROM {course_modules} cm
-            JOIN {modules} m ON m.id = cm.module
-            WHERE cm.id = ?";
+                JOIN {modules} m ON m.id = cm.module
+                WHERE cm.id = ?";
             $modulename = $DB->get_field_sql($sql, [$cmpfile->cm]);
 
             switch ($modulename) {
