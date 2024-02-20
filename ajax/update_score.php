@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/documentFrame.php');
 
 require_login();
-global $DB;
+global $DB, $USER;
 
 $docid = required_param('docId', PARAM_TEXT);
 
