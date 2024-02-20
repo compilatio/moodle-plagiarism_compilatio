@@ -43,7 +43,6 @@ $module = get_coursemodule_from_id(null, $cmid);
 $countsuccess = 0;
 $plagiarismfiles = $docsfailed = $docsinextraction = $SESSION->compilatio_alerts = [];
 
-
 if ($plugincm->analysistype == 'manual') {
     if ($module->modname == "quiz" && !empty($selectedlines)) {
         $sql = "SELECT cmpFile.* 

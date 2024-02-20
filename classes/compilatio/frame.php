@@ -93,7 +93,7 @@ class CompilatioFrame {
             unset($SESSION->compilatio_alerts);
         }
 
-        $startallanalyses = $sendalldocs = $resetdocsinerror = $multipleanalysesoptionss = false;
+        $startallanalyses = $sendalldocs = $resetdocsinerror = $multipleanalysesoptions = false;
 
         $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
@@ -101,7 +101,7 @@ class CompilatioFrame {
             $cmconfig->analysistype == 'manual'
                 && $DB->count_records('plagiarism_compilatio_file', ['status' => 'sent', 'cm' => $cmid]) !== 0
         ) {
-            $startallanalyses = $multipleanalysesoptionss = true;
+            $startallanalyses = $multipleanalysesoptions = true;
 
         } else if ($cmconfig->analysistype == 'planned') { // Display the date of analysis if its type is set on 'Planned'.
             $analysistime = $DB->get_field('plagiarism_compilatio_cm_cfg', 'analysistime', ['cmid' => $cmid]);
@@ -234,6 +234,7 @@ class CompilatioFrame {
                 id='show-stats-per-student'
                 title='" . get_string('display_stats_per_student', 'plagiarism_compilatio') . "'
                 class='cmp-icon fa fa-chalkboard-teacher'
+                data-toggle='tooltip'
             >
             </i>";
         }
@@ -250,9 +251,10 @@ class CompilatioFrame {
                 id='cmp-show-notifications'
                 title='" . get_string("display_notifications", "plagiarism_compilatio") . "'
                 class='cmp-icon fa fa-bell'
+                data-toggle='tooltip'
             >
             </i>
-            <span style='position: relative; top: 0px; left: -19px;' id='cmp-count-notifications' class='badge badge-pill badge-primary'></span>
+            <span id='cmp-count-notifications' class='badge badge-pill badge-primary'></span>
         </span>";
 
         // Display buttons.
@@ -260,29 +262,45 @@ class CompilatioFrame {
             if ($startallanalyses) {
                 $output .=
                     "<button
-                        id='cmp-start-btn'
                         title='" . get_string('start_all_analysis', 'plagiarism_compilatio') . "'
-                        class='btn btn-primary cmp-action-btn mx-1 '
+                        class='btn btn-primary cmp-action-btn mx-1 cmp-start-btn'
                         data-toggle='tooltip'
                     >
                         <i class='fa fa-play-circle'></i>
                     </button>";
-                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
-                    [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
             }
-            if ($multipleanalysesoptionss) {
+            if ($multipleanalysesoptions) {
                 $output .="
-                    <button 
-                        id='show-multiple-analyse-options' 
-                        class='btn btn-secondary cmp-action-btn mx-1' 
-                        data-toggle='tooltip'
+                <div class='dropdown'>
+                    <i
+                        class='fas fa-ellipsis-v fa-lg p-2'
+                        data-toggle='dropdown'
+                        role='button'
                         title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'
                     >
-                        <i  class='fa fa-chevron-down'></i>
-                    </button>
+                    </i>
+                    <div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>
+                        <div
+                            class='cmp-action-btn mx-1 cmp-start-btn'
+                            role='button'
+                        >
+                            <div class='text-nowrap'>" . get_string('start_all_analysis', 'plagiarism_compilatio') . "</div>
+                        </div>
+                        <div
+                            class='cmp-action-btn mx-1 mt-1'
+                            role='button'
+                            id='show-multiple-analyse-options'
+                        >
+                            <div class='text-nowrap'>" . get_string('start_selected_files_analysis', 'plagiarism_compilatio') . "</div>
+                        </div>
+                    </div>
+                </div>
                     ";
+                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
+                [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio'), null]);
+
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedFiles',
-                [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
+                [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio'), null]);
             }
 
             if ($sendalldocs) {
@@ -313,9 +331,6 @@ class CompilatioFrame {
         }
 
         $output .= "</div>";
-
-        // Home tab.
-        $output .= "<div id='cmp-home'></div>";
 
         // Help tab.
         $output .= "<div id='cmp-help' class='cmp-tabs-content'>
@@ -406,32 +421,7 @@ class CompilatioFrame {
         }
 
         $output .= "</div>";
-
-        // Display multiple analysis options.
-        $output .= "<div id='cmp-multiple-analyse-options' class='cmp-tabs-content'>
-                <h5>" . get_string('other_analysis_options', 'plagiarism_compilatio') . "</h5>
-                <div class='ml-2'>
-                    <div class='row mt-3'>
-                        <button
-                            id='cmp-start-btn'
-                            class='btn btn-primary cmp-action-btn mx-1'
-                        >
-                            <i class='fa fa-play-circle'></i>
-                        </button>
-                        <h7 class='mt-2'>" . get_string('start_all_analysis', 'plagiarism_compilatio') . "</h7>
-                    </div>
-                    <div class='row'>
-                        <button
-                            id='cmp-start-selected-btn'
-                            class='btn btn-primary cmp-action-btn mx-1 mt-1'
-                        >
-                            <i class='fa fa-check-double'></i>
-                        </button>
-                        <h7 class='mt-2'>" . get_string('start_selected_files_analysis', 'plagiarism_compilatio') . "</h7>
-                    </div>
-                </div>
-            </div>";
-
+        
         // Display timed analysis date.
         if (isset($analysisdate)) {
             $output .= "<span class='border-top pt-2 mt-2 text-center font-italic'>$analysisdate</span>";

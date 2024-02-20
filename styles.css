@@ -31,10 +31,6 @@
     color: #f34541;
 }
 
-.cmp-color-primary {
-    color: #006fbf;
-}
-
 .cmp-color-secondary {
     color: #494c4e;
 }
@@ -86,31 +82,30 @@ Compilatio frame area
 }
 
 /* Notifications Badge */
-#cmp-count-alerts {
-  position: relative;
-  top: 4px;
-  left: -21px;
-  background-color: #f00;
-  color: #fff;
-  border-radius: 20px;
-  padding: 1px 4px;
-  font-size: 11px;
-  font-weight: bold;
+#cmp-count-notifications {
+    position: relative;
+    top: 2px;
+    left: -19px;
+    border-radius: 20px;
+    padding: 2px 5px;
+    font-size: 11px;
+    font-weight: bold;
 }
 
 #cmp-navbar {
-    overflow: hidden;
     padding: 0.5rem 1rem 0.5rem 1rem;
     background-color: #F5F6F8;
     border: 1px solid #EBEBF0;
     border-radius: 5px;
     color: #444;
+    display: flex;
+    flex-direction: column;
 }
 
 #cmp-container {
     position: fixed;
     right: 3rem;
-    z-index: 9;
+    z-index: 10;
     margin: 70px 0 0.5rem 0;
     max-width: 750px;
 }
@@ -164,6 +159,7 @@ Compilatio frame area
 Compilatio document frame area 
 */
 .cmp-area {
+    position: relative;
     display: flex;
     width: fit-content;
     -ms-align-items: center;
@@ -189,10 +185,10 @@ Compilatio document frame area
     border-color: #ced4da;
 }
 
-.cmp-btn-error {
+.cmp-color-error {
     color: #dc3545;
 }
-.cmp-btn-secondary {
+.cmp-color-secondary {
     color: #494c4e;
 }
 
@@ -212,7 +208,7 @@ Compilatio document frame area
 }
 .cmp-library {
     cursor: pointer;
-    margin: 0 10px 0 3px;
+    margin: 0 10px 0 7px;
     display: inline-block;
     position: relative;
 }
@@ -231,7 +227,7 @@ Compilatio document frame area
     line-height: 1.5;
     text-align: center;
     vertical-align: middle;
-    padding: 0.25rem 1rem;
+    padding: 0.25rem 0.25rem;
     font-size: .925rem;
     text-decoration: none;
     border-radius: 0.4rem;
@@ -240,8 +236,8 @@ Compilatio document frame area
 
 .cmp-btn-doc {
     height: 30px;
-    margin-right: 2px;
-    width: 120px;
+    margin: 2px 2px 2px 0px;
+    width: 100px;
 }
 
 a.cmp-btn-primary:hover {
@@ -272,8 +268,11 @@ a.cmp-btn-primary:hover {
 
 /* Compilatio small logo */
 .cmp-small-logo {
-    height: 22px;
-    margin: 6px;
+    height: 16px;
+    top: -8px;
+    left: -9px;
+    border-radius: 3px;
+    position: absolute;
 }
 
 /* Compilatio notifications */
@@ -359,8 +358,8 @@ a.cmp-btn-primary:hover {
     cursor: auto;
 }
 
-/* Compilatio text no wrap */
-.cmp-nowrap {
+/* Compilatio whitespace no wrap */
+.cmp-whitespace-nowrap {
     white-space: nowrap;
 }
 
@@ -368,9 +367,20 @@ a.cmp-btn-primary:hover {
 .cmp-bckgrnd-white {
     background-color: white;
 }
+.cmp-bckgrnd-grey {
+    background-color: rgb(231, 231, 231);
+}
 
 /* Compilatio max table height and Y slider */
 .cmp-table-height {
     max-height: 400px;
     overflow-y: auto;
+}
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+    background-color: rgb(243, 242, 242);
+  }
+
+.cmp-border-none {
+    border: none !important;
 }

@@ -158,7 +158,7 @@ class CompilatioStatistics {
 
         $output = "
             <div class='col'>
-                <h4 class='cmp-color-primary'>" . get_string('progress', 'plagiarism_compilatio') . "</h4>
+                <h4 class='text-primary'>" . get_string('progress', 'plagiarism_compilatio') . "</h4>
                 <div class='position-relative cmp-box my-3 p-3'>
                     <h5 class='fw-bold cmp-color-green'>"
                       . get_string('analysed_docs', 'plagiarism_compilatio', $countbystatus['scored']->count ?? 0) .
@@ -166,13 +166,13 @@ class CompilatioStatistics {
                 </div>
 
                 <div class='cmp-box my-3'>
-                    <h5 class='p-3 cmp-color-primary'>"
+                    <h5 class='p-3 text-primary'>"
                       . get_string('analysing_docs', 'plagiarism_compilatio', $countbystatus['analysing']->count ?? 0) .
                     "</h5>
                 </div>
 
                 <div class='cmp-box my-3'>
-                    <h5 class='p-3 cmp-color-primary'>"
+                    <h5 class='p-3 text-primary'>"
                       . get_string('queuing_docs', 'plagiarism_compilatio', $countbystatus['queue']->count ?? 0) .
                     "</h5>
                 </div>
@@ -225,14 +225,14 @@ class CompilatioStatistics {
 
             $output .= "
                 <div class='col'>
-                    <h4 class='cmp-color-primary'>" . get_string('results', 'plagiarism_compilatio') . "</h4>
+                    <h4 class='text-primary'>" . get_string('results', 'plagiarism_compilatio') . "</h4>
                     <div class='cmp-box my-3 px-3 pt-3 pb-2'>
-                        <h5 class='cmp-color-primary'>" . get_string('stats_score', 'plagiarism_compilatio') . "</h5>
+                        <h5 class='text-primary'>" . get_string('stats_score', 'plagiarism_compilatio') . "</h5>
                         <div class='row'>{$yes}</div>
                     </div>
 
                     <div class='cmp-box my-3 p-3'>
-                        <h5 class='cmp-color-primary'>" . get_string('stats_threshold', 'plagiarism_compilatio') . "</h5>
+                        <h5 class='text-primary'>" . get_string('stats_threshold', 'plagiarism_compilatio') . "</h5>
                         <div class='row mt-3 fw-bold cmp-color-secondary'>
                             <div class='col-4'>
                                 <h3 class='fw-bold cmp-color-green'>" . $countgreen . "</h3>
@@ -275,7 +275,7 @@ class CompilatioStatistics {
         if (!empty($errors)) {
             $output .= "
                 <div class='col'>
-                    <h4 class='cmp-color-primary'>" . get_string('errors', 'plagiarism_compilatio') . "</h4>
+                    <h4 class='text-primary'>" . get_string('errors', 'plagiarism_compilatio') . "</h4>
                     {$errors}
                 </div>";
         }
@@ -360,7 +360,7 @@ class CompilatioStatistics {
      * @return string       HTML containing the statistics for this student
      */
     public static function get_statistics_by_student($studentid, $cmid) {
-        global $DB;
+        global $CFG, $DB;
 
         $output = "";
 
@@ -372,7 +372,7 @@ class CompilatioStatistics {
                 AND {quiz_attempts}.userid = ?";
 
         $attemptid = $DB->get_field_sql($sql, [$cmid, $studentid]);
-        $attempt = mod_quiz\quiz_attempt::create($attemptid);
+        $attempt = $CFG->version < 2023100900 ? \quiz_attempt::create($attemptid) : \mod_quiz\quiz_attempt::create($attemptid);
 
         $totalwordquiz = 0;
         $globalscorequiz = 0;
@@ -382,14 +382,14 @@ class CompilatioStatistics {
         $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
         $output .= "<div class='cmp-table-height'>
-            <table class='table table-light align-middle rounded-lg shadow-sm'>
+            <table class='table mb-0 align-middle rounded-lg cmp-bckgrnd-grey table-hover'>
             <thead>
                 <tr>
-                    <th class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . "</th>
-                    <th class='text-center align-middle'>" . get_string('response_type', 'plagiarism_compilatio') . "</th>
-                    <th class='text-center align-middle'>" . get_string('total_words_quiz_on_suspect', 'plagiarism_compilatio') . "</th>
-                    <th class='text-center align-middle'>" . get_string('score', 'plagiarism_compilatio') . "</th>
-                    <th class='text-center align-middle'></th>
+                    <th class='text-center align-middle cmp-border-none'>" . get_string('question', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle cmp-border-none'>" . get_string('response_type', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle cmp-border-none text-nowrap'>" . get_string('suspect_words_quiz_on_total', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle cmp-border-none'>" . get_string('score', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle cmp-border-none'></th>
                 </tr>
             </thead>
             <tbody class='cmp-bckgrnd-white'>";
@@ -458,11 +458,11 @@ class CompilatioStatistics {
         $compteur = $divisioncounter == 0 ? 1 : $divisioncounter;
         $globalscorequiz = round($globalscorequiz / $compteur);
         $suspectwordsquiz = round($globalscorequiz * $totalwordquiz / 100);
-        $output .= "<tfoot class='table-group-divider'><tr>
-                        <th class='container text-center align-middle'>" . get_string('total', 'plagiarism_compilatio') . "</th> <td></td>";
+        $output .= "<tfoot class='table-group-divider cmp-bckgrnd-grey'><tr>
+                        <th class='container text-center align-middle' style='border-bottom-left-radius: 10px;'>" . get_string('total', 'plagiarism_compilatio') . "</th> <td></td>";
         if ($questionsnotanalysed < count($attempt->get_slots())) {
-            $output .= "<td class='align-middle font-weight-light cmp-nowrap'>"
-                    . $suspectwordsquiz . ' ' . get_string('word', 'plagiarism_compilatio') . '/<br> ' . $totalwordquiz . ' ' . get_string('word', 'plagiarism_compilatio') . "</td>
+            $output .= "<td class='align-middle font-weight-light cmp-whitespace-nowrap'>"
+                    . $suspectwordsquiz . ' ' . get_string('word', 'plagiarism_compilatio') . ' /<br> ' . $totalwordquiz . ' ' . get_string('word', 'plagiarism_compilatio') . "</td>
                 <td class='align-middle font-weight-light'>";
             $output .= $divisioncounter != 0 ? $globalscorequiz  . "%" : get_string('not_analysed', 'plagiarism_compilatio');
 
@@ -481,7 +481,7 @@ class CompilatioStatistics {
             $output .= "<td class='font-italic font-weight-light' colspan='4' class='align-middle'>" . get_string('not_analysed', 'plagiarism_compilatio');
         }
 
-        $output .= "</td></tr></tfoot></table></div>";
+        $output .= "</td><td style='border-bottom-right-radius: 10px;'></td></tr></tfoot></table></div>";
 
         return [
             'output' => $output,
@@ -589,7 +589,7 @@ class CompilatioStatistics {
 
         $output = "
             <div class='cmp-relative-position'>
-                <h4 class='cmp-color-primary font-weight-normal'>" . get_string('results_by_student', 'plagiarism_compilatio') . "</h4>";
+                <h4 class='text-primary font-weight-normal'>" . get_string('results_by_student', 'plagiarism_compilatio') . "</h4>";
 
         if (!empty($studentattemptsubmitted)) {
             $output .= "<i id='previous-student' title='" . get_string('previous_student', 'plagiarism_compilatio') ."' class='cmp-icon-lg fa fa-chevron-left'></i>
@@ -601,7 +601,7 @@ class CompilatioStatistics {
             }
             $output .= "</select>
                 <i id='next-student' title='" . get_string('next_student', 'plagiarism_compilatio') . "' class='cmp-icon-lg fa fa-chevron-right'></i>
-                <div class='mx-top p-3 row'>
+                <div class='p-3 row'>
                     <div id='statistics-container'></div>
                 </div>";
         } else {

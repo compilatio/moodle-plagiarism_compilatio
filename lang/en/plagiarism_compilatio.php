@@ -140,7 +140,7 @@ $string['defaultupdated'] = 'Default values updated';
 $string['defaults_desc'] = 'The following settings are the defaults set when enabling Compilatio within an Activity Module';
 
 // Compilatio document frame.
-$string["title_score"] = 'Analysis completed: {$a}% of similarities.';
+$string["title_score"] = 'Analysis completed: {$a}% of suspicious texts.';
 $string["title_score_teacher"] = 'If you have ignored any sources in the report, click here to update the score.';
 $string['btn_unsent'] = 'Send';
 $string['title_unsent'] = "Send the document to Compilatio";
@@ -262,14 +262,14 @@ $string['queuing_docs'] = '{$a} document(s) awaiting analysis';
 $string['stats_min'] = 'Minimum';
 $string['stats_max'] = 'Maximum';
 $string['stats_avg'] = 'Average';
-$string['stats_score'] = 'Similarities percentage';
+$string['stats_score'] = 'Suspicious texts percentage';
 $string['stats_error_unknown'] = ' unknown errors';
 $string['stats_threshold'] = 'Number of documents per threshold';
 $string['results_by_student'] = 'Results by student';
 $string['previous_student'] = 'Previous student';
 $string['next_student'] = 'Next student';
-$string['total_words_quiz_on_suspect'] = 'words suspect/ <br>total words';
-$string['total_words/suspect_words'] = 'words suspect / total words';
+$string['suspect_words_quiz_on_total'] = 'words suspect / <br>total words';
+$string['suspect_words/total_words'] = 'words suspect / total words';
 $string['question'] = 'Question';
 $string['score'] = 'Score';
 $string['word'] = 'words';
@@ -297,7 +297,7 @@ $string["export_global_csv"] = 'Click here to export this data in CSV format';
 $string["global_statistics_description"] = 'All the documents data send to Compilatio.';
 $string["global_statistics"] = 'Global statistics';
 $string["activities_statistics"] = 'Statistics by activity';
-$string["similarities"] = 'Similarities';
+$string["similarities"] = 'Suspicious texts';
 
 // Help tab.
 $string['tabs_title_help'] = 'Help';

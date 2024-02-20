@@ -220,7 +220,7 @@ class CompilatioDocumentFrame {
                 $documentframe =
                     "<div
                         title='" . get_string('title_planned', 'plagiarism_compilatio', userdate($config->analysistime)) . "'
-                        class='cmp-btn-secondary'
+                        class='cmp-color-secondary'
                     >
                         <i class='cmp-icon-lg mx-2 fa fa-clock-o'></i>"
                         . get_string('btn_planned', 'plagiarism_compilatio') .
@@ -243,7 +243,7 @@ class CompilatioDocumentFrame {
 
         } else if ($status == "queue" || $status == "analysing") {
             $documentframe =
-                "<div title='" . get_string('title_' . $status, "plagiarism_compilatio") . "' class='cmp-btn-secondary'>
+                "<div title='" . get_string('title_' . $status, "plagiarism_compilatio") . "' class='cmp-color-secondary'>
                     <i class='cmp-icon-lg mx-2 fa fa-spinner fa-spin'></i>"
                     . get_string('btn_' . $status, "plagiarism_compilatio") .
                 "</div>";
@@ -258,7 +258,7 @@ class CompilatioDocumentFrame {
             }
 
             $documentframe =
-                "<div title='" . get_string("title_" . $status, "plagiarism_compilatio", $value ?? null) . "' class='cmp-btn-error'>
+                "<div title='" . get_string("title_" . $status, "plagiarism_compilatio", $value ?? null) . "' class='cmp-color-error'>
                     <i class='mx-2 fa fa-exclamation-triangle'></i>"
                     . get_string('btn_' . $status, "plagiarism_compilatio") .
                 "</div>";

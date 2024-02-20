@@ -22,7 +22,7 @@ define(['jquery'], function($) {
         $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");        
         
         $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
-            {'cmid': cmid, 'selectedUsers': selectedusers.toString()}, function() {
+            {'cmid': cmid, 'selectedUsers': selectedusers != null ? selectedusers.toString() : ''}, function() {
                 window.location.reload();
             });
     }
@@ -72,7 +72,7 @@ define(['jquery'], function($) {
 
     exports.startAllAnalysis = function(basepath, cmid, message) {
         $(document).ready(function() {
-            var startAllAnalysis = $('#cmp-start-btn');
+            var startAllAnalysis = $('.cmp-start-btn');
             startAllAnalysis.click(function() {
                 startAnalysis(message, basepath, cmid, null);
             });
@@ -82,7 +82,6 @@ define(['jquery'], function($) {
     exports.startAnalysesOnSelectedFiles = function(basepath, cmid, message) {
         $(document).ready(function() {
             const multipleanalysisoptions = $('#show-multiple-analyse-options').hide();
-            const startAnalysesOnSelectedFiles = $('#cmp-start-selected-btn');
             const checkboxes = $('td.c0 input, #selectall');
             function getSelectedLines() {
                 return checkboxes.filter(':checked').map(function() {
@@ -94,7 +93,7 @@ define(['jquery'], function($) {
                 selectedUsers.length > 0 ? multipleanalysisoptions.show() : multipleanalysisoptions.hide();
             }
             checkboxes.on('change', updateButtonVisibility);
-            startAnalysesOnSelectedFiles.click(function() {
+            multipleanalysisoptions.click(function() {
                 startAnalysis(message, basepath, cmid, getSelectedLines());
             });
         });
@@ -296,14 +295,9 @@ define(['jquery'], function($) {
                 $('#cmp-alert-' + $(this).attr('id').split("-").pop()).parent().remove()
             });
 
-            var selectedElement = '';
             if (docid) {
-                selectedElement = '#cmp-search';
-            } else {
-                selectedElement = '#cmp-home';
+                $('#cmp-search').show();
             }
-
-            $(selectedElement).show();
 
             $('#cmp-show-notifications').on('click', function() {
                 tabClick($(this), $('#cmp-notifications'));
@@ -320,12 +314,9 @@ define(['jquery'], function($) {
             $('#show-search').on('click', function() {
                 tabClick($(this), $('#cmp-search'));
             });
-            $('#show-multiple-analyse-options').on('click', function() {
-                tabClick($(this), $('#cmp-multiple-analyse-options'));
-            });
 
-            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search, #show-multiple-analyse-options');
-            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-home, #cmp-search, #cmp-multiple-analyse-options');
+            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search');
+            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-search');
 
             /**
              * TabClick
@@ -342,17 +333,18 @@ define(['jquery'], function($) {
                     tabs.not(tabClicked).removeClass('active');
 
                     tabClicked.toggleClass('active');
+                } else {
+                    elements.hide();
+                    tabs.removeClass('active');
                 }
 
-                if ($('#cmp-stats').hasClass('active')) {
+                if ($('#show-stats').hasClass('active')) {
                     $('#cmp-container').css('max-width', 'none');
                 }
             }
 
             $('#cmp-logo').on('click', function() {
-                var elementClicked = $('#cmp-home');
-                elementClicked.show();
-                elements.not(elementClicked).hide();
+                elements.hide();
                 tabs.removeClass('active');
             });
         });

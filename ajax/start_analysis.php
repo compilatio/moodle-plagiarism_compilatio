@@ -46,7 +46,7 @@ $status = CompilatioAnalyses::start_analysis($plagiarismfile);
 $res = new StdClass();
 
 if ($status == 'queue') {
-    $res->documentFrame = "<div title='" . get_string('title_' . $status, 'plagiarism_compilatio') . "' class='cmp-btn-secondary'>
+    $res->documentFrame = "<div title='" . get_string('title_' . $status, 'plagiarism_compilatio') . "' class='cmp-color-secondary'>
             <i class='cmp-icon-lg mx-2 fa fa-spinner fa-spin'></i>"
             . get_string('btn_' . $status, 'plagiarism_compilatio') .
         "</div>";
@@ -59,7 +59,7 @@ if ($status == 'queue') {
     }
 
     $res->documentFrame =
-        "<div title='" . get_string('title_' . $status, 'plagiarism_compilatio', $value ?? null) . "' class='cmp-btn-error'>
+        "<div title='" . get_string('title_' . $status, 'plagiarism_compilatio', $value ?? null) . "' class='cmp-color-error'>
             <i class='mx-2 fa fa-exclamation-triangle'></i>" . get_string('btn_' . $status, 'plagiarism_compilatio') .
         "</div>";
     $res->bgcolor = 'error';

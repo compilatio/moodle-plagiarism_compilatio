@@ -263,14 +263,14 @@ $string['queuing_docs'] = '{$a} document(s) en attente d\'analyse.';
 $string['stats_min'] = 'Minimum';
 $string['stats_max'] = 'Maximum';
 $string['stats_avg'] = 'Moyen';
-$string['stats_score'] = 'Pourcentage de similitudes';
+$string['stats_score'] = 'Pourcentage de textes suspects';
 $string['stats_error_unknown'] = ' erreurs inconnues';
 $string['stats_threshold'] = 'Nombre de documents par seuil';
 $string['results_by_student'] = 'Résultat par élève';
 $string['previous_student'] = 'Élève précédent';
 $string['next_student'] = 'Élève suivant';
-$string['total_words_quiz_on_suspect'] = 'mots suspect/<br> mots totaux';
-$string['total_words/suspect_words'] = 'nombre de mots suspect / nombre de mots';
+$string['suspect_words_quiz_on_total'] = 'mots suspect /<br> mots totaux';
+$string['suspect_words/total_words'] = 'nombre de mots suspect / nombre de mots';
 $string['question'] = 'Question';
 $string['score'] = 'Score';
 $string['word'] = 'mots';
@@ -299,7 +299,7 @@ $string["export_global_csv"] = 'Cliquez-ici pour exporter ces données au format
 $string["global_statistics_description"] = 'Toutes les données des documents envoyés à Compilatio.';
 $string["global_statistics"] = 'Statistiques globales';
 $string["activities_statistics"] = 'Statistiques par activité';
-$string["similarities"] = 'Similitudes';
+$string["similarities"] = 'Textes suspects';
 
 // Help tab.
 $string['tabs_title_help'] = 'Aide';
