@@ -344,8 +344,6 @@ class CompilatioDocumentFrame {
      */
     public static function get_score($cmpfile, $config, $isteacher, $wrapping) {
         global $DB;
-        $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmpfile->cm]);
-        $compilatio = new CompilatioAPI($userid);
 
         $color = $cmpfile->globalscore <= ($config->warningthreshold ?? 10)
             ? 'green'
