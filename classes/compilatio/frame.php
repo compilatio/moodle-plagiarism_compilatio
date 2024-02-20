@@ -230,13 +230,13 @@ class CompilatioFrame {
         // Stat per student quiz icon.
         if ($module == 'quiz') {
             $output .=
-            "<i
+            "<span
                 id='show-stats-per-student'
                 title='" . get_string('display_stats_per_student', 'plagiarism_compilatio') . "'
-                class='cmp-icon fa fa-chalkboard-teacher'
+                class='cmp-icon'
                 data-toggle='tooltip'
-            >
-            </i>";
+            >" . CompilatioIcons::statisticsPerStudent() . "
+            </span>";
         }
 
         if ($plagiarismsettings['enable_search_tab']) {
@@ -272,13 +272,13 @@ class CompilatioFrame {
             if ($multipleanalysesoptions) {
                 $output .="
                 <div class='dropdown'>
-                    <i
-                        class='fas fa-ellipsis-v fa-lg p-2'
+                    <span 
                         data-toggle='dropdown'
                         role='button'
-                        title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'
-                    >
-                    </i>
+                        class='p-2'
+                        title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'>"
+                        . CompilatioIcons::ellipsis() .
+                    "</span>
                     <div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>
                         <div
                             class='cmp-action-btn mx-1 cmp-start-btn'

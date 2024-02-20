@@ -27,6 +27,7 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/icons.php');
 
 require_login();
 
@@ -69,8 +70,8 @@ foreach ($notifications as $index => $notification) {
 
             $contents .= "
                 <div id='cmp-notifications-content-" . $notification->id . "' class='cmp-notifications-content' style='display: none;'>
-                    <div class='cmp-show-notifications mb-2 cmp-cursor-pointer'>
-                        <i class='fa-solid fa-arrow-left mr-2'></i>" . get_string('see_all_notifications', 'plagiarism_compilatio') . "
+                    <div class='cmp-show-notifications mb-2 cmp-cursor-pointer'>"
+                        . CompilatioIcons::arrowLeft() . get_string('see_all_notifications', 'plagiarism_compilatio') . "
                     </div>
                     <div class='d-flex flex-column'>" . $body . "</div>
                 </div>";

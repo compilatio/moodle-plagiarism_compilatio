@@ -180,7 +180,9 @@ class CompilatioDocumentFrame {
     ) {
         global $DB, $CFG;
 
-        $cmpfile = $DB->get_record('plagiarism_compilatio_file', ['id' => $cmpfileid]);
+        if (!empty($cmpfileid)) {
+            $cmpfile = $DB->get_record('plagiarism_compilatio_file', ['id' => $cmpfileid]);
+        }
 
         $status = $cmpfile->status ?? null;
 
