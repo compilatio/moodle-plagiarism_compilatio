@@ -133,7 +133,7 @@ class CompilatioSendFile {
                 if ($cmconfig->analysistype == 'auto') {
                     $cmpfile->status = 'queue';
 
-                    // ADTD v2 document management.
+                    // v2 docs management.
                     if (null === $cmconfig->folderid) {
                         $cmpfile->status = 'to_analyze';
                     }

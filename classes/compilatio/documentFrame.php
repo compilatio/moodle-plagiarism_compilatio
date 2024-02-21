@@ -61,7 +61,7 @@ class CompilatioDocumentFrame {
 
         $cm = get_coursemodule_from_id(null, $linkarray['cmid']);
 
-        // Get submiter userid.
+        // Get submitter userid.
         $userid = $linkarray['userid']; // In Workshops and forums.
         if ($cm->modname == 'assign' && isset($linkarray['file'])) { // In assigns.
             $userid = $DB->get_field('assign_submission', 'userid', ['id' => $linkarray['file']->get_itemid()]);
@@ -111,6 +111,11 @@ class CompilatioDocumentFrame {
         $cmpfile = $DB->get_record('plagiarism_compilatio_file',
             ['cm' => $linkarray['cmid'], 'userid' => $userid, 'identifier' => $identifier]);
 
+        if (empty($cmpfile) && isset($linkarray['quizfilename'])) { // v2 docs management. Try to get record with filename in quiz.
+            $cmpfile = $DB->get_record('plagiarism_compilatio_file',
+                ['cm' => $linkarray['cmid'], 'userid' => $userid, 'identifier' => sha1($linkarray['quizfilename'])]);
+        }
+
         if (empty($cmpfile)) { // Try to get record without userid in forums.
             $sql = 'SELECT * FROM {plagiarism_compilatio_file} WHERE cm = ? AND identifier = ?';
             $cmpfile = $DB->get_record_sql($sql, [$linkarray['cmid'], $identifier]);
@@ -146,8 +151,7 @@ class CompilatioDocumentFrame {
             } else {
                 return '';
             }
-        }
-        
+        }        
         
         $output .= "<div id='cmp-" . $domid . "'></div>";
 
@@ -186,7 +190,7 @@ class CompilatioDocumentFrame {
 
         $status = $cmpfile->status ?? null;
 
-        // ADTD v2 document management.
+        // v2 docs management.
         $status = $status == 'to_analyze' ? 'queue' : $status;
 
         $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmpfile->cm ?? null]);
@@ -204,7 +208,7 @@ class CompilatioDocumentFrame {
 
                 $href = "{$CFG->httpswwwroot}/plagiarism/compilatio/redirect_report.php?" . http_build_query($params);
 
-                // ADTD v2 document management.
+                // v2 docs management.
                 if (isset($cmpfile->reporturl)) {
                     $href = $cmpfile->reporturl;
                 }
@@ -292,7 +296,7 @@ class CompilatioDocumentFrame {
         // Add de/indexing feature for teachers.
         $indexed = null;
         if (!empty($cmpfile->externalid) && $cantriggeranalysis && !$isstudentanalyse) {
-            // ADTD v2 document management.
+            // v2 docs management.
             if (null === $cmpfile->indexed) {
                 $compilatio = new CompilatioAPI($config->userid);
                 $document = $compilatio->get_document($cmpfile->externalid);
@@ -410,6 +414,8 @@ class CompilatioDocumentFrame {
      * @return array Return linkarray
      */
     private static function manage_quiz($linkarray) {
+        global $DB;
+
         if (empty($linkarray['cmid']) || empty($linkarray['content'])) {
             $quba = question_engine::load_questions_usage_by_activity($linkarray['area']);
 
@@ -430,6 +436,11 @@ class CompilatioDocumentFrame {
                     }
                     // If content and file not submitted, try to get the content.
                     if (empty($linkarray['content']) && empty($linkarray['file'])) {
+                        // v2 docs management.
+                        $courseid = $DB->get_field('course_modules', 'course', array('id' => $linkarray['cmid']));
+                        $attemptid = $DB->get_field('quiz_attempts', 'id', ['uniqueid' => $attempt->get_usage_id()]);
+                        $linkarray['quizfilename'] = "quiz-" . $courseid . "-" . $linkarray['cmid'] . "-" . $attemptid . "-Q" . $attempt->get_question_id() . ".htm";
+
                         $linkarray['content'] = $attempt->get_response_summary();
                     }
                 }

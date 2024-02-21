@@ -193,7 +193,7 @@ class CompilatioSettings {
                 $needtermsofservice = true;
             }
 
-            // ADTD v2 document management.
+            // v2 docs management.
             if (!empty($config) && null === $config->userid && $config->activated === '1') {
                 $needtermsofservice = false;
             }

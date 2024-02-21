@@ -306,7 +306,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                 'showstudentreport' => $showstudent[$config['compilatio_show_student_report']],
                 'studentanalyses'   => $config['compi_student_analyses'],
                 'analysistype'      => $analysistype[$config['compilatio_analysistype']],
-                'analysistime'      => $config['compilatio_timeanalyse'] ?? null,
+                'analysistime'      => $config['compilatio_timeanalyse'],
                 'warningthreshold'  => $config['green_threshold'],
                 'criticalthreshold' => $config['orange_threshold'],
                 'defaultindexing'   => $config['indexing_state'],
@@ -358,7 +358,9 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                     $filename = $file->filename;
                 }
 
-                $reporturl = preg_match('/^[a-f0-9]{40}$/', $file->reporturl) ? null : $file->reporturl;
+                if (!empty($file->reporturl)) {
+                    $reporturl = preg_match('/^[a-f0-9]{40}$/', $file->reporturl) ? null : $file->reporturl;
+                }
 
                 $v3file = (object) [
                     'cm'              => $file->cm,
@@ -372,7 +374,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                     'utlscore'        => $file->utlscore ?? null,
                     'aiscore'         => $file->aiscore ?? null,
                     'timesubmitted'   => $file->timesubmitted,
-                    'reporturl'       => $reporturl,
+                    'reporturl'       => $reporturl ?? null,
                 ];
 
                 $DB->insert_record('plagiarism_compilatio_file', $v3file);

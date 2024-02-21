@@ -24,7 +24,7 @@
  */
 
 namespace plagiarism_compilatio\task;
-// ADTD v2 document management.
+// v2 docs management.
 /**
  * Trigger_analyses task class
  */

@@ -347,7 +347,7 @@ $string['manual_analysis'] = 'The analysis of this document must be triggered ma
 // Scheduled tasks.
 $string['get_scores'] = "Retrieve plagiarism scores from Compilatio";
 $string['update_meta'] = "Perform Compilatio's scheduled operations";
-$string['trigger_analyses'] = "Trigger Compilatio analyses"; // ADTD v2 document management.
+$string['trigger_analyses'] = "Trigger Compilatio analyses"; // v2 docs management.
 
 // Report.
 $string['redirect_report_failed'] = "An error occurred while retrieving the analysis report. Please try again later or contact support (support@compilatio.net) if the problem persists.";

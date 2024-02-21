@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 $tasks = [
-    // ADTD v2 document management.
+    // v2 docs management.
     [
         'classname' => 'plagiarism_compilatio\task\trigger_analyses',
         'blocking' => 0,

@@ -745,12 +745,12 @@ class CompilatioAPI {
         return $response->status->message;
     }
 
-    // ADTR v2 document management.
     private function build_curl_on_behalf_of_user($endpoint, $method = null, $data = null, $handle = null) {
         global $DB;
 
         $header = [];
 
+        // v2 docs management.
         $header[] = null === $this->userid
             ? 'X-LMS-USER-ID: ' . $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => 0])
             : 'X-LMS-USER-ID: ' . $this->userid;
