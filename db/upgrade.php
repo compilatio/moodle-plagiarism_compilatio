@@ -306,7 +306,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                 'showstudentreport' => $showstudent[$config['compilatio_show_student_report']],
                 'studentanalyses'   => $config['compi_student_analyses'],
                 'analysistype'      => $analysistype[$config['compilatio_analysistype']],
-                'analysistime'      => $config['compilatio_timeanalyse'],
+                'analysistime'      => $config['compilatio_timeanalyse'] ?? null,
                 'warningthreshold'  => $config['green_threshold'],
                 'criticalthreshold' => $config['orange_threshold'],
                 'defaultindexing'   => $config['indexing_state'],
