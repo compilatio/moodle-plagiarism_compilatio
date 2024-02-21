@@ -3462,7 +3462,7 @@ function compilatio_handle_quiz_attempt($attemptid) {
     $plagiarismsettings = (array) get_config('plagiarism_compilatio');
     $fs = get_file_storage();
 
-    $attempt = \mod_quiz\quiz_attempt::create($attemptid);
+    $attempt = $CFG->version < 2023100900 ? \quiz_attempt::create($attemptid) : \mod_quiz\quiz_attempt::create($attemptid);
     $userid = $attempt->get_userid();
     $cmid = $attempt->get_cmid();
 
