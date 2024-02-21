@@ -407,6 +407,10 @@ class CompilatioEventHandler {
             if ($answer->get_question()->get_type_name() == 'essay') {
                 $content = $answer->get_response_summary();
 
+                if (empty($content)) {
+                    return;
+                }
+
                 // Check for duplicates files.
                 $identifier = sha1($content);
                 $duplicate = $DB->get_records('plagiarism_compilatio_file',

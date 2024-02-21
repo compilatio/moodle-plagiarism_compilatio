@@ -362,16 +362,20 @@ class CompilatioStatistics {
     public static function get_statistics_by_student($studentid, $cmid) {
         global $CFG, $DB;
 
+        require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
         $output = "";
 
         $sql = "SELECT {quiz_attempts}.id
                 FROM {quiz_attempts}
-                INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz
-                INNER JOIN {course_modules} ON {course_modules}.instance = {quiz}.id
-                WHERE {course_modules}.id = ?
-                AND {quiz_attempts}.userid = ?";
+                    INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz
+                    INNER JOIN {course_modules} ON {course_modules}.instance = {quiz}.id
+                WHERE {course_modules}.id = ? AND {quiz_attempts}.userid = ?
+                ORDER BY {quiz_attempts}.attempt DESC
+                LIMIT 1";
 
         $attemptid = $DB->get_field_sql($sql, [$cmid, $studentid]);
+
         $attempt = $CFG->version < 2023100900 ? \quiz_attempt::create($attemptid) : \mod_quiz\quiz_attempt::create($attemptid);
 
         $totalwordquiz = 0;
@@ -564,7 +568,7 @@ class CompilatioStatistics {
         global $DB, $PAGE, $CFG;
         $compilatio = new CompilatioAPI();
 
-        $sql = "SELECT {user}.id, {user}.lastname, {user}.firstname
+        $sql = "SELECT DISTINCT {user}.id, {user}.lastname, {user}.firstname
             FROM {user}
             INNER JOIN {quiz_attempts} on {quiz_attempts}.userid = {user}.id
             INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz
