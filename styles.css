@@ -209,7 +209,7 @@ Compilatio document frame area
 }
 .cmp-library {
     cursor: pointer;
-    margin: 0 10px 0 7px;
+    margin: 0 10px 0 3px;
     display: inline-block;
     position: relative;
 }
@@ -237,7 +237,7 @@ Compilatio document frame area
 
 .cmp-btn-doc {
     height: 30px;
-    margin: 2px 2px 2px 0px;
+    margin: 2px 2px 2px 2px;
     width: 100px;
 }
 
@@ -258,22 +258,23 @@ a.cmp-btn-primary:hover {
 /* Similarities */
 .cmp-similarity {
     cursor: pointer;
-    margin: 0 5px;
+    margin: 0 7px 0 5px;
     height: 32px;
     line-height: 34px;
     text-align: center;
     font-weight: bold;
     font-size: medium;
     white-space: nowrap;
+    width: 35px;
+}
+.cmp-score-icon {
+    margin: 0 2px;
 }
 
 /* Compilatio small logo */
 .cmp-small-logo {
-    height: 16px;
-    top: -8px;
-    left: -9px;
-    border-radius: 3px;
-    position: absolute;
+    height: 22px;
+    margin: 6px;
 }
 
 /* Compilatio notifications */

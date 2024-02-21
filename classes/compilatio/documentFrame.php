@@ -359,7 +359,7 @@ class CompilatioDocumentFrame {
         $title .= $isteacher ? ' ' . get_string('title_score_teacher', 'plagiarism_compilatio') : '';
 
         $html = "<span title='{$title}' class='cmp-similarity cmp-color-{$color} align-middle'>
-                    <i class='fa fa-circle'></i> {$cmpfile->globalscore}<small>%</small>
+                    <i style='display: none;' class='fa fa-refresh'></i><span>{$cmpfile->globalscore}<small>%</small></span>
                 </span>";
 
         $scores = ['similarityscore', 'utlscore'];

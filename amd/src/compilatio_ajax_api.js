@@ -153,10 +153,12 @@ define(['jquery'], function($) {
                 if (isteacher) {
                     var refreshScoreBtn = $('#cmp-' + domid + ' .cmp-similarity');
                     refreshScoreBtn.on("mouseover", (e) => {
-                        refreshScoreBtn.find('i').removeClass('fa-circle').addClass('fa-refresh');
+                        refreshScoreBtn.find('i').show()//removeClass('fa-circle').addClass('fa-refresh');
+                        refreshScoreBtn.find('span').hide()
                     });
                     refreshScoreBtn.on("mouseout", (e) => {
-                        refreshScoreBtn.find('i').removeClass('fa-refresh').addClass('fa-circle');
+                        refreshScoreBtn.find('i').hide()//removeClass('fa-refresh').addClass('fa-circle');
+                        refreshScoreBtn.find('span').show()
                     });
                     refreshScoreBtn.click(function() {
                         $('#cmp-' + domid + ' #cmp-score-icons').remove();

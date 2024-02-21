@@ -47,7 +47,7 @@ class CompilatioIcons {
     }
 
     public static function report() {
-        return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 67' width='20' class='mr-1 icon-inline'>
+        return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 67' width='20' class='mr-1'>
                 <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                 <path fill='#494c4e' d='M71.61,34.39h0A3.6,3.6,0,1,1,68,30.79,3.59,3.59,0,0,1,71.61,34.39ZM91.14.15a9,9,0,0,0-7.91,13.34L72,26.31a8.91,8.91,0,0,0-4-.94,9,9,0,0,0-8.44,5.83L43.11,27.9a9,9,0,1,0-16.64,6.59L13.18,49.44a8.88,8.88,0,0,0-4-.95,9,9,0,1,0,7.92,4.71l13.29-15a8.92,8.92,0,0,0,4,1,9,9,0,0,0,8.43-5.83l16.47,3.3A9,9,0,0,0,77,34.39a8.93,8.93,0,0,0-1.11-4.33L87.14,17.24a9,9,0,1,0,4-17.09Zm-82,61a3.6,3.6,0,1,1,3.6-3.59A3.59,3.59,0,0,1,9.16,61.1ZM34.39,33.78A3.6,3.6,0,1,1,38,30.18,3.6,3.6,0,0,1,34.39,33.78Zm56.74-21a3.6,3.6,0,1,1,3.6-3.6A3.6,3.6,0,0,1,91.13,12.76Z'></path>
             </svg>";
@@ -62,7 +62,7 @@ class CompilatioIcons {
 
     public static function aiscore($color) {
         $color = self::get_hexadecimal_color($color);
-        return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' height='1em' class='mr-1 icon-inline'>
+        return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' height='1em' class='cmp-score-icon'>
         <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
         <path
             d='M184 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64h-8c-35.3 0-64 28.7-64 64v8H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v48H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v48H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v8c0 35.3 28.7 64 64 64h8v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h48v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h48v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h8c35.3 0 64-28.7 64-64v-8h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448V280h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448V184h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448v-8c0-35.3-28.7-64-64-64h-8V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H280V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H184V24zM112 128c0-8.8 7.2-16 16-16H384c8.8 0 16 7.2 16 16V384c0 8.8-7.2 16-16 16H128c-8.8 0-16-7.2-16-16V128zm224 44c-11 0-20 9-20 20V320c0 11 9 20 20 20s20-9 20-20V192c0-11-9-20-20-20zM234.3 184c-3.2-7.3-10.4-12-18.3-12s-15.1 4.7-18.3 12l-56 128c-4.4 10.1 .2 21.9 10.3 26.3s21.9-.2 26.3-10.3l5.3-12h64.8l5.3 12c4.4 10.1 16.2 14.7 26.3 10.3s14.7-16.2 10.3-26.3l-56-128zM216 241.9L230.9 276H201.1L216 241.9z'
@@ -73,7 +73,7 @@ class CompilatioIcons {
 
     public static function utlscore($color) {
         $color = self::get_hexadecimal_color($color);
-        return "<svg xmlns='http://www.w3.org/2000/svg' file='none' height='1em' viewBox='0 0 640 512' class='icon-inline mr-1'>
+        return "<svg xmlns='http://www.w3.org/2000/svg' file='none' height='1em' viewBox='0 0 640 512' class='cmp-score-icon'>
                 <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                 <path
                     fill='{$color}'
@@ -84,7 +84,7 @@ class CompilatioIcons {
 
     public static function similarityscore($color) {
         $color = self::get_hexadecimal_color($color);
-        return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' height='1em' fill='none' class='mx-1 icon-inline'>
+        return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' height='1em' fill='none' class='cmp-score-icon'>
             <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
             <path
                 fill='{$color}'
@@ -94,33 +94,33 @@ class CompilatioIcons {
     }
 
     public static function ignoredaiscore() {
-        return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' height='1em' class='mr-1 icon-inline'>
-        <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-        <path
-            d='M184 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64h-8c-35.3 0-64 28.7-64 64v8H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v48H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v48H24c-13.3 0-24 10.7-24 24s10.7 24 24 24H64v8c0 35.3 28.7 64 64 64h8v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h48v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h48v40c0 13.3 10.7 24 24 24s24-10.7 24-24V448h8c35.3 0 64-28.7 64-64v-8h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448V280h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448V184h40c13.3 0 24-10.7 24-24s-10.7-24-24-24H448v-8c0-35.3-28.7-64-64-64h-8V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H280V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H184V24zM112 128c0-8.8 7.2-16 16-16H384c8.8 0 16 7.2 16 16V384c0 8.8-7.2 16-16 16H128c-8.8 0-16-7.2-16-16V128zm224 44c-11 0-20 9-20 20V320c0 11 9 20 20 20s20-9 20-20V192c0-11-9-20-20-20zM234.3 184c-3.2-7.3-10.4-12-18.3-12s-15.1 4.7-18.3 12l-56 128c-4.4 10.1 .2 21.9 10.3 26.3s21.9-.2 26.3-10.3l5.3-12h64.8l5.3 12c4.4 10.1 16.2 14.7 26.3 10.3s14.7-16.2 10.3-26.3l-56-128zM216 241.9L230.9 276H201.1L216 241.9z'
-            fill='#B0B0B0'
-        />
-    </svg>";
+        return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512' height='1em' class='cmp-score-icon'>
+                <!--!Font Awesome Pro 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2024 Fonticons, Inc.-->
+                <path
+                    fill='#B0B0B0'
+                    d='M5.1 9.2C13.3-1.2 28.4-3.1 38.8 5.1L143 86.8C154.8 72.9 172.4 64 192 64l8 0 0-40c0-13.3 10.7-24 24-24s24 10.7 24 24l0 40 48 0 0-40c0-13.3 10.7-24 24-24s24 10.7 24 24l0 40 48 0 0-40c0-13.3 10.7-24 24-24s24 10.7 24 24l0 40 8 0c35.3 0 64 28.7 64 64l0 8 40 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-40 0 0 48 40 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-40 0 0 48 40 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-40 0c39.6 31 79.2 62.1 118.8 93.1c10.4 8.2 12.3 23.3 4.1 33.7s-23.3 12.3-33.7 4.1L9.2 42.9C-1.2 34.7-3.1 19.6 5.1 9.2zM64 160c0-4.1 1-8 2.8-11.3L111.7 184 88 184c-13.3 0-24-10.7-24-24zm0 96c0-13.3 10.7-24 24-24l40 0 0-35.1 48 37.8L176 384c0 8.8 7.2 16 16 16l193.8 0 60.9 48-6.8 0 0 40c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-40-48 0 0 40c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-40-48 0 0 40c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-40-8 0c-35.3 0-64-28.7-64-64l0-8-40 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l40 0 0-48-40 0c-13.3 0-24-10.7-24-24zM180.9 116.5l82.4 64.6c3.7-5.6 9.9-9.1 16.7-9.1c7.9 0 15.1 4.7 18.3 12l16.3 37.3L380 272.5l0-80.5c0-11 9-20 20-20s20 9 20 20l0 111.9 44 34.5L464 128c0-8.8-7.2-16-16-16l-256 0c-4.3 0-8.2 1.7-11.1 4.5zM205.7 312l17.5-40.1 56 44.1-31.6 0-5.3 12c-4.4 10.1-16.2 14.7-26.3 10.3s-14.7-16.2-10.3-26.3zM512 376s0 0 0 0z'
+                />
+            </svg>";
     }
 
     public static function ignoredutlscore() {
-        return "<svg xmlns='http://www.w3.org/2000/svg' file='none' height='1em' viewBox='0 0 640 512' class='icon-inline mr-1'>
-                <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+        return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512' height='1em' class='cmp-score-icon'>
+                <!--!Font Awesome Pro 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2024 Fonticons, Inc.-->
                 <path
                     fill='#B0B0B0'
-                    d='M0 417.5C0 406 3.1 394.8 9.1 385C75.2 276.4 141.3 167.9 207.4 59.3C217.7 42.4 236.1 32 256 32s38.3 10.4 48.6 27.3c48.4 79.5 96.8 159 145.2 238.6c-11.6 11.6-23.3 23.3-34.9 34.9C364.5 250 314 167.1 263.6 84.3C262 81.6 259.1 80 256 80s-6 1.6-7.6 4.3C182.3 192.9 116.2 301.4 50.1 410c-1.4 2.2-2.1 4.8-2.1 7.5c0 8 6.5 14.5 14.5 14.5c90.7 0 181.3 0 272 0c-4 16-8 32-12.1 48c-86.6 0-173.3 0-260 0C28 480 0 452 0 417.5zM224 368c0-17.7 14.3-32 32-32s32 14.3 32 32s-14.3 32-32 32s-32-14.3-32-32zm8-184c0-13.3 10.7-24 24-24s24 10.7 24 24c0 32 0 64 0 96c0 13.3-10.7 24-24 24s-24-10.7-24-24c0-32 0-64 0-96zM353.5 492.1c5-20 10-40.1 15-60.1c1.4-5.7 4.3-10.8 8.4-14.9C420 374 463.1 331 506.2 287.9c-.1 0 0 0-.1 0c23.7 23.7 47.3 47.3 71 71C534 402 491 445 447.9 488.1c-4.1 4.1-9.3 7-14.9 8.4c-20 5-40.1 10-60.1 15c-5.5 1.4-11.2-.2-15.2-4.2s-5.6-9.7-4.2-15.2zM528.8 265.3c9.8-9.8 19.6-19.6 29.4-29.4c15.7-15.6 41-15.6 56.6 0c4.8 4.8 9.5 9.5 14.3 14.3c15.6 15.7 15.6 41 0 56.6c-9.8 9.8-19.6 19.6-29.4 29.4l-70.9-70.9z'
+                    d='M5.1 9.2C13.3-1.2 28.4-3.1 38.8 5.1L218.6 146l52.8-86.7C281.7 42.4 300.1 32 320 32s38.3 10.4 48.6 27.3L566.9 385c5.9 9.8 9.1 21 9.1 32.5c0 2.8-.2 5.5-.5 8.2l55.3 43.4c10.4 8.2 12.3 23.3 4.1 33.7s-23.3 12.3-33.7 4.1L9.2 42.9C-1.2 34.7-3.1 19.6 5.1 9.2zM64 417.5c0-11.5 3.1-22.7 9.1-32.5l95.2-156.4 38 29.9L114.1 410c-1.4 2.2-2.1 4.8-2.1 7.5c0 8 6.5 14.5 14.5 14.5l300 0 60.9 48-360.9 0C92 480 64 452 64 417.5zM256.7 175.9L296 206.7l0-22.7c0-13.3 10.7-24 24-24s24 10.7 24 24l0 60.3L499 365.8 327.6 84.3C326 81.6 323.1 80 320 80s-6 1.6-7.6 4.3l-55.7 91.6zM288 368c0-13.3 8.1-24.7 19.7-29.6L351.6 373c-2.4 15.3-15.6 27-31.6 27c-17.7 0-32-14.3-32-32z'
                 />
             </svg>";
     }
 
     public static function ignoredsimilarityscore() {
-        return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' height='1em' fill='none' class='mx-1 icon-inline'>
-            <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-            <path
-                fill='#B0B0B0'
-                d='M104.6 48H64C28.7 48 0 76.7 0 112V384c0 35.3 28.7 64 64 64h96V400H64c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H80c0 17.7 14.3 32 32 32h72.4C202 108.4 227.6 96 256 96h62c-7.1-27.6-32.2-48-62-48H215.4C211.6 20.9 188.2 0 160 0s-51.6 20.9-55.4 48zM144 56a16 16 0 1 1 32 0 16 16 0 1 1 -32 0zM448 464H256c-8.8 0-16-7.2-16-16V192c0-8.8 7.2-16 16-16l140.1 0L464 243.9V448c0 8.8-7.2 16-16 16zM256 512H448c35.3 0 64-28.7 64-64V243.9c0-12.7-5.1-24.9-14.1-33.9l-67.9-67.9c-9-9-21.2-14.1-33.9-14.1H256c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64z'
-            />
-        </svg>";
+        return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512' height='1em' class='cmp-score-icon'>
+                <!--!Font Awesome Pro 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2024 Fonticons, Inc.-->
+                <path
+                    fill='#B0B0B0'
+                    d='M5.1 9.2C13.3-1.2 28.4-3.1 38.8 5.1l62.3 48.8c8.2-3.8 17.3-5.9 26.9-5.9l40.6 0C172.4 20.9 195.8 0 224 0s51.6 20.9 55.4 48L320 48c29.8 0 54.9 20.4 62 48l-62 0c-28.4 0-54 12.4-71.6 32l-52.8 0 62.2 48.8c6.8-28 32.1-48.8 62.2-48.8l140.1 0c12.7 0 24.9 5.1 33.9 14.1L561.9 210c9 9 14.1 21.2 14.1 33.9l0 182.2 54.8 43c10.4 8.2 12.3 23.3 4.1 33.7s-23.3 12.3-33.7 4.1L9.2 42.9C-1.2 34.7-3.1 19.6 5.1 9.2zM64 146.4l48 37.8L112 384c0 8.8 7.2 16 16 16l96 0 0 48-96 0c-35.3 0-64-28.7-64-64l0-237.6zM208 56c0 8.8 7.2 16 16 16s16-7.2 16-16s-7.2-16-16-16s-16 7.2-16 16zm48 241.7l48 37.8L304 448c0 8.8 7.2 16 16 16l147.1 0 59 46.5c-4.5 1-9.2 1.5-14 1.5l-192 0c-35.3 0-64-28.7-64-64l0-150.3zM304 192l0 21L528 388.5l0-144.6L460.1 176 320 176c-8.8 0-16 7.2-16 16z'
+                />
+            </svg>";
     }
 
     private static function get_hexadecimal_color($color) {
