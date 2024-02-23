@@ -115,7 +115,7 @@ class CompilatioAnalyses {
                 $cmpfile->aiscore = isset($scores->ai_generated_percent)
                     ? round($scores->ai_generated_percent)
                     : null;
-            
+
                 $scoresmapping = [
                     'ai_generated' => 'aiscore',
                     'unrecognized_text_language' => 'utlscore',

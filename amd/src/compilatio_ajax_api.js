@@ -81,7 +81,7 @@ define(['jquery'], function($) {
 
     exports.startAnalysesOnSelectedFiles = function(basepath, cmid, message) {
         $(document).ready(function() {
-            const multipleanalysisoptions = $('#show-multiple-analyse-options').hide();
+            const startSelectedAnalysesBtn = $('#start-selected-analyses-btn').hide();
             const checkboxes = $('td.c0 input, #selectall');
             function getSelectedLines() {
                 return checkboxes.filter(':checked').map(function() {
@@ -90,10 +90,10 @@ define(['jquery'], function($) {
             }
             function updateButtonVisibility() {
                 const selectedUsers = getSelectedLines();
-                selectedUsers.length > 0 ? multipleanalysisoptions.show() : multipleanalysisoptions.hide();
+                selectedUsers.length > 0 ? startSelectedAnalysesBtn.show() : startSelectedAnalysesBtn.hide();
             }
             checkboxes.on('change', updateButtonVisibility);
-            multipleanalysisoptions.click(function() {
+            startSelectedAnalysesBtn.click(function() {
                 startAnalysis(message, basepath, cmid, getSelectedLines());
             });
         });

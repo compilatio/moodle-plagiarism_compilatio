@@ -199,6 +199,7 @@ $string['hide_area'] = 'Hide Compilatio informations';
 $string['show_area'] = 'Show Compilatio informations';
 $string['start_selected_files_analysis'] = 'Analyse selected documents ';
 $string['access_report'] = 'Access report';
+$string["other_analysis_options"] = 'Other analysis options';
 
 // Detailed error status.
 $string['detailed_error_unsupported'] = "These documents could not be analysed by Compilatio because their format is not supported.";
@@ -242,9 +243,6 @@ $string["compilatio_search_help"] = "You can find the depositor of a document by
 $string["compilatio_iddocument"] = "Document identifier";
 $string["compilatio_search_notfound"] = "No document was found for this identifier among the documents loaded on your Moodle platform.";
 $string["compilatio_depositor"] = 'The document in activity <b>{$a->modulename}</b> was submitted by the Moodle user <b>{$a->lastname} {$a->firstname}</b>.';
-
-// Other analysis options
-$string["other_analysis_options"] = 'Other analysis options';
 
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistics';
@@ -348,7 +346,7 @@ $string['manual_analysis'] = 'The analysis of this document must be triggered ma
 // Scheduled tasks.
 $string['get_scores'] = "Retrieve plagiarism scores from Compilatio";
 $string['update_meta'] = "Perform Compilatio's scheduled operations";
-$string['trigger_analyses'] = "Trigger Compilatio analyses"; // v2 docs management.
+$string['trigger_analyses'] = "Trigger Compilatio analyses"; // Plugin v2 docs management.
 
 // Report.
 $string['redirect_report_failed'] = "An error occurred while retrieving the analysis report. Please try again later or contact support (support@compilatio.net) if the problem persists.";

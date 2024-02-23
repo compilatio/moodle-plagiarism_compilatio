@@ -667,7 +667,7 @@ class CompilatioAPI {
         if ($this->get_error_response($response, 200) === false) {
             return $response->data->notifications;
         }
-        
+
         return [];
     }
 
@@ -750,7 +750,7 @@ class CompilatioAPI {
 
         $header = [];
 
-        // v2 docs management.
+        // Plugin v2 docs management.
         $header[] = null === $this->userid
             ? 'X-LMS-USER-ID: ' . $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => 0])
             : 'X-LMS-USER-ID: ' . $this->userid;

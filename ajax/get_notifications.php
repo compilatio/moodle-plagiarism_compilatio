@@ -71,7 +71,7 @@ foreach ($notifications as $index => $notification) {
             $contents .= "
                 <div id='cmp-notifications-content-" . $notification->id . "' class='cmp-notifications-content' style='display: none;'>
                     <div class='cmp-show-notifications mb-2 cmp-cursor-pointer'>"
-                        . CompilatioIcons::arrowLeft() . get_string('see_all_notifications', 'plagiarism_compilatio') . "
+                        . CompilatioIcons::arrow_left() . get_string('see_all_notifications', 'plagiarism_compilatio') . "
                     </div>
                     <div class='d-flex flex-column'>" . $body . "</div>
                 </div>";

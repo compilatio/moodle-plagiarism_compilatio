@@ -8,7 +8,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 - The plugin now uses a Compilatio Magister account for each Moodle teacher and a Compilatio folder for each Moodle activity.
-- Added the option to run analyses only on selected lines (students).
+- Added the option to run analyses only on selected lines (students in assignment and attempts in quizzes).
 - Quiz: possibility to display statistics by user in a new tab.
 - Added marketing notifications display.
 - Redesign display of Compilatio frame for documents.

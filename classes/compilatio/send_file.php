@@ -133,7 +133,7 @@ class CompilatioSendFile {
                 if ($cmconfig->analysistype == 'auto') {
                     $cmpfile->status = 'queue';
 
-                    // v2 docs management.
+                    // Plugin v2 docs management.
                     if (null === $cmconfig->folderid) {
                         $cmpfile->status = 'to_analyze';
                     }

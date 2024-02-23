@@ -24,7 +24,7 @@
  */
 
 namespace plagiarism_compilatio\task;
-// v2 docs management.
+// Plugin v2 docs management.
 /**
  * Trigger_analyses task class
  */

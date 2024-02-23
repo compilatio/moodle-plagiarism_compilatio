@@ -415,7 +415,7 @@ class CompilatioEventHandler {
                 $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
                 if (str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) >= $nbmotsmin) {
                     $question = "Q" . $answer->get_question_id();
-                    $courseid = $DB->get_field('course_modules', 'course', array('id' => $cmid));
+                    $courseid = $DB->get_field('course_modules', 'course', ['id' => $cmid]);
                     $filename = "quiz-{$courseid}-{$cmid}-{$attemptid}-{$question}.htm";
 
                     // Check for duplicates files.

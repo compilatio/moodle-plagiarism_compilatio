@@ -151,8 +151,8 @@ class CompilatioDocumentFrame {
             } else {
                 return '';
             }
-        }        
-        
+        }
+
         $output .= "<div id='cmp-" . $domid . "'></div>";
 
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'displayDocumentFrame', [
@@ -190,7 +190,7 @@ class CompilatioDocumentFrame {
 
         $status = $cmpfile->status ?? null;
 
-        // v2 docs management.
+        // Plugin v2 docs management.
         $status = $status == 'to_analyze' ? 'queue' : $status;
 
         $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmpfile->cm ?? null]);
@@ -208,7 +208,7 @@ class CompilatioDocumentFrame {
 
                 $href = "{$CFG->httpswwwroot}/plagiarism/compilatio/redirect_report.php?" . http_build_query($params);
 
-                // v2 docs management.
+                // Plugin v2 docs management.
                 if (isset($cmpfile->reporturl)) {
                     $href = $cmpfile->reporturl;
                 }
@@ -296,7 +296,7 @@ class CompilatioDocumentFrame {
         // Add de/indexing feature for teachers.
         $indexed = null;
         if (!empty($cmpfile->externalid) && $cantriggeranalysis && !$isstudentanalyse) {
-            // v2 docs management.
+            // Plugin v2 docs management.
             if (null === $cmpfile->indexed) {
                 $compilatio = new CompilatioAPI($config->userid);
                 $document = $compilatio->get_document($cmpfile->externalid);
@@ -368,7 +368,7 @@ class CompilatioDocumentFrame {
 
         $scores = ['similarityscore', 'utlscore'];
         $recipe = get_config('plagiarism_compilatio', 'recipe');
-        
+
         $recipe === 'anasim-premium' ? array_push($scores, 'aiscore') : '';
 
         $icons = '';
@@ -438,7 +438,7 @@ class CompilatioDocumentFrame {
                     }
                     // If content and file not submitted, try to get the content.
                     if (empty($linkarray['content']) && empty($linkarray['file'])) {
-                        $courseid = $DB->get_field('course_modules', 'course', array('id' => $linkarray['cmid']));
+                        $courseid = $DB->get_field('course_modules', 'course', ['id' => $linkarray['cmid']]);
                         $attemptid = $DB->get_field('quiz_attempts', 'id', ['uniqueid' => $attempt->get_usage_id()]);
                         $linkarray['cmp_filename'] = "quiz-" . $courseid . "-" . $linkarray['cmid'] . "-" . $attemptid . "-Q" . $attempt->get_question_id() . ".htm";
 

@@ -93,7 +93,7 @@ class CompilatioFrame {
             unset($SESSION->compilatio_alerts);
         }
 
-        $startallanalyses = $sendalldocs = $resetdocsinerror = $multipleanalysesoptions = false;
+        $startallanalyses = $sendalldocs = $resetdocsinerror = $selectanalysesoptions = false;
 
         $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
@@ -101,7 +101,10 @@ class CompilatioFrame {
             $cmconfig->analysistype == 'manual'
                 && $DB->count_records('plagiarism_compilatio_files', ['status' => 'sent', 'cm' => $cmid]) !== 0
         ) {
-            $startallanalyses = $multipleanalysesoptions = true;
+            if ($module == 'quiz' || $module == 'assign') {
+                $selectanalysesoptions = true;
+            }
+            $startallanalyses = true;
 
         } else if ($cmconfig->analysistype == 'planned') { // Display the date of analysis if its type is set on 'Planned'.
             $analysistime = $DB->get_field('plagiarism_compilatio_cm_cfg', 'analysistime', ['cmid' => $cmid]);
@@ -235,7 +238,7 @@ class CompilatioFrame {
                 title='" . get_string('display_stats_per_student', 'plagiarism_compilatio') . "'
                 class='cmp-icon'
                 data-toggle='tooltip'
-            >" . CompilatioIcons::statisticsPerStudent() . "
+            >" . CompilatioIcons::statistics_per_student() . "
             </span>";
         }
 
@@ -244,7 +247,7 @@ class CompilatioFrame {
             $output .= "<i id='show-search' title='" . get_string('compilatio_search_tab', 'plagiarism_compilatio') .
                 "' class='cmp-icon fa fa-search fa-2x' data-toggle='tooltip'></i>";
         }
-    
+
         // Notification icon.
         $output .= "<span>
             <i
@@ -268,39 +271,40 @@ class CompilatioFrame {
                     >
                         <i class='fa fa-play-circle'></i>
                     </button>";
-            }
-            if ($multipleanalysesoptions) {
-                $output .="
-                <div class='dropdown'>
-                    <span 
-                        data-toggle='dropdown'
-                        role='button'
-                        class='p-2'
-                        title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'>"
-                        . CompilatioIcons::ellipsis() .
-                    "</span>
-                    <div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>
-                        <div
-                            class='cmp-action-btn mx-1 cmp-start-btn'
-                            role='button'
-                        >
-                            <div class='text-nowrap'>" . get_string('start_all_analysis', 'plagiarism_compilatio') . "</div>
-                        </div>
-                        <div
-                            class='cmp-action-btn mx-1 mt-1'
-                            role='button'
-                            id='show-multiple-analyse-options'
-                        >
-                            <div class='text-nowrap'>" . get_string('start_selected_files_analysis', 'plagiarism_compilatio') . "</div>
-                        </div>
-                    </div>
-                </div>
-                    ";
+
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
-                [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio'), null]);
+                    [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio'), null]);
+            }
+
+            if ($selectanalysesoptions) {
+                $output .= "
+                    <div class='dropdown'>
+                        <span
+                            data-toggle='dropdown'
+                            role='button'
+                            class='p-2'
+                            title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'>"
+                            . CompilatioIcons::ellipsis() .
+                        "</span>
+                        <div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>
+                            <div
+                                class='cmp-action-btn mx-1 cmp-start-btn'
+                                role='button'
+                            >
+                                <div class='text-nowrap'>" . get_string('start_all_analysis', 'plagiarism_compilatio') . "</div>
+                            </div>
+                            <div
+                                class='cmp-action-btn mx-1 mt-1'
+                                role='button'
+                                id='start-selected-analyses-btn'
+                            >
+                                <div class='text-nowrap'>" . get_string('start_selected_files_analysis', 'plagiarism_compilatio') . "</div>
+                            </div>
+                        </div>
+                    </div>";
 
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedFiles',
-                [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio'), null]);
+                    [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio'), null]);
             }
 
             if ($sendalldocs) {
@@ -312,6 +316,7 @@ class CompilatioFrame {
                     >
                         <i class='cmp-icon-lg fa fa-paper-plane'></i>
                     </button>";
+
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'sendUnsentDocs',
                     [$CFG->httpswwwroot, $cmid, get_string('send_documents_in_progress', 'plagiarism_compilatio')]);
             }
@@ -342,8 +347,6 @@ class CompilatioFrame {
         $output .= get_config('plagiarism_compilatio', 'recipe') === 'anasim-premium'
             ? "<li>" . get_string('ai_included_in_subscription', 'plagiarism_compilatio'). "</li></ul></p>"
             : "</ul>" . get_string('ai_not_included_in_subscription', 'plagiarism_compilatio'). "</p>";
-
-
 
         if ($module == 'quiz') {
             $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
@@ -421,7 +424,7 @@ class CompilatioFrame {
         }
 
         $output .= "</div>";
-        
+
         // Display timed analysis date.
         if (isset($analysisdate)) {
             $output .= "<span class='border-top pt-2 mt-2 text-center font-italic'>$analysisdate</span>";

@@ -37,27 +37,28 @@ global $DB, $SESSION;
 
 $cmid = required_param('cmid', PARAM_TEXT);
 $selectedlines = optional_param('selectedUsers', "", PARAM_TEXT);
+
 $plugincm = compilatio_cm_use($cmid);
 $module = get_coursemodule_from_id(null, $cmid);
-// Counter incremented on success.
+
 $countsuccess = 0;
-$plagiarismfiles = $docsfailed = $docsinextraction = $SESSION->compilatio_alerts = [];
+$cmpfiles = $docsfailed = $docsinextraction = $SESSION->compilatio_alerts = [];
 
 if ($plugincm->analysistype == 'manual') {
     if ($module->modname == "quiz" && !empty($selectedlines)) {
-        $sql = "SELECT cmpFile.* 
-            FROM {plagiarism_compilatio_files} cmpFile
-            INNER JOIN {user} ON {user}.id = cmpFile.userid 
-            INNER JOIN {quiz_attempts} ON {quiz_attempts}.userid = {user}.id 
-            WHERE {quiz_attempts}.id IN ('".$selectedlines."') AND cmpFile.status='sent' AND cmpFile.cm = ?";
-        $plagiarismfiles = $DB->get_records_sql($sql, [$cmid]);
+        $sql = "SELECT cmpfile.*
+            FROM {plagiarism_compilatio_files} cmpfile
+            INNER JOIN {user} ON {user}.id = cmpfile.userid
+            INNER JOIN {quiz_attempts} ON {quiz_attempts}.userid = {user}.id
+            WHERE {quiz_attempts}.id IN ('".$selectedlines."') AND cmpfile.status='sent' AND cmpfile.cm = ?";
+        $cmpfiles = $DB->get_records_sql($sql, [$cmid]);
     } else {
         $sql = "cm = ? AND status = 'sent'";
         $sql .= !empty($selectedlines) ? " AND userid IN (" . $selectedlines . ")" : "";
-        $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, [$cmid]);
+        $cmpfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, [$cmid]);
     }
 
-    foreach ($plagiarismfiles as $file) {
+    foreach ($cmpfiles as $file) {
 
         if (compilatio_student_analysis($plugincm->studentanalyses, $cmid, $file->userid)) {
             continue;
@@ -73,7 +74,7 @@ if ($plugincm->analysistype == 'manual') {
     }
 }
 
-if (count($plagiarismfiles) === 0) {
+if (count($cmpfiles) === 0) {
     $SESSION->compilatio_alerts[] = [
         'class' => 'info',
         'content' => get_string('no_document_available_for_analysis', 'plagiarism_compilatio'),

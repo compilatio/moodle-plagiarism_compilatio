@@ -193,7 +193,7 @@ class CompilatioSettings {
                 $needtermsofservice = true;
             }
 
-            // v2 docs management.
+            // Plugin v2 docs management.
             if (!empty($config) && null === $config->userid && $config->activated === '1') {
                 $needtermsofservice = false;
             }
