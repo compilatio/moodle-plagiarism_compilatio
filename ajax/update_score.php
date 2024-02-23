@@ -44,5 +44,5 @@ if (!empty($file)) {
 
     $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $file->cm]);
 
-    echo CompilatioDocumentFrame::get_score($file, $cmconfig, true, false);
+    echo CompilatioDocumentFrame::get_score($file, $cmconfig, true);
 }

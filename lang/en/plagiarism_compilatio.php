@@ -217,7 +217,6 @@ $string["short_error_unsupported"] = 'documents unsupported.';
 $string["short_error_too_short"] = 'documents too short.';
 $string["short_error_too_long"] = 'documents too long.';
 $string["short_error_too_large"] = 'documents too large.';
-$string["not_analysed"] = 'not analysed';
 
 // Notifications tab.
 $string["notifications"] = "Notifications";
@@ -282,6 +281,8 @@ $string['file'] = 'File';
 $string['text'] = 'Text';
 $string['no_document_to_display'] = 'No documents to display';
 $string['student'] = 'Student';
+$string["not_analysed"] = 'not analysed';
+$string['no_document_analysed'] = 'No documents analysed';
 
 // Global Statistics.
 $string["no_statistics_yet"] = 'No documents have been analysed yet.';

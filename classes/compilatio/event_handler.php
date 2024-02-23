@@ -411,19 +411,20 @@ class CompilatioEventHandler {
                     return;
                 }
 
-                // Check for duplicates files.
-                $identifier = sha1($content);
-                $duplicate = $DB->get_records('plagiarism_compilatio_file',
-                    ['identifier' => $identifier, 'userid' => $userid, 'cm' => $cmid]);
-                compilatio_delete_files($duplicate);
-
                 // Online text content.
                 $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
                 if (str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) >= $nbmotsmin) {
                     $question = "Q" . $answer->get_question_id();
-                    $filename = "quiz-{$attemptid}-{$question}.htm";
+                    $courseid = $DB->get_field('course_modules', 'course', array('id' => $cmid));
+                    $filename = "quiz-{$courseid}-{$cmid}-{$attemptid}-{$question}.htm";
 
-                    CompilatioSendFile::send_file($cmid, $userid, null, $filename, $content);
+                    // Check for duplicates files.
+                    $identifier = sha1($filename);
+                    $duplicate = $DB->get_records('plagiarism_compilatio_file',
+                        ['identifier' => $identifier, 'userid' => $userid, 'cm' => $cmid]);
+                    compilatio_delete_files($duplicate);
+
+                    CompilatioSendFile::send_file($cmid, $userid, null, $filename, $content, $identifier);
                 }
 
                 // Files attachments.

@@ -155,9 +155,7 @@ Compilatio frame area
     border-bottom: 1px solid #e5e5e5;
 }
 
-/*
-Compilatio document frame area 
-*/
+/* Compilatio document frame area */
 .cmp-area {
     position: relative;
     display: flex;
@@ -167,7 +165,7 @@ Compilatio document frame area
     margin-top: 10px;
     border: solid 2px;
     border-radius: 0.6rem;
-    min-width: 275px;
+    min-width: 295px;
     height: 38px;
     background-color: white;
 }
@@ -237,7 +235,7 @@ Compilatio document frame area
 
 .cmp-btn-doc {
     height: 30px;
-    margin: 2px 2px 2px 2px;
+    margin: 2px;
     width: 100px;
 }
 
@@ -355,11 +353,6 @@ a.cmp-btn-primary:hover {
     text-decoration: none;
 }
 
-/* Compilatio cursor shape auto */
-.cmp-cursor-auto {
-    cursor: auto;
-}
-
 /* Compilatio whitespace no wrap */
 .cmp-whitespace-nowrap {
     white-space: nowrap;
@@ -381,7 +374,7 @@ a.cmp-btn-primary:hover {
 
 .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
     background-color: rgb(243, 242, 242);
-  }
+}
 
 .cmp-border-none {
     border: none !important;

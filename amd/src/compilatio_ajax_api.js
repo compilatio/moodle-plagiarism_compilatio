@@ -171,7 +171,7 @@ define(['jquery'], function($) {
 
                 var toogleIndexingStateBtn = $('#cmp-' + domid + ' .cmp-library');
                 toogleIndexingStateBtn.click(function() {
-                    i = toogleIndexingStateBtn.find('i');
+                    var i = $(this).find('i');
                     if (i.is('.cmp-library-in')) {
                         var indexingState = 0;
                     }

@@ -47,7 +47,7 @@ class CompilatioSendFile {
      * @param object $filename  Filename for text content
      * @param object $content   Text content
      */
-    public static function send_file($cmid, $userid, $file = null, $filename = null, $content = null, $indexed = null) {
+    public static function send_file($cmid, $userid, $file = null, $filename = null, $content = null, $identifier = null) {
 
         global $DB, $CFG;
 
@@ -67,7 +67,7 @@ class CompilatioSendFile {
 
         if (null === $file) {
             $cmpfile->filename = $filename;
-            $cmpfile->identifier = sha1($content);
+            $cmpfile->identifier = $identifier ?? sha1($content);
 
         } else {
             $content = $file->get_content();

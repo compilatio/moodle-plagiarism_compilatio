@@ -111,9 +111,9 @@ class CompilatioDocumentFrame {
         $cmpfile = $DB->get_record('plagiarism_compilatio_file',
             ['cm' => $linkarray['cmid'], 'userid' => $userid, 'identifier' => $identifier]);
 
-        if (empty($cmpfile) && isset($linkarray['quizfilename'])) { // v2 docs management. Try to get record with filename in quiz.
+        if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
             $cmpfile = $DB->get_record('plagiarism_compilatio_file',
-                ['cm' => $linkarray['cmid'], 'userid' => $userid, 'identifier' => sha1($linkarray['quizfilename'])]);
+                ['cm' => $linkarray['cmid'], 'userid' => $userid, 'identifier' => sha1($linkarray['cmp_filename'])]);
         }
 
         if (empty($cmpfile)) { // Try to get record without userid in forums.
@@ -219,7 +219,7 @@ class CompilatioDocumentFrame {
                     "</a>";
             }
 
-            $score = self::get_score($cmpfile, $config, $isteacher, false);
+            $score = self::get_score($cmpfile, $config, $isteacher);
 
         } else if ($status == 'sent') {
             if (($config->analysistype ?? null) == 'planned') {
@@ -348,7 +348,7 @@ class CompilatioDocumentFrame {
      * @param  mixed  $indexingstate Indexing state
      * @return string                Return the HTML
      */
-    public static function get_score($cmpfile, $config, $isteacher, $wrapping) {
+    public static function get_score($cmpfile, $config, $isteacher, $nowrap = false) {
         global $DB;
 
         $color = $cmpfile->globalscore <= ($config->warningthreshold ?? 10)
@@ -371,35 +371,37 @@ class CompilatioDocumentFrame {
         
         $recipe === 'anasim-premium' ? array_push($scores, 'aiscore') : '';
 
-        $scores = array_diff($scores, $ignoredscores);
-
-        $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
         $icons = '';
-
         foreach ($scores as $score) {
-            $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
-            $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
-            if (isset($cmpfile->$score)) {
+            if (!isset($cmpfile->$score)) {
+                continue;
+            }
+
+            if (in_array($score, $ignoredscores)) {
+                $icon = 'ignored' . $score;
+                $icons .= CompilatioIcons::$icon();
+            } else {
                 $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
             }
         }
 
-        if(!empty($ignoredscores)){
-            $tooltip .= "<b>" . get_string('excluded_from_score', 'plagiarism_compilatio') . ' </b><br>';
+        $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
+        $ignoredtooltip = "<b>" . get_string('excluded_from_score', 'plagiarism_compilatio') . ' </b><br>';
 
-            foreach ($ignoredscores as $score) {
-                $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
-                $tooltip .= get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
-                $icon = 'ignored' . $score;
-                $icons .= CompilatioIcons::$icon();
-            }
+        foreach ($scores as $score) {
+            $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
+            $message = get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
+
+            in_array($score, $ignoredscores) ? $ignoredtooltip .= $message : $tooltip .= $message;
         }
 
-        $tooltip .= $recipe !== 'anasim-premium' 
-            ? get_string('aiscore', 'plagiarism_compilatio') . " : <b>" . get_string('ai_score_not_included', 'plagiarism_compilatio') . "</b><br>" 
-            : '';
+        if ($recipe !== 'anasim-premium') {
+            $tooltip .= get_string('aiscore', 'plagiarism_compilatio') . " : <b>" . get_string('ai_score_not_included', 'plagiarism_compilatio') . "</b><br>";
+        }
 
-        $html .= "<span id='cmp-score-icons' class='" . ($wrapping === false ? "d-flex" : "flex-nowrap") .
+        $tooltip .= $ignoredtooltip;
+
+        $html .= "<span id='cmp-score-icons' class='" . ($nowrap === true ? "flex-nowrap" : "d-flex") .
             "' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
                         {$icons}
                 </span>";
@@ -436,10 +438,9 @@ class CompilatioDocumentFrame {
                     }
                     // If content and file not submitted, try to get the content.
                     if (empty($linkarray['content']) && empty($linkarray['file'])) {
-                        // v2 docs management.
                         $courseid = $DB->get_field('course_modules', 'course', array('id' => $linkarray['cmid']));
                         $attemptid = $DB->get_field('quiz_attempts', 'id', ['uniqueid' => $attempt->get_usage_id()]);
-                        $linkarray['quizfilename'] = "quiz-" . $courseid . "-" . $linkarray['cmid'] . "-" . $attemptid . "-Q" . $attempt->get_question_id() . ".htm";
+                        $linkarray['cmp_filename'] = "quiz-" . $courseid . "-" . $linkarray['cmid'] . "-" . $attemptid . "-Q" . $attempt->get_question_id() . ".htm";
 
                         $linkarray['content'] = $attempt->get_response_summary();
                     }
