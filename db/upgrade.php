@@ -252,7 +252,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021062300, 'plagiarism', 'compilatio');
     }
 
-    if ($oldversion < 2024022100) {
+    if ($oldversion < 2024022600) {
         // API key.
         $apiconfigid = get_config('plagiarism_compilatio', 'apiconfigid');
         $apikey = $DB->get_field('plagiarism_compilatio_apicon', 'api_key', ['id' => $apiconfigid]);
@@ -354,7 +354,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         $updatemeta = new update_meta();
         $updatemeta->execute();
 
-        upgrade_plugin_savepoint(true, 2024022100, 'plagiarism', 'compilatio');
+        upgrade_plugin_savepoint(true, 2024022600, 'plagiarism', 'compilatio');
     }
 
     foreach ($tablestodelete as $table) {
