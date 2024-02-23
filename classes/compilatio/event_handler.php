@@ -51,7 +51,7 @@ class CompilatioEventHandler {
         if ($event['objecttable'] == 'forum_posts') {
             if (!isset($SESSION->compilatio_bin_created)) {
                 $sql = "SELECT  pcf.id, pcf.externalid, pcf.cm
-                    FROM {plagiarism_compilatio_file} pcf
+                    FROM {plagiarism_compilatio_files} pcf
                     JOIN {plagiarism_compilatio_cm_cfg} cfg ON cfg.cmid = pcf.cm
                     WHERE pcf.cm = ? AND (filename LIKE ? OR filename LIKE ?) AND recyclebinid IS NULL";
 
@@ -62,21 +62,21 @@ class CompilatioEventHandler {
 
         // In workshops.
         if ($event['objecttable'] == 'workshop_submissions') {
-            $duplicates = $DB->get_records('plagiarism_compilatio_file', ['cm' => $cmid, 'userid' => $userid]);
+            $duplicates = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
         }
 
         // In quiz.
         if ($event['objecttable'] == 'quiz_attempts') {
-            $duplicates = $DB->get_records('plagiarism_compilatio_file', ['cm' => $cmid, 'userid' => $userid]);
+            $duplicates = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
             compilatio_delete_files($duplicates);
 
-            $sql = "SELECT * FROM {plagiarism_compilatio_file} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'quiz-%'";
+            $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'quiz-%'";
             $duplicates = $DB->get_records_sql($sql, [$cmid, $userid]);
         }
 
         // User delete.
         if ($event['objecttable'] == 'user') {
-            $duplicates = $DB->get_records('plagiarism_compilatio_file', ['userid' => $event['objectid']]);
+            $duplicates = $DB->get_records('plagiarism_compilatio_files', ['userid' => $event['objectid']]);
         }
 
         compilatio_delete_files($duplicates);
@@ -110,7 +110,7 @@ class CompilatioEventHandler {
             if (isset($options[$option]) && $options[$option] == 1) {
 
                 $sql = 'SELECT pcf.id, pcf.externalid, pcf.cm
-                    FROM {plagiarism_compilatio_file} pcf
+                    FROM {plagiarism_compilatio_files} pcf
                     JOIN {course_modules} course_modules ON pcf.cm = course_modules.id
                     JOIN {modules} modules ON modules.id = course_modules.module
                     WHERE course_modules.course = ? AND modules.name = ?';
@@ -189,10 +189,10 @@ class CompilatioEventHandler {
 
             foreach ($cmcfgs as $cmcfg) {
                 // Update filename for restored forum posts.
-                $posts = $DB->get_records_sql("SELECT * FROM {plagiarism_compilatio_file}
+                $posts = $DB->get_records_sql("SELECT * FROM {plagiarism_compilatio_files}
                     WHERE cm = ? AND (filename LIKE 'forum-%.htm' OR filename LIKE 'post-%.htm')", [$cmcfg->cmid]);
                 foreach ($posts as $post) {
-                    $restoredpost = $DB->get_record_sql("SELECT * FROM {plagiarism_compilatio_file}
+                    $restoredpost = $DB->get_record_sql("SELECT * FROM {plagiarism_compilatio_files}
                         WHERE cm != ? AND filename = ?", [$cmcfg->cmid, $post->filename]);
 
                     if (preg_match('~^forum-\d+.htm$~', $post->filename)) { // Text.
@@ -200,17 +200,17 @@ class CompilatioEventHandler {
                         $postid = $DB->get_field_sql($sql, [$post->identifier]);
 
                         $restoredpost->filename = 'forum-' . $postid . '.htm';
-                        $DB->update_record('plagiarism_compilatio_file', $restoredpost);
+                        $DB->update_record('plagiarism_compilatio_files', $restoredpost);
                     } else { // File.
                         $filename = explode("-", $post->filename)[2];
                         $moodlefile = $DB->get_record('files', ['filename' => $filename, 'filearea' => 'attachment']);
 
                         $restoredpost->filename = 'forum-' . $moodlefile->itemid . "-" . $filename;
-                        $DB->update_record('plagiarism_compilatio_file', $restoredpost);
+                        $DB->update_record('plagiarism_compilatio_files', $restoredpost);
                     }
                 }
 
-                $DB->delete_records('plagiarism_compilatio_file', ['cm' => $cmcfg->cmid]);
+                $DB->delete_records('plagiarism_compilatio_files', ['cm' => $cmcfg->cmid]);
                 $DB->delete_records('plagiarism_compilatio_cm_cfg', ['id' => $cmcfg->id]);
             }
 
@@ -244,7 +244,7 @@ class CompilatioEventHandler {
 
             // If the documents have been deleted in the mdl_files table, we also delete them on our side.
             if (empty($submissionfiles)) {
-                $duplicates = $DB->get_records('plagiarism_compilatio_file', ['cm' => $cmid, 'userid' => $userid]);
+                $duplicates = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
                 compilatio_delete_files($duplicates);
             }
         }
@@ -253,7 +253,7 @@ class CompilatioEventHandler {
         $plugincm = compilatio_cm_use($cmid);
         if ($event['target'] == 'assessable' && $plugincm->studentanalyses === '1') {
 
-            $files = $DB->get_records('plagiarism_compilatio_file', ['cm' => $cmid, 'userid' => $userid]);
+            $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
             $compilatio = new CompilatioAPI($plugincm->userid);
 
             foreach ($files as $file) {
@@ -295,10 +295,10 @@ class CompilatioEventHandler {
             $identifier = sha1($DB->get_record('assignsubmission_onlinetext', $params))->onlinetext;
         }
 
-        $compifile = $DB->get_record('plagiarism_compilatio_file', ['filename' => $filename, 'identifier' => $identifier]);
+        $compifile = $DB->get_record('plagiarism_compilatio_files', ['filename' => $filename, 'identifier' => $identifier]);
 
         if (!$compifile) {
-            $duplicates = $DB->get_records('plagiarism_compilatio_file', ['filename' => $filename]);
+            $duplicates = $DB->get_records('plagiarism_compilatio_files', ['filename' => $filename]);
             compilatio_delete_files($duplicates);
 
             if (trim($content) != "") {
@@ -332,14 +332,14 @@ class CompilatioEventHandler {
         if ($event['objecttable'] == 'assign_submission') {
             $mdlfiles = $fs->get_area_files($event["contextid"], $event["component"], 'submission_files', $event["objectid"]);
 
-            $sql = "SELECT * FROM {plagiarism_compilatio_file} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'assign-%'";
+            $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'assign-%'";
             $allcmpfiles = $DB->get_records_sql($sql, [$cmid, $userid]);
         }
 
         if ($event['objecttable'] == 'forum_posts') {
             $mdlfiles = $fs->get_area_files($event["contextid"], $event["component"], 'attachment', $event["objectid"]);
 
-            $sql = "SELECT * FROM {plagiarism_compilatio_file} WHERE cm = ? AND filename NOT LIKE 'forum-%'";
+            $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND filename NOT LIKE 'forum-%'";
             $allcmpfiles = $DB->get_records_sql($sql, [$cmid]);
 
             $filename = "forum-" . $event["objectid"];
@@ -348,12 +348,12 @@ class CompilatioEventHandler {
         if ($event['objecttable'] == 'workshop_submissions') {
             $mdlfiles = $fs->get_area_files($event["contextid"], $event["component"], 'submission_attachment', $event["objectid"]);
 
-            $sql = "SELECT * FROM {plagiarism_compilatio_file} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'workshop-%'";
+            $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'workshop-%'";
             $allcmpfiles = $DB->get_records_sql($sql, [$cmid, $userid]);
         }
 
         foreach ($mdlfiles as $file) {
-            $cmpfile = $DB->get_record('plagiarism_compilatio_file',
+            $cmpfile = $DB->get_record('plagiarism_compilatio_files',
                 ['cm' => $cmid, 'userid' => $userid, 'identifier' => $file->get_contenthash()]);
             if ($cmpfile) {
                 array_push($cmpfilestokeep, $cmpfile);
@@ -420,7 +420,7 @@ class CompilatioEventHandler {
 
                     // Check for duplicates files.
                     $identifier = sha1($filename);
-                    $duplicate = $DB->get_records('plagiarism_compilatio_file',
+                    $duplicate = $DB->get_records('plagiarism_compilatio_files',
                         ['identifier' => $identifier, 'userid' => $userid, 'cm' => $cmid]);
                     compilatio_delete_files($duplicate);
 
@@ -433,7 +433,7 @@ class CompilatioEventHandler {
                 foreach ($files as $file) {
 
                     // Check for duplicate files.
-                    $sql = "SELECT * FROM {plagiarism_compilatio_file}
+                    $sql = "SELECT * FROM {plagiarism_compilatio_files}
                         WHERE cm = ? AND userid = ? AND identifier = ?";
                     $duplicates = $DB->get_records_sql($sql, [$cmid, $userid, $file->get_contenthash()]);
                     compilatio_delete_files($duplicates);

@@ -95,7 +95,7 @@ class CompilatioSendFile {
             "userid" => $userid,
             "identifier" => $cmpfile->identifier,
         ];
-        if (!empty($DB->get_record("plagiarism_compilatio_file", $params))) {
+        if (!empty($DB->get_record("plagiarism_compilatio_files", $params))) {
             return false;
         }
 
@@ -139,14 +139,14 @@ class CompilatioSendFile {
                     }
                 }
 
-                $DB->insert_record('plagiarism_compilatio_file', $cmpfile);
+                $DB->insert_record('plagiarism_compilatio_files', $cmpfile);
                 return true;
             } else {
                 $cmpfile->status = 'error_sending_failed';
             }
         }
 
-        $DB->insert_record('plagiarism_compilatio_file', $cmpfile);
+        $DB->insert_record('plagiarism_compilatio_files', $cmpfile);
         return false;
     }
 
@@ -193,17 +193,18 @@ class CompilatioSendFile {
                     break;
                 case 'quiz':
                     $questionid = substr(explode('.', $cmpfile->filename)[0], strpos($cmpfile->filename, "Q") + 1);
+                    $attemptid = explode("-", $cmpfile->filename)[3];
 
                     $sql = "SELECT responsesummary
-                    FROM {quiz_attempts} quiz
-                    JOIN {question_attempts} qa ON quiz.uniqueid = qa.questionusageid
-                    WHERE quiz.id = ? AND qa.questionid = ?";
-                    $content = $DB->get_field_sql($sql, [$objectid, $questionid]);
+                        FROM {quiz_attempts} quiz
+                        JOIN {question_attempts} qa ON quiz.uniqueid = qa.questionusageid
+                        WHERE quiz.id = ? AND qa.questionid = ?";
+                    $content = $DB->get_field_sql($sql, [$attemptid, $questionid]);
                     break;
             }
 
             if (!empty($content)) {
-                $DB->delete_records('plagiarism_compilatio_file', ['id' => $cmpfile->id]);
+                $DB->delete_records('plagiarism_compilatio_files', ['id' => $cmpfile->id]);
 
                 $success = self::send_file($cmpfile->cm, $cmpfile->userid, null, $cmpfile->filename, $content);
             }
@@ -222,7 +223,7 @@ class CompilatioSendFile {
             $fs = get_file_storage();
             $file = $fs->get_file_by_id($f->id);
 
-            $DB->delete_records('plagiarism_compilatio_file', ['id' => $cmpfile->id]);
+            $DB->delete_records('plagiarism_compilatio_files', ['id' => $cmpfile->id]);
 
             $success = self::send_file($cmpfile->cm, $cmpfile->userid, $file);
         }

@@ -46,7 +46,7 @@ $plagiarismfiles = $docsfailed = $docsinextraction = $SESSION->compilatio_alerts
 if ($plugincm->analysistype == 'manual') {
     if ($module->modname == "quiz" && !empty($selectedlines)) {
         $sql = "SELECT cmpFile.* 
-            FROM {plagiarism_compilatio_file} cmpFile
+            FROM {plagiarism_compilatio_files} cmpFile
             INNER JOIN {user} ON {user}.id = cmpFile.userid 
             INNER JOIN {quiz_attempts} ON {quiz_attempts}.userid = {user}.id 
             WHERE {quiz_attempts}.id IN ('".$selectedlines."') AND cmpFile.status='sent' AND cmpFile.cm = ?";
@@ -54,7 +54,7 @@ if ($plugincm->analysistype == 'manual') {
     } else {
         $sql = "cm = ? AND status = 'sent'";
         $sql .= !empty($selectedlines) ? " AND userid IN (" . $selectedlines . ")" : "";
-        $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_file', $sql, [$cmid]);
+        $plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, [$cmid]);
     }
 
     foreach ($plagiarismfiles as $file) {

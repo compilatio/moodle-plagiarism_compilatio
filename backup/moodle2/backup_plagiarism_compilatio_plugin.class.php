@@ -83,7 +83,7 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
         $pluginwrapper->add_child($compilatiofiles);
         $compilatiofiles->add_child($compilatiofile);
         if ($userinfo) {
-            $compilatiofile->set_source_table('plagiarism_compilatio_file', ['cm' => backup::VAR_PARENTID]);
+            $compilatiofile->set_source_table('plagiarism_compilatio_files', ['cm' => backup::VAR_PARENTID]);
         }
         return $plugin;
     }

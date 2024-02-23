@@ -72,7 +72,7 @@ if ($rawcsv) {
             pcf.status "file_status",
             pcf.globalscore "file_score",
             ' . $todate . '(pcf.timesubmitted) "file_submitted_on"
-        FROM {plagiarism_compilatio_file} pcf
+        FROM {plagiarism_compilatio_files} pcf
         JOIN {user} student ON pcf.userid=student.id
         JOIN {course_modules} cm ON pcf.cm = cm.id
         LEFT JOIN {assign} assign ON cm.instance= assign.id AND cm.module= 1

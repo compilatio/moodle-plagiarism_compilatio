@@ -313,8 +313,6 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
             ];
 
             $DB->insert_record('plagiarism_compilatio_cm_cfg', $v3config);
-
-            $DB->delete_records('plagiarism_compilatio_config', ['cm' => $cmid]);
         }
 
         // Recycle bin ids.
@@ -328,60 +326,30 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         }
 
         // Files.
-        do {
-            $files = $DB->get_records("plagiarism_compilatio_files", null, '', '*', 0, 50);
+        $status = [
+            201 => 'sent',
+            202 => 'sent',
+            203 => 'analysing',
+            404 => 'error_not_found',
+            412 => 'error_too_short',
+            413 => 'error_too_large',
+            414 => 'error_too_long',
+            415 => 'error_unsupported',
+            416 => 'error_sending_failed',
+            418 => 'error_analysis_failed',
+            'Analyzed' => 'scored',
+            'In queue' => 'queue',
+            'pending' => 'error_sending_failed',
+        ];
 
-            if (empty($files) && is_array($files)) {
-                break;
-            }
+        foreach ($status as $oldstatus => $newstatus) {
+            $DB->execute(
+                "UPDATE {plagiarism_compilatio_files} SET status = ? WHERE statuscode = ?",
+                [$newstatus, $oldstatus]
+            );
+        }
 
-            foreach ($files as $file) {
-                $status = [
-                    201 => 'sent',
-                    202 => 'sent',
-                    203 => 'analysing',
-                    404 => 'error_not_found',
-                    412 => 'error_too_short',
-                    413 => 'error_too_large',
-                    414 => 'error_too_long',
-                    415 => 'error_unsupported',
-                    416 => 'error_sending_failed',
-                    418 => 'error_analysis_failed',
-                    'Analyzed' => 'scored',
-                    'In queue' => 'queue',
-                    'pending' => 'error_sending_failed',
-                ];
-
-                if (preg_match('~^post-\d+-\d+-\d+.htm$~', $file->filename)) {
-                    $filename = 'forum' . substr($file->filename, strrpos($file->filename, '-'));
-                } else {
-                    $filename = $file->filename;
-                }
-
-                if (!empty($file->reporturl)) {
-                    $reporturl = preg_match('/^[a-f0-9]{40}$/', $file->reporturl) ? null : $file->reporturl;
-                }
-
-                $v3file = (object) [
-                    'cm'              => $file->cm,
-                    'userid'          => $file->userid,
-                    'identifier'      => $file->identifier,
-                    'filename'        => $filename,
-                    'externalid'      => $file->externalid,
-                    'status'          => $status[$file->statuscode],
-                    'globalscore'     => $file->globalscore,
-                    'similarityscore' => $file->simscore ?? null,
-                    'utlscore'        => $file->utlscore ?? null,
-                    'aiscore'         => $file->aiscore ?? null,
-                    'timesubmitted'   => $file->timesubmitted,
-                    'reporturl'       => $reporturl ?? null,
-                ];
-
-                $DB->insert_record('plagiarism_compilatio_file', $v3file);
-
-                $DB->delete_records('plagiarism_compilatio_files', ['id' => $file->id]);
-            }
-        } while (1);
+        $DB->execute("UPDATE {plagiarism_compilatio_files} SET reporturl = NULL WHERE LENGTH(reporturl) = 40");
 
         $updatemeta = new update_meta();
         $updatemeta->execute();

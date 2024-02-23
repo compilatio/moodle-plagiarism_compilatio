@@ -83,10 +83,10 @@ class provider implements
             'privacy:metadata:core_plagiarism'
         );
 
-        $collection->add_database_table('plagiarism_compilatio_file', [
-            'userid'   => 'privacy:metadata:plagiarism_compilatio_file:userid',
-            'filename' => 'privacy:metadata:plagiarism_compilatio_file:filename',
-        ], 'privacy:metadata:plagiarism_compilatio_file');
+        $collection->add_database_table('plagiarism_compilatio_files', [
+            'userid'   => 'privacy:metadata:plagiarism_compilatio_files:userid',
+            'filename' => 'privacy:metadata:plagiarism_compilatio_files:filename',
+        ], 'privacy:metadata:plagiarism_compilatio_files');
 
         $collection->add_database_table('plagiarism_compilatio_user', [
             'userid'       => 'privacy:metadata:plagiarism_compilatio_user:userid',
@@ -120,7 +120,7 @@ class provider implements
         $sql = "SELECT c.id
                 FROM {context} c
                 JOIN {course_modules} cm ON c.instanceid = cm.id
-                JOIN {plagiarism_compilatio_file} pcf ON cm.id = pcf.cm
+                JOIN {plagiarism_compilatio_files} pcf ON cm.id = pcf.cm
                 WHERE pcf.userid = ? AND c.contextlevel = ?";
 
         $contextlist = new contextlist();
@@ -142,10 +142,10 @@ class provider implements
 
         global $DB;
 
-        $submissions = $DB->get_records('plagiarism_compilatio_file', ['userid' => $userid, 'cm' => $context->instanceid]);
+        $submissions = $DB->get_records('plagiarism_compilatio_files', ['userid' => $userid, 'cm' => $context->instanceid]);
 
         foreach ($submissions as $submission) {
-            $data["plagiarism_compilatio_file"][] = (object)$submission;
+            $data["plagiarism_compilatio_files"][] = (object)$submission;
         }
 
         if (isset($data)) {
@@ -164,10 +164,10 @@ class provider implements
         require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-        $files = $DB->get_records('plagiarism_compilatio_file', ["cm" => $context->instanceid]);
+        $files = $DB->get_records('plagiarism_compilatio_files', ["cm" => $context->instanceid]);
         compilatio_delete_files($files);
 
-        $DB->delete_records('plagiarism_compilatio_file', ['cm' => $context->instanceid]);
+        $DB->delete_records('plagiarism_compilatio_files', ['cm' => $context->instanceid]);
     }
 
     /**
@@ -187,10 +187,10 @@ class provider implements
 
         // If the student owns the document (and not the school), we can delete everything from the databases.
         if ($ownerfile === '0') {
-            $files = $DB->get_records('plagiarism_compilatio_file', ["userid" => $userid]);
+            $files = $DB->get_records('plagiarism_compilatio_files', ["userid" => $userid]);
             compilatio_delete_files($files);
 
-            $DB->delete_records('plagiarism_compilatio_file', ['userid' => $userid]);
+            $DB->delete_records('plagiarism_compilatio_files', ['userid' => $userid]);
         }
     }
 
@@ -209,12 +209,12 @@ class provider implements
         $cmid = $context->instanceid;
 
         foreach ($userids as $userid) {
-            $files = $DB->get_records('plagiarism_compilatio_file', ["userid" => $userid, "cm" => $cmid]);
+            $files = $DB->get_records('plagiarism_compilatio_files', ["userid" => $userid, "cm" => $cmid]);
             compilatio_delete_files($files);
         }
 
         foreach ($userids as $userid) {
-            $DB->delete_records('plagiarism_compilatio_file', ['userid' => $userid, 'cm' => $cmid]);
+            $DB->delete_records('plagiarism_compilatio_files', ['userid' => $userid, 'cm' => $cmid]);
         }
     }
 }

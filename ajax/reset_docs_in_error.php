@@ -41,14 +41,14 @@ $compilatio = new CompilatioAPI();
 $SESSION->compilatio_alerts = [];
 
 // Restart failed analyses.
-$files = $DB->get_records('plagiarism_compilatio_file', ['cm' => $cmid, 'status' => 'error_analysis_failed']);
+$files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'error_analysis_failed']);
 
 if (!empty($files)) {
     compilatio_delete_files($files);
 }
 
 // Send failed files.
-$files = array_merge($files, $DB->get_records('plagiarism_compilatio_file', ['cm' => $cmid, 'status' => 'error_sending_failed']));
+$files = array_merge($files, $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'error_sending_failed']));
 
 if (!empty($files)) {
     $countsuccess = 0;

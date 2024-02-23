@@ -108,16 +108,16 @@ class CompilatioDocumentFrame {
         }
 
         // Get compilatio file record.
-        $cmpfile = $DB->get_record('plagiarism_compilatio_file',
+        $cmpfile = $DB->get_record('plagiarism_compilatio_files',
             ['cm' => $linkarray['cmid'], 'userid' => $userid, 'identifier' => $identifier]);
 
         if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
-            $cmpfile = $DB->get_record('plagiarism_compilatio_file',
+            $cmpfile = $DB->get_record('plagiarism_compilatio_files',
                 ['cm' => $linkarray['cmid'], 'userid' => $userid, 'identifier' => sha1($linkarray['cmp_filename'])]);
         }
 
         if (empty($cmpfile)) { // Try to get record without userid in forums.
-            $sql = 'SELECT * FROM {plagiarism_compilatio_file} WHERE cm = ? AND identifier = ?';
+            $sql = 'SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND identifier = ?';
             $cmpfile = $DB->get_record_sql($sql, [$linkarray['cmid'], $identifier]);
         }
 
@@ -185,7 +185,7 @@ class CompilatioDocumentFrame {
         global $DB, $CFG;
 
         if (!empty($cmpfileid)) {
-            $cmpfile = $DB->get_record('plagiarism_compilatio_file', ['id' => $cmpfileid]);
+            $cmpfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $cmpfileid]);
         }
 
         $status = $cmpfile->status ?? null;
@@ -301,7 +301,7 @@ class CompilatioDocumentFrame {
                 $compilatio = new CompilatioAPI($config->userid);
                 $document = $compilatio->get_document($cmpfile->externalid);
                 $cmpfile->indexed = $document->indexed;
-                $DB->update_record('plagiarism_compilatio_file', $cmpfile);
+                $DB->update_record('plagiarism_compilatio_files', $cmpfile);
             }
 
             $indexed = $cmpfile->indexed ? true : false;

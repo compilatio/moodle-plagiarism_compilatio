@@ -83,7 +83,7 @@ class CompilatioFrame {
 
         // Store plagiarismfiles in $SESSION.
         $sql = 'cm = ? AND externalid IS NOT null';
-        $SESSION->compilatio_plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_file', $sql, [$cmid]);
+        $SESSION->compilatio_plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, [$cmid]);
         $filesids = array_keys($SESSION->compilatio_plagiarismfiles);
 
         $alerts = [];
@@ -99,7 +99,7 @@ class CompilatioFrame {
 
         if (
             $cmconfig->analysistype == 'manual'
-                && $DB->count_records('plagiarism_compilatio_file', ['status' => 'sent', 'cm' => $cmid]) !== 0
+                && $DB->count_records('plagiarism_compilatio_files', ['status' => 'sent', 'cm' => $cmid]) !== 0
         ) {
             $startallanalyses = $multipleanalysesoptions = true;
 
@@ -129,7 +129,7 @@ class CompilatioFrame {
         }
 
         // Display reset docs in error button if necesseary.
-        $sql = "SELECT COUNT(DISTINCT pcf.id) FROM {plagiarism_compilatio_file} pcf
+        $sql = "SELECT COUNT(DISTINCT pcf.id) FROM {plagiarism_compilatio_files} pcf
             WHERE pcf.cm=? AND (status = 'error_analysis_failed' OR status = 'error_sending_failed')";
         if ($DB->count_records_sql($sql, [$cmid]) !== 0) {
             $resetdocsinerror = true;
@@ -406,7 +406,7 @@ class CompilatioFrame {
 
         if (!empty($docid)) {
             $sql = "SELECT usr.lastname, usr.firstname, cf.cm
-                FROM {plagiarism_compilatio_file} cf
+                FROM {plagiarism_compilatio_files} cf
                 JOIN {user} usr on cf.userid = usr.id
                 WHERE cf.externalid = ?";
             $doc = $DB->get_record_sql($sql, [$docid]);

@@ -167,7 +167,7 @@ function compilatio_cm_use($cmid) {
 }
 
 /**
- * Get the submissions unknown from Compilatio table plagiarism_compilatio_file
+ * Get the submissions unknown from Compilatio table plagiarism_compilatio_files
  *
  * @param string $cmid cmid of the assignment
  */
@@ -194,7 +194,7 @@ function compilatio_get_unsent_documents($cmid) {
         foreach ($files as $file) {
             if ($file->get_filename() != '.') {
                 $countfiles = $DB->count_records(
-                    'plagiarism_compilatio_file',
+                    'plagiarism_compilatio_files',
                     ['identifier' => $file->get_contenthash(), 'cm' => $cmid]
                 );
 
@@ -274,7 +274,7 @@ function compilatio_delete_course_modules($cmconfigs) {
         $compilatio = new CompilatioAPI();
 
         foreach ($cmconfigs as $cmconfig) {
-            $files = $DB->get_records('plagiarism_compilatio_file', ['cm' => $cmconfig->cmid]);
+            $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmconfig->cmid]);
 
             $keepfileindexed = boolval(get_config('plagiarism_compilatio', 'keep_docs_indexed'));
             compilatio_delete_files($files, $keepfileindexed);
@@ -290,7 +290,7 @@ function compilatio_delete_course_modules($cmconfigs) {
  * compilatio_delete_files
  *
  * Deindex and remove document(s) in Compilatio
- * Remove entry(ies) in plagiarism_compilatio_file table
+ * Remove entry(ies) in plagiarism_compilatio_files table
  *
  * @param array    $files
  * @param bool     $keepfilesindexed
@@ -302,14 +302,14 @@ function compilatio_delete_files($files, $keepfilesindexed = false) {
 
         foreach ($files as $doc) {
             if (is_null($doc->externalid)) {
-                $DB->delete_records('plagiarism_compilatio_file', ['id' => $doc->id]);
+                $DB->delete_records('plagiarism_compilatio_files', ['id' => $doc->id]);
             } else {
                 $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $doc->cm]);
                 $compilatio->set_user_id($userid);
 
                 if ($keepfilesindexed || $compilatio->set_indexing_state($doc->externalid, 0)) {
                     $compilatio->delete_document($doc->externalid);
-                    $DB->delete_records('plagiarism_compilatio_file', ['id' => $doc->id]);
+                    $DB->delete_records('plagiarism_compilatio_files', ['id' => $doc->id]);
                 } else {
                     mtrace('Error deindexing document ' . $doc->externalid);
                 }

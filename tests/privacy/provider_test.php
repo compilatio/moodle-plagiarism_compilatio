@@ -56,7 +56,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->assertEquals('core_plagiarism', $itemcollection[1]->get_name());
         $this->assertEquals('privacy:metadata:core_plagiarism', $itemcollection[1]->get_summary());
 
-        $this->assertEquals('plagiarism_compilatio_file', $itemcollection[2]->get_name());
+        $this->assertEquals('plagiarism_compilatio_files', $itemcollection[2]->get_name());
         $privacyfields = $itemcollection[2]->get_privacy_fields();
         $this->assertArrayHasKey('userid', $privacyfields);
         $this->assertArrayHasKey('filename', $privacyfields);
@@ -147,8 +147,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
             $this->create_partial_plagiarismfile($coursemodule->id, $student->id);
         }
 
-        // On vérifie qu'on a bien cinq plagiarismfiles dans la tablea plagiarism_compilatio_file.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_file');
+        // On vérifie qu'on a bien cinq plagiarismfiles dans la tablea plagiarism_compilatio_files.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
         $this->assertEquals(5, $nbplagiarismfiles);
 
         // On supprime les plagiarismfiles dans ce contexte précis.
@@ -156,8 +156,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->create_partial_webservice();
         provider::delete_plagiarism_for_context($context);
 
-        // On vérifie qu'on a bien vidé la table plagiarism_compilatio_file.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_file');
+        // On vérifie qu'on a bien vidé la table plagiarism_compilatio_files.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
         $this->assertEquals(0, $nbplagiarismfiles);
     }
 
@@ -184,8 +184,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
             $this->create_partial_plagiarismfile($coursemodule2->id, $student->id);
         }
 
-        // On vérifie qu'on a bien dix plagiarismfiles dans la table plagiarism_compilatio_file.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_file');
+        // On vérifie qu'on a bien dix plagiarismfiles dans la table plagiarism_compilatio_files.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
         $this->assertEquals(10, $nbplagiarismfiles);
 
         // On lance la suppression des fichiers de l'étudiant.
@@ -193,8 +193,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->create_partial_webservice('1'); // Les fichiers appartiennent bien à l'établissement.
         provider::delete_plagiarism_for_user($student->id, $context);
 
-        // On vérifie qu'on a toujours les dix plagiarismfiles dans la table plagiarism_compilatio_file.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_file');
+        // On vérifie qu'on a toujours les dix plagiarismfiles dans la table plagiarism_compilatio_files.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
         $this->assertEquals(10, $nbplagiarismfiles);
     }
 
@@ -221,8 +221,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
             $this->create_partial_plagiarismfile($coursemodule2->id, $student->id);
         }
 
-        // On vérifie qu'on a bien dix plagiarismfiles dans la table plagiarism_compilatio_file.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_file');
+        // On vérifie qu'on a bien dix plagiarismfiles dans la table plagiarism_compilatio_files.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
         $this->assertEquals(10, $nbplagiarismfiles);
 
         // On lance la suppression des fichiers de l'étudiant.
@@ -230,8 +230,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->create_partial_webservice('0'); // Les fichiers appartiennent bien à l'étudiant.
         provider::delete_plagiarism_for_user($student->id, $context);
 
-        // On vérifie qu'on a bien vidé la table plagiarism_compilatio_file.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_file');
+        // On vérifie qu'on a bien vidé la table plagiarism_compilatio_files.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
         $this->assertEquals(0, $nbplagiarismfiles);
     }
 
@@ -259,8 +259,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
             $this->create_partial_plagiarismfile($coursemodule->id, $student3->id);
         }
 
-        // On vérifie que la table plagiarism_compilatio_file contient bien quinze plagiarismfiles.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_file');
+        // On vérifie que la table plagiarism_compilatio_files contient bien quinze plagiarismfiles.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
         $this->assertEquals(15, $nbplagiarismfiles);
 
         // On crée la liste d'IDs avec les étudiants 1 et 2.
@@ -271,8 +271,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->create_partial_webservice();
         provider::delete_plagiarism_for_users($userids, $context);
 
-        // On vérifie qu'il ne reste plus que cinq plagiarismfiles dans la table plagiarism_compilatio_file.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_file');
+        // On vérifie qu'il ne reste plus que cinq plagiarismfiles dans la table plagiarism_compilatio_files.
+        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
         $this->assertEquals(5, $nbplagiarismfiles);
     }
 
@@ -311,7 +311,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
     }
 
     /**
-     * Fonction qui insère seulement quelques champs dans la table plagiarism_compilatio_file
+     * Fonction qui insère seulement quelques champs dans la table plagiarism_compilatio_files
      *
      * @param   int         $cmid               Course module's ID
      * @param   int         $userid             User's ID
@@ -325,7 +325,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $plagiarismfile->cm = $cmid;
         $plagiarismfile->userid = $userid;
         $plagiarismfile->externalid = rand(0, 100);
-        $id = $DB->insert_record('plagiarism_compilatio_file', $plagiarismfile);
+        $id = $DB->insert_record('plagiarism_compilatio_files', $plagiarismfile);
         $plagiarismfile->id = $id;
 
         return $plagiarismfile;

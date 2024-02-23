@@ -358,9 +358,9 @@ $string['download_report_failed'] = "An error occurred while downloading the ana
 $string['privacy:metadata:core_files'] = 'Files attached to submissions or created from online text submissions';
 $string['privacy:metadata:core_plagiarism'] = 'This plugin is called by Moodle plagiarism subsystem';
 
-$string['privacy:metadata:plagiarism_compilatio_file'] = "Information about files submitted to Compilatio";
-$string['privacy:metadata:plagiarism_compilatio_file:userid'] = "The Moodle ID of the user who made the submission";
-$string['privacy:metadata:plagiarism_compilatio_file:filename'] = "Name of file submitted or generated name for online text";
+$string['privacy:metadata:plagiarism_compilatio_files'] = "Information about files submitted to Compilatio";
+$string['privacy:metadata:plagiarism_compilatio_files:userid'] = "The Moodle ID of the user who made the submission";
+$string['privacy:metadata:plagiarism_compilatio_files:filename'] = "Name of file submitted or generated name for online text";
 
 $string['privacy:metadata:plagiarism_compilatio_user'] = "Information about the teacher who created a course module with Compilatio";
 $string['privacy:metadata:plagiarism_compilatio_user:userid'] = "The Moodle ID of the teacher";

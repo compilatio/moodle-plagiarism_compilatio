@@ -67,7 +67,7 @@ class CompilatioAnalyses {
         } else {
             return $analyse;
         }
-        $DB->update_record('plagiarism_compilatio_file', $cmpfile);
+        $DB->update_record('plagiarism_compilatio_files', $cmpfile);
 
         return $cmpfile->status;
     }
@@ -135,7 +135,7 @@ class CompilatioAnalyses {
             }
         }
 
-        $DB->update_record('plagiarism_compilatio_file', $cmpfile);
+        $DB->update_record('plagiarism_compilatio_files', $cmpfile);
 
         return $cmpfile;
     }

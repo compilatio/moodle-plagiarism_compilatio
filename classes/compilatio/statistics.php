@@ -47,10 +47,10 @@ class CompilatioStatistics {
                 AVG(globalscore) avg,
                 MIN(globalscore) min,
                 MAX(globalscore) max,
-                COUNT(DISTINCT plagiarism_compilatio_file.id) count
-            FROM {plagiarism_compilatio_file} plagiarism_compilatio_file
+                COUNT(DISTINCT plagiarism_compilatio_files.id) count
+            FROM {plagiarism_compilatio_files} plagiarism_compilatio_files
             JOIN {course_modules} course_modules
-                ON plagiarism_compilatio_file.cm = course_modules.id
+                ON plagiarism_compilatio_files.cm = course_modules.id
             JOIN {modules} modules ON modules.id = course_modules.module
             LEFT JOIN {assign} assign ON course_modules.instance = assign.id AND modules.name = 'assign'
             LEFT JOIN {forum} forum ON course_modules.instance = forum.id AND modules.name = 'forum'
@@ -119,7 +119,7 @@ class CompilatioStatistics {
             }
 
             $sql = "SELECT status, COUNT(DISTINCT id) AS count
-                FROM {plagiarism_compilatio_file}
+                FROM {plagiarism_compilatio_files}
                 WHERE cm = ? AND status LIKE 'error%'
                 GROUP BY status";
 
@@ -153,7 +153,7 @@ class CompilatioStatistics {
 
         global $DB, $PAGE;
 
-        $sql = "SELECT status, COUNT(DISTINCT id) AS count FROM {plagiarism_compilatio_file}  WHERE cm = ? GROUP BY status";
+        $sql = "SELECT status, COUNT(DISTINCT id) AS count FROM {plagiarism_compilatio_files}  WHERE cm = ? GROUP BY status";
         $countbystatus = $DB->get_records_sql($sql, [$cmid]);
 
         $output = "
@@ -183,7 +183,7 @@ class CompilatioStatistics {
             $warningthreshold = $plagiarismvalues->warningthreshold ?? 10;
             $criticalthreshold = $plagiarismvalues->criticalthreshold ?? 25;
 
-            $from = "SELECT COUNT(DISTINCT pcf.id) FROM {plagiarism_compilatio_file} pcf WHERE pcf.cm=?";
+            $from = "SELECT COUNT(DISTINCT pcf.id) FROM {plagiarism_compilatio_files} pcf WHERE pcf.cm=?";
 
             $countgreen = $DB->count_records_sql(
                 $from . " AND status = 'scored' AND globalscore <= $warningthreshold",
@@ -200,7 +200,7 @@ class CompilatioStatistics {
 
             $scorestats = $DB->get_record_sql(
                 "SELECT ROUND(AVG(globalscore)) avg, MIN(globalscore) min, MAX(globalscore) max
-                    FROM {plagiarism_compilatio_file} pcf
+                    FROM {plagiarism_compilatio_files} pcf
                     WHERE pcf.cm=? AND status='scored'",
                 [$cmid]
             );
@@ -312,7 +312,7 @@ class CompilatioStatistics {
         global $DB;
 
         $sql = "SELECT DISTINCT pcf.id, pcf.filename, pcf.userid
-            FROM {plagiarism_compilatio_file} pcf
+            FROM {plagiarism_compilatio_files} pcf
             WHERE pcf.cm=? AND status = ?";
 
         $files = $DB->get_records_sql($sql, [$cmid, $status]);
@@ -418,7 +418,7 @@ class CompilatioStatistics {
                 $courseid = $DB->get_field('course_modules', 'course', array('id' => $cmid));
                 $filename = "quiz-" . $courseid . "-" . $cmid . "-" . $attemptid . "-Q" . $answer->get_question_id() . ".htm";
 
-                $cmpfile = $DB->get_record('plagiarism_compilatio_file', ['cm' => $cmid, 'userid' => $studentid, 'identifier' => sha1($filename)]);
+                $cmpfile = $DB->get_record('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $studentid, 'identifier' => sha1($filename)]);
                 if (!empty($cmpfile)) {
                     $cmpfile->wordcount = $wordcount;
                     $cmpfiles[] = $cmpfile;
@@ -427,7 +427,7 @@ class CompilatioStatistics {
 
             $files = $answer->get_last_qt_files('attachments', $context->id);
             foreach ($files as $file) {
-                $cmpfile = $DB->get_record('plagiarism_compilatio_file', ['cm' => $cmid, 'userid' => $studentid, 'identifier' => $file->get_contenthash()]);
+                $cmpfile = $DB->get_record('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $studentid, 'identifier' => $file->get_contenthash()]);
 
                 if (!empty($cmpfile)) {
                     $cmpfiles[] = $cmpfile;

@@ -37,7 +37,7 @@ global $DB, $USER;
 
 $docid = required_param('docId', PARAM_TEXT);
 
-$file = $DB->get_record('plagiarism_compilatio_file', ['id' => $docid]);
+$file = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 
 if (!empty($file)) {
     $file = CompilatioAnalyses::check_analysis($file);

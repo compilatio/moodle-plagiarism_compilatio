@@ -69,7 +69,7 @@ class CompilatioCsv {
         $sql = "
             SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname,
                 pcf.status, pcf.globalscore, pcf.timesubmitted
-            FROM {plagiarism_compilatio_file} pcf
+            FROM {plagiarism_compilatio_files} pcf
             JOIN {user} usr ON pcf.userid= usr.id
             WHERE pcf.cm=?";
 

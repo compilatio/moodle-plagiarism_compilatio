@@ -108,7 +108,7 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
             $data->cm = $this->task->get_moduleid();
             $data->userid = $this->get_mappingid('user', $data->userid);
 
-            $DB->insert_record('plagiarism_compilatio_file', $data);
+            $DB->insert_record('plagiarism_compilatio_files', $data);
         }
     }
 }

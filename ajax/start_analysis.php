@@ -39,7 +39,7 @@ global $DB;
 
 $docid = required_param('docId', PARAM_RAW);
 
-$plagiarismfile = $DB->get_record('plagiarism_compilatio_file', ['id' => $docid]);
+$plagiarismfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 
 $status = CompilatioAnalyses::start_analysis($plagiarismfile);
 
