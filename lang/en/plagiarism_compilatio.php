@@ -168,7 +168,7 @@ $string['btn_error_not_found'] = 'Document not found';
 $string['title_error_not_found'] = 'This document was not found. Please contact your moodle administrator. Error : document not found for this API key.';
 
 $string['tooltip_detailed_scores'] = '% of suspect texts, including:';
-$string['similarityscore'] = 'Similarities';
+$string['simscore'] = 'Similarities';
 $string['utlscore'] = 'Language not recognised';
 $string['aiscore'] = 'AI-generated text';
 $string['unmeasured'] = 'not measured';

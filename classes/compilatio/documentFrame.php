@@ -366,7 +366,7 @@ class CompilatioDocumentFrame {
                     <i style='display: none;' class='fa fa-refresh'></i><span>{$cmpfile->globalscore}<small>%</small></span>
                 </span>";
 
-        $scores = ['similarityscore', 'utlscore'];
+        $scores = ['simscore', 'utlscore'];
         $recipe = get_config('plagiarism_compilatio', 'recipe');
 
         $recipe === 'anasim-premium' ? array_push($scores, 'aiscore') : '';
@@ -399,7 +399,9 @@ class CompilatioDocumentFrame {
             $tooltip .= get_string('aiscore', 'plagiarism_compilatio') . " : <b>" . get_string('ai_score_not_included', 'plagiarism_compilatio') . "</b><br>";
         }
 
-        $tooltip .= $ignoredtooltip;
+        if (!empty($ignoredscores)) {
+            $tooltip .= $ignoredtooltip;
+        }
 
         $html .= "<span id='cmp-score-icons' class='" . ($nowrap === true ? "flex-nowrap" : "d-flex") .
             "' data-toggle='tooltip' data-html='true' title='{$tooltip}'>

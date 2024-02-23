@@ -74,7 +74,7 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
             'globalscore',
             'aiscore',
             'utlscore',
-            'similarityscore',
+            'simscore',
             'timesubmitted',
             'indexed',
             'reporturl',

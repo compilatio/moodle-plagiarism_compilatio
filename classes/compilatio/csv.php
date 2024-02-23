@@ -169,7 +169,7 @@ class CompilatioCsv {
         $line["question"] = get_string('question', "plagiarism_compilatio");
         $line["suspectwords/totalwords"] = get_string('suspect_words/total_words', "plagiarism_compilatio");
         $line["tot"] = get_string('total', 'plagiarism_compilatio') . ' (%)';
-        $line["sim"] = get_string('similarityscore', 'plagiarism_compilatio') . ' (%)';
+        $line["sim"] = get_string('simscore', 'plagiarism_compilatio') . ' (%)';
         $line["utl"] = get_string('utlscore', 'plagiarism_compilatio') . ' (%)';
         $line["IA"] = get_string('aiscore', 'plagiarism_compilatio') . ' (%)';
 
@@ -182,7 +182,7 @@ class CompilatioCsv {
                 $line["question"] = 'Q' . $question['question_number'];
                 $line["suspect/totalwords"] = $question['suspect_words'] . '/' . $question['cmpfile']->wordcount;
 
-                $scores = ['globalscore', 'similarityscore', 'utlscore', 'aiscore'];
+                $scores = ['globalscore', 'simscore', 'utlscore', 'aiscore'];
 
                 foreach ($scores as $score) {
                     $line[get_string($score, 'plagiarism_compilatio')] = $question['cmpfile']->status == 'scored'

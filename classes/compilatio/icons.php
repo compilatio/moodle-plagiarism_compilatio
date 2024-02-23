@@ -82,7 +82,7 @@ class CompilatioIcons {
             </svg>";
     }
 
-    public static function similarityscore($color) {
+    public static function simscore($color) {
         $color = self::get_hexadecimal_color($color);
         return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' height='1em' fill='none' class='cmp-score-icon'>
             <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -113,7 +113,7 @@ class CompilatioIcons {
             </svg>";
     }
 
-    public static function ignoredsimilarityscore() {
+    public static function ignoredsimscore() {
         return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 512' height='1em' class='cmp-score-icon'>
                 <!--!Font Awesome Pro 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2024 Fonticons, Inc.-->
                 <path
