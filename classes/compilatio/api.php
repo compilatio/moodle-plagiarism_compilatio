@@ -96,6 +96,14 @@ class CompilatioAPI {
         $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
+            $oldmoodleownerid = $response->data->user->current_api_key->old_moodle_owner_id ?? null;
+
+            if (!empty($oldmoodleownerid)) {
+                return $oldmoodleownerid;
+            }
+            
+            $this->update_apikey();
+
             return $response->data->user->id;
         }
         return false;

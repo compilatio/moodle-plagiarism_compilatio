@@ -260,11 +260,9 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
         require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
         $compilatio = new CompilatioAPI(null, $apikey);
+
         $compilatioid = $compilatio->get_apikey_user_id();
-
         $DB->insert_record('plagiarism_compilatio_user', (object) ['userid' => 0, 'compilatioid' => $compilatioid]);
-
-        $compilatio->update_apikey();
 
         // Plugin settings.
         $settings = [
