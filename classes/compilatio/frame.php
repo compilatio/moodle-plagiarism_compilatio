@@ -335,6 +335,16 @@ class CompilatioFrame {
             }
         }
 
+        // Options icon.
+        $output .= "
+            <i
+                id='cmp-show-options'
+                title='" . get_string("display_options_frame", "plagiarism_compilatio") . "'
+                class='cmp-icon fas fa-cog'
+                data-toggle='tooltip'
+            >
+            </i>";
+
         $output .= "</div>";
 
         // Help tab.
@@ -424,6 +434,12 @@ class CompilatioFrame {
         }
 
         $output .= "</div>";
+
+        // Options.
+        $output .= "
+            <div id='cmp-options' class='cmp-tabs-content'>
+               " . CompilatioSettings::get_options_score_analyse($cmid) . "
+            </div>";
 
         // Display timed analysis date.
         if (isset($analysisdate)) {

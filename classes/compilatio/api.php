@@ -518,6 +518,23 @@ class CompilatioAPI {
     }
 
     /**
+     * Update score without selected score
+     *
+     * @param  string   $docid  Document ID
+     * @param  array    $deletedfromscore  Ignored scores
+     * @return mixed    Return report if succeed, an error message otherwise
+     */
+    public function update_score_as_selections($docid, $deletefromscore) {
+        $endpoint = '/api/private/anasim/report/' . $docid;
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', json_encode(['ingored_types' => $deletefromscore])));
+        $error = $this->get_error_response($response, 200);
+        if ($error === false) {
+            return $response->data->report;
+        }
+        return $error;
+    }
+
+    /**
      * Start an analyse of a document
      *
      * @param  string   $docid  Document ID

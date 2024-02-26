@@ -127,6 +127,11 @@ define(['jquery'], function($) {
         });
     };
 
+    /*exports.optionsanalysescores = function(cmid, deletefromscore) {
+        $(document).ready(function( {
+        }))
+    }*/
+
     exports.validateTermsOfService = function(basepath, userid) {
         $(document).ready(function() {
             $('#tos-btn').click(function() {
@@ -316,9 +321,12 @@ define(['jquery'], function($) {
             $('#show-search').on('click', function() {
                 tabClick($(this), $('#cmp-search'));
             });
+            $('#cmp-show-options').on('click', function() {
+                tabClick($(this), $('#cmp-options'));
+            });
 
-            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search');
-            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-search');
+            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search, #cmp-show-options');
+            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-search, #cmp-options');
 
             /**
              * TabClick

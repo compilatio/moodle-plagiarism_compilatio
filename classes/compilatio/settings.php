@@ -446,4 +446,43 @@ class CompilatioSettings {
         $mform->setDefault('warningthreshold', '10');
         $mform->setDefault('criticalthreshold', '25');
     }
+
+    public static function get_options_score_analyse($cmid) {
+
+        Global $DB;
+
+        $ignoredscore = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
+        $recipe = get_config('plagiarism_compilatio', 'recipe');
+
+        $output = get_string('include_in_suspecte_text_percentage', 'plagiarism_compilatio') . "
+            <div class='form-check mt-2 ml-3'>
+                <input class='form-check-input' type='checkbox' value='' id='optionscoresimilarities'>
+                <label class='form-check-label' for='defaultCheck1'>
+                    " . get_string('similarities_percentage', 'plagiarism_compilatio') . "
+                </label>
+            </div>
+            <div class='form-check mt-2 ml-3'>
+                <input class='form-check-input' type='checkbox' value='' id='optionscoreutl'>
+                <label class='form-check-label' for='defaultCheck1'>
+                    " . get_string('utl_percentage', 'plagiarism_compilatio') . "
+                </label>
+            </div>
+        ";
+        $output .= 
+            $recipe === "anasim-premium" 
+                ? "
+                    <div class='form-check mt-2 ml-3'>
+                        <input class='form-check-input' type='checkbox' value='' id='optionscoreia'>
+                        <label class='form-check-label' for='defaultCheck1'>
+                            " . get_string('ia_percentage', 'plagiarism_compilatio') . "
+                        </label>
+                    </div> " 
+                : "";
+
+        $output .= "<p class='font-weight-lighter font-italic mt-4'>" . get_string('options_score_informations', 'plagiarism_compilatio') . "</p>
+            <div class='d-flex flex-row-reverse mr-1'>
+                <button type='button' class='btn btn-primary'>" . get_string('update', 'plagiarism_compilatio') . "</button>
+            </div>";
+        return $output;
+    }
 }
