@@ -17,10 +17,10 @@
 /**
  * compilatio_defaults.php - Displays default values to use inside assignments for Compilatio
  *
- * @package plagiarism_compilatio
- * @author Dan Marsden <dan@danmarsden.com>
- * @copyright 1999 onwards Martin Dougiamas {@link http://moodle.com}
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   plagiarism_compilatio
+ * @author    Compilatio <support@compilatio.net>
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
@@ -39,34 +39,41 @@ $resetuser = optional_param('reset', 0, PARAM_INT);
 $page = optional_param('page', 0, PARAM_INT);
 
 $mform = new compilatio_defaults_form(null);
+
 // Get the defaults - cmid(0) is the default list.
-$plagiarismdefaults = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => 0), '', 'name, value');
-if (!empty($plagiarismdefaults)) {
-    $mform->set_data($plagiarismdefaults);
+$defaultconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => 0]);
+if (!empty($defaultconfig)) {
+    $mform->set_data($defaultconfig);
 }
+
 echo $OUTPUT->header();
 $currenttab = 'compilatiodefaults';
 require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
+
 if (($data = $mform->get_data()) && confirm_sesskey()) {
-    $plagiarismplugin = new plagiarism_plugin_compilatio();
+    $plugin = new plagiarism_plugin_compilatio();
 
-    $data->compilatio_analysistype = COMPILATIO_ANALYSISTYPE_MANUAL;
+    $data->analysistype = 'manual';
 
-    $plagiarismelements = $plagiarismplugin->config_options();
-    foreach ($plagiarismelements as $element) {
-        if (isset($data->$element)) {
-            $newelement = new Stdclass();
-            $newelement->cm = 0;
-            $newelement->name = $element;
-            $newelement->value = $data->$element;
-            if (isset($plagiarismdefaults[$element])) { // Update.
-                $newelement->id = $DB->get_field('plagiarism_compilatio_config', 'id', (array('cm' => 0, 'name' => $element)));
-                $DB->update_record('plagiarism_compilatio_config', $newelement);
-            } else { // Insert.
-                $DB->insert_record('plagiarism_compilatio_config', $newelement);
-            }
-        }
+    $defaultconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => 0]);
+
+    $newconfig = false;
+    if (empty($defaultconfig)) {
+        $defaultconfig = new stdClass();
+        $defaultconfig->cmid = 0;
+        $newconfig = true;
     }
+
+    foreach ($plugin->config_options() as $element) {
+        $defaultconfig->$element = $data->$element ?? null;
+    }
+
+    if ($newconfig) {
+        $DB->insert_record('plagiarism_compilatio_cm_cfg', $defaultconfig);
+    } else {
+        $DB->update_record('plagiarism_compilatio_cm_cfg', $defaultconfig);
+    }
+
     echo $OUTPUT->notification(get_string('defaultupdated', 'plagiarism_compilatio'), 'notifysuccess');
 }
 echo $OUTPUT->box(get_string('defaults_desc', 'plagiarism_compilatio'));

@@ -15,22 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * trigger_analyses.php - Contains Plagiarism plugin trigger_analyses task.
+ * trigger_analyses.php - Contains trigger_analyses task.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace plagiarism_compilatio\task;
-
+// Plugin v2 docs management.
 /**
- * Task class
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Trigger_analyses task class
  */
 class trigger_analyses extends \core\task\scheduled_task {
 
@@ -47,9 +43,21 @@ class trigger_analyses extends \core\task\scheduled_task {
      * @return void
      */
     public function execute() {
-        global $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-        compilatio_trigger_analyses();
-    }
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 
+        $sql = "SELECT file.* FROM {plagiarism_compilatio_files} file
+            JOIN {plagiarism_compilatio_cm_cfg} config ON config.cmid = file.cm
+            WHERE file.status = 'sent' AND config.activated = '1' AND config.analysistype = 'planned' AND config.analysistime < ?";
+        $files = $DB->get_records_sql($sql, [time()]);
+
+        foreach ($files as $file) {
+            \CompilatioAnalyses::start_analysis($file);
+        }
+
+        $files = $DB->get_records('plagiarism_compilatio_files', ['status' => 'to_analyze']);
+        foreach ($files as $file) {
+            \CompilatioAnalyses::start_analysis($file);
+        }
+    }
 }

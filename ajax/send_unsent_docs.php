@@ -15,23 +15,41 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * stats_json.php - Generates global statistics about the course modules
+ * Start analysis for all document in course module
  *
- * @package   plagiarism_compilatio
- * @author    Compilatio <support@compilatio.net>
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @param string $_POST['cmid']
  */
-require_once(dirname(dirname(__FILE__)) . '/../config.php');
+
+require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
+
+require_once($CFG->dirroot . '/plagiarism/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
 
 require_login();
 
-$context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+global $SESSION;
 
-echo json_encode(CompilatioStatistics::get_global_statistics());
+$cmid = required_param('cmid', PARAM_TEXT);
+
+// Handle not sent documents :.
+$files = compilatio_get_unsent_documents($cmid);
+
+if (count($files) != 0) {
+    CompilatioSendFile::send_unsent_files($files, $cmid);
+    $countsuccess = count($files) - count(compilatio_get_unsent_documents($cmid));
+}
+
+if ($countsuccess > 0) {
+    $SESSION->compilatio_alerts = [
+        [
+            'class' => 'info',
+            'content' => get_string('document_sent', 'plagiarism_compilatio', $countsuccess),
+        ],
+    ];
+}

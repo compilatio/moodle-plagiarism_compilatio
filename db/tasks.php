@@ -15,62 +15,43 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * task.php - Contains Plagiarism plugin array who list cron task.
+ * task.php - Contains array who list plugin cron tasks.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-$tasks = array(
-    array(
-        'classname' => 'plagiarism_compilatio\task\send_files',
-        'blocking' => 0,
-        'minute' => '*/5',
-        'hour' => '*',
-        'day' => '*',
-        'dayofweek' => '*',
-        'month' => '*'
-    ),
-    array(
-        'classname' => 'plagiarism_compilatio\task\get_scores',
-        'blocking' => 0,
-        'minute' => '*/5',
-        'hour' => '*',
-        'day' => '*',
-        'dayofweek' => '*',
-        'month' => '*'
-    ),
-    array(
-        'classname' => 'plagiarism_compilatio\task\update_meta',
-        'blocking' => 0,
-        'minute' => '0',
-        'hour' => '*/3',
-        'day' => '*',
-        'dayofweek' => '*',
-        'month' => '*'
-    ),
-    array(
+$tasks = [
+    // Plugin v2 docs management.
+    [
         'classname' => 'plagiarism_compilatio\task\trigger_analyses',
         'blocking' => 0,
         'minute' => '*/5',
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
-        'month' => '*'
-    ),
-    array(
-        'classname' => 'plagiarism_compilatio\task\migration',
+        'month' => '*',
+    ],
+    [
+        'classname' => 'plagiarism_compilatio\task\get_scores',
         'blocking' => 0,
-        'minute' => '*',
+        'minute' => '*/5',
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
-        'month' => '*'
-    )
-);
+        'month' => '*',
+    ],
+    [
+        'classname' => 'plagiarism_compilatio\task\update_meta',
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '*/3',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*',
+    ],
+];

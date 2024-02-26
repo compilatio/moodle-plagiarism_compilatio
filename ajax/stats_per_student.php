@@ -15,23 +15,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * stats_json.php - Generates global statistics about the course modules
+ * Get stats per student
  *
- * @package   plagiarism_compilatio
- * @author    Compilatio <support@compilatio.net>
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @param string $_POST['cmid']
+ * @param string $_POST['selectedstudent']
  */
-require_once(dirname(dirname(__FILE__)) . '/../config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
+
+require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 require_login();
 
-$context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+global $DB;
 
-echo json_encode(CompilatioStatistics::get_global_statistics());
+$selectedstudent = required_param('selectedstudent', PARAM_TEXT);
+$cmid = required_param('cmid', PARAM_TEXT);
+
+$output = is_numeric($selectedstudent)
+    ? CompilatioStatistics::get_statistics_by_student($selectedstudent, $cmid)['output']
+    : "";
+
+echo $output;

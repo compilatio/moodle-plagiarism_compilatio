@@ -17,18 +17,14 @@
 /**
  * restore_plagiarism_compilatio_plugin.class.php - Contains Plagiarism plugin methods to restore the plugin.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * Restore class
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
 
@@ -37,7 +33,7 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
      * @return  void
      */
     protected function define_course_plugin_structure() {
-        $paths = array();
+        $paths = [];
 
         // Add own format stuff.
         $elename = 'compilatioconfig';
@@ -66,11 +62,11 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
      * @return  array Paths
      */
     protected function define_module_plugin_structure() {
-        $paths = array();
+        $paths = [];
 
         // Add own format stuff.
-        $elename = 'compilatioconfigmod';
-        $elepath = $this->get_pathfor('compilatio_configs/compilatio_config');
+        $elename = 'compilatiomodule';
+        $elepath = $this->get_pathfor('compilatio_modules/compilatio_module');
         $paths[] = new restore_path_element($elename, $elepath);
 
         $elename = 'compilatiofiles';
@@ -86,15 +82,15 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
      * @param  object $data Data
      * @return void
      */
-    public function process_compilatioconfigmod($data) {
+    public function process_compilatiomodule($data) {
         global $DB;
 
         if ($this->task->is_samesite()) { // Files can only be restored if this is the same site as was backed up.
             $data = (object)$data;
             $oldid = $data->id;
-            $data->cm = $this->task->get_moduleid();
+            $data->cmid = $this->task->get_moduleid();
 
-            $DB->insert_record('plagiarism_compilatio_config', $data);
+            $DB->insert_record('plagiarism_compilatio_cm_cfg', $data);
         }
     }
 

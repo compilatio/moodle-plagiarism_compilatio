@@ -17,15 +17,15 @@
 // the plagiarism compilatio plugin.
 
 /**
- * upgrade.php - Contains Plagiarism plugin class to upgrade the database between differents versions.
+ * upgrade.php - Contains class to upgrade the plugin database between differents versions.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use plagiarism_compilatio\task\update_meta;
 
 /**
  * Method to upgrade the database between differents versions
@@ -39,10 +39,12 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     $filestable = new xmldb_table('plagiarism_compilatio_files');
-    $similarityscorefield = new xmldb_field('similarityscore', XMLDB_TYPE_INTEGER, '5', null, XMLDB_NOTNULL, null, 0);
+    if ($dbman->table_exists($filestable)) {
+        $similarityscorefield = new xmldb_field('similarityscore', XMLDB_TYPE_INTEGER, '5', null, XMLDB_NOTNULL, null, 0);
 
-    if ($dbman->field_exists($filestable, $similarityscorefield)) {
-        $dbman->rename_field($filestable, $similarityscorefield, 'globalscore');
+        if ($dbman->field_exists($filestable, $similarityscorefield)) {
+            $dbman->rename_field($filestable, $similarityscorefield, 'globalscore');
+        }
     }
 
     $schema = new xmldb_structure('db');
@@ -65,6 +67,9 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         }
     }
 
+    $tablestodelete = [];
+    $fieldstodelete = [];
+
     echo $OUTPUT->box_start('generalbox boxaligncenter');
 
     foreach ($compilatiodbchecks as $tablename => $results) {
@@ -83,7 +88,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                 }
                 if ($matches[1] == 'not expected') {
                     $table = new xmldb_table($tablename);
-                    $dbman->drop_table($table);
+                    $tablestodelete[] = $table;
                     echo("drop table '" . $tablename . "'");
                 }
             }
@@ -107,7 +112,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                             echo("drop index '" . $k . "' => ");
                         }
                     }
-                    $dbman->drop_field($table, $field);
+                    $fieldstodelete[] = ['table' => $table, 'field' => $field];
                     echo("drop field '" . $matches[1] . "'");
                 } else {
                     $field = $schema->getTable($tablename)->getField($matches[1]);
@@ -175,7 +180,6 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         if (strpos($k, 'compilatio_') === 0) {
             if ($k == 'compilatio_use') {
                 $newname = 'enabled';
-
                 // Forces old 'compilatio_use' to '1'. Enabling plugin will be deffered to 'enabled' parameter.
                 try {
                     set_config('compilatio_use', '1', 'plagiarism');
@@ -248,7 +252,116 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021062300, 'plagiarism', 'compilatio');
     }
 
-    compilatio_update_meta();
+    if ($oldversion < 2024022600) {
+        // API key.
+        $apiconfigid = get_config('plagiarism_compilatio', 'apiconfigid');
+        $apikey = $DB->get_field('plagiarism_compilatio_apicon', 'api_key', ['id' => $apiconfigid]);
+        set_config('apikey', $apikey, 'plagiarism_compilatio');
+
+        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+        $compilatio = new CompilatioAPI(null, $apikey);
+
+        $compilatioid = $compilatio->get_apikey_user_id();
+        $DB->insert_record('plagiarism_compilatio_user', (object) ['userid' => 0, 'compilatioid' => $compilatioid]);
+
+        // Plugin settings.
+        $settings = [
+            'allow_analyses_auto'            => 'enable_analyses_auto',
+            'allow_teachers_to_show_reports' => 'enable_show_reports',
+            'allow_student_analyses'         => 'enable_student_analyses',
+            'allow_search_tab'               => 'enable_search_tab',
+        ];
+
+        foreach ($settings as $oldsetting => $newsetting) {
+            $value = get_config('plagiarism_compilatio', $oldsetting);
+            set_config($newsetting, $value, 'plagiarism_compilatio');
+            unset_config($oldsetting, 'plagiarism_compilatio');
+        }
+
+        $settings = ['nb_mots_max', 'nb_mots_min', 'file_max_size', 'apiconfigid', 'idgroupe'];
+
+        foreach ($settings as $setting) {
+            unset_config($setting, 'plagiarism_compilatio');
+        }
+
+        // Course modules config.
+        $cmids = $DB->get_fieldset_sql("SELECT DISTINCT cm FROM {plagiarism_compilatio_config}");
+
+        foreach ($cmids as $cmid) {
+            $config = $DB->get_records_menu('plagiarism_compilatio_config', ['cm' => $cmid], '', 'name, value');
+
+            if (empty($config)) {
+                continue;
+            }
+
+            $analysistype = [0 => 'auto', 1 => 'manual', 2 => 'planned'];
+            $showstudent = [0 => 'never', 1 => 'immediately', 2 => 'closed'];
+
+            $v3config = (object) [
+                'cmid'              => $cmid,
+                'activated'         => $config['use_compilatio'],
+                'showstudentscore'  => $showstudent[$config['compilatio_show_student_score']],
+                'showstudentreport' => $showstudent[$config['compilatio_show_student_report']],
+                'studentanalyses'   => $config['compi_student_analyses'],
+                'analysistype'      => $analysistype[$config['compilatio_analysistype']],
+                'analysistime'      => $config['compilatio_timeanalyse'],
+                'warningthreshold'  => $config['green_threshold'],
+                'criticalthreshold' => $config['orange_threshold'],
+                'defaultindexing'   => $config['indexing_state'],
+            ];
+
+            $DB->insert_record('plagiarism_compilatio_cm_cfg', $v3config);
+        }
+
+        // Recycle bin ids.
+        $sql = "SELECT DISTINCT cm, recyclebinid FROM {plagiarism_compilatio_files} WHERE recyclebinid IS NOT NULL";
+        $recyclebins = $DB->get_records_sql($sql);
+
+        foreach ($recyclebins as $recyclebin) {
+            $cmcfg = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $recyclebin->cm]);
+            $cmcfg->recyclebinid = $recyclebin->recyclebinid;
+            $DB->update_record('plagiarism_compilatio_cm_cfg', $cmcfg);
+        }
+
+        // Files.
+        $status = [
+            201 => 'sent',
+            202 => 'sent',
+            203 => 'analysing',
+            404 => 'error_not_found',
+            412 => 'error_too_short',
+            413 => 'error_too_large',
+            414 => 'error_too_long',
+            415 => 'error_unsupported',
+            416 => 'error_sending_failed',
+            418 => 'error_analysis_failed',
+            'Analyzed' => 'scored',
+            'In queue' => 'queue',
+            'pending' => 'error_sending_failed',
+        ];
+
+        foreach ($status as $oldstatus => $newstatus) {
+            $DB->execute(
+                "UPDATE {plagiarism_compilatio_files} SET status = ? WHERE statuscode = ?",
+                [$newstatus, $oldstatus]
+            );
+        }
+
+        $DB->execute("UPDATE {plagiarism_compilatio_files} SET reporturl = NULL WHERE LENGTH(reporturl) = 40");
+
+        $updatemeta = new update_meta();
+        $updatemeta->execute();
+
+        upgrade_plugin_savepoint(true, 2024022600, 'plagiarism', 'compilatio');
+    }
+
+    foreach ($tablestodelete as $table) {
+        $dbman->drop_table($table);
+    }
+
+    foreach ($fieldstodelete as $field) {
+        $dbman->drop_field($field['table'], $field['field']);
+    }
 
     return true;
 }

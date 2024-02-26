@@ -5,7 +5,7 @@
  * @return {string} pourcentage.
  */
 function compilatioPercentage(v) {
-    return v + "%";
+    return v + '%';
 }
 
 /**
@@ -18,15 +18,15 @@ function compilatioPercentage(v) {
 function compilatioUrlSorter(a, b) {
 
     // Strip tags to compare their content.
-    a = a.replace(/(<([^>]+)>)/ig, "");
-    b = b.replace(/(<([^>]+)>)/ig, "");
+    a = a.replace(/(<([^>]+)>)/ig, '');
+    b = b.replace(/(<([^>]+)>)/ig, '');
     return a.localeCompare(b);
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("compilatio-table-no-js").style.display = "none";
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('cmp-table-no-js').style.display = 'none';
 
-    document.querySelectorAll('#compilatio-table-js thead tr th').forEach(function(el, index) {
+    document.querySelectorAll('#cmp-table-js thead tr th').forEach(function(el, index) {
         switch (index) {
             case 0:
                 el.setAttribute('data-field', 'course');
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 el.setAttribute('data-sorter', 'compilatioUrlSorter');
                 break;
             case 2:
-                el.setAttribute('data-field', 'assign');
+                el.setAttribute('data-field', 'activity');
                 el.setAttribute('data-sortable', 'true');
                 el.setAttribute('data-sorter', 'compilatioUrlSorter');
                 break;

@@ -15,21 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * version.php - Contains Plagiarism plugin settings.
+ * version.php - Contains plugin version settings.
  *
- * @since      2.0
- * @package    plagiarism_compilatio
- * @subpackage plagiarism
- * @author     Dan Marsden <dan@danmarsden.com>
- * @copyright  2012 Dan Marsden http://danmarsden.com
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   plagiarism_compilatio
+ * @author    Compilatio <support@compilatio.net>
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-$plugin->version    = 2024022001;
+$plugin->version    = 2024022600;
 $plugin->requires   = 2017042100;
 $plugin->cron       = 300; // Only run every 5 minutes.
 $plugin->component  = 'plagiarism_compilatio';
 $plugin->maturity   = MATURITY_STABLE;
-$plugin->release    = '2.7.3';
+$plugin->release    = '3.0.0';

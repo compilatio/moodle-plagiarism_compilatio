@@ -2,208 +2,324 @@ define(['jquery'], function($) {
     /**
      * A Module that handles Compilatio ajax/API calls
      */
-  
+
     /**
      * disableCompilatioButtons
      * Disable Compilatio buttons (during multiple ajax/API calls)
      */
     function disableCompilatioButtons() {
-        $(".compilatio-button").each(function() {
-            $(this).attr("disabled", "disabled");
-            $(this).addClass("disabled");
-            $(this).attr("href", "#");
+        $('.cmp-action-btn').each(function() {
+            $(this).attr('disabled', 'disabled');
+            $(this).addClass('disabled');
+            $(this).attr('href', '#');
         });
     }
-  
+
     var exports = {};
-  
-    var getIndexingState = exports.getIndexingState = function(basepath, eltId, docId, apiconfigid) {
+
+    function startAnalysis(message, basepath, cmid, selectedusers) {
+        disableCompilatioButtons();
+        $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");        
+        
+        $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
+            {'cmid': cmid, 'selectedUsers': selectedusers != null ? selectedusers.toString() : ''}, function() {
+                window.location.reload();
+            });
+    }
+
+    exports.getSelectedStudent = function(basepath, cmid) {
+        $(document).ready(function(){
+            const dropdown = $('#student-select');
+            const statisticsContainer = $('#statistics-container');
+            
+            dropdown.on('change', function() {
+                const selectedstudent = $(this).val();
+                $.ajax({
+                    type: 'POST',
+                    url: basepath + '/plagiarism/compilatio/ajax/stats_per_student.php',  
+                    data: { selectedstudent: selectedstudent, cmid: cmid },
+                    success: function(response) {
+                        statisticsContainer.html(response);
+                    },
+                    error: function(error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+
+            $('#previous-student').on('click', function() {
+                changeSelectedTruc(dropdown.prop('selectedIndex'), -1)
+            });
+
+            $('#next-student').on('click', function() {
+                changeSelectedTruc(dropdown.prop('selectedIndex'), 1)
+            });
+
+            function changeSelectedTruc (selectedIndex, direction) {
+                var newIndex = selectedIndex + direction;
+                const maxIndex = dropdown.find('option').length - 1;
+
+                if (newIndex == -1) {
+                    newIndex = maxIndex;
+                } else if (newIndex > maxIndex) {
+                    newIndex = 0;
+                }
+
+                dropdown.prop('selectedIndex', newIndex).change();
+            }
+        });
+    }
+
+    exports.startAllAnalysis = function(basepath, cmid, message) {
         $(document).ready(function() {
-            $.post(basepath + '/plagiarism/compilatio/ajax/get_indexing_state.php',
-            {'idDoc': docId, 'apiconfigid': apiconfigid}, function(data) {
-                $(".compi-" + eltId + " .compilatio-library").detach();
-                $(".compi-" + eltId).prepend(data);
-  
-                setTimeout(function() {
-                    $(".compi-" + eltId + " > div:first-child").click(function() {
-                        toggleIndexingState(basepath, eltId, docId, apiconfigid);
-                    });
-                }, 250); // Wait for all DOM updates be finished before binding events handlers.
+            var startAllAnalysis = $('.cmp-start-btn');
+            startAllAnalysis.click(function() {
+                startAnalysis(message, basepath, cmid, null);
             });
         });
     };
-  
-    var toggleIndexingState = exports.toggleIndexingState = function(basepath, eltId, docId, apiconfigid) {
-        var indexingState;
-        if ($(".compi-" + eltId + " > div:first-child").is('.compilatio-library-in')) {
-            $(".compi-" + eltId + " > div:first-child").removeClass('compilatio-library-in');
-            indexingState = 0;
-        }
-        if ($(".compi-" + eltId + " > div:first-child").is('.compilatio-library-out')) {
-            $(".compi-" + eltId + " > div:first-child").removeClass('compilatio-library-out');
-            indexingState = 1;
-        }
-        $(".compi-" + eltId + " > div:first-child").addClass('compilatio-library');
-        $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php',
-        {'idDoc': docId, 'indexingState': indexingState, 'apiconfigid': apiconfigid}, function(data) {
-            if (data == 'true') {
-                getIndexingState(basepath, eltId, docId, apiconfigid);
+
+    exports.startAnalysesOnSelectedFiles = function(basepath, cmid, message) {
+        $(document).ready(function() {
+            const startSelectedAnalysesBtn = $('#start-selected-analyses-btn').hide();
+            const checkboxes = $('td.c0 input, #selectall');
+            function getSelectedLines() {
+                return checkboxes.filter(':checked').map(function() {
+                    return $(this).val() != 'on' ? $(this).val() : null;
+                }).get();
             }
+            function updateButtonVisibility() {
+                const selectedUsers = getSelectedLines();
+                selectedUsers.length > 0 ? startSelectedAnalysesBtn.show() : startSelectedAnalysesBtn.hide();
+            }
+            checkboxes.on('change', updateButtonVisibility);
+            startSelectedAnalysesBtn.click(function() {
+                startAnalysis(message, basepath, cmid, getSelectedLines());
+            });
         });
     };
-  
-    exports.refreshButton = function(basepath, fileIds, docNotUploaded, infoStr) {
+    
+    exports.sendUnsentDocs = function(basepath, cmid, message) {
         $(document).ready(function() {
-            var n = fileIds.length;
-            var i = 0;
-            var refreshButton = $("i.fa-refresh").parent("button");
-            if (n == 0) {
+            var sendUnsentDocs = $('#cmp-send-btn');
+            sendUnsentDocs.click(function() {
                 disableCompilatioButtons();
-                if (docNotUploaded > 0) {
-                    $(".comp-start-btn").each(function() {
-                        $(this).removeAttr("disabled");
-                        $(this).removeClass("disabled");
-                    });
-                }
-                $(".comp-restart-btn").removeAttr("disabled");
-                $(".comp-restart-btn").removeClass("disabled");
-            } else {
-                refreshButton.click(function() {
-                    disableCompilatioButtons();
-                    // Display progress bar.
-                    $("#compi-home").html("<p>" + infoStr + "<progress id='compi-update-progress' value='"
-                        + i + "' max='" + n + "'></progress></p>");
-                    $("#compilatio-logo").click();
-                    // Launch ajax requests.
-                    fileIds.forEach(function(id) {
-                        $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_check_analysis.php',
-                        {'id': id}, function() {
-                            i++;
-                            $("#compi-update-progress").val(i);
-                            if (i == n) {
-                                window.location.reload();
-                            }
-                        });
-                    });
-                });
-            }
-        });
-    };
-  
-    exports.startAllAnalysis = function(basepath, cmid, message) {
-        $(document).ready(function() {
-            var startAllAnalysis = $("button.comp-start-btn");
-            startAllAnalysis.click(function() {
-                disableCompilatioButtons();
-                $("#compi-notices").append(
-                    "<div class='compilatio-alert compilatio-alert-info'>" + message + "<i class='ml-3 fa-spin fa-lg fa fa-spinner'></i></div>"
-                );
-                $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_all_analysis.php',
+                $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
+                $.post(basepath + '/plagiarism/compilatio/ajax/send_unsent_docs.php',
                 {'cmid': cmid}, function() {
                     window.location.reload();
                 });
             });
         });
     };
-  
-    exports.startAnalysis = function(basepath, eltId, docId) {
+
+    exports.resetDocsInError = function(basepath, cmid, message) {
         $(document).ready(function() {
-            setTimeout(function() {
-                let startBtn = $(".compi-" + eltId + " > div:last-child");
-                startBtn.click(function() {
-                    $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_start_analysis.php',
-                    {'docId': docId}, function(res) {
-                        if (res != 'false') {
-                            if (res.startsWith("<p")) {
-                                $('#cmp-start-analyse-error').remove();
-                                startBtn.closest(".compilatio-area").after(res);
+            var resetDocsInError = $('#cmp-reset-btn');
+            resetDocsInError.click(function() {
+                disableCompilatioButtons();
+                $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
+                $.post(basepath + '/plagiarism/compilatio/ajax/reset_docs_in_error.php',
+                {'cmid': cmid}, function() {
+                    window.location.reload();
+                });
+            });
+        });
+    };
+
+    exports.validateTermsOfService = function(basepath, userid) {
+        $(document).ready(function() {
+            $('#tos-btn').click(function() {
+                $.post(basepath + '/plagiarism/compilatio/ajax/validate_terms_of_service.php',
+                {'userid': userid}, function() {
+                    window.location.reload();
+                });
+            });
+        });
+    };
+
+    exports.checkUserInfo = function(basepath, userid) {
+        $(document).ready(function() {
+            $.post(basepath + '/plagiarism/compilatio/ajax/check_user_info.php', {'userid': userid});
+        });
+    };
+
+    function displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, domid) {
+        $.post(basepath + '/plagiarism/compilatio/ajax/display_document_frame.php', {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url}, function(button) {
+            let el = $('#cmp-' + domid);
+            el.empty().append(button);
+
+            setTimeout(e => {
+                if (isteacher) {
+                    var refreshScoreBtn = $('#cmp-' + domid + ' .cmp-similarity');
+                    refreshScoreBtn.on("mouseover", (e) => {
+                        refreshScoreBtn.find('i').show();
+                        refreshScoreBtn.find('span').hide();
+                    });
+                    refreshScoreBtn.on("mouseout", (e) => {
+                        refreshScoreBtn.find('i').hide();
+                        refreshScoreBtn.find('span').show();
+                    });
+                    refreshScoreBtn.click(function() {
+                        $('#cmp-' + domid + ' #cmp-score-icons').remove();
+                        refreshScoreBtn.empty();
+                        $.post(basepath + '/plagiarism/compilatio/ajax/update_score.php', {'docId': cmpfileid}, function(res) {
+                            refreshScoreBtn.replaceWith(res);
+                        });
+                    });
+                }
+
+                var toogleIndexingStateBtn = $('#cmp-' + domid + ' .cmp-library');
+                toogleIndexingStateBtn.click(function() {
+                    var i = $(this).find('i');
+                    if (i.is('.cmp-library-in')) {
+                        var indexingState = 0;
+                    }
+                    if (i.is('.cmp-library-out')) {
+                        var indexingState = 1;
+                    }
+                    i.removeClass();
+                    $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php', {'docId': cmpfileid, 'indexingState': indexingState}, function(res) {
+                        if (res == 'true') {
+                            if (indexingState == 0) {
+                                i.addClass('cmp-library-out fa-times-circle fa');
                             } else {
-                                startBtn.replaceWith(res);
+                                i.addClass('cmp-library-in fa-check-circle fa');
                             }
                         }
                     });
                 });
-            }, 300);
+
+                var startAnalysisBtn = $('#cmp-' + domid + ' .cmp-start-btn');
+                startAnalysisBtn.click(function() {
+                    startAnalysisBtn.find('i').removeClass('fa-play-circle').addClass('fa-spinner fa-spin');
+
+                    $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis.php',
+                    {'docId': cmpfileid}, function(res) {
+                        res = JSON.parse(res);
+
+                        if ('error' in res) {
+                            $('#cmp-' + domid + ' p').remove();
+                            $('#cmp-' + domid).append("<p class='cmp-color-red'>" + res.error + "</p>");
+                            startAnalysisBtn.find('i').removeClass('fa-spinner fa-spin').addClass('fa-play-circle');
+                        } else {
+                            startAnalysisBtn.replaceWith(res.documentFrame);
+                        }
+                    });
+                });
+            }, 500);
+        });
+    }
+
+    exports.displayDocumentFrame = function(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, domid) {
+        $(document).ready(function() {
+            displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, domid);
+
+            setInterval(function() {
+                displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, domid);
+            }, 3 * 60000);
         });
     };
-  
-    exports.restartFailedAnalysis = function(basepath, cmid, message) {
+
+    exports.getNotifications = function(basepath, userid) {
         $(document).ready(function() {
-            var restartFailedAnalysis = $("button.comp-restart-btn");
-            restartFailedAnalysis.click(function() {
-                disableCompilatioButtons();
-                $("#compi-notices").append(
-                    "<div class='compilatio-alert compilatio-alert-info'>" + message + "<i class='ml-3 fa-spin fa-lg fa fa-spinner'></i></div>"
-                );
-                $.post(basepath + '/plagiarism/compilatio/ajax/compilatio_reset_failed_document.php',
-                {'cmid': cmid}, function() {
-                    window.location.reload();
+            $.post(basepath + '/plagiarism/compilatio/ajax/get_notifications.php', {
+                'userid': userid,
+                'read': JSON.parse(localStorage.getItem("notifications-read")) ?? [],
+                'ignored': JSON.parse(localStorage.getItem("notifications-ignored")) ?? [],
+            }, function(notifications) {
+                notifications = JSON.parse(notifications);
+
+                $('#cmp-count-notifications').html(notifications.count == 0 ? '' : notifications.count);
+                $('#cmp-notifications').html(notifications.content);
+
+                $('#cmp-alerts').append(notifications.floating);
+
+                $('.cmp-notifications-title').on('click', function() {
+                    let count = $('#cmp-count-notifications').html();
+                    count--;
+                    $('#cmp-count-notifications').html(count <= 0 ? '' : count);
+
+                    ignoreNotifications()
+
+                    $('#cmp-show-notifications').toggleClass('active');
+
+                    $('#cmp-notifications').show();
+                    $('#cmp-notifications-titles').hide();
+
+                    let notifId = $(this).attr('id').split("-").pop();
+                    $('#cmp-notifications-content-' + notifId).show();
+
+                    $('#cmp-notifications-' + notifId).children().first().removeClass('text-primary')
+
+                    let notificationsRead = JSON.parse(localStorage.getItem("notifications-read")) ?? []
+                    if (!notificationsRead.includes(notifId)) {
+                        notificationsRead.push(notifId)
+                        localStorage.setItem("notifications-read", JSON.stringify(notificationsRead))
+                    }
                 });
+    
+                $('.cmp-show-notifications').on('click', function() {
+                    $('#cmp-notifications-titles').show();
+                    $('.cmp-notifications-content').hide();
+                });
+
+                $('#cmp-ignore-notifications').on('click', function() {
+                    ignoreNotifications()
+                });
+
+                $('#cmp-show-notifications').on('click', function() {
+                    ignoreNotifications()
+                });
+
+                function ignoreNotifications() {
+                    $('.cmp-alert-notifications').remove();
+                    localStorage.setItem("notifications-ignored", JSON.stringify(notifications.ids))
+                }
             });
         });
     };
-  
-    exports.compilatioTabs = function(alertsCount, idcourt) {
+
+    exports.compilatioTabs = function(docid) {
         $(document).ready(function() {
-  
             if ($('.moove.secondary-navigation')[0]) {
-                $('#compilatio-container').css('margin-top', '140px');
-                $('#cmp-display-frame').css('margin-top', '140px');
+                $('#cmp-container').css('margin-top', '140px');
             }
-  
+
             // Convert markdown to HTML.
             $('.cmp-md').each(function() {
-                $(this).html("<i class='fa-lg fa fa-info-circle'></i><span>" + markdown($.trim($(this).text())) + "</span>")
-            });
-  
-            // Display or hide Compilatio container
-            if (localStorage.getItem("compilatio-container-displayed") == 0) {
-                $('#compilatio-container').hide();
-                $('#cmp-display-frame').show();
-            }
-            if (alertsCount > 0) {
-                $('#cmp-bell').show();
-            }
-            $('#cmp-display-frame').on('click', function() {
-                localStorage.setItem("compilatio-container-displayed", 1);
-                $(this).hide();
-                $('#compilatio-container').show();
-            });
-            $('#cmp-hide-frame').on('click', function() {
-                localStorage.setItem("compilatio-container-displayed", 0);
-                $('#compilatio-container').hide();
-                $('#cmp-display-frame').show();
+                $(this).html(markdown($.trim($(this).text())))
             });
 
-            $('#compi-notices > .compilatio-alert > .fa-times').on('click', function() {
-                $('#compi-notices').empty()
+            $('#cmp-tabs').show();
+
+            $('#cmp-alerts > .cmp-alert > .fa-times').on('click', function() {
+                $('#cmp-alert-' + $(this).attr('id').split("-").pop()).parent().remove()
             });
-  
-            var selectedElement = '';
-            if (idcourt) {
-                selectedElement = '#compi-search';
-            } else {
-                selectedElement = '#compi-home';
+
+            if (docid) {
+                $('#cmp-search').show();
             }
-  
-            $(selectedElement).show();
-  
-            $('#compilatio-show-notifications').on('click', function() {
-                tabClick($(this), $('#compi-notifications'));
+
+            $('#cmp-show-notifications').on('click', function() {
+                tabClick($(this), $('#cmp-notifications'));
             });
             $('#show-stats').on('click', function() {
-                tabClick($(this), $('#compi-stats'));
+                tabClick($(this), $('#cmp-stats'));
+            });
+            $('#show-stats-per-student').on('click', function() {
+                tabClick($(this), $('#cmp-stats-per-student'));
             });
             $('#show-help').on('click', function() {
-                tabClick($(this), $('#compi-help'));
+                tabClick($(this), $('#cmp-help'));
             });
             $('#show-search').on('click', function() {
-                tabClick($(this), $('#compi-search'));
+                tabClick($(this), $('#cmp-search'));
             });
-  
-            var tabs = $('#compilatio-show-notifications, #show-stats, #show-help, #show-search');
-            var elements = $('#compi-notifications, #compi-stats, #compi-help, #compi-home, #compi-search');
-  
+
+            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search');
+            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-search');
+
             /**
              * TabClick
              * Show clicked tab.
@@ -215,22 +331,26 @@ define(['jquery'], function($) {
                 if (!contentToShow.is(':visible')) {
                     contentToShow.show();
                     elements.not(contentToShow).hide();
-  
+
                     tabs.not(tabClicked).removeClass('active');
-  
+
                     tabClicked.toggleClass('active');
+                } else {
+                    elements.hide();
+                    tabs.removeClass('active');
+                }
+
+                if ($('#show-stats').hasClass('active')) {
+                    $('#cmp-container').css('max-width', 'none');
                 }
             }
-  
-            $('#compilatio-logo').on('click', function() {
-                var elementClicked = $('#compi-home');
-                elementClicked.show();
-                elements.not(elementClicked).hide();
+
+            $('#cmp-logo').on('click', function() {
+                elements.hide();
                 tabs.removeClass('active');
             });
         });
     };
-  
+
     return exports;
-  });
-  
+});

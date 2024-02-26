@@ -15,23 +15,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * stats_json.php - Generates global statistics about the course modules
+ * Validate user's terms of service
  *
- * @package   plagiarism_compilatio
- * @author    Compilatio <support@compilatio.net>
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @param string $_POST['userid']
  */
-require_once(dirname(dirname(__FILE__)) . '/../config.php');
+
+require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
+require_once($CFG->dirroot . '/plagiarism/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 require_login();
 
-$context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+global $DB;
 
-echo json_encode(CompilatioStatistics::get_global_statistics());
+$userid = required_param('userid', PARAM_RAW);
+
+$user = $DB->get_record('plagiarism_compilatio_user', ['compilatioid' => $userid]);
+$user->validatedtermsofservice = true;
+$DB->update_record('plagiarism_compilatio_user', $user);
+
+$compilatio = new CompilatioAPI($userid);
+$compilatio->validate_terms_of_service();

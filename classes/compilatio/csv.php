@@ -15,22 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * csv_helper.php - Contains Plagiarism plugin helper methods for generate CSV files.
+ * csv.php - Contains methods to generate CSV files.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * Helper class for generate csv file
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Class to generate csv file
  */
-class csv_helper {
+class CompilatioCsv {
 
     /**
      * Get header
@@ -72,15 +68,14 @@ class csv_helper {
 
         $sql = "
             SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname,
-                pcf.statuscode, pcf.globalscore, pcf.timesubmitted
+                pcf.status, pcf.globalscore, pcf.timesubmitted
             FROM {plagiarism_compilatio_files} pcf
             JOIN {user} usr ON pcf.userid= usr.id
             WHERE pcf.cm=?";
 
-        $files = $DB->get_records_sql($sql, array($cmid));
+        $files = $DB->get_records_sql($sql, [$cmid]);
 
-        $moduleconfig = $DB->get_records_menu('plagiarism_compilatio_config', array('cm' => $cmid), '', 'name, value');
-        $analysistype = $moduleconfig["compilatio_analysistype"];
+        $cmpcm = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
         // Get the name of the activity in order to generate header line and the filename.
         $sql = "
@@ -90,11 +85,7 @@ class csv_helper {
                 AND cm.instance = activity.id
             WHERE cm.id =?";
 
-        $name = "";
-        $record = $DB->get_record_sql($sql, array($cmid));
-        if ($record != null) {
-            $name = $record->name;
-        }
+        $record = $DB->get_field_sql($sql, [$cmid]);
 
         $date = userdate(time());
         // Sanitize date for CSV.
@@ -110,45 +101,23 @@ class csv_helper {
 
         foreach ($files as $file) {
 
-            $line = array();
+            $line = [];
             $line["lastname"]      = $file->lastname;
             $line["firstname"]     = $file->firstname;
             $line["filename"]      = $file->filename;
             $line["timesubmitted"] = date("d/m/y H:i:s", $file->timesubmitted);
 
-            switch ($file->statuscode) {
-                case COMPILATIO_STATUSCODE_COMPLETE:
-                    $line["similarities"] = $file->globalscore;
-                    break;
-                case COMPILATIO_STATUSCODE_UNEXTRACTABLE:
-                    $line["similarities"] = get_string("unextractable", "plagiarism_compilatio");
-                    break;
-                case COMPILATIO_STATUSCODE_TOO_SHORT:
-                    $line["similarities"] = get_string("stats_tooshort", "plagiarism_compilatio");
-                    break;
-                case COMPILATIO_STATUSCODE_TOO_LONG:
-                    $line["similarities"] = get_string("stats_toolong", "plagiarism_compilatio");
-                    break;
-                case COMPILATIO_STATUSCODE_UNSUPPORTED:
-                    $line["similarities"] = get_string("unsupported", "plagiarism_compilatio");
-                    break;
-                case COMPILATIO_STATUSCODE_ANALYSING:
-                    $line["similarities"] = get_string("analysing", "plagiarism_compilatio");
-                    break;
-                case COMPILATIO_STATUSCODE_IN_QUEUE:
-                    $line["similarities"] = get_string("queued", "plagiarism_compilatio");
-                    break;
-                default:
-                    if ($analysistype == COMPILATIO_ANALYSISTYPE_MANUAL) {
-                        $line["similarities"] = get_string("manual_analysis", "plagiarism_compilatio");
-                    } else if ($analysistype == COMPILATIO_ANALYSISTYPE_PROG) {
-                        $line["similarities"] = get_string("waitingforanalysis",
-                                                           "plagiarism_compilatio",
-                                                           userdate($moduleconfig['compilatio_timeanalyse']));
-                    } else {
-                        $line["similarities"] = "";
-                    }
-                    break;
+            if ($file->status == "scored") {
+                $line["stats_score"] = $file->globalscore;
+            } else if ($file->status == "sent") {
+                if ($cmpcm->analysistype == 'manual') {
+                    $line["stats_score"] = get_string("manual_analysis", "plagiarism_compilatio");
+                } else if ($cmpcm->analysistype == 'planned') {
+                    $date = userdate($cmpcm->analysistime);
+                    $line["stats_score"] = get_string("title_planned", "plagiarism_compilatio", $date);
+                }
+            } else {
+                $line["stats_score"] = get_string("title_" . $file->status, "plagiarism_compilatio");
             }
 
             if ($csv === $head) {
@@ -169,4 +138,64 @@ class csv_helper {
 
     }
 
+    public static function generate_cm_csv_per_student($cmid, $userssubmittedtest) {
+        global $DB;
+
+        $cmpcm = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
+
+        // Get the name of the activity in order to generate header line and the filename.
+        $sql = "
+            SELECT activity.name
+            FROM {course_modules} cm
+            JOIN {quiz} activity ON cm.course = activity.course
+                AND cm.instance = activity.id
+            WHERE cm.id =?";
+
+        $name = $DB->get_field_sql($sql, [$cmid]);
+
+        $date = userdate(time());
+        // Sanitize date for CSV.
+        $date = str_replace(",", "", $date);
+        // Create CSV first line.
+        $head = '"' . $name . " - " . $date . "\",\n";
+        // Sanitize filename.
+        $name = preg_replace("/[^a-z0-9\.]/", "", strtolower($name));
+
+        $filename = "compilatio_moodle_" . $name . "_statistics_per_students_" . date("Y_m_d") . ".csv";
+        // Add the first line to the content : "{Name of the module} - {date}".
+        $csv = $head;
+        $line = [];
+        $line["student"] = get_string('student', "plagiarism_compilatio");
+        $line["question"] = get_string('question', "plagiarism_compilatio");
+        $line["suspectwords/totalwords"] = get_string('suspect_words/total_words', "plagiarism_compilatio");
+        $line["tot"] = get_string('total', 'plagiarism_compilatio') . ' (%)';
+        $line["sim"] = get_string('simscore', 'plagiarism_compilatio') . ' (%)';
+        $line["utl"] = get_string('utlscore', 'plagiarism_compilatio') . ' (%)';
+        $line["IA"] = get_string('aiscore', 'plagiarism_compilatio') . ' (%)';
+
+        $csv .= '"' . implode('","', $line) . "\"\n";
+        foreach ($userssubmittedtest as $user) {
+            $datas = CompilatioStatistics::get_question_data($cmid, $user->id);
+            foreach ($datas as $question) {
+                $line = [];
+                $line["name"] = $user->lastname . ' ' . $user->firstname;
+                $line["question"] = 'Q' . $question['question_number'];
+                $line["suspect/totalwords"] = $question['suspect_words'] . '/' . $question['cmpfile']->wordcount;
+
+                $scores = ['globalscore', 'simscore', 'utlscore', 'aiscore'];
+
+                foreach ($scores as $score) {
+                    $line[get_string($score, 'plagiarism_compilatio')] = $question['cmpfile']->status == 'scored'
+                        ? (isset($question['cmpfile']->$score) ? $question['cmpfile']->$score : get_string('unmeasured', 'plagiarism_compilatio'))
+                        : get_string('not_analysed', "plagiarism_compilatio");
+                }
+
+                $csv .= '"' . implode('","', $line) . "\"\n";
+            }
+        }
+
+        self::get_header($filename, $csv);
+
+        exit(0);
+    }
 }

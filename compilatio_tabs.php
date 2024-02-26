@@ -17,11 +17,9 @@
 /**
  * compilatio_tabs.php - Contains Plagiarism plugin script who create tab object in the plugin configuration web page.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,23 +32,21 @@ require('version.php');
 $strplagiarism         = get_string('compilatio', 'plagiarism_compilatio');
 $strplagiarismdefaults = get_string('compilatiodefaults', 'plagiarism_compilatio');
 $strautodiagnosis      = get_string('auto_diagnosis_title', 'plagiarism_compilatio');
-$strstatistics         = get_string('statistics_title', 'plagiarism_compilatio');
+$strstatistics         = get_string('tabs_title_stats', 'plagiarism_compilatio');
 $strhelp               = get_string('tabs_title_help', 'plagiarism_compilatio');
-$strmigration          = get_string('migration_title', 'plagiarism_compilatio');
 
 // Display Compilatio logo.
-echo output_helper::get_logo();
-echo('<p class="float-right">[ version: ' . $plugin->version . ', release: ' . $plugin->release . ' ]</p>');
+echo "<img id='cmp-logo' class='mb-3' src='" . new moodle_url("/plagiarism/compilatio/pix/compilatio.png") . "'>";
+echo '<p class="float-right">[ version: ' . $plugin->version . ', release: ' . $plugin->release . ' ]</p>';
 echo '<div style="clear:both"></div>';
 
 // Create tabs.
-$tabs = array();
+$tabs = [];
 $tabs[] = new tabobject('compilatiosettings', 'settings.php', $strplagiarism, $strplagiarism, false);
 $tabs[] = new tabobject('compilatiodefaults', 'compilatio_defaults.php', $strplagiarismdefaults, $strplagiarismdefaults, false);
 $tabs[] = new tabobject('compilatioautodiagnosis', 'autodiagnosis.php', $strautodiagnosis, $strautodiagnosis, false);
 $tabs[] = new tabobject('compilatiostatistics', 'statistics.php', $strstatistics, $strstatistics, false);
 $tabs[] = new tabobject('compilatiohelp', 'help.php', $strhelp, $strhelp, false);
-$tabs[] = new tabobject('compilatiomigrate', 'migrate.php', $strmigration, $strmigration, false);
 
 // Display tabs.
-print_tabs(array($tabs), $currenttab);
+print_tabs([$tabs], $currenttab);

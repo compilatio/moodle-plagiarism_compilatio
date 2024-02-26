@@ -15,15 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Get document indexing state via Compilatio SOAP API
+ * Get Compilatio document frame
  *
- * This script is called by amd/build/ajax_api.js
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * @param   string $_POST['idDoc']
- * Echos html block relating to the document's indexing state
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
@@ -32,21 +28,23 @@ require_once($CFG->libdir . '/plagiarismlib.php');
 
 // Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/documentFrame.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-// Get helper class.
-require_once($CFG->dirroot . '/plagiarism/compilatio/helper/output_helper.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/helper/ws_helper.php');
-
-// Get constants.
-require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
-
 require_login();
-$iddoc = optional_param('idDoc', '', PARAM_TEXT);
-$apiconfigid = required_param('apiconfigid', PARAM_INT);
 
-if (isset($iddoc) && compilatio_valid_id($iddoc)) {
-    $indexingstate = ws_helper::get_indexing_state($iddoc, $apiconfigid);
-    echo(output_helper::get_indexing_state($indexingstate));
-}
+$cantriggeranalysis = required_param('cantriggeranalysis', PARAM_BOOL);
+$isstudentanalyse = required_param('isstudentanalyse', PARAM_BOOL);
+$cmpfileid = required_param('cmpfileid', PARAM_RAW);
+$canviewreport = required_param('canviewreport', PARAM_BOOL);
+$isteacher = required_param('isteacher', PARAM_BOOL);
+$url = required_param('url', PARAM_RAW);
+
+echo CompilatioDocumentFrame::display_document_frame(
+    $cantriggeranalysis,
+    $isstudentanalyse,
+    $cmpfileid,
+    $canviewreport,
+    $isteacher,
+    $url
+);

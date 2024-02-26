@@ -15,49 +15,42 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This script redirects to Compilatio helpcenter
+ * This script redirects to Compilatio helpcenter - It is called from assignments pages or plugin administration section
  *
- * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * It is called from assignments pages or plugin administration section
- *
+ * @package   plagiarism_compilatio
+ * @author    Compilatio <support@compilatio.net>
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+
 require_login();
 
-$idgroupe = required_param('idgroupe', PARAM_TEXT);
+// Check GET parameter.
+$availpages = ['admin', 'teacher', 'service_status'];
 
-// Gheck GET parameter.
-$availpages = ['moodle-admin', 'moodle-teacher', 'moodle-info-waiting', 'service-state'];
+$page = optional_param('page', 'teacher', PARAM_RAW);
+$userid = optional_param('userid', null, PARAM_RAW);
 
-$page = optional_param('page', 'moodle-teacher', PARAM_RAW);
 if (in_array($page, $availpages) === false) {
-    $page = 'moodle-teacher';
+    $page = 'teacher';
 }
-echo("<!doctype html>
-<html>
-	<head>
-		<title>Compilatio helpcenter</title>
-        <meta charset='utf-8'>
-	</head>
-	<body>
-		<script type='text/javascript'>
-			(function redirectHC(g, e, l, p){
-				var s,u,b,m,i,t,o;s=document;
-				function x(a,b){return a.createElement(b);};function y(a,b,c){a.setAttribute(b,c);};function z(a,b){a.appendChild(b);};
-				u=x(s,\"form\");y(u,'action','https://www.compilatio.net/support/?zeRedirect=zeLogin');y(u,'method','post');
-				b=x(s,'input');y(b,'type','hidden');y(b,'name','moodle_id_groupe');y(b,'value',g);
-				m=x(s,'input');y(m,'type','hidden');y(m,'name','lms-user-email');y(m,'value',e);
-				i=x(s,'input');y(i,'type','hidden');y(i,'name','lms-user-locale');y(i,'value',l);
-				o=x(s,'input');y(o,'type','hidden');y(o,'name','helpcenter-page');y(o,'value',p);
-				t=x(s,'input');y(t,'type','submit');y(t,'id','compilatio-submit-redirect-hc');y(t,'style',\"display: none;\");
-				z(u,b);z(u,m);z(u,i);z(u,o);z(u,t);z(s.body,u);
-				s.getElementById('compilatio-submit-redirect-hc').click();
-			})('".$idgroupe."', '".$USER->email."', '".current_language()."', '".$page."')
-		</script>
-	</body>
-</html>");
+
+$helpcenterpage = get_config('plagiarism_compilatio', 'helpcenter_' . $page);
+
+if ($page == 'service_status') {
+    $lang = substr(current_language(), 0, 2);
+    $lang = in_array($lang, ['fr', 'en', 'it', 'es', 'de', 'pt']) ? $lang : 'fr';
+    header("Location: https://support.compilatio.net/hc/{$lang}/" . $helpcenterpage);
+    exit;
+}
+
+$compilatio = new CompilatioAPI($userid);
+$token = $compilatio->get_zendesk_jwt();
+
+header('Location: https://compilatio.zendesk.com/access/jwt?jwt=' . $token . '&return_to=' . urlencode($helpcenterpage));
+exit;

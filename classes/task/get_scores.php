@@ -15,22 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * get_scores.php - Contains Plagiarism plugin get_scores task.
+ * get_scores.php - Contains get_scores task.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace plagiarism_compilatio\task;
 
 /**
- * Task class
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Get_scores task class
  */
 class get_scores extends \core\task\scheduled_task {
 
@@ -47,12 +43,36 @@ class get_scores extends \core\task\scheduled_task {
      * @return void
      */
     public function execute() {
-        global $CFG;
+
+        global $DB, $CFG;
+
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
+
         $compilatio = new \plagiarism_plugin_compilatio();
+
+        // Keep track of the last cron execution.
+        $lastcron = get_config('plagiarism_compilatio', 'last_cron');
+        if ($lastcron != null) {
+            $frequency = round((time() - $lastcron) / 60);
+            set_config('cron_frequency', $frequency, 'plagiarism_compilatio');
+        }
+        set_config('last_cron', strtotime('now'), 'plagiarism_compilatio');
+
         if ($plagiarismsettings = $compilatio->get_settings()) {
-            compilatio_get_scores($plagiarismsettings);
+            mtrace('getting Compilatio similarity scores');
+            // Get all files set that have been submitted.
+            $sql = "SELECT cf.* FROM {plagiarism_compilatio_files} cf
+                JOIN {plagiarism_compilatio_cm_cfg} cfg ON cf.cm = cfg.cmid
+                WHERE cf.status = 'analysing' OR cf.status = 'queue' OR (cf.status = 'sent' AND cfg.analysistype = 'planned' AND cfg.analysistime < ?)";
+            $files = $DB->get_records_sql($sql, [time()]);
+
+            if (!empty($files)) {
+                foreach ($files as $plagiarismfile) {
+                    mtrace('getting score for file ' . $plagiarismfile->id);
+                    \CompilatioAnalyses::check_analysis($plagiarismfile);
+                }
+            }
         }
     }
-
 }

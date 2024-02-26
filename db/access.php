@@ -15,51 +15,40 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * access.php - Contains Plagiarism plugin array who contains access authorization.
+ * access.php - Contains array who contains access authorization.
  *
- * @since 2.0
  * @package    plagiarism_compilatio
- * @subpackage plagiarism
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-$capabilities = array(
-    'plagiarism/compilatio:enable' => array(
+$capabilities = [
+    'plagiarism/compilatio:enable' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-         'legacy' => array(
-         'editingteacher' => CAP_ALLOW,
-         'manager' => CAP_ALLOW
-        )
-    ),
-    'plagiarism/compilatio:triggeranalysis' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_COURSE,
-        'legacy' => array(
+        'legacy' => [
             'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
-    ),
-    'plagiarism/compilatio:viewreport' => array(
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+    'plagiarism/compilatio:triggeranalysis' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-         'legacy' => array(
-         'editingteacher' => CAP_ALLOW,
-         'teacher' => CAP_ALLOW,
-         'manager' => CAP_ALLOW
-        )
-    ),
-    'plagiarism/compilatio:resetfile' => array(
+        'legacy' => [
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+    'plagiarism/compilatio:viewreport' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-         'legacy' => array(
-         'editingteacher' => CAP_ALLOW,
-         'teacher' => CAP_ALLOW,
-         'manager' => CAP_ALLOW
-        )
-    ),
-);
+        'legacy' => [
+            'editingteacher' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+];

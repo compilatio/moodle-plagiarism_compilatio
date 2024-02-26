@@ -17,49 +17,76 @@
 /**
  * Get JWT to redirect user to report
  *
- * This script is called by amd/build/ajax_api.js
- *
- * @copyright  2022 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * @param   string $_POST['idDoc']
- * @return  string
+ * @package   plagiarism_compilatio
+ * @author    Compilatio <support@compilatio.net>
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
-
-// Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/helper/output_helper.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 require_login();
 
 global $OUTPUT;
 
 $docid = required_param('docid', PARAM_RAW);
+$cmid = required_param('cmid', PARAM_RAW);
+$reporttype = optional_param('type', 'detailed', PARAM_RAW);
 
-$compilatio = compilatio_get_compilatio_service(get_config('plagiarism_compilatio', 'apiconfigid'));
-$jwt = $compilatio->get_report_token($docid);
+$modulecontext = context_module::instance($cmid);
+$isteacher = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
 
-if (strpos($jwt, 'Error') === 0) {
+$userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmid]);
+$compilatio = new CompilatioAPI($userid);
+
+if ($isteacher) {
+    $jwt = $compilatio->get_report_token($docid);
+
+    if ($jwt === false) {
+        echo $OUTPUT->header();
+
+        echo "<p><img src='" . $OUTPUT->image_url('compilatio', 'plagiarism_compilatio') . "' alt='Compilatio' width='250'></p>";
+
+        echo "<div class='compilatio-alert compilatio-alert-danger'>"
+                . get_string('redirect_report_failed', 'plagiarism_compilatio') .
+            '</div>';
+        echo $OUTPUT->footer();
+    } else {
+        header('location: https://app.compilatio.net/api/private/reports/redirect/' . $jwt);
+    }
+} else {
+    $doc = $compilatio->get_document($docid);
+
+    $lang = substr(current_language(), 0, 2);
+    $lang = in_array($lang, ['fr', 'en', 'it', 'es', 'de', 'pt']) ? $lang : 'fr';
+
+    $recipe = get_config('plagiarism_compilatio', 'recipe');
+
+    if (isset($doc->analyses->$recipe->id)) {
+        $filepath = $compilatio->get_pdf_report($doc->analyses->$recipe->id, $lang, $reporttype);
+
+        if (is_file($filepath)) {
+            header('HTTP/1.1 200 OK');
+            header('Date: ' . date('D M j G:i:s T Y'));
+            header('Last-Modified: ' . date('D M j G:i:s T Y'));
+            header('Content-Disposition: attachment;filename=' . basename($filepath));
+            header('Content-Type: application/pdf');
+            header('Content-Length: ' . filesize($filepath));
+            readfile($filepath);
+            exit(0);
+        }
+    }
+
     echo $OUTPUT->header();
 
-    echo "<p><img src='"
-            . $OUTPUT->image_url('compilatio-logo', 'plagiarism_compilatio') .
-        "' alt='Compilatio' width='250'></p>";
+    echo "<p><img src='" . $OUTPUT->image_url('compilatio', 'plagiarism_compilatio') . "' alt='Compilatio' width='250'></p>";
 
     echo "<div class='compilatio-alert compilatio-alert-danger'>"
-            . get_string("redirect_report_failed", "plagiarism_compilatio") .
-        "</div>";
-    echo "<div class='compilatio-alert compilatio-alert-danger'>"
-        . $jwt .
-    "</div>";
+            . get_string('download_report_failed', 'plagiarism_compilatio') .
+        '</div>';
     echo $OUTPUT->footer();
-} else {
-    header("location: " . COMPILATIO_API_URL . "/reports/redirect/" . $jwt);
 }

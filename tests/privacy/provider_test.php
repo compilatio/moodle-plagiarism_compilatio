@@ -18,7 +18,8 @@
  * provider_test.php - Test class of the privacy provider
  *
  * @package    plagiarism_compilatio
- * @copyright  2019 Compilatio.net {@link https://www.compilatio.net}
+ * @author     Compilatio <support@compilatio.net>
+ * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,9 +34,6 @@ global $CFG;
 
 /**
  * Class plagiarism_compilatio_privacy_provider_testcase
- *
- * @copyright  2019 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\tests\provider_testcase {
 
@@ -46,38 +44,40 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
 
         $this->resetAfterTest();
 
-        // On charge la liste des données personnelles que Compilatio stocke.
         $collection = new collection('plagiarism_compilatio');
         $newcollection = provider::get_metadata($collection);
         $itemcollection = $newcollection->get_collection();
 
-        // On vérifie qu'il y a bien cinq items.
-        $this->assertCount(4, $itemcollection);
+        $this->assertCount(6, $itemcollection);
 
-        // On vérifie que core_files est retourné.
         $this->assertEquals('core_files', $itemcollection[0]->get_name());
         $this->assertEquals('privacy:metadata:core_files', $itemcollection[0]->get_summary());
 
-        // On vérifie que core_plagiarism est retourné.
         $this->assertEquals('core_plagiarism', $itemcollection[1]->get_name());
         $this->assertEquals('privacy:metadata:core_plagiarism', $itemcollection[1]->get_summary());
 
-        // On vérifie que plagiarism_compilatio_files est retourné.
         $this->assertEquals('plagiarism_compilatio_files', $itemcollection[2]->get_name());
-
-        // On vérifie que le tableau des champs retournés possède bien les bonnes clés.
         $privacyfields = $itemcollection[2]->get_privacy_fields();
         $this->assertArrayHasKey('userid', $privacyfields);
         $this->assertArrayHasKey('filename', $privacyfields);
 
-        // On vérifie que External Compilatio Document est retourné.
-        $this->assertEquals('External Compilatio Document', $itemcollection[3]->get_name());
-
-        // On vérifie que le tableau des champs retournés possède bien les bonnes clés.
+        $this->assertEquals('plagiarism_compilatio_user', $itemcollection[3]->get_name());
         $privacyfields = $itemcollection[3]->get_privacy_fields();
+        $this->assertArrayHasKey('userid', $privacyfields);
+        $this->assertArrayHasKey('compilatioid', $privacyfields);
+
+        $this->assertEquals('External Compilatio Document', $itemcollection[4]->get_name());
+        $privacyfields = $itemcollection[4]->get_privacy_fields();
         $this->assertArrayHasKey('authors', $privacyfields);
         $this->assertArrayHasKey('depositor', $privacyfields);
         $this->assertArrayHasKey('filename', $privacyfields);
+
+        $this->assertEquals('External Compilatio User', $itemcollection[5]->get_name());
+        $privacyfields = $itemcollection[5]->get_privacy_fields();
+        $this->assertArrayHasKey('firstname', $privacyfields);
+        $this->assertArrayHasKey('lastname', $privacyfields);
+        $this->assertArrayHasKey('email', $privacyfields);
+        $this->assertArrayHasKey('username', $privacyfields);
     }
 
     /**
@@ -123,7 +123,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $context = context_module::instance($coursemodule->id);
 
         // On vérifie que, à l'exportation des données, il y a bien quelque chose à visualiser pour l'utilisateur.
-        provider::export_plagiarism_user_data($student->id, $context, array(), array());
+        provider::export_plagiarism_user_data($student->id, $context, [], []);
         $writer = writer::with_context($context);
 
         $this->assertTrue($writer->has_any_data());
@@ -264,7 +264,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->assertEquals(15, $nbplagiarismfiles);
 
         // On crée la liste d'IDs avec les étudiants 1 et 2.
-        $userids = array($student1->id, $student2->id);
+        $userids = [$student1->id, $student2->id];
 
         // On supprime les plagiarismfiles pour ces deux étudiants.
         $context = context_module::instance($coursemodule->id);
@@ -341,15 +341,9 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
 
         global $DB;
 
-        $apiconfig = new stdClass();
-        $apiconfig->url = 'https://service.compilatio.net/webservices/CompilatioUserClient.wsdl';
-        $apiconfig->api_key = 'abcdef';
-
-        $apiconfigid = $DB->insert_record('plagiarism_compilatio_apicon', $apiconfig);
-
-        $ownerfile = (object) array('plugin' => 'plagiarism_compilatio', 'name' => 'owner_file', 'value' => $owner);
-        $apiconfig = (object) array('plugin' => 'plagiarism_compilatio', 'name' => 'apiconfigid', 'value' => $apiconfigid);
-        $DB->insert_records('config_plugins', array($ownerfile, $apiconfig));
+        $ownerfile = (object) ['plugin' => 'plagiarism_compilatio', 'name' => 'owner_file', 'value' => $owner];
+        $apiconfig = (object) ['plugin' => 'plagiarism_compilatio', 'name' => 'apikey', 'value' => "abcdef"];
+        $DB->insert_records('config_plugins', [$ownerfile, $apiconfig]);
     }
 }
 

@@ -15,14 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Set document indexing state via Compilatio SOAP API
+ * Set document indexing state via Compilatio API
  *
- * This script is called by amd/build/ajax_api.js
+ * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @copyright  2018 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * @param   string $_POST['idDoc']
+ * @param   string $_POST['docId']
  * @param   string $_POST['indexingState']
  * @return  boolean
  */
@@ -30,33 +28,28 @@
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
-
-// Get global class.
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio.class.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-
-// Get helper class.
-require_once($CFG->dirroot . '/plagiarism/compilatio/helper/output_helper.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/helper/ws_helper.php');
-
-// Get constants.
-require_once($CFG->dirroot . '/plagiarism/compilatio/constants.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
 require_login();
+global $DB;
 
 // Get global Compilatio settings.
 $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-$iddoc = optional_param('idDoc', '', PARAM_TEXT);
+$docid = optional_param('docId', '', PARAM_TEXT);
 $indexingstatepost = optional_param('indexingState', '', PARAM_TEXT);
-$apiconfigid = required_param('apiconfigid', PARAM_INT);
 
-if (isset($iddoc) && compilatio_valid_id($iddoc) && isset($indexingstatepost)) {
+if (isset($docid) && isset($indexingstatepost)) {
     $indexingstate = (int) ((boolean) $indexingstatepost);
+    $file = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 
-    $indexingstate = ws_helper::set_indexing_state($iddoc, $indexingstate, $apiconfigid);
+    $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $file->cm]);
+    $compilatio = new CompilatioAPI($userid);
 
-    if ($indexingstate === true) {
+    if ($compilatio->set_indexing_state($file->externalid, $indexingstate) === true) {
+        $file->indexed = $indexingstate;
+        $DB->update_record('plagiarism_compilatio_files', $file);
         echo ('true');
     } else {
         echo ('false');
