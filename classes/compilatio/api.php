@@ -597,7 +597,7 @@ class CompilatioAPI {
      * @return mixed                    Return true if succeed, an error message otherwise
      */
     public function set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency) {
-        $endpoint = '/api/private/moodle-configuration';
+        $endpoint = '/api/private/moodle-configuration/';
         $params = [
             'php_version' => $releasephp,
             'moodle_version' => $releasemoodle,
@@ -607,7 +607,7 @@ class CompilatioAPI {
         ];
 
         $response = json_decode($this->build_curl($endpoint, 'post', json_encode($params)));
-
+        error_log(var_export($response,true));
         if ($this->get_error_response($response, 200) === false) {
             return true;
         }

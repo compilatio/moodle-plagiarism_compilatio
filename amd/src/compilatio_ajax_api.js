@@ -17,7 +17,7 @@ define(['jquery'], function($) {
 
     var exports = {};
 
-    function startAnalysis(message, basepath, cmid, selectedusers) {
+    function startAnalyses(message, basepath, cmid, selectedusers) {
         disableCompilatioButtons();
         $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");        
         
@@ -74,7 +74,7 @@ define(['jquery'], function($) {
         $(document).ready(function() {
             var startAllAnalysis = $('.cmp-start-btn');
             startAllAnalysis.click(function() {
-                startAnalysis(message, basepath, cmid, null);
+                startAnalyses(message, basepath, cmid, null);
             });
         });
     };
@@ -94,7 +94,7 @@ define(['jquery'], function($) {
             }
             checkboxes.on('change', updateButtonVisibility);
             startSelectedAnalysesBtn.click(function() {
-                startAnalysis(message, basepath, cmid, getSelectedLines());
+                startAnalyses(message, basepath, cmid, getSelectedLines());
             });
         });
     };

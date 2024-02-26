@@ -98,7 +98,6 @@ $string['analysistype_help'] = "<p>You have two options:
         <li><strong>Scheduled: </strong> All documents are analysed at the selected time/date.</li>
     </ul>
     To have all documents compared with each other during the analyses, wait until all works are submitted by students then trigger the analyses.</p>";
-$string['analysistype_auto'] = 'Analysis Start';
 $string['analysistype_auto_help'] = "<p>You have three options:
     <ul>
         <li><strong>Manual:</strong> Analysis of documents must be triggered manually with the “Analyse” button of each document or with the “Analyse all documents” button.</li>
@@ -175,7 +174,6 @@ $string['unmeasured'] = 'not measured';
 $string['ai_score_not_included'] = "not included in your subscription";
 $string['excluded_from_score'] = "Excluded from the score:";
 
-$string['previouslysubmitted'] = 'Previously submitted as';
 $string['student_analyse'] = "The analysis can be started by the student";
 $string['student_help'] = "You can analyse your draft with Compilatio Magister, to measure similarities in the text of your files.<br/>
     The contents of your draft will not be used by Compilatio as comparison material for future analyses.<br/>
@@ -195,8 +193,6 @@ $string['start_all_analysis'] = "Analyse all documents";
 $string['send_all_documents'] = "Send all document";
 $string['reset_docs_in_error'] = 'Reset documents in error';
 $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
-$string['hide_area'] = 'Hide Compilatio informations';
-$string['show_area'] = 'Show Compilatio informations';
 $string['start_selected_files_analysis'] = 'Analyse selected documents ';
 $string['access_report'] = 'Access report';
 $string["other_analysis_options"] = 'Other analysis options';
@@ -249,7 +245,7 @@ $string['tabs_title_stats'] = 'Statistics';
 $string["display_stats"] = "Display statistics about this activity";
 $string["display_stats_per_student"] = "Display statistics per student about this activity";
 $string['export_csv'] = 'Export data about this activity into a CSV file';
-$string['export_csv_per_student'] = 'Export data about this student\'s review into a CSV file';
+$string['export_csv_per_student'] = 'Export this student\'s results to a CSV file';
 $string['progress'] = "Progress";
 $string['results'] = "Results";
 $string['errors'] = "Errors";
