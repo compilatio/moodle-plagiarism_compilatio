@@ -61,7 +61,7 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
         ]);
         $pluginwrapper->add_child($compilatioconfigs);
         $compilatioconfigs->add_child($compilatioconfig);
-        $compilatioconfig->set_source_table('plagiarism_compilatio_module', ['cmid' => backup::VAR_PARENTID]);
+        $compilatioconfig->set_source_table('plagiarism_compilatio_cm_cfg', ['cmid' => backup::VAR_PARENTID]);
 
         // Now information about files to module.
         $compilatiofiles = new backup_nested_element('compilatio_files');
