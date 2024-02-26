@@ -607,7 +607,7 @@ class CompilatioAPI {
         ];
 
         $response = json_decode($this->build_curl($endpoint, 'post', json_encode($params)));
-        error_log(var_export($response,true));
+
         if ($this->get_error_response($response, 200) === false) {
             return true;
         }

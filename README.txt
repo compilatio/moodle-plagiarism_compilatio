@@ -7,8 +7,20 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
-- Fix
-- Fix
+
+v3.0.1
+- Fix error when duplicating course modules
+- Fix Moodle and plugin configuration not sent to Compilatio
+
+v3.0.0
+- The plugin now uses a Compilatio Magister account for each Moodle teacher and a Compilatio folder for each Moodle activity.
+- Added the option to run analyses only on selected lines (students in assignment and attempts in quizzes).
+- Quiz: possibility to display statistics by user in a new tab.
+- Added marketing notifications display.
+- Redesign display of Compilatio frame for documents.
+- The plugin now fully uses Compilatio v5 REST API.
+- Cleaning up Compilatio v4 and Soap API code management.
+- Rewriting, splitting and reorganizing files.
 
 COMPLETE CHANGELOG : https://support.compilatio.net/hc/en-us/articles/360019664658
 
