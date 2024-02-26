@@ -449,20 +449,20 @@ class CompilatioSettings {
 
     public static function get_options_score_analyse($cmid) {
 
-        Global $DB;
+        Global $DB, $PAGE, $CFG;
 
         $ignoredscore = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
         $recipe = get_config('plagiarism_compilatio', 'recipe');
 
         $output = get_string('include_in_suspecte_text_percentage', 'plagiarism_compilatio') . "
             <div class='form-check mt-2 ml-3'>
-                <input class='form-check-input' type='checkbox' value='' id='optionscoresimilarities'>
+                <input class='form-check-input-score_options' type='checkbox' value='' id='optionscoresimilarities'>
                 <label class='form-check-label' for='defaultCheck1'>
                     " . get_string('similarities_percentage', 'plagiarism_compilatio') . "
                 </label>
             </div>
             <div class='form-check mt-2 ml-3'>
-                <input class='form-check-input' type='checkbox' value='' id='optionscoreutl'>
+                <input class='form-check-input-score_options' type='checkbox' value='' id='optionscoreutl'>
                 <label class='form-check-label' for='defaultCheck1'>
                     " . get_string('utl_percentage', 'plagiarism_compilatio') . "
                 </label>
@@ -472,7 +472,7 @@ class CompilatioSettings {
             $recipe === "anasim-premium" 
                 ? "
                     <div class='form-check mt-2 ml-3'>
-                        <input class='form-check-input' type='checkbox' value='' id='optionscoreia'>
+                        <input class='form-check-input-score_options' type='checkbox' value='' id='optionscoreia'>
                         <label class='form-check-label' for='defaultCheck1'>
                             " . get_string('ia_percentage', 'plagiarism_compilatio') . "
                         </label>
@@ -481,8 +481,9 @@ class CompilatioSettings {
 
         $output .= "<p class='font-weight-lighter font-italic mt-4'>" . get_string('options_score_informations', 'plagiarism_compilatio') . "</p>
             <div class='d-flex flex-row-reverse mr-1'>
-                <button type='button' class='btn btn-primary'>" . get_string('update', 'plagiarism_compilatio') . "</button>
+                <button id='option-score-ingnored' type='button' class='btn btn-primary'>" . get_string('update', 'plagiarism_compilatio') . "</button>
             </div>";
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'optionsanalysescores', [$CFG->httpswwwroot, $cmid]);
         return $output;
     }
 }

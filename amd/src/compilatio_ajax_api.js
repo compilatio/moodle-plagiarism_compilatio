@@ -127,10 +127,22 @@ define(['jquery'], function($) {
         });
     };
 
-    /*exports.optionsanalysescores = function(cmid, deletefromscore) {
-        $(document).ready(function( {
-        }))
-    }*/
+    exports.optionsanalysescores = function(basepath, cmid) {
+        $(document).ready(function() {
+            var optionsscore = $('#option-score-ingnored');
+            optionsscore.click(function() {
+                var checkedcheckboxes = $('.form-check-input-score_options:checked');
+                var checkedvalues = [];
+                checkedcheckboxes.each(function() {
+                    checkedvalues.push($(this).val());
+                });
+                $.post(basepath + '/plagiarism/compilatio/ajax/update_score_options.php',
+                {'cmid': cmid, 'checkedvalues': checkedvalues}, function() {
+                    window.location.reload();
+                });
+            });
+        });
+    };
 
     exports.validateTermsOfService = function(basepath, userid) {
         $(document).ready(function() {
