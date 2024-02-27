@@ -77,10 +77,7 @@ $string['owner_file_student_details'] = 'When a student request to delete all hi
 // Activity settings.
 $string['info_cm_activation'] = 'By activating Compilatio on this activity, submitted documents will be uploaded to your Compilatio account {$a}.<br>All teachers enrolled in this course will be able to use Compilatio on this activity.';
 $string['info_cm_activated'] = 'Documents submitted in this activity are uploaded to the Compilatio account {$a}.<br>All teachers enrolled in this course can use Compilatio on this activity.';
-$string['terms_of_service'] = 'I have read the <a href=\'{$a}\'>Terms of Service</a> of Compilatio and I accept them.';
 $string['terms_of_service_info'] = '<a href=\'{$a}\'>Terms of Service</a> of Compilatio';
-$string['terms_of_service_alert'] = 'The Compilatio <a href=\'{$a}\'>Terms of Service</a> have not been validated or have been updated. Please read and accept them before using Compilatio.';
-$string['terms_of_service_alert_btn'] = "I have read the Terms of Service and I accept them.";
 $string['activated'] = 'Allow similarity detection with Compilatio';
 $string['defaultindexing'] = "Add documents into the Document Database";
 $string['defaultindexing_help'] = "Yes: Add documents in the document database. These documents will be used as comparison material for future analysis.

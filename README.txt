@@ -8,6 +8,10 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 
+v3.0.2
+- Remove mandatory validation of Compilatio terms of service
+- Fix unsaveable course module settings
+
 v3.0.1
 - Fix error when duplicating course modules
 - Fix Moodle and plugin configuration not sent to Compilatio
