@@ -77,18 +77,14 @@ class CompilatioSettings {
                     if (empty($user)) {
                         $compilatio = new CompilatioAPI();
                         $user = $compilatio->get_or_create_user();
+
+                        if (!empty($user)) {
+                            $compilatio->set_user_id($user->compilatioid);
+                            $compilatio->validate_terms_of_service();
+                        }
                     }
 
                     $cmconfig->userid = $user->compilatioid;
-
-                    $compilatio = new CompilatioAPI($user->compilatioid);
-
-                    if (isset($user->id) && ($data->termsofservice ?? false)) {
-                        $user->validatedtermsofservice = true;
-                        $DB->update_record('plagiarism_compilatio_user', $user);
-
-                        $compilatio->validate_terms_of_service();
-                    }
                 }
 
                 if (isset($cmconfig->userid)) {
@@ -186,23 +182,11 @@ class CompilatioSettings {
         $plagiarismelements = $plugin->config_options();
 
         if (has_capability('plagiarism/compilatio:enable', $context)) {
-            $needtermsofservice = false;
-
-            $cmpuser = $DB->get_record('plagiarism_compilatio_user', ['userid' => $USER->id]);
-            if (empty($cmpuser) || $cmpuser->validatedtermsofservice == 0) {
-                $needtermsofservice = true;
-            }
-
-            // Plugin v2 docs management.
-            if (!empty($config) && null === $config->userid && $config->activated === '1') {
-                $needtermsofservice = false;
-            }
-
             if (!empty($config->userid)) {
                 $teacheremail = $DB->get_field('user', 'email', ['id' => $cmpuser->userid]);
             }
 
-            self::get_form_elements($mform, false, $needtermsofservice, $modulename, $teacheremail ?? null);
+            self::get_form_elements($mform, false, $modulename, $teacheremail ?? null);
 
             // Disable all plagiarism elements if activated eg 0.
             foreach ($plagiarismelements as $element) {
@@ -226,11 +210,10 @@ class CompilatioSettings {
      *
      * @param object  $mform    Moodle form object
      * @param boolean $defaults if this is being loaded from defaults form or from inside a mod.
-     * @param boolean $needtermsofservice
      * @param string  $modulename
      * @param string  $teacheremail
      */
-    public static function get_form_elements($mform, $defaults = false, $needtermsofservice = false, $modulename = null, $teacheremail = null) {
+    public static function get_form_elements($mform, $defaults = false, $modulename = null, $teacheremail = null) {
         global $PAGE, $CFG, $DB, $USER;
 
         $lang = substr(current_language(), 0, 2);
@@ -259,25 +242,13 @@ class CompilatioSettings {
         $mform->hideIf('info_cm', 'activated', 'eq', '0');
 
         $termsofservice = 'https://app.compilatio.net/api/private/terms-of-service/magister/' . $lang;
-        if ($needtermsofservice) {
-            $mform->addElement(
-                'checkbox',
-                'termsofservice',
-                get_string('terms_of_service', 'plagiarism_compilatio', $termsofservice)
-            );
-            $mform->setDefault('termsofservice', 0);
-            $mform->addRule('termsofservice', null, 'required', null, 'client');
-
-            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_form', 'requiredTermsOfService');
-        } else {
-            $group = [];
-            $group[] = $mform->createElement(
-                'html',
-                '<p>' . get_string('terms_of_service_info', 'plagiarism_compilatio', $termsofservice) . '</p>'
-            );
-            $mform->addGroup($group, 'tos_info', '', ' ', false);
-            $mform->hideIf('tos_info', 'activated', 'eq', '0');
-        }
+        $group = [];
+        $group[] = $mform->createElement(
+            'html',
+            '<p>' . get_string('terms_of_service_info', 'plagiarism_compilatio', $termsofservice) . '</p>'
+        );
+        $mform->addGroup($group, 'tos_info', '', ' ', false);
+        $mform->hideIf('tos_info', 'activated', 'eq', '0');
 
         $analysistypes = [
             'manual' => get_string('analysistype_manual', 'plagiarism_compilatio'),

@@ -127,17 +127,6 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.validateTermsOfService = function(basepath, userid) {
-        $(document).ready(function() {
-            $('#tos-btn').click(function() {
-                $.post(basepath + '/plagiarism/compilatio/ajax/validate_terms_of_service.php',
-                {'userid': userid}, function() {
-                    window.location.reload();
-                });
-            });
-        });
-    };
-
     exports.checkUserInfo = function(basepath, userid) {
         $(document).ready(function() {
             $.post(basepath + '/plagiarism/compilatio/ajax/check_user_info.php', {'userid': userid});

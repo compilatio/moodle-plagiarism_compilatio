@@ -738,14 +738,11 @@ class CompilatioAPI {
             return 'Error response status not found';
         } else if ($response->status->code == $expectedstatuscode) {
             return false;
-        } else if (isset($response->errors->key) && $response->errors->key == 'need_terms_of_service_validation') {
+        } else if (isset($response->errors[0]->key) && $response->errors[0]->key == 'need_terms_of_service_validation') {
             if (!empty($this->userid)) {
-                global $DB;
-                $user = $DB->get_record('plagiarism_compilatio_user', ['compilatioid' => $this->userid]);
-                $user->validatedtermsofservice = false;
-                $DB->update_record('plagiarism_compilatio_user', $user);
+                $this->validate_terms_of_service();
             }
-            return $response->errors->key;
+            return $response->errors[0]->key;
         } else if ($response->status->message == 'Forbidden ! Your read only API key cannot modify this resource') {
             set_config('read_only_apikey', 1, 'plagiarism_compilatio');
         }
