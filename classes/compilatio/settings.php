@@ -78,8 +78,10 @@ class CompilatioSettings {
                         $compilatio = new CompilatioAPI();
                         $user = $compilatio->get_or_create_user();
 
-                        $compilatio->set_user_id($user->compilatioid);
-                        $compilatio->validate_terms_of_service();
+                        if (!empty($user)) {
+                            $compilatio->set_user_id($user->compilatioid);
+                            $compilatio->validate_terms_of_service();
+                        }
                     }
 
                     $cmconfig->userid = $user->compilatioid;
