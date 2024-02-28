@@ -101,7 +101,7 @@ class CompilatioAPI {
             if (!empty($oldmoodleownerid)) {
                 return $oldmoodleownerid;
             }
-            
+
             $this->update_apikey();
 
             return $response->data->user->id;

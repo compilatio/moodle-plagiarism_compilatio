@@ -40,15 +40,15 @@ $toremove = [];
 $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 $compilatio = new CompilatioAPI($cmconfig->userid);
 
-foreach($scores as $score){
-    if(!in_array($score, $checkedvalues)){
+foreach ($scores as $score) {
+    if (!in_array($score, $checkedvalues)) {
         $toremove[] = $score;
     }
 }
 
 $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'scored']);
 
-if (in_array('similarities', $toremove)){
+if (in_array('similarities', $toremove)) {
     $key = array_search('similarities', $toremove);
     unset($toremove[$key]);
     $toremove[] = 'exact';
