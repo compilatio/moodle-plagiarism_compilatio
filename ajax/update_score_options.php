@@ -26,6 +26,7 @@
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 
 global $DB;
 
@@ -58,8 +59,27 @@ $cmconfig->ignoredscores = !empty($toremove) ? implode(',', $toremove) : '';
 $DB->update_record('plagiarism_compilatio_cm_cfg', (object) $cmconfig);
 $ignoredtype = json_encode(['ignored_types' => array_values($toremove)]);
 $docsid = [];
-foreach($files as $file){
+foreach ($files as $file) {
     $docsid[] = $file->identifier;
-    $result = $compilatio->update_score_as_selections($file->analysisid, $ignoredtype);
+    $file->updatetaskid = $compilatio->update_score_as_selections($file->analysisid, $ignoredtype);
 }
+
+foreach ($files as $file) {
+    $report = $compilatio->get_updated_report($file->analysisid, $file->updatetaskid);
+
+    $file->exact_percent = $report->scores->exact_percent;
+    $file->same_meaning_percent = $report->scores->same_meaning_percent;
+    $file->unrecognized_text_language_percent = $report->scores->unrecognized_text_language_percent;
+    $file->quotation_percent = $report->scores->quotation_percent;
+    $file->reference_percent = $report->scores->reference_percent;
+    $file->user_annotation_percent = $report->scores->user_annotation_percent;
+    $file->mentioned_percent = $report->scores->mentioned_percent;
+    $file->aiscore = $report->scores->ai_generated_percent;
+    $file->simscore = $report->scores->similarity_percent;
+    $file->utlscore = $report->scores->unrecognized_text_language_percent;
+    $file->globalscore = $report->scores->global_score_percent;
+
+    $DB->update_record('plagiarism_compilatio_files', $file);
+}
+
 echo json_encode($docsid);

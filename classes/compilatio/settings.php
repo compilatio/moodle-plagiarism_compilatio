@@ -458,13 +458,11 @@ class CompilatioSettings {
         $recipe = get_config('plagiarism_compilatio', 'recipe');
         $scores = ['similarities', 'unrecognized_text_language'];
         $recipe === 'anasim-premium' ? array_push($scores, 'ai_generated') : null;
-        $output = get_string('include_in_suspecte_text_percentage', 'plagiarism_compilatio');
-
-        //$cmpfile = $DB->get_record('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $cmconfig->userid, 'identifier' => $identifier]);
+        $output = "<div id='loading-blur'>" . get_string('include_in_suspecte_text_percentage', 'plagiarism_compilatio');
 
         foreach ($scores as $score) {
             $output .= "
-                <div class='form-check mt-2 ml-1'>
+                <div class='form-check mt-2 mr-1'>
                     <input class='form-check-input-score_options' type='checkbox' value='" . $score . "' ";
                     $output .= in_array($score, $ignoredscores) || ($score == 'similarities' && in_array('exact', $ignoredscores))? '' : 'checked';
             $output .= " >
@@ -474,12 +472,15 @@ class CompilatioSettings {
                 </div>";
         }
 
-        $output .= "<div class='mt-2'>
-            <span class='font-weight-lighter font-italic mt-4'>" . get_string('options_score_informations', 'plagiarism_compilatio') . "</span>
-                <div class='d-flex flex-row-reverse mr-1'>
-                    <button id='option-score-ignored' type='button' class='btn btn-primary'>" . get_string('update', 'plagiarism_compilatio') . "</button>
+        $output .= "
+                <div class='mt-2'>
+                    <span class='font-weight-lighter font-italic mt-4'>" . get_string('options_score_informations', 'plagiarism_compilatio') . "</span>
                 </div>
-            </div>";
+            </div>
+            <div class='d-flex flex-row-reverse mr-1'>
+                <button id='option-score-ignored' type='button' class='btn btn-primary'>" . get_string('update', 'plagiarism_compilatio') . "</button>
+            </div>
+            ";
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'optionsanalysescores', [$CFG->httpswwwroot, $cmid, $scores]);
         return $output;
     }

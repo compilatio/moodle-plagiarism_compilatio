@@ -131,6 +131,9 @@ define(['jquery'], function($) {
         $(document).ready(function() {
             var optionsscores = $('#option-score-ignored');
             optionsscores.click(function() {
+                optionsscores.css('background-color', 'grey');
+                optionsscores.html('<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>');
+                $('#loading-blur').css('filter', 'blur(2px)');
                 var checkedcheckboxes = $('.form-check-input-score_options:checked');
                 var checkedvalues = [];
                 checkedcheckboxes.each(function() {
@@ -140,13 +143,8 @@ define(['jquery'], function($) {
                     type: 'POST',
                     url: basepath + '/plagiarism/compilatio/ajax/update_score_options.php',  
                     data: {cmid: cmid, checkedvalues: checkedvalues, scores: scores},
-                    success: function(response) {
-                        var docsid = JSON.parse(response);
-                        docsid.forEach((docid) => {
-                            $.post(basepath + '/plagiarism/compilatio/ajax/update_score.php', {'docId': docid}, function(res) {
-                                window.location.reload();
-                            });
-                        });
+                    success: function() {
+                        window.location.reload();
                     },
                     error: function(error) {
                         console.error('Error:', error);

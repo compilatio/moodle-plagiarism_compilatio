@@ -533,9 +533,29 @@ class CompilatioAPI {
             $responserebuild = json_decode($this->build_curl_on_behalf_of_user($endpointrebuild, 'post'));
             $errorrebuild = $this->get_error_response($responserebuild, 200);
             if ($errorrebuild === false) {
-                return $response->data->report;
+                return $responserebuild->data->update_task_id;
             }
             return $errorrebuild;
+        }
+        return $error;
+    }
+
+    /**
+     * Update score without selected score
+     *
+     * @param  string   $docid  Document ID
+     * @param  array    $deletedfromscore  Ignored scores
+     * @return mixed    Return report if succeed, an error message otherwise
+     */
+    public function get_updated_report($analysisid, $updatetaskid) {
+        $endpoint = '/api/private/report/anasim/' . $analysisid . '/is-updated/' . $updatetaskid;
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
+        $error = $this->get_error_response($response, 200);
+        if ($error === false) {
+            return $response->data->report;
+        } else if ($response->status->code == 202) {
+            sleep(1);
+            return $this->get_updated_report($analysisid, $updatetaskid);
         }
         return $error;
     }
