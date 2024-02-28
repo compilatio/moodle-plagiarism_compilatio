@@ -248,8 +248,8 @@ $string["compilatio_depositor"] = 'The document in activity <b>{$a->modulename}<
 // Options scores tab.
 $string["include_in_suspecte_text_percentage"] = 'Include in the percentage of suspect texts displayed :';
 $string["similarities_percentage"] = 'Percentage of similarities';
-$string["ia_percentage"] = 'Percentage of text potentially written by AI';
-$string["utl_percentage"] = 'Percentage of unrecognized types of languages';
+$string["ai_generated_percentage"] = 'Percentage of text potentially written by AI';
+$string["unrecognized_text_language_percentage"] = 'Percentage of unrecognized types of languages';
 $string["options_score_informations"] = 'Updating scores will affect all documents in the assignment,<br> including those modified individually.';
 $string["update"] = 'Update';
 // Assign statistics tab.

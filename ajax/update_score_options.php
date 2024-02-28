@@ -25,24 +25,41 @@
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/documentFrame.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+
+global $DB;
 
 require_login();
-global $DB, $USER;
 
 $cmid = required_param('cmid', PARAM_TEXT);
+$checkedvalues = optional_param_array('checkedvalues', [], PARAM_TEXT);
+$scores = required_param_array('scores', PARAM_TEXT);
 
-$file = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
+$toremove = [];
+$cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
+$compilatio = new CompilatioAPI($cmconfig->userid);
 
-if (!empty($file)) {
-    $file = CompilatioAnalyses::check_analysis($file);
-
-    $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $file->cm]);
-
-    echo CompilatioDocumentFrame::get_score($file, $cmconfig, true);
+foreach($scores as $score){
+    if(!in_array($score, $checkedvalues)){
+        $toremove[] = $score;
+    }
 }
+
+$files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'scored']);
+
+if (in_array('similarities', $toremove)){
+    $key = array_search('similarities', $toremove);
+    unset($toremove[$key]);
+    $toremove[] = 'exact';
+    $toremove[] = 'same_meaning';
+}
+
+$cmconfig->ignoredscores = !empty($toremove) ? implode(',', $toremove) : '';
+$DB->update_record('plagiarism_compilatio_cm_cfg', (object) $cmconfig);
+$ignoredtype = json_encode(['ignored_types' => array_values($toremove)]);
+$docsid = [];
+foreach($files as $file){
+    $docsid[] = $file->identifier;
+    $result = $compilatio->update_score_as_selections($file->analysisid, $ignoredtype);
+}
+echo json_encode($docsid);

@@ -524,12 +524,18 @@ class CompilatioAPI {
      * @param  array    $deletedfromscore  Ignored scores
      * @return mixed    Return report if succeed, an error message otherwise
      */
-    public function update_score_as_selections($docid, $deletefromscore) {
-        $endpoint = '/api/private/anasim/report/' . $docid;
-        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', json_encode(['ingored_types' => $deletefromscore])));
+    public function update_score_as_selections($analysisid, $deletefromscore) {
+        $endpoint = '/api/private/anasim/report/' . $analysisid;
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', $deletefromscore));
         $error = $this->get_error_response($response, 200);
         if ($error === false) {
-            return $response->data->report;
+            $endpointrebuild = '/api/private/anasim/report/' . $analysisid . '/rebuild';
+            $responserebuild = json_decode($this->build_curl_on_behalf_of_user($endpointrebuild, 'post'));
+            $errorrebuild = $this->get_error_response($responserebuild, 200);
+            if ($errorrebuild === false) {
+                return $response->data->report;
+            }
+            return $errorrebuild;
         }
         return $error;
     }

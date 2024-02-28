@@ -38,11 +38,9 @@ global $DB, $USER;
 $docid = required_param('docId', PARAM_TEXT);
 
 $file = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
-
 if (!empty($file)) {
     $file = CompilatioAnalyses::check_analysis($file);
 
     $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $file->cm]);
-
     echo CompilatioDocumentFrame::get_score($file, $cmconfig, true);
 }

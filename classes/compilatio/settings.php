@@ -451,39 +451,36 @@ class CompilatioSettings {
 
         Global $DB, $PAGE, $CFG;
 
-        $ignoredscore = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
+        $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
+
+        $ignoredscores = $cmconfig->ignoredscores;
+        $ignoredscores = $ignoredscores == '' ? [] : explode(',', $ignoredscores);
         $recipe = get_config('plagiarism_compilatio', 'recipe');
+        $scores = ['similarities', 'unrecognized_text_language'];
+        $recipe === 'anasim-premium' ? array_push($scores, 'ai_generated') : null;
+        $output = get_string('include_in_suspecte_text_percentage', 'plagiarism_compilatio');
 
-        $output = get_string('include_in_suspecte_text_percentage', 'plagiarism_compilatio') . "
-            <div class='form-check mt-2 ml-3'>
-                <input class='form-check-input-score_options' type='checkbox' value='' id='optionscoresimilarities'>
-                <label class='form-check-label' for='defaultCheck1'>
-                    " . get_string('similarities_percentage', 'plagiarism_compilatio') . "
-                </label>
-            </div>
-            <div class='form-check mt-2 ml-3'>
-                <input class='form-check-input-score_options' type='checkbox' value='' id='optionscoreutl'>
-                <label class='form-check-label' for='defaultCheck1'>
-                    " . get_string('utl_percentage', 'plagiarism_compilatio') . "
-                </label>
-            </div>
-        ";
-        $output .= 
-            $recipe === "anasim-premium" 
-                ? "
-                    <div class='form-check mt-2 ml-3'>
-                        <input class='form-check-input-score_options' type='checkbox' value='' id='optionscoreia'>
-                        <label class='form-check-label' for='defaultCheck1'>
-                            " . get_string('ia_percentage', 'plagiarism_compilatio') . "
-                        </label>
-                    </div> " 
-                : "";
+        //$cmpfile = $DB->get_record('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $cmconfig->userid, 'identifier' => $identifier]);
 
-        $output .= "<p class='font-weight-lighter font-italic mt-4'>" . get_string('options_score_informations', 'plagiarism_compilatio') . "</p>
-            <div class='d-flex flex-row-reverse mr-1'>
-                <button id='option-score-ingnored' type='button' class='btn btn-primary'>" . get_string('update', 'plagiarism_compilatio') . "</button>
+        foreach ($scores as $score) {
+            $output .= "
+                <div class='form-check mt-2 ml-1'>
+                    <input class='form-check-input-score_options' type='checkbox' value='" . $score . "' ";
+                    $output .= in_array($score, $ignoredscores) || ($score == 'similarities' && in_array('exact', $ignoredscores))? '' : 'checked';
+            $output .= " >
+                    <label class='form-check-label' for='defaultCheck1'>
+                        " . get_string($score . '_percentage', 'plagiarism_compilatio') . "
+                    </label>
+                </div>";
+        }
+
+        $output .= "<div class='mt-2'>
+            <span class='font-weight-lighter font-italic mt-4'>" . get_string('options_score_informations', 'plagiarism_compilatio') . "</span>
+                <div class='d-flex flex-row-reverse mr-1'>
+                    <button id='option-score-ignored' type='button' class='btn btn-primary'>" . get_string('update', 'plagiarism_compilatio') . "</button>
+                </div>
             </div>";
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'optionsanalysescores', [$CFG->httpswwwroot, $cmid]);
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'optionsanalysescores', [$CFG->httpswwwroot, $cmid, $scores]);
         return $output;
     }
 }
