@@ -78,6 +78,7 @@ foreach ($files as $file) {
     $file->simscore = $report->scores->similarity_percent;
     $file->utlscore = $report->scores->unrecognized_text_language_percent;
     $file->globalscore = $report->scores->global_score_percent;
+    $file->ignoredscores = $cmconfig->ignoredscores;
 
     $DB->update_record('plagiarism_compilatio_files', $file);
 }

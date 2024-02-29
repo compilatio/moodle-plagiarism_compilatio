@@ -17,7 +17,7 @@
         <FIELD NAME="simscore" TYPE="int" LENGTH="5" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="utlscore" TYPE="int" LENGTH="5" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="aiscore" TYPE="int" LENGTH="5" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="ignoredscores" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="ignoredscores" TYPE="char" LENGTH="75" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="analysisid" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="timesubmitted" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="indexed" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
