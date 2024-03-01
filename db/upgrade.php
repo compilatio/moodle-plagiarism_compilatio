@@ -254,7 +254,6 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
     if ($oldversion < 2024022600) {
         // API key.
-
         $apikey = get_config('plagiarism_compilatio', 'apikey');
         if (empty($apikey)) {
             $apiconfigid = get_config('plagiarism_compilatio', 'apiconfigid');
