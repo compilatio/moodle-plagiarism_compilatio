@@ -10,6 +10,7 @@ CHANGES
 
 v3.0.3
 - Fix php exception thrown in api.php
+- Fix errors when plugin update to version 3 is executed twice
 
 v3.0.2
 - Remove mandatory validation of Compilatio terms of service
