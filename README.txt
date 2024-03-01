@@ -8,6 +8,10 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 
+v3.0.3
+- Fix php exception thrown in api.php
+- Fix errors when plugin update to version 3 is executed twice
+
 v3.0.2
 - Remove mandatory validation of Compilatio terms of service
 - Fix unsaveable course module settings

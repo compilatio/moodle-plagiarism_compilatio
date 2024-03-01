@@ -90,7 +90,7 @@ class CompilatioAPI {
         return $error;
     }
 
-    public function get_apikey_user_id() {
+    public function get_apikey_user_id($updateapikey = true) {
         $endpoint = '/api/private/authentication/check-api-key';
 
         $response = json_decode($this->build_curl($endpoint));
@@ -98,10 +98,10 @@ class CompilatioAPI {
         if ($this->get_error_response($response, 200) === false) {
             $oldmoodleownerid = $response->data->user->current_api_key->old_moodle_owner_id ?? null;
 
-            if (!empty($oldmoodleownerid)) {
+            if (!empty($oldmoodleownerid) || !$updateapikey) {
                 return $oldmoodleownerid;
             }
-            
+
             $this->update_apikey();
 
             return $response->data->user->id;
@@ -738,11 +738,15 @@ class CompilatioAPI {
             return 'Error response status not found';
         } else if ($response->status->code == $expectedstatuscode) {
             return false;
-        } else if (isset($response->errors[0]->key) && $response->errors[0]->key == 'need_terms_of_service_validation') {
-            if (!empty($this->userid)) {
-                $this->validate_terms_of_service();
+        } else if ($response->status->code == 403) {
+            foreach (($response->errors ?? []) as $error) {
+                if (isset($error->key) && $error->key == 'need_terms_of_service_validation') {
+                    if (!empty($this->userid)) {
+                        $this->validate_terms_of_service();
+                    }
+                    return $error->key;
+                }
             }
-            return $response->errors[0]->key;
         } else if ($response->status->message == 'Forbidden ! Your read only API key cannot modify this resource') {
             set_config('read_only_apikey', 1, 'plagiarism_compilatio');
         }
