@@ -225,7 +225,7 @@ $string["see_all_notifications"] = "See all notifications";
 $string["open"] = "Open";
 $string["no_notification"] = "No notification";
 $string["display_notifications"] = "Display notifications";
-$string["display_options_frame"] = "Display options for scores";
+$string["display_settings_frame"] = "Display settings for scores";
 $string['no_document_available_for_analysis'] = 'No documents were available for analysis';
 $string["analysis_started"] = '{$a} analysis have been requested.';
 $string["start_analysis_in_progress"] = 'Launching of the analyses in progress';
@@ -245,12 +245,12 @@ $string["compilatio_iddocument"] = "Document identifier";
 $string["compilatio_search_notfound"] = "No document was found for this identifier among the documents loaded on your Moodle platform.";
 $string["compilatio_depositor"] = 'The document in activity <b>{$a->modulename}</b> was submitted by the Moodle user <b>{$a->lastname} {$a->firstname}</b>.';
 
-// Options scores tab.
+// Settings scores tab.
 $string["include_percentage_in_suspect_text"] = 'Include in the percentage of suspect texts displayed :';
 $string["simscore_percentage"] = 'Percentage of similarities';
 $string["aiscore_percentage"] = 'Percentage of text potentially written by AI';
 $string["utlscore_percentage"] = 'Percentage of unrecognized types of languages';
-$string["options_score_informations"] = 'Updating scores will affect all documents in the assignment,<br> including those modified individually.';
+$string["score_settings_informations"] = 'Updating scores will affect all documents in the assignment,<br> including those modified individually.';
 
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistics';

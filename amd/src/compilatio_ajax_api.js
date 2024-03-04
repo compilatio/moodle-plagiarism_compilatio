@@ -127,14 +127,14 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.optionsanalysescores = function(basepath, cmid, scores) {
+    exports.analysescoressettings = function(basepath, cmid, scores) {
         $(document).ready(function() {
-            var optionsscores = $('#option-score-ignored');
-            optionsscores.click(function() {
-                optionsscores.css('background-color', 'grey');
-                optionsscores.html('<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>');
+            var scoressettings = $('#score-settings-ignored');
+            scoressettings.click(function() {
+                scoressettings.css('background-color', 'grey');
+                scoressettings.html('<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>');
                 $('#loading-blur').css('filter', 'blur(2px)');
-                var checkedcheckboxes = $('.checkbox-score-options:checked');
+                var checkedcheckboxes = $('.checkbox-score-settings:checked');
                 var checkedvalues = [];
                 checkedcheckboxes.each(function() {
                     checkedvalues.push($(this).val());
@@ -344,12 +344,12 @@ define(['jquery'], function($) {
             $('#show-search').on('click', function() {
                 tabClick($(this), $('#cmp-search'));
             });
-            $('#cmp-show-options').on('click', function() {
-                tabClick($(this), $('#cmp-options'));
+            $('#cmp-show-settings').on('click', function() {
+                tabClick($(this), $('#cmp-settings'));
             });
 
-            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search, #cmp-show-options');
-            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-search, #cmp-options');
+            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search, #cmp-show-settings');
+            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-search, #cmp-settings');
 
             /**
              * TabClick

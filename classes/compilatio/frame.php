@@ -335,11 +335,11 @@ class CompilatioFrame {
             }
         }
 
-        // Options icon.
+        // Settings icon.
         $output .= "
             <i
-                id='cmp-show-options'
-                title='" . get_string("display_options_frame", "plagiarism_compilatio") . "'
+                id='cmp-show-settings'
+                title='" . get_string("display_settings_frame", "plagiarism_compilatio") . "'
                 class='cmp-icon fas fa-cog'
                 data-toggle='tooltip'
             >
@@ -435,9 +435,9 @@ class CompilatioFrame {
 
         $output .= "</div>";
 
-        // Options.
+        // Settings.
         $output .= "
-            <div id='cmp-options' class='cmp-tabs-content'>
+            <div id='cmp-settings' class='cmp-tabs-content'>
                " . CompilatioSettings::display_scores_settings($cmid) . "
             </div>";
 

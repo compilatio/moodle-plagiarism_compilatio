@@ -463,7 +463,7 @@ class CompilatioSettings {
         foreach ($scores as $score) {
             $output .= "
                 <div class='form-check mt-2 mr-1'>
-                    <input class='checkbox-score-options' type='checkbox' id='" . $score . "' value='" . $score . "' " 
+                    <input class='checkbox-score-settings' type='checkbox' id='" . $score . "' value='" . $score . "' " 
                         . (in_array($score, $ignoredscores) ? '' : 'checked') .
                     ">
                     <label class='form-check-label' for='" . $score . "'>
@@ -474,14 +474,14 @@ class CompilatioSettings {
 
         $output .= "
                 <div class='mt-2'>
-                    <span class='font-weight-lighter font-italic mt-4'>" . get_string('options_score_informations', 'plagiarism_compilatio') . "</span>
+                    <span class='font-weight-lighter font-italic mt-4'>" . get_string('score_settings_informations', 'plagiarism_compilatio') . "</span>
                 </div>
             </div>
             <div class='d-flex flex-row-reverse mr-1'>
-                <button id='option-score-ignored' type='button' class='btn btn-primary'>" . get_string('update', 'core') . "</button>
+                <button id='score-settings-ignored' type='button' class='btn btn-primary'>" . get_string('update', 'core') . "</button>
             </div>";
 
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'optionsanalysescores', [$CFG->httpswwwroot, $cmid, $scores]);
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'analysescoressettings', [$CFG->httpswwwroot, $cmid, $scores]);
 
         return $output;
     }
