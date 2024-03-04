@@ -141,7 +141,7 @@ define(['jquery'], function($) {
                 });
                 $.ajax({
                     type: 'POST',
-                    url: basepath + '/plagiarism/compilatio/ajax/update_score_options.php',  
+                    url: basepath + '/plagiarism/compilatio/ajax/update_score_settings.php',  
                     data: {cmid: cmid, checkedvalues: checkedvalues, scores: scores},
                     success: function() {
                         window.location.reload();
