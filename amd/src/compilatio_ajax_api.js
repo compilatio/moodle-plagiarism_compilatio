@@ -134,7 +134,7 @@ define(['jquery'], function($) {
                 optionsscores.css('background-color', 'grey');
                 optionsscores.html('<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>');
                 $('#loading-blur').css('filter', 'blur(2px)');
-                var checkedcheckboxes = $('.form-check-input-score_options:checked');
+                var checkedcheckboxes = $('.checkbox-score-options:checked');
                 var checkedvalues = [];
                 checkedcheckboxes.each(function() {
                     checkedvalues.push($(this).val());

@@ -359,18 +359,6 @@ class CompilatioDocumentFrame {
 
         $ignoredscores = empty($cmpfile->ignoredscores) ? [] : explode(',', $cmpfile->ignoredscores);
 
-        foreach ($ignoredscores as $index => $ignoredscore) {
-            if ($ignoredscore === 'ai_generated') {
-                $ignoredscores[$index] = 'aiscore';
-            } else if ($ignoredscore === 'unrecognized_text_language') {
-                $ignoredscores[$index] = 'utlscore';
-            } else if ($ignoredscore === 'same_meaning') {
-                unset($ignoredscores[$index]);
-            } else {
-                $ignoredscores[$index] = 'simscore';
-            }
-        }
-
         $title = get_string('title_score', 'plagiarism_compilatio', $cmpfile->globalscore);
         $title .= $isteacher ? ' ' . get_string('title_score_teacher', 'plagiarism_compilatio') : '';
 

@@ -246,12 +246,12 @@ $string["compilatio_search_notfound"] = "No document was found for this identifi
 $string["compilatio_depositor"] = 'The document in activity <b>{$a->modulename}</b> was submitted by the Moodle user <b>{$a->lastname} {$a->firstname}</b>.';
 
 // Options scores tab.
-$string["include_in_suspecte_text_percentage"] = 'Include in the percentage of suspect texts displayed :';
-$string["similarities_percentage"] = 'Percentage of similarities';
-$string["ai_generated_percentage"] = 'Percentage of text potentially written by AI';
-$string["unrecognized_text_language_percentage"] = 'Percentage of unrecognized types of languages';
+$string["include_percentage_in_suspect_text"] = 'Include in the percentage of suspect texts displayed :';
+$string["simscore_percentage"] = 'Percentage of similarities';
+$string["aiscore_percentage"] = 'Percentage of text potentially written by AI';
+$string["utlscore_percentage"] = 'Percentage of unrecognized types of languages';
 $string["options_score_informations"] = 'Updating scores will affect all documents in the assignment,<br> including those modified individually.';
-$string["update"] = 'Update';
+
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistics';
 $string["display_stats"] = "Display statistics about this activity";

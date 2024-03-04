@@ -92,16 +92,12 @@ class CompilatioAnalyses {
             $cmpfile->status = 'error_not_found';
         }
 
-        if ($cmpfile->analysisid === null && $cmpfile->status === 'scored') {
-            $recipe = get_config('plagiarism_compilatio', 'recipe');
-            $cmpfile->analysisid = $doc->analyses->$recipe->id;
-            $DB->update_record('plagiarism_compilatio_files', $cmpfile);
-        }
-
         $recipe = get_config('plagiarism_compilatio', 'recipe');
 
         if (isset($doc->analyses->$recipe->state)) {
             $state = $doc->analyses->$recipe->state;
+
+            $cmpfile->analysisid ??= $doc->analyses->$recipe->id;
 
             if ($state == 'running') {
                 $cmpfile->status = 'analysing';

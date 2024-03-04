@@ -447,26 +447,26 @@ class CompilatioSettings {
         $mform->setDefault('criticalthreshold', '25');
     }
 
-    public static function get_options_score_analyse($cmid) {
+    public static function display_scores_settings($cmid) {
 
-        Global $DB, $PAGE, $CFG;
+        global $DB, $PAGE, $CFG;
 
         $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
         $ignoredscores = $cmconfig->ignoredscores;
         $ignoredscores = $ignoredscores == '' ? [] : explode(',', $ignoredscores);
         $recipe = get_config('plagiarism_compilatio', 'recipe');
-        $scores = ['similarities', 'unrecognized_text_language'];
-        $recipe === 'anasim-premium' ? array_push($scores, 'ai_generated') : null;
-        $output = "<div id='loading-blur'>" . get_string('include_in_suspecte_text_percentage', 'plagiarism_compilatio');
+        $scores = ['simscore', 'utlscore'];
+        $recipe === 'anasim-premium' ? array_push($scores, 'aiscore') : null;
+        $output = "<div id='loading-blur'>" . get_string('include_percentage_in_suspect_text', 'plagiarism_compilatio');
 
         foreach ($scores as $score) {
             $output .= "
                 <div class='form-check mt-2 mr-1'>
-                    <input class='form-check-input-score_options' type='checkbox' value='" . $score . "' ";
-                    $output .= in_array($score, $ignoredscores) || ($score == 'similarities' && in_array('exact', $ignoredscores))? '' : 'checked';
-            $output .= " >
-                    <label class='form-check-label' for='defaultCheck1'>
+                    <input class='checkbox-score-options' type='checkbox' id='" . $score . "' value='" . $score . "' " 
+                        . (in_array($score, $ignoredscores) ? '' : 'checked') .
+                    ">
+                    <label class='form-check-label' for='" . $score . "'>
                         " . get_string($score . '_percentage', 'plagiarism_compilatio') . "
                     </label>
                 </div>";
@@ -478,10 +478,11 @@ class CompilatioSettings {
                 </div>
             </div>
             <div class='d-flex flex-row-reverse mr-1'>
-                <button id='option-score-ignored' type='button' class='btn btn-primary'>" . get_string('update', 'plagiarism_compilatio') . "</button>
-            </div>
-            ";
+                <button id='option-score-ignored' type='button' class='btn btn-primary'>" . get_string('update', 'core') . "</button>
+            </div>";
+
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'optionsanalysescores', [$CFG->httpswwwroot, $cmid, $scores]);
+
         return $output;
     }
 }

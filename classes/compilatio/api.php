@@ -520,44 +520,43 @@ class CompilatioAPI {
     /**
      * Update score without selected score
      *
-     * @param  string   $docid  Document ID
-     * @param  array    $deletedfromscore  Ignored scores
-     * @return mixed    Return report if succeed, an error message otherwise
+     * @param  string   $analysisid  Analysis ID
+     * @param  array    $ignoredtypes  Ignored scores
+     * @return mixed    Return update_task_id if succeed, false otherwise
      */
-    public function update_score_as_selections($analysisid, $deletefromscore) {
+    public function update_and_rebuild_report($analysisid, $ignoredtypes) {
         $endpoint = '/api/private/anasim/report/' . $analysisid;
-        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', $deletefromscore));
-        $error = $this->get_error_response($response, 200);
-        if ($error === false) {
-            $endpointrebuild = '/api/private/anasim/report/' . $analysisid . '/rebuild';
-            $responserebuild = json_decode($this->build_curl_on_behalf_of_user($endpointrebuild, 'post'));
-            $errorrebuild = $this->get_error_response($responserebuild, 200);
-            if ($errorrebuild === false) {
-                return $responserebuild->data->update_task_id;
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', $ignoredtypes));
+
+        if ($this->get_error_response($response, 200) === false) {
+            $endpoint = '/api/private/anasim/report/' . $analysisid . '/rebuild';
+            $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post'));
+
+            if ($this->get_error_response($response, 200) === false) {
+                return $response->data->update_task_id;
             }
-            return $errorrebuild;
         }
-        return $error;
+        return false;
     }
 
     /**
-     * Update score without selected score
+     * Get updated report
      *
-     * @param  string   $docid  Document ID
-     * @param  array    $deletedfromscore  Ignored scores
-     * @return mixed    Return report if succeed, an error message otherwise
+     * @param  string   $analysisid    Analysis ID
+     * @param  array    $updatetaskid  Update task ID
+     * @return mixed    Return report if succeed, false otherwise
      */
     public function get_updated_report($analysisid, $updatetaskid) {
         $endpoint = '/api/private/report/anasim/' . $analysisid . '/is-updated/' . $updatetaskid;
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
-        $error = $this->get_error_response($response, 200);
-        if ($error === false) {
+
+        if ($this->get_error_response($response, 200) === false) {
             return $response->data->report;
         } else if ($response->status->code == 202) {
             sleep(1);
             return $this->get_updated_report($analysisid, $updatetaskid);
         }
-        return $error;
+        return false;
     }
 
     /**

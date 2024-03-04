@@ -20,7 +20,9 @@
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @param   string $_POST['docId']
+ * @param   string $_POST['cmid']
+ * @param   string $_POST['checkedvalues']
+ * @param   string $_POST['scores']
  * @return  boolean
  */
 
@@ -28,52 +30,57 @@ require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 
-global $DB;
-
 require_login();
+
+global $DB;
 
 $cmid = required_param('cmid', PARAM_TEXT);
 $checkedvalues = optional_param_array('checkedvalues', [], PARAM_TEXT);
 $scores = required_param_array('scores', PARAM_TEXT);
 
-$toremove = [];
 $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 $compilatio = new CompilatioAPI($cmconfig->userid);
 
-foreach ($scores as $score) {
-    if (!in_array($score, $checkedvalues)) {
-        $toremove[] = $score;
-    }
-}
+$ignoredscores = array_diff($scores, $checkedvalues);
 
 $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'scored']);
 
-if (in_array('similarities', $toremove)) {
-    $key = array_search('similarities', $toremove);
-    unset($toremove[$key]);
-    $toremove[] = 'exact';
-    $toremove[] = 'same_meaning';
+$ignoredtypes = [];
+foreach ($ignoredscores as $ignoredscore) {
+    switch ($ignoredscore) {
+        case 'simscore':
+            $ignoredtypes[] = 'exact';
+            $ignoredtypes[] = 'same_meaning';
+            break;
+        case 'aiscore':
+            $ignoredtypes[] = 'ai_generated';
+            break;
+        case 'utlscore':
+            $ignoredtypes[] = 'unrecognized_text_language';
+            break;
+    }
 }
 
-$cmconfig->ignoredscores = !empty($toremove) ? implode(',', $toremove) : '';
-$DB->update_record('plagiarism_compilatio_cm_cfg', (object) $cmconfig);
-$ignoredtype = json_encode(['ignored_types' => array_values($toremove)]);
-$docsid = [];
+$cmconfig->ignoredscores = !empty($ignoredscores) ? implode(',', $ignoredscores) : '';
+$DB->update_record('plagiarism_compilatio_cm_cfg', $cmconfig);
+
+$ignoredtypes = json_encode(['ignored_types' => array_values($ignoredtypes)]);
+
 foreach ($files as $file) {
-    $docsid[] = $file->identifier;
-    $file->updatetaskid = $compilatio->update_score_as_selections($file->analysisid, $ignoredtype);
+    if ($file->analysisid === null) {
+        $file = CompilatioAnalyses::check_analysis($file);
+    }
+
+    $file->updatetaskid = $compilatio->update_and_rebuild_report($file->analysisid, $ignoredtypes);
 }
 
 foreach ($files as $file) {
     $report = $compilatio->get_updated_report($file->analysisid, $file->updatetaskid);
 
-    $file->exact_percent = $report->scores->exact_percent;
-    $file->same_meaning_percent = $report->scores->same_meaning_percent;
-    $file->unrecognized_text_language_percent = $report->scores->unrecognized_text_language_percent;
-    $file->quotation_percent = $report->scores->quotation_percent;
-    $file->reference_percent = $report->scores->reference_percent;
-    $file->user_annotation_percent = $report->scores->user_annotation_percent;
-    $file->mentioned_percent = $report->scores->mentioned_percent;
+    if ($report === false) {
+        continue;
+    }
+
     $file->aiscore = $report->scores->ai_generated_percent;
     $file->simscore = $report->scores->similarity_percent;
     $file->utlscore = $report->scores->unrecognized_text_language_percent;
@@ -82,5 +89,3 @@ foreach ($files as $file) {
 
     $DB->update_record('plagiarism_compilatio_files', $file);
 }
-
-echo json_encode($docsid);

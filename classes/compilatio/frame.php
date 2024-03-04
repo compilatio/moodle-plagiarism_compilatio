@@ -438,7 +438,7 @@ class CompilatioFrame {
         // Options.
         $output .= "
             <div id='cmp-options' class='cmp-tabs-content'>
-               " . CompilatioSettings::get_options_score_analyse($cmid) . "
+               " . CompilatioSettings::display_scores_settings($cmid) . "
             </div>";
 
         // Display timed analysis date.
