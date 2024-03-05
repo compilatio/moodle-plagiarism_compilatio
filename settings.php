@@ -148,6 +148,8 @@ if (!empty($plagiarismsettings['enabled'])) {
     } else {
         if ($validapikey == 'Forbidden') {
             echo $OUTPUT->notification(get_string('wrong_apikey_type', 'plagiarism_compilatio'));
+        } else if ($validapikey == 'Invalid Instance Key') { 
+            echo $OUTPUT->notification(get_string('invalid_instance_key', 'plagiarism_compilatio') . '<br> Error: ' . $validapikey);
         } else {
             echo $OUTPUT->notification(get_string('saved_config_failed', 'plagiarism_compilatio') . ' ' . $validapikey);
         }

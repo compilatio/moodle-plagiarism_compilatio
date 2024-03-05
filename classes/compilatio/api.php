@@ -69,15 +69,23 @@ class CompilatioAPI {
     public function check_apikey() {
         $endpoint = '/api/private/authentication/check-api-key';
         $response = json_decode($this->build_curl($endpoint));
-
+        $apikey = false;
         if ($this->get_error_response($response, 200) === false) {
             $readonly = $response->data->user->current_api_key->read_only ?? false;
             set_config('read_only_apikey', (int) $readonly, 'plagiarism_compilatio');
 
             $recipe = $response->data->user->managed_bundle->name === 'magister-premium' ? 'anasim-premium' : 'anasim';
+            $apikey = $response->data->user->current_api_key->id ?? false;
         }
 
         set_config('recipe', $recipe ?? 'anasim', 'plagiarism_compilatio');
+
+        $instancevalidity = $apikey !== false ? self::retrieve_instance_key($apikey) : false;
+
+        if($instancevalidity === false){
+            $error = 'Invalid Instance Key';
+            return $error;
+        }
 
         $endpoint = '/api/private/user/lms/23a3a6980c0f49d98c5dc1ec03478e9161ad5d352cb4651b14865d21d0e81be';
 
@@ -118,6 +126,22 @@ class CompilatioAPI {
             return true;
         }
 
+        return false;
+    }
+
+       /**
+     * Check if the instance key is valid
+     * 
+     * @param   string  $apikey      API Key
+     * @return boolean  Return true if valid, an error message otherwise
+     */
+    public function retrieve_instance_key($apikey) {
+        $endpoint = '/api/private/authentication/retreive-instance-key';
+        $response = json_decode($this->build_curl($endpoint, null, $apikey));
+
+        if ($this->get_error_response($response, 200) === false) {
+            return $response->data;
+        }
         return false;
     }
 

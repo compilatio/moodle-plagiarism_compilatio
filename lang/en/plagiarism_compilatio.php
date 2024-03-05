@@ -38,6 +38,7 @@ $string['wrong_apikey_type'] = 'The API key entered is not valid, if you have re
 $string['saved_config_failed'] = '<strong>The combination API key - adress entered is invalid. Compilatio is disabled, please try again.<br/>
     The <a href="autodiagnosis.php">auto-diagnosis</a> page can help you to configure this plugin.</strong><br/>
     Error :';
+$string['invalid_instance_key'] = '<strong>It seems that the API key you\'re using is already linked to another Moddle instance.<br>Please contact support to provide you with a new one.</strong>';
 $string['read_only_apikey'] = 'Your read-only API key does not allow uploading or analysing documents.';
 $string['subscription'] = '<b>Informations about your subscription:</b>';
 $string['subscription_start'] = 'Start date:';
