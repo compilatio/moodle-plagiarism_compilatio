@@ -458,7 +458,7 @@ class CompilatioSettings {
         $recipe = get_config('plagiarism_compilatio', 'recipe');
         $scores = ['simscore', 'utlscore'];
         $recipe === 'anasim-premium' ? array_push($scores, 'aiscore') : null;
-        $output = "<div id='loading-blur'>" . get_string('include_percentage_in_suspect_text', 'plagiarism_compilatio');
+        $output = get_string('include_percentage_in_suspect_text', 'plagiarism_compilatio');
 
         foreach ($scores as $score) {
             $output .= "
@@ -476,7 +476,6 @@ class CompilatioSettings {
                 <div class='mt-2'>
                     <span class='font-weight-lighter font-italic mt-4'>" . get_string('score_settings_informations', 'plagiarism_compilatio') . "</span>
                 </div>
-            </div>
             <div class='d-flex flex-row-reverse mr-1'>
                 <button id='score-settings-ignored' type='button' class='btn btn-primary'>" . get_string('update', 'core') . "</button>
             </div>";

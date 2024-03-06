@@ -133,7 +133,7 @@ define(['jquery'], function($) {
             scoressettings.click(function() {
                 scoressettings.css('background-color', 'grey');
                 scoressettings.html('<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>');
-                $('#loading-blur').css('filter', 'blur(2px)');
+                $('.checkbox-score-settings').attr("disabled", true);
                 var checkedcheckboxes = $('.checkbox-score-settings:checked');
                 var checkedvalues = [];
                 checkedcheckboxes.each(function() {
