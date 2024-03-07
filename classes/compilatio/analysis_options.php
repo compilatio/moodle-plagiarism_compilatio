@@ -33,28 +33,71 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php'
  */
 class CompilatioAnalysisOptions {
 
-    public static function get_analysis_options() {
+    public static function get_analysis_options($cmid) {
 
         global $DB, $PAGE, $CFG;
         $compilatio = new CompilatioAPI();
+
+        $sql = "SELECT DISTINCT {user}.id, {user}.lastname, {user}.firstname
+        FROM {user}
+        INNER JOIN {quiz_attempts} on {quiz_attempts}.userid = {user}.id
+        INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz
+        INNER JOIN {course} ON {course}.id = {quiz}.course
+        INNER JOIN {course_modules} on {course_modules}.course = {course}.id
+        WHERE {course_modules}.id = ?
+            AND {quiz_attempts}.state = 'finished'
+            AND {course_modules}.instance = {quiz}.id";
+
+        $studentattemptsubmitted = $DB->get_records_sql($sql, [$cmid]);
+
+        $sql = "SELECT {quiz_attempts}.id
+                FROM {quiz_attempts}
+                    INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz
+                    INNER JOIN {course_modules} ON {course_modules}.instance = {quiz}.id
+                WHERE {course_modules}.id = ? AND {quiz_attempts}.userid = ?
+                ORDER BY {quiz_attempts}.attempt DESC
+                LIMIT 1";
+
+        $attemptid = $DB->get_field_sql($sql, [$cmid, $studentattemptsubmitte[0]->id]);
+
+        $attempt = $CFG->version < 2023100900 ? \quiz_attempt::create($attemptid) : \mod_quiz\quiz_attempt::create($attemptid);
+
+        $quizslots = $attempt->get_slots();
 
         $output = "
             <div class='cmp-relative-position'>
                 <div class='cmp-table-height'>
                     <table class='table mb-0 align-middle rounded-lg cmp-bckgrnd-grey table-hover'>
-                        <thead>
+                        <thead class='thead-light'>
                             <tr>
-                                <th class='text-center align-middle cmp-border-none'>" . get_string('question', 'plagiarism_compilatio') . "</th>
-                                <th class='text-center align-middle cmp-border-none'>" . get_string('start_analysis', 'plagiarism_compilatio') . "</th>
+                                <th class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . "</th>
+                                <th class='text-center align-middle'>" . get_string('title_sent', 'plagiarism_compilatio') . "</th>
                             </tr>
                         </thead>
+                        <tbody class='cmp-bckgrnd-white'>";
+        
+        foreach ($quizslots as $quizslot) {
+            $output .= "<tr>
+                            <td class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . " " . $quizslot->slot . "</td>
+                            <td class='text-center align-middle'> 
+                                <button class='btn btn-primary start-analysis-btn' 
+                                    data-question-id='" . $quizslot->id . "'
+                                    id='start_analysis_selected_questions_btn_" . $quizslot->slot . "' 
+                                    type='button'
+                                >
+                                    <i class='fa fa-play-circle'></i>
+                                </button>
+                            </td>
+                        </tr>";
+        }
+        
+        $output .= "</tbody>
                     </table>
-                    <input class='btn btn-primary' id='start_analysis_selected_questions_btn' type='submit' value='" .get_string('start_selected_questions_analysis', 'plagiarism_compilatio'). "'>
                 </div>
             </div>";
-
+        
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'start_analysis_selected_questions', [$CFG->httpswwwroot, $cmid]);
-        return $output;
+        return $output;        
     }
 
 }

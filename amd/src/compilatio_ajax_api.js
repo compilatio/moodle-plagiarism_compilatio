@@ -99,18 +99,18 @@ define(['jquery'], function($) {
         });
     };    
     
-    exports.start_analysis_selected_questions = function(basepath, cmid) {
-        $(document).ready(function() {
-            const startAnalysesQuestionsBtn = $('#start_analysis_selected_questions_btn').hide();
-            const checkboxes = $('td.c0 input, #selectall');
-            function getSelectedLines() {
-                return checkboxes.filter(':checked').map(function() {
-                    return $(this).val() != 'on' ? $(this).val() : null;
-                }).get();
-            }
-            checkboxes.on('change', updateButtonVisibility);
-            startAnalysesQuestionsBtn.click(function() {
-                startAnalysis(basepath, cmid, getSelectedLines());
+    exports.start_analysis_selected_questions = function (basepath, cmid) {
+        $(document).ready(function () {
+            const startAnalysesQuestionsBtn = $('.start-analysis-btn');
+    
+            startAnalysesQuestionsBtn.click(function () {
+                disableCompilatioButtons();
+                const questionId = $(this).data('question-id');
+
+                $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis_per_question.php',
+                    {'cmid': cmid, 'questionid': questionId}, function () {
+                        window.location.reload();
+                    });
             });
         });
     };

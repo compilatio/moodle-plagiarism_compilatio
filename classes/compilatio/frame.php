@@ -403,7 +403,8 @@ class CompilatioFrame {
                 <div class='text-center'>"
                 . CompilatioStatistics::get_quiz_students_statistics($cmid) . "</div>
             </div>";
-
+        
+        // Analysis options tab.
         $output .= "
             <div id='cmp-start-per-question' class='cmp-tabs-content'>
                 <div class='text-center'>"
