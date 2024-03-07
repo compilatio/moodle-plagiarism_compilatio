@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analysis_options.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/csv.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/icons.php');
 
@@ -93,7 +94,7 @@ class CompilatioFrame {
             unset($SESSION->compilatio_alerts);
         }
 
-        $startallanalyses = $sendalldocs = $resetdocsinerror = $selectanalysesoptions = false;
+        $startallanalyses = $sendalldocs = $resetdocsinerror = $selectanalysesoptions = $selectanalysesquestions = false;
 
         $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
@@ -103,6 +104,10 @@ class CompilatioFrame {
         ) {
             if ($module == 'quiz' || $module == 'assign') {
                 $selectanalysesoptions = true;
+            }
+
+            if ($module == 'quiz'){
+                $selectanalysesquestions = true;
             }
             $startallanalyses = true;
 
@@ -288,7 +293,7 @@ class CompilatioFrame {
                         "</span>
                         <div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>
                             <div
-                                class='cmp-action-btn mx-1 cmp-start-btn'
+                                class='cmp-action-btn mx-2 mt-1 cmp-start-btn'
                                 role='button'
                             >
                                 <div class='text-nowrap'>" . get_string('start_all_analysis', 'plagiarism_compilatio') . "</div>
@@ -299,10 +304,17 @@ class CompilatioFrame {
                                 id='start-selected-analyses-btn'
                             >
                                 <div class='text-nowrap'>" . get_string('start_selected_files_analysis', 'plagiarism_compilatio') . "</div>
-                            </div>
+                            </div>";
+                            $output .= $selectanalysesquestions ? "<div
+                                    class='cmp-action-btn mx-2 mt-1'
+                                    role='button'
+                                    id='show-start-per-question'
+                                >
+                            <div class='text-nowrap'>" . get_string('start_selected_questions_analysis', 'plagiarism_compilatio') . "</div>" : "<div>";
+                    $output .= "  
+                        </div>  
                         </div>
                     </div>";
-
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedFiles',
                     [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio'), null]);
             }
@@ -390,6 +402,12 @@ class CompilatioFrame {
             <div id='cmp-stats-per-student' class='cmp-tabs-content'>
                 <div class='text-center'>"
                 . CompilatioStatistics::get_quiz_students_statistics($cmid) . "</div>
+            </div>";
+
+        $output .= "
+            <div id='cmp-start-per-question' class='cmp-tabs-content'>
+                <div class='text-center'>"
+                . CompilatioAnalysisOptions::get_analysis_options($cmid) . "</div>
             </div>";
 
         // Notifications tab.

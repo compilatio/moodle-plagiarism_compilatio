@@ -97,6 +97,22 @@ define(['jquery'], function($) {
                 startAnalysis(message, basepath, cmid, getSelectedLines());
             });
         });
+    };    
+    
+    exports.start_analysis_selected_questions = function(basepath, cmid) {
+        $(document).ready(function() {
+            const startAnalysesQuestionsBtn = $('#start_analysis_selected_questions_btn').hide();
+            const checkboxes = $('td.c0 input, #selectall');
+            function getSelectedLines() {
+                return checkboxes.filter(':checked').map(function() {
+                    return $(this).val() != 'on' ? $(this).val() : null;
+                }).get();
+            }
+            checkboxes.on('change', updateButtonVisibility);
+            startAnalysesQuestionsBtn.click(function() {
+                startAnalysis(basepath, cmid, getSelectedLines());
+            });
+        });
     };
     
     exports.sendUnsentDocs = function(basepath, cmid, message) {
@@ -316,9 +332,12 @@ define(['jquery'], function($) {
             $('#show-search').on('click', function() {
                 tabClick($(this), $('#cmp-search'));
             });
+            $('#show-start-per-question').on('click', function() {
+                tabClick($(this), $('#cmp-start-per-question'));
+            });
 
-            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search');
-            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-search');
+            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search, #show-start-per-question');
+            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-search, #cmp-start-per-question');
 
             /**
              * TabClick

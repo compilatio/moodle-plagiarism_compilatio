@@ -198,6 +198,7 @@ $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
 $string['hide_area'] = 'Hide Compilatio informations';
 $string['show_area'] = 'Show Compilatio informations';
 $string['start_selected_files_analysis'] = 'Analyse selected documents ';
+$string['start_selected_questions_analysis'] = 'Analyse selected questions ';
 $string['access_report'] = 'Access report';
 $string["other_analysis_options"] = 'Other analysis options';
 
