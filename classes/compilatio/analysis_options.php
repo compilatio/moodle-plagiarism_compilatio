@@ -51,6 +51,24 @@ class CompilatioAnalysisOptions {
 
         $modulecontext = context_module::instance($cmid);
         $quizquestions = qbank_helper::get_question_structure($quizid, $modulecontext);
+        
+        $sql = "SELECT DISTINCT {user}.id, {user}.lastname, {user}.firstname
+            FROM {user}
+            INNER JOIN {quiz_attempts} on {quiz_attempts}.userid = {user}.id
+            INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz
+            INNER JOIN {course} ON {course}.id = {quiz}.course
+            INNER JOIN {course_modules} on {course_modules}.course = {course}.id
+            WHERE {course_modules}.id = ?
+                AND {quiz_attempts}.state = 'finished'
+                AND {course_modules}.instance = {quiz}.id";
+
+        $studentattemptsubmitted = $DB->get_records_sql($sql, [$cmid]);
+
+        if (empty($studentattemptsubmitted)) {
+            $output = "<h5>" . get_string('no_students_finished_quiz', 'plagiarism_compilatio') . "</h5>";
+            return $output;
+        }
+        
         $output = "
             <div class='cmp-relative-position'>
                 <div class='cmp-table-height'>

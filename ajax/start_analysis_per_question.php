@@ -69,11 +69,7 @@ if ($plugincm->analysistype == 'manual') {
                     $cmpfiles[] = $DB->get_record('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $studentid, 'identifier' => $file->get_contenthash()]);
                 }
             }
-
-            
-
         }
-
     }
 
     foreach ($cmpfiles as $file) {
