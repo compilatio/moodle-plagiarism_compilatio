@@ -28,6 +28,8 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
+use mod_quiz\question\bank\qbank_helper;
+
 /**
  * CompilatioSettings class
  */
@@ -35,35 +37,20 @@ class CompilatioAnalysisOptions {
 
     public static function get_analysis_options($cmid) {
 
-        global $DB, $PAGE, $CFG;
+        global $DB, $PAGE, $CFG, $SESSION;
+        require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
         $compilatio = new CompilatioAPI();
 
-        $sql = "SELECT DISTINCT {user}.id, {user}.lastname, {user}.firstname
-        FROM {user}
-        INNER JOIN {quiz_attempts} on {quiz_attempts}.userid = {user}.id
-        INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz
-        INNER JOIN {course} ON {course}.id = {quiz}.course
-        INNER JOIN {course_modules} on {course_modules}.course = {course}.id
-        WHERE {course_modules}.id = ?
-            AND {quiz_attempts}.state = 'finished'
-            AND {course_modules}.instance = {quiz}.id";
+        $sql = "SELECT {quiz}.id
+            FROM {quiz}
+            INNER JOIN {course_modules} ON {course_modules}.instance = {quiz}.id
+            WHERE {course_modules}.id = ?";
 
-        $studentattemptsubmitted = $DB->get_records_sql($sql, [$cmid]);
+        $quizid = $DB->get_field_sql($sql, [$cmid]);
 
-        $sql = "SELECT {quiz_attempts}.id
-                FROM {quiz_attempts}
-                    INNER JOIN {quiz} ON {quiz}.id = {quiz_attempts}.quiz
-                    INNER JOIN {course_modules} ON {course_modules}.instance = {quiz}.id
-                WHERE {course_modules}.id = ? AND {quiz_attempts}.userid = ?
-                ORDER BY {quiz_attempts}.attempt DESC
-                LIMIT 1";
-
-        $attemptid = $DB->get_field_sql($sql, [$cmid, $studentattemptsubmitte[0]->id]);
-
-        $attempt = $CFG->version < 2023100900 ? \quiz_attempt::create($attemptid) : \mod_quiz\quiz_attempt::create($attemptid);
-
-        $quizslots = $attempt->get_slots();
-
+        $modulecontext = context_module::instance($cmid);
+        $quizquestions = qbank_helper::get_question_structure($quizid, $modulecontext);
         $output = "
             <div class='cmp-relative-position'>
                 <div class='cmp-table-height'>
@@ -75,19 +62,23 @@ class CompilatioAnalysisOptions {
                             </tr>
                         </thead>
                         <tbody class='cmp-bckgrnd-white'>";
-        
-        foreach ($quizslots as $quizslot) {
+
+        foreach ($quizquestions as $quizquestion) {
             $output .= "<tr>
-                            <td class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . " " . $quizslot->slot . "</td>
-                            <td class='text-center align-middle'> 
-                                <button class='btn btn-primary start-analysis-btn' 
-                                    data-question-id='" . $quizslot->id . "'
-                                    id='start_analysis_selected_questions_btn_" . $quizslot->slot . "' 
-                                    type='button'
-                                >
-                                    <i class='fa fa-play-circle'></i>
-                                </button>
-                            </td>
+                            <td class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . " " . $quizquestion->slot . "</td>
+                            <td class='text-center align-middle'> ";
+
+            $output.= $quizquestion->qtype == 'essay' 
+                    ? "<button class='btn btn-primary start-analysis-btn' 
+                            data-question-id='" . $quizquestion->questionid . "'
+                            id='start_analysis_selected_questions_btn_" . $quizquestion->slot . "' 
+                            type='button'
+                        >
+                            <i class='fa fa-play-circle'></i>
+                        </button>" 
+                    : "<div class='font-italic'>" . get_string('invalid_question_type', 'plagiarism_compilatio') . "</div>";
+
+            $output .="</td>
                         </tr>";
         }
         
@@ -96,8 +87,8 @@ class CompilatioAnalysisOptions {
                 </div>
             </div>";
         
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'start_analysis_selected_questions', [$CFG->httpswwwroot, $cmid]);
-        return $output;        
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'start_analysis_selected_questions', [$CFG->httpswwwroot, $cmid, $quizid]);
+        return $output;
     }
 
 }

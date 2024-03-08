@@ -99,16 +99,16 @@ define(['jquery'], function($) {
         });
     };    
     
-    exports.start_analysis_selected_questions = function (basepath, cmid) {
+    exports.start_analysis_selected_questions = function (basepath, cmid, quizid) {
         $(document).ready(function () {
             const startAnalysesQuestionsBtn = $('.start-analysis-btn');
     
             startAnalysesQuestionsBtn.click(function () {
                 disableCompilatioButtons();
-                const questionId = $(this).data('question-id');
-
+                const slotid = $(this).data('question-id');
+                console.log(slotid);
                 $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis_per_question.php',
-                    {'cmid': cmid, 'questionid': questionId}, function () {
+                    {'cmid': cmid, 'slotid': slotid, 'quizid': quizid}, function () {
                         window.location.reload();
                     });
             });
