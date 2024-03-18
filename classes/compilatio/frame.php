@@ -488,7 +488,7 @@ class CompilatioFrame {
             $questionselector .= "</div>";
             $questionselector .= "
                 <div
-                    class='cmp-action-btn mx-2 mt-1'
+                    class='cmp-action-btn p-2'
                     role='button'
                     id='start-selected-questions-btn'
                 >
@@ -505,15 +505,15 @@ class CompilatioFrame {
                     title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'>"
                     . CompilatioIcons::ellipsis() .
                 "</span>
-                <div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>
+                <div class='dropdown-menu overflow-hidden p-0' aria-labelledby='dropdownMenuButton'>
                     <div
-                        class='cmp-action-btn mx-2 mt-1 cmp-start-btn'
+                        class='cmp-action-btn p-2 cmp-start-btn'
                         role='button'
                     >
                         <div class='text-nowrap'>" . get_string('start_all_analysis', 'plagiarism_compilatio') . "</div>
                     </div>
                     <div
-                        class='cmp-action-btn mx-2 mt-1'
+                        class='cmp-action-btn p-2'
                         role='button'
                         id='start-selected-students-btn'
                     >
