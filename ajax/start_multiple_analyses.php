@@ -37,46 +37,59 @@ require_login();
 global $DB, $SESSION;
 
 $cmid = required_param('cmid', PARAM_TEXT);
-$questionid = required_param('slotid', PARAM_TEXT);
-$quizid = required_param('quizid', PARAM_TEXT);
+$selectedstudents = optional_param('selectedstudents', '', PARAM_TEXT);
+$selectedquestions = array_values(optional_param_array('selectedquestions', [], PARAM_TEXT));
+$quizid = optional_param('quizid', '', PARAM_TEXT);
 
 $plugincm = compilatio_cm_use($cmid);
 $module = get_coursemodule_from_id(null, $cmid);
 
 $countsuccess = 0;
-$plagiarism_compilatio_files = $docsfailed = $docsinextraction = $SESSION->compilatio_alerts = [];
-$cmpfiles = [];
-$context = context_module::instance($cmid);
+$cmpfiles = $docsfailed = $docsinextraction = $SESSION->compilatio_alerts = [];
 
 if ($plugincm->analysistype == 'manual') {
-    $quizattempts = $DB->get_records('quiz_attempts', ['quiz'=> $quizid]);
-    
-    foreach ($quizattempts as $quizattempt) {
-
-        $attempt = $CFG->version < 2023100900 ? \quiz_attempt::create($quizattempt->id) : \mod_quiz\quiz_attempt::create($quizattempt->id);
+    if (!empty($selectedquestions)) {
+        $context = context_module::instance($cmid);
+        $quizattempts = $DB->get_records('quiz_attempts', ['quiz' => $quizid]);
         
-        foreach ($attempt->get_slots() as $slot) {
+        foreach ($quizattempts as $quizattempt) {
+            $attempt = $CFG->version < 2023100900 ? \quiz_attempt::create($quizattempt->id) : \mod_quiz\quiz_attempt::create($quizattempt->id);
             
-            if ($attempt->get_question_attempt($slot)->get_question_id() == $questionid) {
-                $answer = $attempt->get_question_attempt($slot);
-                $courseid = $DB->get_field('course_modules', 'course', array('id' => $cmid));
-                $filename = "quiz-" . $courseid . "-" . $cmid . "-" . $quizattempt->id . "-Q" . $answer->get_question_id() . ".htm";
+            foreach ($attempt->get_slots() as $slot) {
+                if (in_array($attempt->get_question_attempt($slot)->get_question_id(), $selectedquestions)) {
+                    $answer = $attempt->get_question_attempt($slot);
+                    $courseid = $DB->get_field('course_modules', 'course', array('id' => $cmid));
+                    $filename = "quiz-" . $courseid . "-" . $cmid . "-" . $quizattempt->id . "-Q" . $answer->get_question_id() . ".htm";
 
-                $cmpfiles[] = $DB->get_record('plagiarism_compilatio_files', ['cm' => $cmid, 'identifier' => sha1($filename), 'status' => 'sent']);
-                
-                $files = $answer->get_last_qt_files('attachments', $context->id);
-                foreach ($files as $file) {
-                    $cmpfiles[] = $DB->get_record('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $studentid, 'identifier' => $file->get_contenthash()]);
+                    $cmpfiles[] = $DB->get_record('plagiarism_compilatio_files', ['cm' => $cmid, 'identifier' => sha1($filename), 'status' => 'sent']);
+
+                    $files = $answer->get_last_qt_files('attachments', $context->id);
+                    foreach ($files as $file) {
+                        $cmpfiles[] = $DB->get_record('plagiarism_compilatio_files', ['cm' => $cmid, 'identifier' => $file->get_contenthash(), 'status' => 'sent']);
+                    }
                 }
             }
         }
+    } else if ($module->modname == "quiz" && !empty($selectedstudents)) {
+        $sql = "SELECT cmpfile.*
+            FROM {plagiarism_compilatio_files} cmpfile
+            INNER JOIN {user} ON {user}.id = cmpfile.userid
+            INNER JOIN {quiz_attempts} ON {quiz_attempts}.userid = {user}.id
+            WHERE {quiz_attempts}.id IN ('".$selectedstudents."') AND cmpfile.status='sent' AND cmpfile.cm = ?";
+        $cmpfiles = $DB->get_records_sql($sql, [$cmid]);
+    } else {
+        $sql = "cm = ? AND status = 'sent'";
+        $sql .= !empty($selectedstudents) ? " AND userid IN (" . $selectedstudents . ")" : "";
+        $cmpfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, [$cmid]);
     }
 
     foreach ($cmpfiles as $file) {
         if (empty($file) || compilatio_student_analysis($plugincm->studentanalyses, $cmid, $file->userid)) {
             continue;
         }
-        $status = CompilatioAnalyses::start_analysis($file);
+
+        $status = 'queue';//CompilatioAnalyses::start_analysis($file);
+
         if ($status == 'queue') {
             $countsuccess++;
         } else if ($status == get_string('extraction_in_progress', 'plagiarism_compilatio')) {
@@ -87,7 +100,7 @@ if ($plugincm->analysistype == 'manual') {
     }
 }
 
-if (count($plagiarism_compilatio_files) === 0) {
+if (count($cmpfiles) === 0) {
     $SESSION->compilatio_alerts[] = [
         'class' => 'info',
         'content' => get_string('no_document_available_for_analysis', 'plagiarism_compilatio'),

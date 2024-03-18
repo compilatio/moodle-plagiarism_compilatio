@@ -45,7 +45,7 @@ class CompilatioEventHandler {
             $userid = $event['userid'];
         }
 
-        $duplicates = [];
+        $files = [];
 
         // In forums.
         if ($event['objecttable'] == 'forum_posts') {
@@ -56,30 +56,30 @@ class CompilatioEventHandler {
                     WHERE pcf.cm = ? AND (filename LIKE ? OR filename LIKE ?) AND recyclebinid IS NULL";
 
                 $filename = 'forum-' . $event['objectid'];
-                $duplicates = $DB->get_records_sql($sql, [$cmid, $filename . '-%', $filename . '.htm']);
+                $files = $DB->get_records_sql($sql, [$cmid, $filename . '-%', $filename . '.htm']);
             }
         }
 
         // In workshops.
         if ($event['objecttable'] == 'workshop_submissions') {
-            $duplicates = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
+            $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
         }
 
         // In quiz.
         if ($event['objecttable'] == 'quiz_attempts') {
-            $duplicates = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
-            compilatio_delete_files($duplicates);
+            $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
+            compilatio_delete_files($files);
 
             $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'quiz-%'";
-            $duplicates = $DB->get_records_sql($sql, [$cmid, $userid]);
+            $files = $DB->get_records_sql($sql, [$cmid, $userid]);
         }
 
         // User delete.
         if ($event['objecttable'] == 'user') {
-            $duplicates = $DB->get_records('plagiarism_compilatio_files', ['userid' => $event['objectid']]);
+            $files = $DB->get_records('plagiarism_compilatio_files', ['userid' => $event['objectid']]);
         }
 
-        compilatio_delete_files($duplicates);
+        compilatio_delete_files($files);
 
         // Course module delete.
         if ($event['objecttable'] == 'course_modules') {

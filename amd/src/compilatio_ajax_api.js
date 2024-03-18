@@ -17,14 +17,18 @@ define(['jquery'], function($) {
 
     var exports = {};
 
-    function startAnalysis(message, basepath, cmid, selectedusers) {
+    function startAnalyses(message, basepath, cmid, selectedstudents = null, selectedquestions = null, quizid = null) {
         disableCompilatioButtons();
         $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");        
         
-        $.post(basepath + '/plagiarism/compilatio/ajax/start_all_analysis.php',
-            {'cmid': cmid, 'selectedUsers': selectedusers != null ? selectedusers.toString() : ''}, function() {
-                window.location.reload();
-            });
+        let params = { 'cmid': cmid };
+        if (selectedstudents != null) params.selectedstudents = selectedstudents.toString()
+        if (selectedquestions != null) params.selectedquestions = selectedquestions
+        if (quizid != null) params.quizid = quizid
+
+        $.post(basepath + '/plagiarism/compilatio/ajax/start_multiple_analyses.php', params, function() {
+            window.location.reload();
+        });
     }
 
     exports.getSelectedStudent = function(basepath, cmid) {
@@ -48,14 +52,14 @@ define(['jquery'], function($) {
             });
 
             $('#previous-student').on('click', function() {
-                changeSelectedTruc(dropdown.prop('selectedIndex'), -1)
+                changeSelectedStudent(dropdown.prop('selectedIndex'), -1)
             });
 
             $('#next-student').on('click', function() {
-                changeSelectedTruc(dropdown.prop('selectedIndex'), 1)
+                changeSelectedStudent(dropdown.prop('selectedIndex'), 1)
             });
 
-            function changeSelectedTruc (selectedIndex, direction) {
+            function changeSelectedStudent(selectedIndex, direction) {
                 var newIndex = selectedIndex + direction;
                 const maxIndex = dropdown.find('option').length - 1;
 
@@ -74,14 +78,14 @@ define(['jquery'], function($) {
         $(document).ready(function() {
             var startAllAnalysis = $('.cmp-start-btn');
             startAllAnalysis.click(function() {
-                startAnalysis(message, basepath, cmid, null);
+                startAnalyses(message, basepath, cmid);
             });
         });
     };
 
-    exports.startAnalysesOnSelectedFiles = function(basepath, cmid, message) {
+    exports.startAnalysesOnSelectedStudents = function(basepath, cmid, message) {
         $(document).ready(function() {
-            const startSelectedAnalysesBtn = $('#start-selected-analyses-btn').hide();
+            const startSelectedStudentsBtn = $('#start-selected-students-btn').hide();
             const checkboxes = $('td.c0 input, #selectall');
             function getSelectedLines() {
                 return checkboxes.filter(':checked').map(function() {
@@ -90,27 +94,29 @@ define(['jquery'], function($) {
             }
             function updateButtonVisibility() {
                 const selectedUsers = getSelectedLines();
-                selectedUsers.length > 0 ? startSelectedAnalysesBtn.show() : startSelectedAnalysesBtn.hide();
+                selectedUsers.length > 0 ? startSelectedStudentsBtn.show() : startSelectedStudentsBtn.hide();
             }
             checkboxes.on('change', updateButtonVisibility);
-            startSelectedAnalysesBtn.click(function() {
-                startAnalysis(message, basepath, cmid, getSelectedLines());
+            startSelectedStudentsBtn.click(function() {
+                startAnalyses(message, basepath, cmid, getSelectedLines());
             });
         });
     };    
     
-    exports.start_analysis_selected_questions = function (basepath, cmid, quizid) {
+    exports.startAnalysesOnSelectedQuestions = function (basepath, cmid, message, quizid) {
         $(document).ready(function () {
-            const startAnalysesQuestionsBtn = $('.start-analysis-btn');
+            const startSelectedQuestionsBtn = $('#start-selected-questions-btn');
     
-            startAnalysesQuestionsBtn.click(function () {
+            startSelectedQuestionsBtn.click(function () {
                 disableCompilatioButtons();
-                const slotid = $(this).data('question-id');
-                console.log(slotid);
-                $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis_per_question.php',
-                    {'cmid': cmid, 'slotid': slotid, 'quizid': quizid}, function () {
-                        window.location.reload();
-                    });
+
+                var checkedcheckboxes = $('.checkbox-question-selector:checked');
+                var selectedquestions = [];
+                checkedcheckboxes.each(function() {
+                    selectedquestions.push($(this).val());
+                });
+
+                startAnalyses(message, basepath, cmid, null, selectedquestions, quizid);
             });
         });
     };
