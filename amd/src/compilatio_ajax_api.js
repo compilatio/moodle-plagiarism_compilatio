@@ -21,6 +21,7 @@ define(['jquery'], function($) {
         disableCompilatioButtons();
         $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");        
         
+        // TODO
         let params = { 'cmid': cmid };
         if (selectedstudents != null) params.selectedstudents = selectedstudents.toString()
         if (selectedquestions != null) params.selectedquestions = selectedquestions
@@ -338,12 +339,9 @@ define(['jquery'], function($) {
             $('#show-search').on('click', function() {
                 tabClick($(this), $('#cmp-search'));
             });
-            $('#show-start-per-question').on('click', function() {
-                tabClick($(this), $('#cmp-start-per-question'));
-            });
 
-            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search, #show-start-per-question');
-            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-search, #cmp-start-per-question');
+            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search');
+            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-search');
 
             /**
              * TabClick

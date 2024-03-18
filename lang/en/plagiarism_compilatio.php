@@ -201,7 +201,6 @@ $string['start_selected_files_analysis'] = 'Analyse selected documents';
 $string['start_selected_questions_analysis'] = 'Analyse selected questions';
 $string['access_report'] = 'Access report';
 $string["other_analysis_options"] = 'Other analysis options';
-$string["invalid_question_type"] = 'Invalid question type';
 
 // Detailed error status.
 $string['detailed_error_unsupported'] = "These documents could not be analysed by Compilatio because their format is not supported.";

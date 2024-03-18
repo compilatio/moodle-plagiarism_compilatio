@@ -88,7 +88,7 @@ if ($plugincm->analysistype == 'manual') {
             continue;
         }
 
-        $status = 'queue';//CompilatioAnalyses::start_analysis($file);
+        $status = CompilatioAnalyses::start_analysis($file);
 
         if ($status == 'queue') {
             $countsuccess++;

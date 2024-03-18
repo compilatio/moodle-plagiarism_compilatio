@@ -496,6 +496,7 @@ class CompilatioFrame {
                 </div>";
         }
 
+        // TODO dropdown closed on click
         $output .= "
             <div class='dropdown'>
                 <span
