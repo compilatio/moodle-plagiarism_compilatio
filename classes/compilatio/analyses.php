@@ -97,6 +97,8 @@ class CompilatioAnalyses {
         if (isset($doc->analyses->$recipe->state)) {
             $state = $doc->analyses->$recipe->state;
 
+            $cmpfile->analysisid ??= $doc->analyses->$recipe->id;
+
             if ($state == 'running') {
                 $cmpfile->status = 'analysing';
             } else if ($state == 'finished') {

@@ -77,10 +77,7 @@ $string['owner_file_student_details'] = 'When a student request to delete all hi
 // Activity settings.
 $string['info_cm_activation'] = 'By activating Compilatio on this activity, submitted documents will be uploaded to your Compilatio account {$a}.<br>All teachers enrolled in this course will be able to use Compilatio on this activity.';
 $string['info_cm_activated'] = 'Documents submitted in this activity are uploaded to the Compilatio account {$a}.<br>All teachers enrolled in this course can use Compilatio on this activity.';
-$string['terms_of_service'] = 'I have read the <a href=\'{$a}\'>Terms of Service</a> of Compilatio and I accept them.';
 $string['terms_of_service_info'] = '<a href=\'{$a}\'>Terms of Service</a> of Compilatio';
-$string['terms_of_service_alert'] = 'The Compilatio <a href=\'{$a}\'>Terms of Service</a> have not been validated or have been updated. Please read and accept them before using Compilatio.';
-$string['terms_of_service_alert_btn'] = "I have read the Terms of Service and I accept them.";
 $string['activated'] = 'Allow similarity detection with Compilatio';
 $string['defaultindexing'] = "Add documents into the Document Database";
 $string['defaultindexing_help'] = "Yes: Add documents in the document database. These documents will be used as comparison material for future analysis.
@@ -98,7 +95,6 @@ $string['analysistype_help'] = "<p>You have two options:
         <li><strong>Scheduled: </strong> All documents are analysed at the selected time/date.</li>
     </ul>
     To have all documents compared with each other during the analyses, wait until all works are submitted by students then trigger the analyses.</p>";
-$string['analysistype_auto'] = 'Analysis Start';
 $string['analysistype_auto_help'] = "<p>You have three options:
     <ul>
         <li><strong>Manual:</strong> Analysis of documents must be triggered manually with the “Analyse” button of each document or with the “Analyse all documents” button.</li>
@@ -175,7 +171,6 @@ $string['unmeasured'] = 'not measured';
 $string['ai_score_not_included'] = "not included in your subscription";
 $string['excluded_from_score'] = "Excluded from the score:";
 
-$string['previouslysubmitted'] = 'Previously submitted as';
 $string['student_analyse'] = "The analysis can be started by the student";
 $string['student_help'] = "You can analyse your draft with Compilatio Magister, to measure similarities in the text of your files.<br/>
     The contents of your draft will not be used by Compilatio as comparison material for future analyses.<br/>
@@ -195,8 +190,6 @@ $string['start_all_analysis'] = "Analyse all documents";
 $string['send_all_documents'] = "Send all document";
 $string['reset_docs_in_error'] = 'Reset documents in error';
 $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
-$string['hide_area'] = 'Hide Compilatio informations';
-$string['show_area'] = 'Show Compilatio informations';
 $string['start_selected_files_analysis'] = 'Analyse selected documents';
 $string['start_selected_questions_analysis'] = 'Analyse selected questions';
 $string['access_report'] = 'Access report';
@@ -226,6 +219,7 @@ $string["see_all_notifications"] = "See all notifications";
 $string["open"] = "Open";
 $string["no_notification"] = "No notification";
 $string["display_notifications"] = "Display notifications";
+$string["display_settings_frame"] = "Display settings for scores";
 $string['no_document_available_for_analysis'] = 'No documents were available for analysis';
 $string["analysis_started"] = '{$a} analysis have been requested.';
 $string["start_analysis_in_progress"] = 'Launching of the analyses in progress';
@@ -245,12 +239,19 @@ $string["compilatio_iddocument"] = "Document identifier";
 $string["compilatio_search_notfound"] = "No document was found for this identifier among the documents loaded on your Moodle platform.";
 $string["compilatio_depositor"] = 'The document in activity <b>{$a->modulename}</b> was submitted by the Moodle user <b>{$a->lastname} {$a->firstname}</b>.';
 
+// Settings scores tab.
+$string["include_percentage_in_suspect_text"] = 'Include in the percentage of suspect texts displayed :';
+$string["simscore_percentage"] = 'Percentage of similarities';
+$string["aiscore_percentage"] = 'Percentage of text potentially written by AI';
+$string["utlscore_percentage"] = 'Percentage of unrecognized types of languages';
+$string["score_settings_info"] = 'Updating scores will affect all documents in the assignment,<br> including those modified individually.';
+
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistics';
 $string["display_stats"] = "Display statistics about this activity";
 $string["display_stats_per_student"] = "Display statistics per student about this activity";
 $string['export_csv'] = 'Export data about this activity into a CSV file';
-$string['export_csv_per_student'] = 'Export data about this student\'s review into a CSV file';
+$string['export_csv_per_student'] = 'Export this student\'s results to a CSV file';
 $string['progress'] = "Progress";
 $string['results'] = "Results";
 $string['errors'] = "Errors";

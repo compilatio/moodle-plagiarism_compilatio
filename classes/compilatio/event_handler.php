@@ -125,7 +125,7 @@ class CompilatioEventHandler {
         }
     }
 
-    // ADTD v2 course modules management.
+    // Plugin v2 course modules management.
     private static function create_folder_if_not_set($courseid, $modulename) {
         global $DB, $USER;
 

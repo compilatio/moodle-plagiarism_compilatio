@@ -90,7 +90,7 @@ class CompilatioAPI {
         return $error;
     }
 
-    public function get_apikey_user_id() {
+    public function get_apikey_user_id($updateapikey = true) {
         $endpoint = '/api/private/authentication/check-api-key';
 
         $response = json_decode($this->build_curl($endpoint));
@@ -98,10 +98,10 @@ class CompilatioAPI {
         if ($this->get_error_response($response, 200) === false) {
             $oldmoodleownerid = $response->data->user->current_api_key->old_moodle_owner_id ?? null;
 
-            if (!empty($oldmoodleownerid)) {
+            if (!empty($oldmoodleownerid) || !$updateapikey) {
                 return $oldmoodleownerid;
             }
-            
+
             $this->update_apikey();
 
             return $response->data->user->id;
@@ -518,6 +518,48 @@ class CompilatioAPI {
     }
 
     /**
+     * Update ignored scores in report
+     *
+     * @param  string   $analysisid   Analysis ID
+     * @param  array    $ignoredtypes Ignored scores
+     * @return mixed    Return update_task_id if succeed, false otherwise
+     */
+    public function update_and_rebuild_report($analysisid, $ignoredtypes) {
+        $endpoint = '/api/private/anasim/report/' . $analysisid;
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', $ignoredtypes));
+
+        if ($this->get_error_response($response, 200) === false) {
+            $endpoint = '/api/private/anasim/report/' . $analysisid . '/rebuild';
+            $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post'));
+
+            if ($this->get_error_response($response, 200) === false) {
+                return $response->data->update_task_id;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get updated report
+     *
+     * @param  string   $analysisid    Analysis ID
+     * @param  array    $updatetaskid  Update task ID
+     * @return mixed    Return report if succeed, false otherwise
+     */
+    public function get_updated_report($analysisid, $updatetaskid) {
+        $endpoint = '/api/private/report/anasim/' . $analysisid . '/is-updated/' . $updatetaskid;
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
+
+        if ($this->get_error_response($response, 200) === false) {
+            return $response->data->report;
+        } else if ($response->status->code == 202) {
+            sleep(1);
+            return $this->get_updated_report($analysisid, $updatetaskid);
+        }
+        return false;
+    }
+
+    /**
      * Start an analyse of a document
      *
      * @param  string   $docid  Document ID
@@ -597,7 +639,7 @@ class CompilatioAPI {
      * @return mixed                    Return true if succeed, an error message otherwise
      */
     public function set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency) {
-        $endpoint = '/api/private/moodle-configuration';
+        $endpoint = '/api/private/moodle-configuration/';
         $params = [
             'php_version' => $releasephp,
             'moodle_version' => $releasemoodle,
@@ -738,14 +780,15 @@ class CompilatioAPI {
             return 'Error response status not found';
         } else if ($response->status->code == $expectedstatuscode) {
             return false;
-        } else if (isset($response->errors->key) && $response->errors->key == 'need_terms_of_service_validation') {
-            if (!empty($this->userid)) {
-                global $DB;
-                $user = $DB->get_record('plagiarism_compilatio_user', ['compilatioid' => $this->userid]);
-                $user->validatedtermsofservice = false;
-                $DB->update_record('plagiarism_compilatio_user', $user);
+        } else if ($response->status->code == 403) {
+            foreach (($response->errors ?? []) as $error) {
+                if (isset($error->key) && $error->key == 'need_terms_of_service_validation') {
+                    if (!empty($this->userid)) {
+                        $this->validate_terms_of_service();
+                    }
+                    return $error->key;
+                }
             }
-            return $response->errors->key;
         } else if ($response->status->message == 'Forbidden ! Your read only API key cannot modify this resource') {
             set_config('read_only_apikey', 1, 'plagiarism_compilatio');
         }
