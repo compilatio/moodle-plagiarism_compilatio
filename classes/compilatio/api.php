@@ -518,6 +518,48 @@ class CompilatioAPI {
     }
 
     /**
+     * Update ignored scores in report
+     *
+     * @param  string   $analysisid   Analysis ID
+     * @param  array    $ignoredtypes Ignored scores
+     * @return mixed    Return update_task_id if succeed, false otherwise
+     */
+    public function update_and_rebuild_report($analysisid, $ignoredtypes) {
+        $endpoint = '/api/private/anasim/report/' . $analysisid;
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', $ignoredtypes));
+
+        if ($this->get_error_response($response, 200) === false) {
+            $endpoint = '/api/private/anasim/report/' . $analysisid . '/rebuild';
+            $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post'));
+
+            if ($this->get_error_response($response, 200) === false) {
+                return $response->data->update_task_id;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get updated report
+     *
+     * @param  string   $analysisid    Analysis ID
+     * @param  array    $updatetaskid  Update task ID
+     * @return mixed    Return report if succeed, false otherwise
+     */
+    public function get_updated_report($analysisid, $updatetaskid) {
+        $endpoint = '/api/private/report/anasim/' . $analysisid . '/is-updated/' . $updatetaskid;
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
+
+        if ($this->get_error_response($response, 200) === false) {
+            return $response->data->report;
+        } else if ($response->status->code == 202) {
+            sleep(1);
+            return $this->get_updated_report($analysisid, $updatetaskid);
+        }
+        return false;
+    }
+
+    /**
      * Start an analyse of a document
      *
      * @param  string   $docid  Document ID

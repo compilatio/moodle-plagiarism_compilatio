@@ -194,11 +194,21 @@ class CompilatioFrame {
         $output .= "<div id='cmp-tabs' data-toggle='tooltip'>";
 
         // Display logo.
-        $output .= "<img id='cmp-logo' src='" . new moodle_url('/plagiarism/compilatio/pix/compilatio.png') . "' data-toggle='tooltip'>";
+        $output .= "<img id='cmp-logo' src='" . new moodle_url('/plagiarism/compilatio/pix/compilatio.png') . "'>";
 
         // Help icon.
         $output .= "<i id='show-help' title='" . get_string('compilatio_help_assign', 'plagiarism_compilatio') .
             "' class='cmp-icon fa fa-question-circle' data-toggle='tooltip'></i>";
+
+        // Settings icon.
+        $output .= "
+            <i
+                id='cmp-show-settings'
+                title='" . get_string("display_settings_frame", "plagiarism_compilatio") . "'
+                class='cmp-icon fas fa-cog'
+                data-toggle='tooltip'
+            >
+            </i>";
 
         // Stat icon.
         $output .=
@@ -233,7 +243,7 @@ class CompilatioFrame {
             <i
                 id='cmp-show-notifications'
                 title='" . get_string("display_notifications", "plagiarism_compilatio") . "'
-                class='cmp-icon fa fa-bell'
+                class='cmp-icon fa fa-bell mr-3'
                 data-toggle='tooltip'
             >
             </i>
@@ -242,11 +252,14 @@ class CompilatioFrame {
 
         // Display buttons.
         if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
+
+            $output .= "<div class='btn-group ml-auto' role='group'>";
+
             if ($startallanalyses) {
                 $output .=
                     "<button
                         title='" . get_string('start_all_analysis', 'plagiarism_compilatio') . "'
-                        class='btn btn-primary cmp-action-btn mx-1 cmp-start-btn'
+                        class='btn btn-primary cmp-action-btn cmp-start-btn'
                         data-toggle='tooltip'
                     >
                         <i class='fa fa-play-circle'></i>
@@ -258,23 +271,23 @@ class CompilatioFrame {
 
             if ($selectanalysesoptions) {
                 $output .= "
-                    <div class='dropdown'>
-                        <span
-                            data-toggle='dropdown'
-                            role='button'
-                            class='p-2'
-                            title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'>"
-                            . CompilatioIcons::ellipsis() .
-                        "</span>
-                        <div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>
+                    <div 
+                        class='dropdown btn btn-outline-primary' 
+                        id='dropdownbutton' 
+                        role='button'
+                        title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "' 
+                        data-toggle='dropdown'
+                    >
+                        <i class='fa fa-ellipsis-v'></i>
+                        <div class='dropdown-menu'>
                             <div
-                                class='cmp-action-btn mx-1 cmp-start-btn'
+                                class='cmp-action-btn cmp-start-btn mx-2 hover'
                                 role='button'
                             >
                                 <div class='text-nowrap'>" . get_string('start_all_analysis', 'plagiarism_compilatio') . "</div>
                             </div>
                             <div
-                                class='cmp-action-btn mx-1 mt-1'
+                                class='cmp-action-btn mx-2 mt-1 hover'
                                 role='button'
                                 id='start-selected-analyses-btn'
                             >
@@ -290,9 +303,10 @@ class CompilatioFrame {
             if ($sendalldocs) {
                 $output .=
                     "<button
+                        data-toggle='tooltip'
                         id='cmp-send-btn'
                         title='" . get_string('send_all_documents', 'plagiarism_compilatio') . "'
-                        class='btn btn-primary cmp-action-btn mx-1'
+                        class='btn btn-outline-primary cmp-action-btn'
                     >
                         <i class='cmp-icon-lg fa fa-paper-plane'></i>
                     </button>";
@@ -304,15 +318,18 @@ class CompilatioFrame {
             if ($resetdocsinerror) {
                 $output .=
                     "<button
+                        data-toggle='tooltip'
                         id='cmp-reset-btn'
                         title='" . get_string('reset_docs_in_error', 'plagiarism_compilatio') . "'
-                        class='btn btn-primary cmp-action-btn mx-1'
+                        class='btn btn-outline-primary cmp-action-btn'
                     >
                         <i class='cmp-icon-lg fa fa-rotate-right'></i>
                     </button>";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'resetDocsInError',
                     [$CFG->httpswwwroot, $cmid, get_string('reset_docs_in_error_in_progress', 'plagiarism_compilatio')]);
             }
+
+            $output .= "</div>";
         }
 
         $output .= "</div>";
@@ -405,6 +422,12 @@ class CompilatioFrame {
 
         $output .= "</div>";
 
+        // Settings.
+        $output .= "
+            <div id='cmp-settings' class='cmp-tabs-content'>
+               " . self::display_score_settings($cmid) . "
+            </div>";
+
         // Display timed analysis date.
         if (isset($analysisdate)) {
             $output .= "<span class='border-top pt-2 mt-2 text-center font-italic'>$analysisdate</span>";
@@ -414,6 +437,7 @@ class CompilatioFrame {
 
         // Alerts.
         $output .= "<div class='d-flex'><div id='cmp-alerts' class='ml-auto mt-1'>";
+
         foreach ($alerts as $index => $alert) {
             if (isset($alert['content'])) {
                 switch ($alert['class']) {
@@ -452,6 +476,46 @@ class CompilatioFrame {
 
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'getNotifications',
             [$CFG->httpswwwroot, $cmconfig->userid]);
+
+        return $output;
+    }
+
+    public static function display_score_settings($cmid) {
+        global $DB, $PAGE, $CFG;
+
+        $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
+
+        $ignoredscores = $cmconfig->ignoredscores;
+        $ignoredscores = $ignoredscores == '' ? [] : explode(',', $ignoredscores);
+
+        $scores = ['simscore', 'utlscore'];
+
+        $recipe = get_config('plagiarism_compilatio', 'recipe');
+        $recipe === 'anasim-premium' ? array_push($scores, 'aiscore') : null;
+
+        $output = get_string('include_percentage_in_suspect_text', 'plagiarism_compilatio');
+
+        foreach ($scores as $score) {
+            $output .= "
+                <div class='form-check mt-2 mr-1'>
+                    <input class='checkbox-score-settings' type='checkbox' id='" . $score . "' value='" . $score . "' " 
+                        . (in_array($score, $ignoredscores) ? '' : 'checked') .
+                    ">
+                    <label class='form-check-label' for='" . $score . "'>
+                        " . get_string($score . '_percentage', 'plagiarism_compilatio') . "
+                    </label>
+                </div>";
+        }
+
+        $output .= "
+            <div class='mt-2'>
+                <span class='font-weight-lighter font-italic mt-4'>" . get_string('score_settings_info', 'plagiarism_compilatio') . "</span>
+            </div>
+            <div class='d-flex flex-row-reverse mr-1'>
+                <button id='score-settings-ignored' type='button' class='btn btn-primary'>" . get_string('update', 'core') . "</button>
+            </div>";
+
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'updateScoreSettings', [$CFG->httpswwwroot, $cmid, $scores]);
 
         return $output;
     }

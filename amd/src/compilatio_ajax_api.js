@@ -127,6 +127,37 @@ define(['jquery'], function($) {
         });
     };
 
+    exports.updateScoreSettings = function(basepath, cmid, scores) {
+        $(document).ready(function() {
+            var scoresettings = $('#score-settings-ignored');
+
+            scoresettings.click(function() {
+                scoresettings.css('background-color', 'grey');
+                scoresettings.html('<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>');
+
+                $('.checkbox-score-settings').attr("disabled", true);
+
+                var checkedcheckboxes = $('.checkbox-score-settings:checked');
+                var checkedvalues = [];
+                checkedcheckboxes.each(function() {
+                    checkedvalues.push($(this).val());
+                });
+
+                $.ajax({
+                    type: 'POST',
+                    url: basepath + '/plagiarism/compilatio/ajax/update_score_settings.php',  
+                    data: {cmid: cmid, checkedvalues: checkedvalues, scores: scores},
+                    success: function() {
+                        window.location.reload();
+                    },
+                    error: function(error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        });
+    };
+    
     exports.checkUserInfo = function(basepath, userid) {
         $(document).ready(function() {
             $.post(basepath + '/plagiarism/compilatio/ajax/check_user_info.php', {'userid': userid});
@@ -305,9 +336,12 @@ define(['jquery'], function($) {
             $('#show-search').on('click', function() {
                 tabClick($(this), $('#cmp-search'));
             });
+            $('#cmp-show-settings').on('click', function() {
+                tabClick($(this), $('#cmp-settings'));
+            });
 
-            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search');
-            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-search');
+            var tabs = $('#cmp-show-notifications, #show-stats, #show-stats-per-student, #show-help, #show-search, #cmp-show-settings');
+            var elements = $('#cmp-notifications, #cmp-stats, #cmp-stats-per-student, #cmp-help, #cmp-search, #cmp-settings');
 
             /**
              * TabClick
