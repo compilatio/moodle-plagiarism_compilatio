@@ -388,7 +388,7 @@ class CompilatioStatistics {
             <table class='table mb-0 align-middle rounded-lg cmp-bckgrnd-grey table-hover'>
             <thead>
                 <tr>
-                    <th class='text-center align-middle cmp-border-none'>" . get_string('question', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle cmp-border-none'>" . get_string('question', 'core') . "</th>
                     <th class='text-center align-middle cmp-border-none'>" . get_string('response_type', 'plagiarism_compilatio') . "</th>
                     <th class='text-center align-middle cmp-border-none text-nowrap'>" . get_string('suspect_words_quiz_on_total', 'plagiarism_compilatio') . "</th>
                     <th class='text-center align-middle cmp-border-none'>" . get_string('score', 'plagiarism_compilatio') . "</th>
@@ -523,7 +523,7 @@ class CompilatioStatistics {
         $output = "<tr class='font-weight-light'>";
 
         $output .= $index == 0
-            ? "<td rowspan='" . $count . "' class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . ' ' . $slot . "</td>"
+            ? "<td rowspan='" . $count . "' class='text-center align-middle'>" . get_string('question', 'core') . ' ' . $slot . "</td>"
             : '';
 
         $output .= "<td class='text-center align-middle'>";

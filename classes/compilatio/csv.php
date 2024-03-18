@@ -166,7 +166,7 @@ class CompilatioCsv {
         $csv = $head;
         $line = [];
         $line["student"] = get_string('student', "plagiarism_compilatio");
-        $line["question"] = get_string('question', "plagiarism_compilatio");
+        $line["question"] = get_string('question', "core");
         $line["suspectwords/totalwords"] = get_string('suspect_words/total_words', "plagiarism_compilatio");
         $line["tot"] = get_string('total', 'plagiarism_compilatio') . ' (%)';
         $line["sim"] = get_string('simscore', 'plagiarism_compilatio') . ' (%)';

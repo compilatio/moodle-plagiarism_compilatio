@@ -190,7 +190,8 @@ $string['start_all_analysis'] = "Analyse all documents";
 $string['send_all_documents'] = "Send all document";
 $string['reset_docs_in_error'] = 'Reset documents in error';
 $string["compilatio_help_assign"] = "Display help about Compilatio plugin";
-$string['start_selected_files_analysis'] = 'Analyse selected documents ';
+$string['start_selected_files_analysis'] = 'Analyse selected documents';
+$string['start_selected_questions_analysis'] = 'Analyse selected questions';
 $string['access_report'] = 'Access report';
 $string["other_analysis_options"] = 'Other analysis options';
 
@@ -268,7 +269,6 @@ $string['previous_student'] = 'Previous student';
 $string['next_student'] = 'Next student';
 $string['suspect_words_quiz_on_total'] = 'words suspect / <br>total words';
 $string['suspect_words/total_words'] = 'words suspect / total words';
-$string['question'] = 'Question';
 $string['score'] = 'Score';
 $string['word'] = 'words';
 $string['total'] = 'Total';

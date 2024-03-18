@@ -253,6 +253,10 @@ a.cmp-btn-primary:hover {
     background-color: #b8c1ca;
 }
 
+.dropdown-menu > .cmp-action-btn:hover {
+    background-color: #F5F6F8;
+}
+
 /* Similarities */
 .cmp-similarity {
     cursor: pointer;
