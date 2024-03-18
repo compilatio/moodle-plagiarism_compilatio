@@ -90,7 +90,7 @@ class CompilatioAPI {
         return $error;
     }
 
-    public function get_apikey_user_id() {
+    public function get_apikey_user_id($updateapikey = true) {
         $endpoint = '/api/private/authentication/check-api-key';
 
         $response = json_decode($this->build_curl($endpoint));
@@ -98,7 +98,7 @@ class CompilatioAPI {
         if ($this->get_error_response($response, 200) === false) {
             $oldmoodleownerid = $response->data->user->current_api_key->old_moodle_owner_id ?? null;
 
-            if (!empty($oldmoodleownerid)) {
+            if (!empty($oldmoodleownerid) || !$updateapikey) {
                 return $oldmoodleownerid;
             }
 
@@ -639,7 +639,7 @@ class CompilatioAPI {
      * @return mixed                    Return true if succeed, an error message otherwise
      */
     public function set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency) {
-        $endpoint = '/api/private/moodle-configuration';
+        $endpoint = '/api/private/moodle-configuration/';
         $params = [
             'php_version' => $releasephp,
             'moodle_version' => $releasemoodle,
@@ -780,14 +780,15 @@ class CompilatioAPI {
             return 'Error response status not found';
         } else if ($response->status->code == $expectedstatuscode) {
             return false;
-        } else if (isset($response->errors->key) && $response->errors->key == 'need_terms_of_service_validation') {
-            if (!empty($this->userid)) {
-                global $DB;
-                $user = $DB->get_record('plagiarism_compilatio_user', ['compilatioid' => $this->userid]);
-                $user->validatedtermsofservice = false;
-                $DB->update_record('plagiarism_compilatio_user', $user);
+        } else if ($response->status->code == 403) {
+            foreach (($response->errors ?? []) as $error) {
+                if (isset($error->key) && $error->key == 'need_terms_of_service_validation') {
+                    if (!empty($this->userid)) {
+                        $this->validate_terms_of_service();
+                    }
+                    return $error->key;
+                }
             }
-            return $response->errors->key;
         } else if ($response->status->message == 'Forbidden ! Your read only API key cannot modify this resource') {
             set_config('read_only_apikey', 1, 'plagiarism_compilatio');
         }

@@ -48,6 +48,7 @@ class update_meta extends \core\task\scheduled_task {
      */
     public function execute() {
         global $DB, $CFG;
+
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         // Update the 'Compilatio unavailable' marker in the database.

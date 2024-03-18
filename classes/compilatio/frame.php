@@ -185,26 +185,6 @@ class CompilatioFrame {
                 'checkUserInfo',
                 [$CFG->httpswwwroot, $user->compilatioid]
             );
-
-            if ($user->validatedtermsofservice == 0) {
-                $lang = substr(current_language(), 0, 2);
-
-                $termsofservice = 'https://app.compilatio.net/api/private/terms-of-service/magister/' . $lang;
-
-                $alerts[] = "
-                    <div class='cmp-alert cmp-alert-danger'>
-                        <div>
-                            <p>" . get_string('terms_of_service_alert', 'plagiarism_compilatio', $termsofservice) . "<p>
-                            <input id='tos-btn' class='btn btn-primary' type='submit'
-                                value=\"" . get_string('terms_of_service_alert_btn', 'plagiarism_compilatio') . "\">
-                        </div>
-                    </div>";
-                    $PAGE->requires->js_call_amd(
-                        'plagiarism_compilatio/compilatio_ajax_api',
-                        'validateTermsOfService',
-                        [$CFG->httpswwwroot, $user->compilatioid]
-                    );
-            }
         }
 
         $output = "<div id='cmp-container'>";
