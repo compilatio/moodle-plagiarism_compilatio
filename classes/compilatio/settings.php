@@ -446,42 +446,4 @@ class CompilatioSettings {
         $mform->setDefault('warningthreshold', '10');
         $mform->setDefault('criticalthreshold', '25');
     }
-
-    public static function display_scores_settings($cmid) {
-
-        global $DB, $PAGE, $CFG;
-
-        $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
-
-        $ignoredscores = $cmconfig->ignoredscores;
-        $ignoredscores = $ignoredscores == '' ? [] : explode(',', $ignoredscores);
-        $recipe = get_config('plagiarism_compilatio', 'recipe');
-        $scores = ['simscore', 'utlscore'];
-        $recipe === 'anasim-premium' ? array_push($scores, 'aiscore') : null;
-        $output = get_string('include_percentage_in_suspect_text', 'plagiarism_compilatio');
-
-        foreach ($scores as $score) {
-            $output .= "
-                <div class='form-check mt-2 mr-1'>
-                    <input class='checkbox-score-settings' type='checkbox' id='" . $score . "' value='" . $score . "' " 
-                        . (in_array($score, $ignoredscores) ? '' : 'checked') .
-                    ">
-                    <label class='form-check-label' for='" . $score . "'>
-                        " . get_string($score . '_percentage', 'plagiarism_compilatio') . "
-                    </label>
-                </div>";
-        }
-
-        $output .= "
-                <div class='mt-2'>
-                    <span class='font-weight-lighter font-italic mt-4'>" . get_string('score_settings_informations', 'plagiarism_compilatio') . "</span>
-                </div>
-            <div class='d-flex flex-row-reverse mr-1'>
-                <button id='score-settings-ignored' type='button' class='btn btn-primary'>" . get_string('update', 'core') . "</button>
-            </div>";
-
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'analysescoressettings', [$CFG->httpswwwroot, $cmid, $scores]);
-
-        return $output;
-    }
 }

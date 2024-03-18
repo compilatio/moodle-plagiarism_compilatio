@@ -348,10 +348,11 @@ class CompilatioFrame {
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'resetDocsInError',
                     [$CFG->httpswwwroot, $cmid, get_string('reset_docs_in_error_in_progress', 'plagiarism_compilatio')]);
             }
-            $output .= "";
+
+            $output .= "</div>";
         }
 
-        $output .= "</div></div>";
+        $output .= "</div>";
 
         // Help tab.
         $output .= "<div id='cmp-help' class='cmp-tabs-content'>
@@ -444,7 +445,7 @@ class CompilatioFrame {
         // Settings.
         $output .= "
             <div id='cmp-settings' class='cmp-tabs-content'>
-               " . CompilatioSettings::display_scores_settings($cmid) . "
+               " . self::display_score_settings($cmid) . "
             </div>";
 
         // Display timed analysis date.
@@ -456,6 +457,7 @@ class CompilatioFrame {
 
         // Alerts.
         $output .= "<div class='d-flex'><div id='cmp-alerts' class='ml-auto mt-1'>";
+
         foreach ($alerts as $index => $alert) {
             if (isset($alert['content'])) {
                 switch ($alert['class']) {
@@ -494,6 +496,46 @@ class CompilatioFrame {
 
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'getNotifications',
             [$CFG->httpswwwroot, $cmconfig->userid]);
+
+        return $output;
+    }
+
+    public static function display_score_settings($cmid) {
+        global $DB, $PAGE, $CFG;
+
+        $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
+
+        $ignoredscores = $cmconfig->ignoredscores;
+        $ignoredscores = $ignoredscores == '' ? [] : explode(',', $ignoredscores);
+
+        $scores = ['simscore', 'utlscore'];
+
+        $recipe = get_config('plagiarism_compilatio', 'recipe');
+        $recipe === 'anasim-premium' ? array_push($scores, 'aiscore') : null;
+
+        $output = get_string('include_percentage_in_suspect_text', 'plagiarism_compilatio');
+
+        foreach ($scores as $score) {
+            $output .= "
+                <div class='form-check mt-2 mr-1'>
+                    <input class='checkbox-score-settings' type='checkbox' id='" . $score . "' value='" . $score . "' " 
+                        . (in_array($score, $ignoredscores) ? '' : 'checked') .
+                    ">
+                    <label class='form-check-label' for='" . $score . "'>
+                        " . get_string($score . '_percentage', 'plagiarism_compilatio') . "
+                    </label>
+                </div>";
+        }
+
+        $output .= "
+            <div class='mt-2'>
+                <span class='font-weight-lighter font-italic mt-4'>" . get_string('score_settings_info', 'plagiarism_compilatio') . "</span>
+            </div>
+            <div class='d-flex flex-row-reverse mr-1'>
+                <button id='score-settings-ignored' type='button' class='btn btn-primary'>" . get_string('update', 'core') . "</button>
+            </div>";
+
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'updateScoreSettings', [$CFG->httpswwwroot, $cmid, $scores]);
 
         return $output;
     }

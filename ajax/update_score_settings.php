@@ -15,15 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Update similarity score state for a document
+ * Update report with ignored scores for documents of course module
  *
- * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright 2024 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param   string $_POST['cmid']
  * @param   string $_POST['checkedvalues']
  * @param   string $_POST['scores']
- * @return  boolean
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
@@ -62,6 +61,7 @@ foreach ($ignoredscores as $ignoredscore) {
 }
 
 $cmconfig->ignoredscores = !empty($ignoredscores) ? implode(',', $ignoredscores) : '';
+
 $DB->update_record('plagiarism_compilatio_cm_cfg', $cmconfig);
 
 $ignoredtypes = json_encode(['ignored_types' => array_values($ignoredtypes)]);

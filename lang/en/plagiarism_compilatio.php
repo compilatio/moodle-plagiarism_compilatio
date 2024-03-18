@@ -250,7 +250,7 @@ $string["include_percentage_in_suspect_text"] = 'Include in the percentage of su
 $string["simscore_percentage"] = 'Percentage of similarities';
 $string["aiscore_percentage"] = 'Percentage of text potentially written by AI';
 $string["utlscore_percentage"] = 'Percentage of unrecognized types of languages';
-$string["score_settings_informations"] = 'Updating scores will affect all documents in the assignment,<br> including those modified individually.';
+$string["score_settings_info"] = 'Updating scores will affect all documents in the assignment,<br> including those modified individually.';
 
 // Assign statistics tab.
 $string['tabs_title_stats'] = 'Statistics';

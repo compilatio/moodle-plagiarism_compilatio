@@ -127,18 +127,22 @@ define(['jquery'], function($) {
         });
     };
 
-    exports.analysescoressettings = function(basepath, cmid, scores) {
+    exports.updateScoreSettings = function(basepath, cmid, scores) {
         $(document).ready(function() {
-            var scoressettings = $('#score-settings-ignored');
-            scoressettings.click(function() {
-                scoressettings.css('background-color', 'grey');
-                scoressettings.html('<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>');
+            var scoresettings = $('#score-settings-ignored');
+
+            scoresettings.click(function() {
+                scoresettings.css('background-color', 'grey');
+                scoresettings.html('<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>');
+
                 $('.checkbox-score-settings').attr("disabled", true);
+
                 var checkedcheckboxes = $('.checkbox-score-settings:checked');
                 var checkedvalues = [];
                 checkedcheckboxes.each(function() {
                     checkedvalues.push($(this).val());
                 });
+
                 $.ajax({
                     type: 'POST',
                     url: basepath + '/plagiarism/compilatio/ajax/update_score_settings.php',  

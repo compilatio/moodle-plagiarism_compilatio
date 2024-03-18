@@ -518,10 +518,10 @@ class CompilatioAPI {
     }
 
     /**
-     * Update score without selected score
+     * Update ignored scores in report
      *
-     * @param  string   $analysisid  Analysis ID
-     * @param  array    $ignoredtypes  Ignored scores
+     * @param  string   $analysisid   Analysis ID
+     * @param  array    $ignoredtypes Ignored scores
      * @return mixed    Return update_task_id if succeed, false otherwise
      */
     public function update_and_rebuild_report($analysisid, $ignoredtypes) {
