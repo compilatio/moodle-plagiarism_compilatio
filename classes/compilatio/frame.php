@@ -446,10 +446,10 @@ class CompilatioFrame {
         $output .=
             "<button
                 title='" . get_string('start_all_analysis', 'plagiarism_compilatio') . "'
-                class='btn btn-primary cmp-action-btn mx-1 cmp-start-btn'
+                class='btn btn-primary cmp-action-btn cmp-start-btn'
                 data-toggle='tooltip'
             >
-                <i class='fa fa-play-circle'></i>
+                <i class='cmp-icon-lg fa fa-play-circle'></i>
             </button>";
 
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
@@ -500,17 +500,15 @@ class CompilatioFrame {
                 </div>";
         }
 
-        // TODO dropdown closed on click
         $output .= "
-            <div class='dropdown'>
-                <span
-                    data-toggle='dropdown'
-                    role='button'
-                    class='p-2'
-                    title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'>"
-                    . CompilatioIcons::ellipsis() .
-                "</span>
-                <div class='dropdown-menu overflow-hidden p-0' aria-labelledby='dropdownMenuButton'>
+            <div
+                class='dropdown btn btn-outline-primary cmp-action-btn'
+                role='button'
+                data-toggle='dropdown'
+                title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'
+            >
+                <i class='cmp-icon-lg fa fa-ellipsis-v'></i>
+                <div id='cmp-dropdown-menu' class='dropdown-menu overflow-hidden p-0' aria-labelledby='dropdownMenuButton'>
                     <div
                         class='cmp-action-btn p-2 cmp-start-btn'
                         role='button'
@@ -530,7 +528,7 @@ class CompilatioFrame {
 
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedStudents',
             [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
-  
+
         return $output;
     }
 

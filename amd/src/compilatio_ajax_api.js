@@ -19,13 +19,18 @@ define(['jquery'], function($) {
 
     function startAnalyses(message, basepath, cmid, selectedstudents = null, selectedquestions = null, quizid = null) {
         disableCompilatioButtons();
+
+        $('#cmp-dropdown-menu').removeClass('show');
+
         $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");        
-        
-        // TODO
-        let params = { 'cmid': cmid };
-        if (selectedstudents != null) params.selectedstudents = selectedstudents.toString()
-        if (selectedquestions != null) params.selectedquestions = selectedquestions
-        if (quizid != null) params.quizid = quizid
+
+        let params = {
+            'cmid': cmid,
+            'selectedquestions': selectedquestions,
+            'quizid': quizid
+        };
+
+        if (selectedstudents != null) params.selectedstudents = selectedstudents.toString();
 
         $.post(basepath + '/plagiarism/compilatio/ajax/start_multiple_analyses.php', params, function() {
             window.location.reload();
@@ -34,10 +39,10 @@ define(['jquery'], function($) {
 
     exports.getSelectedStudent = function(basepath, cmid) {
         $(document).ready(function(){
-            const dropdown = $('#student-select');
+            const studentSelector = $('#student-select');
             const statisticsContainer = $('#statistics-container');
             
-            dropdown.on('change', function() {
+            studentSelector.on('change', function() {
                 const selectedstudent = $(this).val();
                 $.ajax({
                     type: 'POST',
@@ -53,16 +58,16 @@ define(['jquery'], function($) {
             });
 
             $('#previous-student').on('click', function() {
-                changeSelectedStudent(dropdown.prop('selectedIndex'), -1)
+                changeSelectedStudent(studentSelector.prop('selectedIndex'), -1)
             });
 
             $('#next-student').on('click', function() {
-                changeSelectedStudent(dropdown.prop('selectedIndex'), 1)
+                changeSelectedStudent(studentSelector.prop('selectedIndex'), 1)
             });
 
             function changeSelectedStudent(selectedIndex, direction) {
                 var newIndex = selectedIndex + direction;
-                const maxIndex = dropdown.find('option').length - 1;
+                const maxIndex = studentSelector.find('option').length - 1;
 
                 if (newIndex == -1) {
                     newIndex = maxIndex;
@@ -70,13 +75,17 @@ define(['jquery'], function($) {
                     newIndex = 0;
                 }
 
-                dropdown.prop('selectedIndex', newIndex).change();
+                studentSelector.prop('selectedIndex', newIndex).change();
             }
         });
     }
 
     exports.startAllAnalysis = function(basepath, cmid, message) {
         $(document).ready(function() {
+            $('#cmp-dropdown-menu').on('click', function(event){
+                event.stopPropagation();
+            });
+
             var startAllAnalysis = $('.cmp-start-btn');
             startAllAnalysis.click(function() {
                 startAnalyses(message, basepath, cmid);
@@ -109,15 +118,15 @@ define(['jquery'], function($) {
             const startSelectedQuestionsBtn = $('#start-selected-questions-btn');
     
             startSelectedQuestionsBtn.click(function () {
-                disableCompilatioButtons();
-
                 var checkedcheckboxes = $('.checkbox-question-selector:checked');
                 var selectedquestions = [];
                 checkedcheckboxes.each(function() {
                     selectedquestions.push($(this).val());
                 });
 
-                startAnalyses(message, basepath, cmid, null, selectedquestions, quizid);
+                if (selectedquestions.length > 0) {
+                    startAnalyses(message, basepath, cmid, null, selectedquestions, quizid);
+                }
             });
         });
     };
