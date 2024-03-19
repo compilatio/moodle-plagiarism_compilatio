@@ -385,7 +385,7 @@ class CompilatioStatistics {
         $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
         $output .= "<div class='cmp-table-height'>
-            <table class='table mb-0 align-middle rounded-lg cmp-bckgrnd-grey table-hover'>
+            <table class='cmp-table table mb-0 align-middle rounded-lg cmp-bckgrnd-grey table-hover'>
             <thead>
                 <tr>
                     <th class='text-center align-middle cmp-border-none'>" . get_string('question', 'core') . "</th>
