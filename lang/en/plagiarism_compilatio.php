@@ -27,7 +27,7 @@ $string['compilatio'] = 'Compilatio plagiarism plugin';
 // Admin Compilatio settings.
 $string['activate_compilatio'] = 'Enable Compilatio';
 $string['disclaimer_data'] = 'By enabling Compilatio, you accept the fact that data about your Moodle configuration will be collected in order to improve support and maintenance of this service.';
-$string['studentdisclosuredefault'] = 'All files uploaded here will be submitted to the similarities detection service Compilatio';
+$string['studentdisclosuredefault'] = 'All files uploaded here will be submitted to the suspicious texts detection service Compilatio';
 $string['students_disclosure'] = 'Student Disclosure';
 $string['students_disclosure_help'] = 'This text will be displayed to all students on the file upload page.';
 $string['compilatioexplain'] = 'For more information on this plugin see: <a href="http://www.compilatio.net/en/" target="_blank">compilatio.net</a>';
@@ -47,7 +47,7 @@ $string['subscription_analysis_page_count'] = 'Analysed pages: {$a->usage} of {$
 $string['disable_ssl_verification'] = "Ignore SSL certificate verification.";
 $string['disable_ssl_verification_help'] = "Enable this option if you have problems verifying SSL certificates or if you experience errors when sending files to Compilatio.";
 $string["teacher_features_title"] = "Features enabled for teachers";
-$string["enable_show_reports"] = "Possibility to show similarity reports to students";
+$string["enable_show_reports"] = "Possibility to show analysis reports to students";
 $string['enable_student_analyses'] = "Possibility to enable student analysis on drafts.";
 $string['enable_student_analyses_help'] = "This option will allow teachers to activate on an activity the analysis by students of their documents submitted in draft mode with Compilatio Magister, before final submission to the teacher.";
 $string["enable_search_tab"] = "Search tool to identify the author of a document.";
@@ -78,14 +78,14 @@ $string['owner_file_student_details'] = 'When a student request to delete all hi
 $string['info_cm_activation'] = 'By activating Compilatio on this activity, submitted documents will be uploaded to your Compilatio account {$a}.<br>All teachers enrolled in this course will be able to use Compilatio on this activity.';
 $string['info_cm_activated'] = 'Documents submitted in this activity are uploaded to the Compilatio account {$a}.<br>All teachers enrolled in this course can use Compilatio on this activity.';
 $string['terms_of_service_info'] = '<a href=\'{$a}\'>Terms of Service</a> of Compilatio';
-$string['activated'] = 'Allow similarity detection with Compilatio';
+$string['activated'] = 'Allow suspicious texts detection with Compilatio';
 $string['defaultindexing'] = "Add documents into the Document Database";
 $string['defaultindexing_help'] = "Yes: Add documents in the document database. These documents will be used as comparison material for future analysis.
     No: Documents are not added in document database and won't be used for comparisons.";
-$string['showstudentscore'] = 'Show similarity score to student';
-$string['showstudentscore_help'] = 'The similarity score is the percentage of the submission that has been matched with other content.';
-$string['showstudentreport'] = 'Show similarity report to student';
-$string['showstudentreport_help'] = 'The similarity report gives a breakdown on what parts of the submission were plagiarised and the location of the detected sources.';
+$string['showstudentscore'] = 'Show suspicious texts score to student';
+$string['showstudentscore_help'] = 'The suspicious texts score is the percentage of the submission that may potentially not be authentic.';
+$string['showstudentreport'] = 'Show analysis report to student';
+$string['showstudentreport_help'] = 'The analysis report gives a breakdown on what parts of the submission were plagiarised and the location of the detected sources.';
 $string['immediately'] = "Immediately";
 $string['showwhenclosed'] = 'When Activity closed';
 $string['analysistype'] = 'Analysis Start';
@@ -125,7 +125,7 @@ $string['studentanalyses'] = "Allow students to analyse their documents";
 $string['studentanalyses_help'] = "This allows students to analyse their draft files with Compilatio Magister, before final submission to the teacher.";
 $string['activate_submissiondraft'] = 'To allow students to analyse their drafts, you must enable the <b>{$a}</b> option in the section';
 $string['quiz_help'] = 'Only essay questions whose answer contain at least {$a} words will be analysed.';
-$string["admin_disabled_reports"] = "The administrator does not allow the teachers to display the similarity reports to the students.";
+$string["admin_disabled_reports"] = "The administrator does not allow the teachers to display the analysis reports to the students.";
 $string['help_compilatio_format_content'] = "Compilatio handles most formats used in word processors and on the internet. The following formats are supported : ";
 $string['max_file_size'] = 'Files must not exceed <strong>{$a} MB</strong>';
 $string['word_limits'] = 'To be able to be analysed, a text must have between {$a->min} and {$a->max} word';
@@ -181,8 +181,8 @@ $string['not_indexed_document'] = "Document not added to your institution&#39s d
 $string['extraction_in_progress'] = 'document extraction in progress, please try again later';
 
 // Compilatio frame.
-$string['similarities_disclaimer'] = "You can analyse similarities in this activity's documents with <a href='http://www.compilatio.net/en/' target='_blank'>Compilatio</a>.<br/>
-    Be careful: similarities measured during analysis do not necessarily mean plagiarism. The analysis report helps you to identify if the similarities matched to suitable quotation or to plagiarism.";
+$string['similarities_disclaimer'] = "You can analyse suspicious texts in this activity's documents with <a href='http://www.compilatio.net/en/' target='_blank'>Compilatio</a>.<br/>
+    Be careful: suspicious texts measured during analysis do not necessarily mean plagiarism. The analysis report helps you to identify if the suspicious texts matched to suitable quotation or to plagiarism.";
 $string['programmed_analysis_future'] = 'Documents will be analysed by Compilatio on {$a}.';
 $string['programmed_analysis_past'] = 'Documents have been submitted for analysis to Compilatio on {$a}.';
 $string['webservice_unreachable'] = "Compilatio is currently unavailable. We apologize for the inconvenience.";
@@ -305,8 +305,8 @@ $string['goto_compilatio_service_status'] = "See Compilatio services status.";
 $string['helpcenter'] = "Access the Compilatio Help Center for the using of Compilatio plugin in Moodle.";
 $string['admin_goto_helpcenter'] = "Access the Compilatio Help Center to see articles related to administration of the Moodle plugin.";
 $string['helpcenter_error'] = "We can't automatically connect you to the help centre. Please try again later or go there directly using the following link : ";
-$string['element_included_in_subscription'] = "Your subscription includes: <ul><li>similarity detection</li><li>obfuscation detection";
-$string['ai_included_in_subscription'] = "detection of text written by AI</li></ul>";
+$string['element_included_in_subscription'] = "Your subscription includes: <ul><li>similarity detection</li><li>altered texts detection";
+$string['ai_included_in_subscription'] = "detection of text generated by AI</li></ul>";
 $string['ai_not_included_in_subscription'] = "Your subscription does not include AI text detection.";
 
 // Auto diagnostic page.
