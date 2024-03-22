@@ -51,9 +51,6 @@ class CompilatioAnalyses {
             $cmpfile->status = 'queue';
             $cmpfile->timesubmitted = time();
 
-        } else if (strpos($analyse, 'No document found with id') !== false) {
-            $cmpfile->status = 'error_not_found';
-
         } else if (strpos($analyse, 'Document doesn\'t exceed minimum word limit') !== false) {
             $cmpfile->status = 'error_too_short';
 
