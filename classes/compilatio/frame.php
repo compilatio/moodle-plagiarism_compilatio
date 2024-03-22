@@ -330,7 +330,7 @@ class CompilatioFrame {
         // Stats tab.
         $url = $PAGE->url;
         $url->param('cmp_csv_export', true);
-        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") . "' class='cmp-icon pr-3' href='$url' data-toggle='tooltip' >
+        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") . "' class='cmp-icon position-absolute' style='left: 1rem; bottom: 1rem;' href='$url' data-toggle='tooltip' >
                 <i class='fa fa-download'></i>
             </a>";
 
