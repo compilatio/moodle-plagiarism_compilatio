@@ -61,6 +61,12 @@ Compilatio frame area
 .cmp-icon.active, .cmp-icon:hover, .cmp-icon:focus{
     color: #202121;
 }
+.cmp-icon > svg {
+    fill: #6D6D6D;
+}
+.cmp-icon.active > svg, .cmp-icon > svg:hover, .cmp-icon > svg:focus{
+    fill: #202121;
+}
 
 #cmp-tabs {
     display: flex;
