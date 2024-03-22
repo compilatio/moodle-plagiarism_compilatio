@@ -59,8 +59,6 @@ class CompilatioAnalyses {
 
         } else if (strpos($analyse, 'is not extracted, wait few seconds and retry.') !== false) {
             return get_string('extraction_in_progress', 'plagiarism_compilatio');
-        } else if ($analyse == 'Error need terms of service validation') {
-            return;
         } else {
             return $analyse;
         }
