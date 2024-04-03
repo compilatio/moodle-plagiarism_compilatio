@@ -8,6 +8,11 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 
+v3.1.0
+- Added the option to run analyses only on selected questions in quizzes
+- Added a score settings tab with the possibility to ignore score elements (AI, similarities, unrecognized languages) on all documents in the activity
+- Small front adjustments in Compilatio container
+
 v3.0.3
 - Fix php exception thrown in api.php
 - Fix errors when plugin update to version 3 is executed twice

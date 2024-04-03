@@ -89,9 +89,9 @@ Compilatio frame area
 
 /* Notifications Badge */
 #cmp-count-notifications {
-    position: relative;
-    top: 2px;
-    left: -1.6rem;
+    position: absolute;
+    top: 14px;
+    left: 25px;
     border-radius: 20px;
     padding: 2px 5px;
     font-size: 11px;
@@ -341,26 +341,9 @@ a.cmp-btn-primary:hover {
     color: #374151;
 }
 
-/* Compilatio CSV download logo position */
-.cmp-relative-position {
-     position: relative;
-}
-
-/* Compilatio CSV download logo position */
-.cmp-position-absolute-right {
-    position: absolute;
-    right: 0; 
-    top: 0;
-}
-
 /* Compilatio links color CSV download */
 .cmp-links-color {
     color: #5A51E7 !important;
-}
-
-/* Compilatio links no underline CSV download */
-.cmp-no-decoration {
-    text-decoration: none;
 }
 
 /* Compilatio whitespace no wrap */
@@ -369,9 +352,6 @@ a.cmp-btn-primary:hover {
 }
 
 /* Compilatio background color white */
-.cmp-bckgrnd-white {
-    background-color: white;
-}
 .cmp-bckgrnd-grey {
     background-color: rgb(231, 231, 231);
 }

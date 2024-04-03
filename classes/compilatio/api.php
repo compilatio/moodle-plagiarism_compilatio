@@ -638,7 +638,7 @@ class CompilatioAPI {
      * @param  int      $cronfrequency  CRON frequency
      * @return mixed                    Return true if succeed, an error message otherwise
      */
-    public function set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency) {
+    public function set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency, $instancekey) {
         $endpoint = '/api/private/moodle-configuration/';
         $params = [
             'php_version' => $releasephp,
@@ -646,6 +646,7 @@ class CompilatioAPI {
             'compilatio_plugin_version' => $releaseplugin,
             'language' => $language,
             'cron_frequency' => $cronfrequency,
+            'instance_key' => $instancekey,
         ];
 
         $response = json_decode($this->build_curl($endpoint, 'post', json_encode($params)));

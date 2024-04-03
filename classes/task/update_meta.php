@@ -59,6 +59,12 @@ class update_meta extends \core\task\scheduled_task {
             set_config('connection_webservice', 0, 'plagiarism_compilatio');
         }
 
+        $instancekey = get_config('plagiarism_compilatio', 'instance_key');
+        if (empty($instancekey)) {
+            $instancekey = sha1(microtime() . getmypid() . random_bytes(50));
+            set_config('instance_key', $instancekey, 'plagiarism_compilatio');
+        }
+
         $compilatio = new \CompilatioAPI();
         $compilatio->check_apikey();
         $compilatio->set_moodle_configuration(
@@ -66,7 +72,8 @@ class update_meta extends \core\task\scheduled_task {
             $CFG->release,
             get_config('plagiarism_compilatio', 'version'),
             $CFG->lang,
-            get_config('plagiarism_compilatio', 'cron_frequency') ?? 0
+            get_config('plagiarism_compilatio', 'cron_frequency') ?? 0,
+            $instancekey
         );
 
         // Update compilatio config.

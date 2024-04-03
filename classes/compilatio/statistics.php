@@ -395,7 +395,7 @@ class CompilatioStatistics {
                     <th class='text-center align-middle cmp-border-none'></th>
                 </tr>
             </thead>
-            <tbody class='cmp-bckgrnd-white'>";
+            <tbody class='bg-white'>";
 
         $context = context_module::instance($cmid);
 
@@ -552,7 +552,7 @@ class CompilatioStatistics {
             }
 
             $output .=
-                "<a href='{$href}' target='_blank' class='cmp-no-decoration'>
+                "<a href='{$href}' target='_blank' class='text-decoration-none'>
                     <span class='text-primary text-nowrap font-weight-bold cmp-links-color'>" . get_string('access_report', 'plagiarism_compilatio') . "</span>
                 </a>";
         } else if (strpos($cmpfile->status, "error") === 0) {
@@ -599,7 +599,7 @@ class CompilatioStatistics {
         }
 
         $output = "
-            <div class='cmp-relative-position'>
+            <div class='position-relative'>
                 <h4 class='text-primary font-weight-normal'>" . get_string('results_by_student', 'plagiarism_compilatio') . "</h4>";
 
         if (!empty($studentattemptsubmitted)) {

@@ -238,11 +238,11 @@ class CompilatioFrame {
         }
 
         // Notification icon.
-        $output .= "<span>
+        $output .= "<span class='position-relative'>
             <i
                 id='cmp-show-notifications'
                 title='" . get_string("display_notifications", "plagiarism_compilatio") . "'
-                class='cmp-icon fa fa-bell mr-3'
+                class='cmp-icon fa fa-bell'
                 data-toggle='tooltip'
             >
             </i>
@@ -250,9 +250,10 @@ class CompilatioFrame {
         </span>";
 
         // Display buttons.
-        if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
+        if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)
+            && ($startallanalyses || $sendalldocs || $resetdocsinerror)) {
 
-            $output .= "<div class='btn-group ml-auto' role='group'>";
+            $output .= "<div class='btn-group ml-auto pl-5' role='group'>";
 
             if ($startallanalyses) {
                 $output .= self::display_start_all_analyses_button($cmid, $module);
@@ -330,13 +331,13 @@ class CompilatioFrame {
         // Stats tab.
         $url = $PAGE->url;
         $url->param('cmp_csv_export', true);
-        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") . "' class='cmp-icon position-absolute' style='left: 1rem; bottom: 1rem;' href='$url' data-toggle='tooltip' >
+        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") . "' class='cmp-icon position-absolute' style='right: 1rem;' href='$url' data-toggle='tooltip' >
                 <i class='fa fa-download'></i>
             </a>";
 
         $output .= "
             <div id='cmp-stats' class='cmp-tabs-content'>
-                <div class='row text-center'>"
+                <div class='row text-center position-relative'>"
                 . CompilatioStatistics::get_statistics($cmid) . $exportbutton .
                 "</div>
             </div>";
