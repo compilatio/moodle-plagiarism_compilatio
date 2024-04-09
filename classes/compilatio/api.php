@@ -415,7 +415,7 @@ class CompilatioAPI {
         $warningthreshold = 10,
         $criticalthreshold = 25
     ) {
-        $endpoint = '/api/private/folder/'.$folderid;
+        $endpoint = '/api/private/folder/' . $folderid;
 
         $params = [
             'name' => $name,
@@ -589,27 +589,6 @@ class CompilatioAPI {
             return $response->errors->form[0];
         }
         return $error;
-    }
-
-    /**
-     * Get analysis and delete it
-     *
-     * @param  string   $docid  Document ID
-     * @return mixed    Return true if succeed, an error message otherwise
-     */
-    public function delete_analyse($docid) {
-        $endpoint = '/api/private/analysis/get-by-doc/' . $docid;
-        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
-
-        if ($this->get_error_response($response, 200) === false) {
-            $endpoint = '/api/private/analysis/' . $response->data->analysis->id;
-            $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'delete'));
-
-            if ($this->get_error_response($response, 200) === false) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
