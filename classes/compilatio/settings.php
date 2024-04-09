@@ -183,7 +183,10 @@ class CompilatioSettings {
 
         if (has_capability('plagiarism/compilatio:enable', $context)) {
             if (!empty($config->userid)) {
-                $teacheremail = $DB->get_field('user', 'email', ['id' => $cmpuser->userid]);
+                $sql = 'SELECT email FROM {user} u
+                    JOIN {plagiarism_compilatio_user} cu ON cu.userid = u.id
+                    WHERE cu.compilatioid = ?';
+                $teacheremail = $DB->get_field_sql($sql, [$config->userid]);
             }
 
             self::get_form_elements($mform, false, $modulename, $teacheremail ?? null);
