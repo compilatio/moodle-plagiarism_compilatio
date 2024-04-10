@@ -81,10 +81,18 @@ foreach ($files as $file) {
         continue;
     }
 
-    $file->aiscore = $report->scores->ai_generated_percent;
-    $file->simscore = $report->scores->similarity_percent;
-    $file->utlscore = $report->scores->unrecognized_text_language_percent;
-    $file->globalscore = $report->scores->global_score_percent;
+    $file->globalscore = round($report->scores->global_score_percent ?? 0);
+
+    $file->simscore = isset($report->scores->similarity_percent)
+        ? round($report->scores->similarity_percent)
+        : null;
+    $file->utlscore = isset($report->scores->unrecognized_text_language_percent)
+        ? round($report->scores->unrecognized_text_language_percent)
+        : null;
+    $file->aiscore = isset($report->scores->ai_generated_percent)
+        ? round($report->scores->ai_generated_percent)
+        : null;
+
     $file->ignoredscores = $cmconfig->ignoredscores;
 
     $DB->update_record('plagiarism_compilatio_files', $file);

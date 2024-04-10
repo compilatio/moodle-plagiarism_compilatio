@@ -275,10 +275,13 @@ define(['jquery'], function($) {
 
     exports.getNotifications = function(basepath, userid) {
         $(document).ready(function() {
+            let notificationsRead = localStorage.getItem("notifications-read")
+            let notificationsIgnored = localStorage.getItem("notifications-ignored")
+
             $.post(basepath + '/plagiarism/compilatio/ajax/get_notifications.php', {
                 'userid': userid,
-                'read': JSON.parse(localStorage.getItem("notifications-read")) ?? [],
-                'ignored': JSON.parse(localStorage.getItem("notifications-ignored")) ?? [],
+                'read': notificationsRead ? JSON.parse(notificationsRead) : [],
+                'ignored': notificationsIgnored ? JSON.parse(notificationsIgnored) : [],
             }, function(notifications) {
                 notifications = JSON.parse(notifications);
 
@@ -304,7 +307,8 @@ define(['jquery'], function($) {
 
                     $('#cmp-notifications-' + notifId).children().first().removeClass('text-primary')
 
-                    let notificationsRead = JSON.parse(localStorage.getItem("notifications-read")) ?? []
+                    let notificationsRead = localStorage.getItem("notifications-read")
+                    notificationsRead ? JSON.parse(notificationsRead) : [];
                     if (!notificationsRead.includes(notifId)) {
                         notificationsRead.push(notifId)
                         localStorage.setItem("notifications-read", JSON.stringify(notificationsRead))

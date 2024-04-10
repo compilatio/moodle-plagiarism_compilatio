@@ -204,7 +204,7 @@ class CompilatioFrame {
             <i
                 id='cmp-show-settings'
                 title='" . get_string("display_settings_frame", "plagiarism_compilatio") . "'
-                class='cmp-icon fas fa-cog'
+                class='cmp-icon fa fa-cog'
                 data-toggle='tooltip'
             >
             </i>";
