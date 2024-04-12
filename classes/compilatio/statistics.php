@@ -526,10 +526,10 @@ class CompilatioStatistics {
             ? "<td rowspan='" . $count . "' class='text-center align-middle'>" . get_string('question', 'core') . ' ' . $slot . "</td>"
             : '';
 
-        $output .= "<td class='text-center align-middle'>";
+        $output .= "<td class='text-center align-middle text-nowrap overflow-hidden' style='max-width: 8rem;'>";
         $output .= preg_match('~.htm$~', $cmpfile->filename)
                 ? get_string('text', 'plagiarism_compilatio')
-                : get_string('file', 'plagiarism_compilatio') .'<br><small>'. $cmpfile->filename .'</small>';
+                : get_string('file', 'plagiarism_compilatio') . "<br><small title='" . $cmpfile->filename . "'>" . $cmpfile->filename . "</small>";
         $output .= "</td>";
 
         if ($cmpfile->status == 'scored') {

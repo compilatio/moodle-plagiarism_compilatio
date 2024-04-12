@@ -13,7 +13,7 @@ v3.1.0
 - Added a score settings tab with the possibility to ignore score elements (AI, similarities, unrecognized languages) on all documents in the activity
 - Small front adjustments in Compilatio container
 - Fix warning and email not displayed in Compilatio activity settings
-- Fix Javascript syntax error for medieval versions of safari
+- Fix Javascript syntax error on obsolete versions of safari
 
 v3.0.3
 - Fix php exception thrown in api.php
