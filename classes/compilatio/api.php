@@ -415,7 +415,7 @@ class CompilatioAPI {
         $warningthreshold = 10,
         $criticalthreshold = 25
     ) {
-        $endpoint = '/api/private/folder/'.$folderid;
+        $endpoint = '/api/private/folder/' . $folderid;
 
         $params = [
             'name' => $name,
@@ -518,6 +518,48 @@ class CompilatioAPI {
     }
 
     /**
+     * Update ignored scores in report
+     *
+     * @param  string   $analysisid   Analysis ID
+     * @param  array    $ignoredtypes Ignored scores
+     * @return mixed    Return update_task_id if succeed, false otherwise
+     */
+    public function update_and_rebuild_report($analysisid, $ignoredtypes) {
+        $endpoint = '/api/private/anasim/report/' . $analysisid;
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', $ignoredtypes));
+
+        if ($this->get_error_response($response, 200) === false) {
+            $endpoint = '/api/private/anasim/report/' . $analysisid . '/rebuild';
+            $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post'));
+
+            if ($this->get_error_response($response, 200) === false) {
+                return $response->data->update_task_id;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get updated report
+     *
+     * @param  string   $analysisid    Analysis ID
+     * @param  array    $updatetaskid  Update task ID
+     * @return mixed    Return report if succeed, false otherwise
+     */
+    public function get_updated_report($analysisid, $updatetaskid) {
+        $endpoint = '/api/private/report/anasim/' . $analysisid . '/is-updated/' . $updatetaskid;
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
+
+        if ($this->get_error_response($response, 200) === false) {
+            return $response->data->report;
+        } else if ($response->status->code == 202) {
+            sleep(1);
+            return $this->get_updated_report($analysisid, $updatetaskid);
+        }
+        return false;
+    }
+
+    /**
      * Start an analyse of a document
      *
      * @param  string   $docid  Document ID
@@ -550,27 +592,6 @@ class CompilatioAPI {
     }
 
     /**
-     * Get analysis and delete it
-     *
-     * @param  string   $docid  Document ID
-     * @return mixed    Return true if succeed, an error message otherwise
-     */
-    public function delete_analyse($docid) {
-        $endpoint = '/api/private/analysis/get-by-doc/' . $docid;
-        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
-
-        if ($this->get_error_response($response, 200) === false) {
-            $endpoint = '/api/private/analysis/' . $response->data->analysis->id;
-            $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'delete'));
-
-            if ($this->get_error_response($response, 200) === false) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Get a list of the allowed file types by Compilatio.
      *
      * @return  array   Return an array of the different allowed file types
@@ -596,7 +617,7 @@ class CompilatioAPI {
      * @param  int      $cronfrequency  CRON frequency
      * @return mixed                    Return true if succeed, an error message otherwise
      */
-    public function set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency) {
+    public function set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency, $instancekey) {
         $endpoint = '/api/private/moodle-configuration/';
         $params = [
             'php_version' => $releasephp,
@@ -604,6 +625,7 @@ class CompilatioAPI {
             'compilatio_plugin_version' => $releaseplugin,
             'language' => $language,
             'cron_frequency' => $cronfrequency,
+            'instance_key' => $instancekey,
         ];
 
         $response = json_decode($this->build_curl($endpoint, 'post', json_encode($params)));

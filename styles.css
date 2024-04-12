@@ -37,7 +37,7 @@
 
 /* Icon sizing */
 .cmp-icon-lg {
-  font-size: 1.2em !important;
+  font-size: 1.1em !important;
   vertical-align: middle;
 }
 
@@ -61,6 +61,12 @@ Compilatio frame area
 .cmp-icon.active, .cmp-icon:hover, .cmp-icon:focus{
     color: #202121;
 }
+.cmp-icon > svg {
+    fill: #6D6D6D;
+}
+.cmp-icon.active > svg, .cmp-icon > svg:hover, .cmp-icon > svg:focus{
+    fill: #202121;
+}
 
 #cmp-tabs {
     display: flex;
@@ -83,9 +89,9 @@ Compilatio frame area
 
 /* Notifications Badge */
 #cmp-count-notifications {
-    position: relative;
-    top: 2px;
-    left: -19px;
+    position: absolute;
+    top: 14px;
+    left: 25px;
     border-radius: 20px;
     padding: 2px 5px;
     font-size: 11px;
@@ -253,6 +259,10 @@ a.cmp-btn-primary:hover {
     background-color: #b8c1ca;
 }
 
+.dropdown-menu > .cmp-action-btn:hover {
+    background-color: #F5F6F8;
+}
+
 /* Similarities */
 .cmp-similarity {
     cursor: pointer;
@@ -331,26 +341,9 @@ a.cmp-btn-primary:hover {
     color: #374151;
 }
 
-/* Compilatio CSV download logo position */
-.cmp-relative-position {
-     position: relative;
-}
-
-/* Compilatio CSV download logo position */
-.cmp-position-absolute-right {
-    position: absolute;
-    right: 0; 
-    top: 0;
-}
-
 /* Compilatio links color CSV download */
 .cmp-links-color {
     color: #5A51E7 !important;
-}
-
-/* Compilatio links no underline CSV download */
-.cmp-no-decoration {
-    text-decoration: none;
 }
 
 /* Compilatio whitespace no wrap */
@@ -359,9 +352,6 @@ a.cmp-btn-primary:hover {
 }
 
 /* Compilatio background color white */
-.cmp-bckgrnd-white {
-    background-color: white;
-}
 .cmp-bckgrnd-grey {
     background-color: rgb(231, 231, 231);
 }
@@ -372,7 +362,7 @@ a.cmp-btn-primary:hover {
     overflow-y: auto;
 }
 
-.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+.cmp-table.table-hover tbody tr:hover td, .cmp-table.table-hover tbody tr:hover th {
     background-color: rgb(243, 242, 242);
 }
 

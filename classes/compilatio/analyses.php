@@ -51,9 +51,6 @@ class CompilatioAnalyses {
             $cmpfile->status = 'queue';
             $cmpfile->timesubmitted = time();
 
-        } else if (strpos($analyse, 'No document found with id') !== false) {
-            $cmpfile->status = 'error_not_found';
-
         } else if (strpos($analyse, 'Document doesn\'t exceed minimum word limit') !== false) {
             $cmpfile->status = 'error_too_short';
 
@@ -62,8 +59,6 @@ class CompilatioAnalyses {
 
         } else if (strpos($analyse, 'is not extracted, wait few seconds and retry.') !== false) {
             return get_string('extraction_in_progress', 'plagiarism_compilatio');
-        } else if ($analyse == 'Error need terms of service validation') {
-            return;
         } else {
             return $analyse;
         }
@@ -97,14 +92,16 @@ class CompilatioAnalyses {
         if (isset($doc->analyses->$recipe->state)) {
             $state = $doc->analyses->$recipe->state;
 
+            $cmpfile->analysisid ??= $doc->analyses->$recipe->id;
+
             if ($state == 'running') {
                 $cmpfile->status = 'analysing';
             } else if ($state == 'finished') {
                 $scores = $doc->light_reports->$recipe->scores;
 
                 $cmpfile->status = 'scored';
-                $globalscore = $recipe == 'anasim-premium' ? $scores->global_score_percent : $scores->displayed_similarity_percent;
-                $cmpfile->globalscore = round($globalscore ?? 0);
+
+                $cmpfile->globalscore = round($scores->global_score_percent ?? 0);
 
                 $cmpfile->simscore = isset($scores->similarity_percent)
                     ? round($scores->similarity_percent)
@@ -140,4 +137,3 @@ class CompilatioAnalyses {
         return $cmpfile;
     }
 }
-

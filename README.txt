@@ -1,4 +1,4 @@
-Compilatio.net Plagiarism plugin for Moodle 3.11, 4.0, 4.1, 4.2, 4.3
+Compilatio.net Plagiarism plugin for Moodle 4.0, 4.1, 4.2, 4.3, 4.4
 
 Author: Compilatio <support@compilatio.net>
 Copyright 2023 Compilatio.net https://www.compilatio.net
@@ -7,6 +7,13 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+
+v3.1.0
+- Added the option to run analyses only on selected questions in quizzes
+- Added a score settings tab with the possibility to ignore score elements (AI, similarities, unrecognized languages) on all documents in the activity
+- Small front adjustments in Compilatio container
+- Fix warning and email not displayed in Compilatio activity settings
+- Fix Javascript syntax error on obsolete versions of safari
 
 v3.0.3
 - Fix php exception thrown in api.php

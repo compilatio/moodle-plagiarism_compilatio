@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
+use mod_quiz\question\bank\qbank_helper;
+
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/csv.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/icons.php');
@@ -93,7 +95,7 @@ class CompilatioFrame {
             unset($SESSION->compilatio_alerts);
         }
 
-        $startallanalyses = $sendalldocs = $resetdocsinerror = $selectanalysesoptions = false;
+        $startallanalyses = $sendalldocs = $resetdocsinerror = false;
 
         $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
@@ -101,9 +103,6 @@ class CompilatioFrame {
             $cmconfig->analysistype == 'manual'
                 && $DB->count_records('plagiarism_compilatio_files', ['status' => 'sent', 'cm' => $cmid]) !== 0
         ) {
-            if ($module == 'quiz' || $module == 'assign') {
-                $selectanalysesoptions = true;
-            }
             $startallanalyses = true;
 
         } else if ($cmconfig->analysistype == 'planned') { // Display the date of analysis if its type is set on 'Planned'.
@@ -194,11 +193,21 @@ class CompilatioFrame {
         $output .= "<div id='cmp-tabs' data-toggle='tooltip'>";
 
         // Display logo.
-        $output .= "<img id='cmp-logo' src='" . new moodle_url('/plagiarism/compilatio/pix/compilatio.png') . "' data-toggle='tooltip'>";
+        $output .= "<img id='cmp-logo' src='" . new moodle_url('/plagiarism/compilatio/pix/compilatio.png') . "'>";
 
         // Help icon.
         $output .= "<i id='show-help' title='" . get_string('compilatio_help_assign', 'plagiarism_compilatio') .
             "' class='cmp-icon fa fa-question-circle' data-toggle='tooltip'></i>";
+
+        // Settings icon.
+        $output .= "
+            <i
+                id='cmp-show-settings'
+                title='" . get_string("display_settings_frame", "plagiarism_compilatio") . "'
+                class='cmp-icon fa fa-cog'
+                data-toggle='tooltip'
+            >
+            </i>";
 
         // Stat icon.
         $output .=
@@ -229,7 +238,7 @@ class CompilatioFrame {
         }
 
         // Notification icon.
-        $output .= "<span>
+        $output .= "<span class='position-relative'>
             <i
                 id='cmp-show-notifications'
                 title='" . get_string("display_notifications", "plagiarism_compilatio") . "'
@@ -241,58 +250,22 @@ class CompilatioFrame {
         </span>";
 
         // Display buttons.
-        if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)) {
+        if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)
+            && ($startallanalyses || $sendalldocs || $resetdocsinerror)) {
+
+            $output .= "<div class='btn-group ml-auto pl-5' role='group'>";
+
             if ($startallanalyses) {
-                $output .=
-                    "<button
-                        title='" . get_string('start_all_analysis', 'plagiarism_compilatio') . "'
-                        class='btn btn-primary cmp-action-btn mx-1 cmp-start-btn'
-                        data-toggle='tooltip'
-                    >
-                        <i class='fa fa-play-circle'></i>
-                    </button>";
-
-                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
-                    [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio'), null]);
-            }
-
-            if ($selectanalysesoptions) {
-                $output .= "
-                    <div class='dropdown'>
-                        <span
-                            data-toggle='dropdown'
-                            role='button'
-                            class='p-2'
-                            title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'>"
-                            . CompilatioIcons::ellipsis() .
-                        "</span>
-                        <div class='dropdown-menu' aria-labelledby='dropdownMenuButton'>
-                            <div
-                                class='cmp-action-btn mx-1 cmp-start-btn'
-                                role='button'
-                            >
-                                <div class='text-nowrap'>" . get_string('start_all_analysis', 'plagiarism_compilatio') . "</div>
-                            </div>
-                            <div
-                                class='cmp-action-btn mx-1 mt-1'
-                                role='button'
-                                id='start-selected-analyses-btn'
-                            >
-                                <div class='text-nowrap'>" . get_string('start_selected_files_analysis', 'plagiarism_compilatio') . "</div>
-                            </div>
-                        </div>
-                    </div>";
-
-                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedFiles',
-                    [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio'), null]);
+                $output .= self::display_start_all_analyses_button($cmid, $module);
             }
 
             if ($sendalldocs) {
                 $output .=
                     "<button
+                        data-toggle='tooltip'
                         id='cmp-send-btn'
                         title='" . get_string('send_all_documents', 'plagiarism_compilatio') . "'
-                        class='btn btn-primary cmp-action-btn mx-1'
+                        class='btn btn-outline-primary cmp-action-btn'
                     >
                         <i class='cmp-icon-lg fa fa-paper-plane'></i>
                     </button>";
@@ -304,15 +277,18 @@ class CompilatioFrame {
             if ($resetdocsinerror) {
                 $output .=
                     "<button
+                        data-toggle='tooltip'
                         id='cmp-reset-btn'
                         title='" . get_string('reset_docs_in_error', 'plagiarism_compilatio') . "'
-                        class='btn btn-primary cmp-action-btn mx-1'
+                        class='btn btn-outline-primary cmp-action-btn'
                     >
                         <i class='cmp-icon-lg fa fa-rotate-right'></i>
                     </button>";
                 $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'resetDocsInError',
                     [$CFG->httpswwwroot, $cmid, get_string('reset_docs_in_error_in_progress', 'plagiarism_compilatio')]);
             }
+
+            $output .= "</div>";
         }
 
         $output .= "</div>";
@@ -355,13 +331,13 @@ class CompilatioFrame {
         // Stats tab.
         $url = $PAGE->url;
         $url->param('cmp_csv_export', true);
-        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") . "' class='cmp-icon pr-3' href='$url' data-toggle='tooltip' >
+        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") . "' class='cmp-icon position-absolute' style='right: 1rem;' href='$url' data-toggle='tooltip' >
                 <i class='fa fa-download'></i>
             </a>";
 
         $output .= "
             <div id='cmp-stats' class='cmp-tabs-content'>
-                <div class='row text-center'>"
+                <div class='row text-center position-relative'>"
                 . CompilatioStatistics::get_statistics($cmid) . $exportbutton .
                 "</div>
             </div>";
@@ -405,6 +381,12 @@ class CompilatioFrame {
 
         $output .= "</div>";
 
+        // Settings.
+        $output .= "
+            <div id='cmp-settings' class='cmp-tabs-content'>
+               " . self::display_score_settings($cmid) . "
+            </div>";
+
         // Display timed analysis date.
         if (isset($analysisdate)) {
             $output .= "<span class='border-top pt-2 mt-2 text-center font-italic'>$analysisdate</span>";
@@ -414,6 +396,7 @@ class CompilatioFrame {
 
         // Alerts.
         $output .= "<div class='d-flex'><div id='cmp-alerts' class='ml-auto mt-1'>";
+
         foreach ($alerts as $index => $alert) {
             if (isset($alert['content'])) {
                 switch ($alert['class']) {
@@ -452,6 +435,140 @@ class CompilatioFrame {
 
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'getNotifications',
             [$CFG->httpswwwroot, $cmconfig->userid]);
+
+        return $output;
+    }
+
+    private static function display_start_all_analyses_button($cmid, $module) {
+        global $DB, $CFG, $PAGE;
+        
+        $output = $questionselector = '';
+
+        $output .=
+            "<button
+                title='" . get_string('start_all_analysis', 'plagiarism_compilatio') . "'
+                class='btn btn-primary cmp-action-btn cmp-start-btn'
+                data-toggle='tooltip'
+            >
+                <i class='cmp-icon-lg fa fa-play-circle'></i>
+            </button>";
+
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
+            [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
+
+        if ($module !== 'quiz' && $module !== 'assign') {
+            return $output;
+        }
+
+        if ($module == 'quiz') {
+            $sql = "SELECT {quiz}.id
+                FROM {quiz}
+                INNER JOIN {course_modules} ON {course_modules}.instance = {quiz}.id
+                WHERE {course_modules}.id = ?";
+
+            $quizid = $DB->get_field_sql($sql, [$cmid]);
+
+            $modulecontext = context_module::instance($cmid);
+            $quizquestions = qbank_helper::get_question_structure($quizid, $modulecontext);
+
+            $questionselector .= "<div class='text-center'>";
+
+            foreach ($quizquestions as $quizquestion) {
+                if ($quizquestion->qtype !== 'essay') {
+                    continue;
+                }
+
+                $questionselector .= "
+                    <div>
+                        <input class='checkbox-question-selector' type='checkbox' id='" . $quizquestion->questionid . "' value='" . $quizquestion->questionid . "'>
+                        <label class='form-check-label' for='" . $quizquestion->questionid . "'>
+                            " . get_string('question', 'core') . " " . $quizquestion->slot . "
+                        </label>
+                    </div>";
+            }
+
+            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedQuestions',
+                [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio'), $quizid]);
+
+            $questionselector .= "</div>";
+            $questionselector .= "
+                <div
+                    class='cmp-action-btn p-2'
+                    role='button'
+                    id='start-selected-questions-btn'
+                >
+                    <div class='text-nowrap'>" . get_string('start_selected_questions_analysis', 'plagiarism_compilatio') . "</div>
+                </div>";
+        }
+
+        $output .= "
+            <div
+                class='dropdown btn btn-outline-primary cmp-action-btn'
+                role='button'
+                data-toggle='dropdown'
+                title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'
+            >
+                <i class='cmp-icon-lg fa fa-ellipsis-v'></i>
+                <div id='cmp-dropdown-menu' class='dropdown-menu overflow-hidden p-0' aria-labelledby='dropdownMenuButton'>
+                    <div
+                        class='cmp-action-btn p-2 cmp-start-btn'
+                        role='button'
+                    >
+                        <div class='text-nowrap'>" . get_string('start_all_analysis', 'plagiarism_compilatio') . "</div>
+                    </div>
+                    <div
+                        class='cmp-action-btn p-2'
+                        role='button'
+                        id='start-selected-students-btn'
+                    >
+                        <div class='text-nowrap'>" . get_string('start_selected_files_analysis', 'plagiarism_compilatio') . "</div>
+                    </div>
+                    " . $questionselector . "
+                </div>  
+            </div>";
+
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedStudents',
+            [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
+
+        return $output;
+    }
+
+    private static function display_score_settings($cmid) {
+        global $DB, $PAGE, $CFG;
+
+        $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
+
+        $ignoredscores = $cmconfig->ignoredscores;
+        $ignoredscores = $ignoredscores == '' ? [] : explode(',', $ignoredscores);
+
+        $scores = ['simscore', 'utlscore'];
+
+        $recipe = get_config('plagiarism_compilatio', 'recipe');
+        $recipe === 'anasim-premium' ? array_push($scores, 'aiscore') : null;
+
+        $output = get_string('include_percentage_in_suspect_text', 'plagiarism_compilatio');
+
+        foreach ($scores as $score) {
+            $output .= "
+                <div class='form-check mt-2 mr-1'>
+                    <input class='checkbox-score-settings' type='checkbox' id='" . $score . "' value='" . $score . "' " 
+                        . (in_array($score, $ignoredscores) ? '' : 'checked') .
+                    ">
+                    <label class='form-check-label' for='" . $score . "'>
+                        " . get_string($score . '_percentage', 'plagiarism_compilatio') . "
+                    </label>
+                </div>";
+        }
+
+        $output .= "
+            <div class='mt-2'>
+                <span class='font-weight-lighter font-italic mt-4'>" . get_string('score_settings_info', 'plagiarism_compilatio') . "</span>
+            </div>
+            <div class='d-flex flex-row-reverse mr-1'>
+                <button id='score-settings-ignored' type='button' class='btn btn-primary'>" . get_string('update', 'core') . "</button>
+            </div>";
+
+        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'updateScoreSettings', [$CFG->httpswwwroot, $cmid, $scores]);
 
         return $output;
     }

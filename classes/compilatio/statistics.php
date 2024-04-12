@@ -385,17 +385,17 @@ class CompilatioStatistics {
         $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
         $output .= "<div class='cmp-table-height'>
-            <table class='table mb-0 align-middle rounded-lg cmp-bckgrnd-grey table-hover'>
+            <table class='cmp-table table mb-0 align-middle rounded-lg cmp-bckgrnd-grey table-hover'>
             <thead>
                 <tr>
-                    <th class='text-center align-middle cmp-border-none'>" . get_string('question', 'plagiarism_compilatio') . "</th>
+                    <th class='text-center align-middle cmp-border-none'>" . get_string('question', 'core') . "</th>
                     <th class='text-center align-middle cmp-border-none'>" . get_string('response_type', 'plagiarism_compilatio') . "</th>
                     <th class='text-center align-middle cmp-border-none text-nowrap'>" . get_string('suspect_words_quiz_on_total', 'plagiarism_compilatio') . "</th>
                     <th class='text-center align-middle cmp-border-none'>" . get_string('score', 'plagiarism_compilatio') . "</th>
                     <th class='text-center align-middle cmp-border-none'></th>
                 </tr>
             </thead>
-            <tbody class='cmp-bckgrnd-white'>";
+            <tbody class='bg-white'>";
 
         $context = context_module::instance($cmid);
 
@@ -523,13 +523,13 @@ class CompilatioStatistics {
         $output = "<tr class='font-weight-light'>";
 
         $output .= $index == 0
-            ? "<td rowspan='" . $count . "' class='text-center align-middle'>" . get_string('question', 'plagiarism_compilatio') . ' ' . $slot . "</td>"
+            ? "<td rowspan='" . $count . "' class='text-center align-middle'>" . get_string('question', 'core') . ' ' . $slot . "</td>"
             : '';
 
-        $output .= "<td class='text-center align-middle'>";
+        $output .= "<td class='text-center align-middle text-nowrap overflow-hidden' style='max-width: 8rem;'>";
         $output .= preg_match('~.htm$~', $cmpfile->filename)
                 ? get_string('text', 'plagiarism_compilatio')
-                : get_string('file', 'plagiarism_compilatio') .'<br><small>'. $cmpfile->filename .'</small>';
+                : get_string('file', 'plagiarism_compilatio') . "<br><small title='" . $cmpfile->filename . "'>" . $cmpfile->filename . "</small>";
         $output .= "</td>";
 
         if ($cmpfile->status == 'scored') {
@@ -552,7 +552,7 @@ class CompilatioStatistics {
             }
 
             $output .=
-                "<a href='{$href}' target='_blank' class='cmp-no-decoration'>
+                "<a href='{$href}' target='_blank' class='text-decoration-none'>
                     <span class='text-primary text-nowrap font-weight-bold cmp-links-color'>" . get_string('access_report', 'plagiarism_compilatio') . "</span>
                 </a>";
         } else if (strpos($cmpfile->status, "error") === 0) {
@@ -599,7 +599,7 @@ class CompilatioStatistics {
         }
 
         $output = "
-            <div class='cmp-relative-position'>
+            <div class='position-relative'>
                 <h4 class='text-primary font-weight-normal'>" . get_string('results_by_student', 'plagiarism_compilatio') . "</h4>";
 
         if (!empty($studentattemptsubmitted)) {
