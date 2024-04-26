@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 use mod_quiz\question\bank\qbank_helper;
 
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/csv.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/icons.php');

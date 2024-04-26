@@ -118,17 +118,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
 }
 
 /**
- * Output callback to insert a chunk of html at the start of the html document.
- * This allow us to display the Compilatio frame with statistics, alerts,
- * author search tool and buttons to launch all analyses and update submitted files status.
- *
- * @return string
- */
-function plagiarism_compilatio_before_standard_top_of_body_html() {
-    return CompilatioFrame::get_frame();
-}
-
-/**
  * Hook to save plagiarism specific settings on a module settings page
  *
  * @param stdClass $data
