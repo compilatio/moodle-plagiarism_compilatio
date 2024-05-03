@@ -8,6 +8,10 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 
+3.2.0
+- Added a tab in the administration section of the plugin to manage documents in error
+- [Fix] Replace deprecated callback before_standard_top_of_body_html in Moodle 4.4 to new hook callback before_standard_top_of_body_html_generation
+
 v3.1.0
 - Added the option to run analyses only on selected questions in quizzes
 - Added a score settings tab with the possibility to ignore score elements (AI, similarities, unrecognized languages) on all documents in the activity

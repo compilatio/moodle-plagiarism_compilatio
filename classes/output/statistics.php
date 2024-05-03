@@ -23,11 +23,17 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * CompilatioStatistics class
- */
+namespace plagiarism_compilatio\output;
 
-class CompilatioStatistics {
+use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\compilatio\csv_generator;
+use plagiarism_compilatio\output\document_frame;
+use moodle_url;
+
+/**
+ * statistics class
+ */
+class statistics {
     /**
      * Get global plagiarism statistics
      *
@@ -284,75 +290,6 @@ class CompilatioStatistics {
     }
 
     /**
-     * Display an array as a list, using moodle translations and parameters
-     * Index 0 for translation index and index 1 for parameter
-     *
-     * @param  array $listitems List items
-     * @return string           Return the stat string
-     */
-    public static function display_list_stats($listitems) {
-
-        $string = "<ul>";
-        foreach ($listitems as $listitem) {
-            $string .= "<li>" . get_string($listitem[0], 'plagiarism_compilatio', $listitem[1]) . "</li>";
-        }
-        $string .= "</ul>";
-        return $string;
-    }
-
-    /**
-     * Lists files of an assignment according to the status code
-     *
-     * @param  string $cmid       Course module ID
-     * @param  int    $status     Status
-     * @return array              containing the student & the file
-     */
-    public static function get_files_by_status_code($cmid, $status) {
-
-        global $DB;
-
-        $sql = "SELECT DISTINCT pcf.id, pcf.filename, pcf.userid
-            FROM {plagiarism_compilatio_files} pcf
-            WHERE pcf.cm=? AND status = ?";
-
-        $files = $DB->get_records_sql($sql, [$cmid, $status]);
-
-        if (!empty($files)) {
-            // Don't display user name for anonymous assign.
-            $sql = "SELECT blindmarking, assign.id FROM {course_modules} cm
-                JOIN {assign} assign ON cm.instance= assign.id
-                WHERE cm.id = $cmid";
-            $anonymousassign = $DB->get_record_sql($sql);
-
-            if (!empty($anonymousassign) && $anonymousassign->blindmarking) {
-                foreach ($files as $file) {
-                    $anonymousid = $DB->get_field('assign_user_mapping', 'id',
-                        ['assignment' => $anonymousassign->id, 'userid' => $file->userid]);
-                    $file->user = get_string('hiddenuser', 'assign') . ' ' . $anonymousid;
-                }
-
-                return array_map(
-                    function ($file) {
-                        return $file->user . ' : ' . $file->filename;
-                    }, $files);
-            } else {
-                foreach ($files as $file) {
-                    $user = $DB->get_record('user', ['id' => $file->userid]);
-                    $file->lastname = $user->lastname;
-                    $file->firstname = $user->firstname;
-                }
-
-                return array_map(
-                    function ($file) {
-                        return $file->lastname . ' ' . $file->firstname . ' : ' . $file->filename;
-                    }, $files);
-            }
-        } else {
-            return [];
-        }
-    }
-
-    /**
      * Get statistics for the student selected on the dropdown selector
      *
      * @param  string $studentid user
@@ -397,10 +334,10 @@ class CompilatioStatistics {
             </thead>
             <tbody class='bg-white'>";
 
-        $context = context_module::instance($cmid);
+        $context = \context_module::instance($cmid);
 
         $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmid]);
-        $compilatio = new CompilatioAPI($userid);
+        $compilatio = new api($userid);
 
         $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
 
@@ -417,8 +354,11 @@ class CompilatioStatistics {
             if ($wordcount >= $nbmotsmin) {
                 $courseid = $DB->get_field('course_modules', 'course', array('id' => $cmid));
                 $filename = "quiz-" . $courseid . "-" . $cmid . "-" . $attemptid . "-Q" . $answer->get_question_id() . ".htm";
-
+                error_log(var_export($cmid,true));
+                error_log(var_export($studentid,true));
+                error_log(var_export(sha1($filename),true));
                 $cmpfile = $DB->get_record('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $studentid, 'identifier' => sha1($filename)]);
+                error_log(var_export($cmpfile,true));
                 if (!empty($cmpfile)) {
                     $cmpfile->wordcount = $wordcount;
                     $cmpfiles[] = $cmpfile;
@@ -535,7 +475,7 @@ class CompilatioStatistics {
         if ($cmpfile->status == 'scored') {
             $output .= "<td class='text-center align-middle text-nowrap'>"
                 . $suspectwordsquestion . ' ' . get_string('word', 'plagiarism_compilatio') . ' / <br>' . $wordcount . ' ' . get_string('word', 'plagiarism_compilatio') . " </td>";
-            $output .= "<td class='text-center text-nowrap align-middle'>". CompilatioDocumentFrame::get_score($cmpfile, $config, true, true) . "</td>";
+            $output .= "<td class='text-center text-nowrap align-middle'>". document_frame::get_score($cmpfile, $config, true, true) . "</td>";
 
             $output .= "<td class='align-middle'>";
 
@@ -573,7 +513,7 @@ class CompilatioStatistics {
     public static function get_quiz_students_statistics($cmid) {
 
         global $DB, $PAGE, $CFG;
-        $compilatio = new CompilatioAPI();
+        $compilatio = new api();
 
         $sql = "SELECT DISTINCT {user}.id, {user}.lastname, {user}.firstname
             FROM {user}
@@ -595,7 +535,7 @@ class CompilatioStatistics {
 
         $export = optional_param('cmp_csv_export_per_student', '', PARAM_BOOL);
         if ($export) {
-            CompilatioCsv::generate_cm_csv_per_student($cmid, $studentattemptsubmitted);
+            csv_generator::generate_cm_csv_per_student($cmid, $studentattemptsubmitted);
         }
 
         $output = "

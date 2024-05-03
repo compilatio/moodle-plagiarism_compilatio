@@ -17,6 +17,7 @@
 /**
  * Get stats per student
  *
+ * @package   plagiarism_compilatio
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -25,8 +26,8 @@
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+
+use plagiarism_compilatio\output\statistics;
 
 require_login();
 
@@ -36,7 +37,7 @@ $selectedstudent = required_param('selectedstudent', PARAM_TEXT);
 $cmid = required_param('cmid', PARAM_TEXT);
 
 $output = is_numeric($selectedstudent)
-    ? CompilatioStatistics::get_statistics_by_student($selectedstudent, $cmid)['output']
+    ? statistics::get_statistics_by_student($selectedstudent, $cmid)['output']
     : "";
 
 echo $output;

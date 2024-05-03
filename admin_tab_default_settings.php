@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * compilatio_defaults.php - Displays default values to use inside assignments for Compilatio
+ * admin_tab_default_settings.php - Displays default values to use inside assignments for Compilatio
  *
  * @package   plagiarism_compilatio
  * @author    Compilatio <support@compilatio.net>
@@ -27,16 +27,10 @@ require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->libdir.'/plagiarismlib.php');
 require_once($CFG->dirroot.'/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/admin_forms.php');
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
-
-$context = context_system::instance();
-
-$fileid = optional_param('fileid', 0, PARAM_INT);
-$resetuser = optional_param('reset', 0, PARAM_INT);
-$page = optional_param('page', 0, PARAM_INT);
 
 $mform = new compilatio_defaults_form(null);
 
@@ -48,7 +42,7 @@ if (!empty($defaultconfig)) {
 
 echo $OUTPUT->header();
 $currenttab = 'compilatiodefaults';
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/admin_tabs.php');
 
 if (($data = $mform->get_data()) && confirm_sesskey()) {
     $plugin = new plagiarism_plugin_compilatio();

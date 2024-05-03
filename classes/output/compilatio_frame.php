@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * frame.php - Contains method to get Compilatio Frame.
+ * compilatio_frame.php - Contains method to get Compilatio frame.
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
@@ -23,19 +23,37 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_compilatio\output;
+
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-use mod_quiz\question\bank\qbank_helper;
-
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/csv.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/icons.php');
+
+use mod_quiz\question\bank\qbank_helper;
+use core\hook\output\before_standard_top_of_body_html_generation;
+use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\compilatio\csv_generator;
+use plagiarism_compilatio\output\statistics;
+use plagiarism_compilatio\output\icons;
+use moodle_url;
 
 /**
- * CompilatioFrame class
+ * compilatio_frame class
  */
-class CompilatioFrame {
+class compilatio_frame {
+
+    /**
+     * Hook callback to insert a chunk of html at the start of the html document.
+     * This allow us to display the Compilatio frame with statistics, alerts,
+     * author search tool and buttons to launch all analyses and update submitted files status.
+     *
+     * @param before_standard_top_of_body_html_generation $hook
+     */
+    public static function before_standard_top_of_body_html_generation(before_standard_top_of_body_html_generation $hook): void {
+        $output = self::get_frame();
+
+        $hook->add_html($output);
+    }
 
     /**
      * Display compilatio frame
@@ -81,7 +99,7 @@ class CompilatioFrame {
 
         $export = optional_param('cmp_csv_export', '', PARAM_BOOL);
         if ($export) {
-            CompilatioCsv::generate_cm_csv($cmid, $module);
+            csv_generator::generate_cm_csv($cmid, $module);
         }
 
         // Store plagiarismfiles in $SESSION.
@@ -153,7 +171,7 @@ class CompilatioFrame {
             $countunsend = 0;
         }
 
-        $compilatio = new CompilatioAPI();
+        $compilatio = new api();
         $language = substr(current_language(), 0, 2);
 
         foreach ($compilatio->get_alerts() as $alert) {
@@ -228,7 +246,7 @@ class CompilatioFrame {
                 title='" . get_string('display_stats_per_student', 'plagiarism_compilatio') . "'
                 class='cmp-icon'
                 data-toggle='tooltip'
-            >" . CompilatioIcons::statistics_per_student() . "
+            >" . icons::statistics_per_student() . "
             </span>";
         }
 
@@ -339,14 +357,14 @@ class CompilatioFrame {
         $output .= "
             <div id='cmp-stats' class='cmp-tabs-content'>
                 <div class='row text-center position-relative'>"
-                . CompilatioStatistics::get_statistics($cmid) . $exportbutton .
+                . statistics::get_statistics($cmid) . $exportbutton .
                 "</div>
             </div>";
 
         $output .= "
             <div id='cmp-stats-per-student' class='cmp-tabs-content'>
                 <div class='text-center'>"
-                . CompilatioStatistics::get_quiz_students_statistics($cmid) . "</div>
+                . statistics::get_quiz_students_statistics($cmid) . "</div>
             </div>";
 
         // Notifications tab.
@@ -469,7 +487,7 @@ class CompilatioFrame {
 
             $quizid = $DB->get_field_sql($sql, [$cmid]);
 
-            $modulecontext = context_module::instance($cmid);
+            $modulecontext = \context_module::instance($cmid);
             $quizquestions = qbank_helper::get_question_structure($quizid, $modulecontext);
 
             $questionselector .= "<div class='text-center'>";

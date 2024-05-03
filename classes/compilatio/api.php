@@ -23,10 +23,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_compilatio\compilatio;
+
 /**
- * CompilatioAPI class
+ * api class
  */
-class CompilatioAPI {
+class api {
     private $apikey;
     private $urlrest;
     private $userid;
@@ -157,15 +159,14 @@ class CompilatioAPI {
 
         // Create the user if doesn't exists.
         if ($compilatioid == 404) {
-            $lang = substr(current_language(), 0, 2);
-            $compilatioid = $this->set_user($teacher->firstname, $teacher->lastname, $teacher->email, $lang);
+            $compilatioid = $this->set_user($teacher->firstname, $teacher->lastname, $teacher->email);
         }
 
         if (!preg_match('/^[a-f0-9]{40}$/', $compilatioid)) {
             return null;
         }
 
-        $user = new stdClass();
+        $user = new \stdClass();
         $user->compilatioid = $compilatioid;
         $user->userid = $teacher->id;
         $user->id = $DB->insert_record('plagiarism_compilatio_user', $user);
@@ -181,7 +182,9 @@ class CompilatioAPI {
      * @param   string  $email          User's email
      * @return  string                  Return the user's ID, an error message otherwise
      */
-    private function set_user($firstname, $lastname, $email, $lang) {
+    private function set_user($firstname, $lastname, $email) {
+        $lang = substr(current_language(), 0, 2);
+
         $endpoint = '/api/private/user/create';
         $params = [
             'firstname' => $firstname,
@@ -241,6 +244,7 @@ class CompilatioAPI {
     /**
      * Update Elastisafe user
      *
+     * @param   string  $userid         User's identifier
      * @param   string  $firstname      User's firstname
      * @param   string  $lastname       User's lastname
      * @param   string  $email          User's email
@@ -266,8 +270,11 @@ class CompilatioAPI {
      * Load document on Compilatio account
      *
      * @param   string  $filename       Filename
-     * @param   string  $content        Document's content
      * @param   string  $folderid       Document's folder ID
+     * @param   string  $filepath       File path
+     * @param   boolean $indexed        Document's indexing state
+     * @param   object  $depositor      Document's depositor
+     * @param   array   $authors        Document's authors
      * @return  string                  Return the document's ID, an error message otherwise
      */
     public function set_document($filename, $folderid, $filepath, $indexed, $depositor, $authors) {
@@ -361,8 +368,13 @@ class CompilatioAPI {
     /**
      * Create folder on Compilatio account
      *
-     * @param   string  $name          Folder's name
-     * @return  string                  Return the folder's ID, an error message otherwise
+     * @param   string   $name              Folder's name
+     * @param   boolean  $defaultindexing   Folder's default indexing
+     * @param   string   $analysistype      Analysis type
+     * @param   string   $analysistime      Date for scheduled analysis
+     * @param   int      $warningthreshold  Folder's warning threshold
+     * @param   int      $criticalthreshold Folder's critical threshold
+     * @return  string   Return the folder's ID, an error message otherwise
      */
     public function set_folder(
         $name,
@@ -403,8 +415,14 @@ class CompilatioAPI {
     /**
      * Update folder on Compilatio account
      *
-     * @param   int  $folderid          Folder ID
-     * @return  string                  Return true if succeed, an error message otherwise
+     * @param   int      $folderid          Folder ID
+     * @param   string   $name              Folder's name
+     * @param   boolean  $defaultindexing   Folder's default indexing
+     * @param   string   $analysistype      Analysis type
+     * @param   string   $analysistime      Date for scheduled analysis
+     * @param   int      $warningthreshold  Folder's warning threshold
+     * @param   int      $criticalthreshold Folder's critical threshold
+     * @return  string   Return true if succeed, an error message otherwise
      */
     public function update_folder(
         $folderid,
@@ -615,6 +633,7 @@ class CompilatioAPI {
      * @param  string   $releaseplugin  Plugin version
      * @param  string   $language       Language
      * @param  int      $cronfrequency  CRON frequency
+     * @param  int      $instancekey    Instance key
      * @return mixed                    Return true if succeed, an error message otherwise
      */
     public function set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency, $instancekey) {
@@ -686,8 +705,9 @@ class CompilatioAPI {
 
     /**
      * Get a list of Compilatio marketing notifications.
-     *
-     * @return  array   Return an array of marketing notifications
+     * 
+     * @param  string  $lang lang
+     * @return array   Return an array of marketing notifications
      */
     public function get_marketing_notifications($lang) {
         $endpoint = '/api/private/marketing-notifications/' . $lang;

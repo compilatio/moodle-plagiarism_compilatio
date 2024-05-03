@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * documentFrame.php - Contains method to get Compilatio document frame with score, report, indexing state, ...
+ * document_frame.php - Contains method to get Compilatio document frame with score, report, indexing state, ...
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
@@ -23,14 +23,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+namespace plagiarism_compilatio\output;
 
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/icons.php');
+use plagiarism_compilatio\output\icons;
+use plagiarism_compilatio\compilatio\file;
+use moodle_url;
 
 /**
- * CompilatioDocumentFrame class
+ * document_frame class
  */
-class CompilatioDocumentFrame {
+class document_frame {
 
     /**
      * Display plagiarism document area
@@ -76,7 +78,7 @@ class CompilatioDocumentFrame {
         }
 
         // Don't show Compilatio if not allowed.
-        $modulecontext = context_module::instance($linkarray['cmid']);
+        $modulecontext = \context_module::instance($linkarray['cmid']);
         $isteacher = $canviewscore = $canviewreport = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
         $cantriggeranalysis = has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext);
         $isstudentanalyse = compilatio_student_analysis($plugincm->studentanalyses, $linkarray['cmid'], $userid);
@@ -136,7 +138,7 @@ class CompilatioDocumentFrame {
                 $trigger = optional_param('sendfile', 0, PARAM_INT);
                 $fileid = $linkarray['file']->get_id();
                 if ($trigger == $fileid) {
-                    CompilatioSendFile::send_unsent_files([$linkarray['file']], $linkarray['cmid']);
+                    file::send_unsent_files([$linkarray['file']], $linkarray['cmid']);
                     return self::get_document_frame($linkarray);
                 }
 
@@ -170,9 +172,15 @@ class CompilatioDocumentFrame {
     }
 
     /**
-     * Display plagiarism document area
-     * @param string  $linkarray
-     * @return string Return the HTML formatted string.
+     * Display plagiarism document frame
+     * 
+     * @param boolean  $cantriggeranalysis
+     * @param boolean  $isstudentanalyse
+     * @param string   $cmpfileid
+     * @param boolean  $canviewreport
+     * @param boolean  $isteacher
+     * @param string   $url
+     * @return string  Return document frame HTML string.
      */
     public static function display_document_frame(
         $cantriggeranalysis,
@@ -190,7 +198,6 @@ class CompilatioDocumentFrame {
 
         $status = $cmpfile->status ?? null;
 
-        // Plugin v2 docs management.
         $status = $status == 'to_analyze' ? 'queue' : $status;
 
         $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmpfile->cm ?? null]);
@@ -215,7 +222,7 @@ class CompilatioDocumentFrame {
 
                 $documentframe =
                     "<a href='{$href}' target='_blank' class='cmp-btn cmp-btn-doc cmp-btn-primary'>"
-                        . CompilatioIcons::report() . get_string('report', 'core') .
+                        . icons::report() . get_string('report', 'core') .
                     "</a>";
             }
 
@@ -298,7 +305,7 @@ class CompilatioDocumentFrame {
         if (!empty($cmpfile->externalid) && $cantriggeranalysis && !$isstudentanalyse) {
             // Plugin v2 docs management.
             if (null === $cmpfile->indexed) {
-                $compilatio = new CompilatioAPI($config->userid);
+                $compilatio = new api($config->userid);
                 $document = $compilatio->get_document($cmpfile->externalid);
                 $cmpfile->indexed = $document->indexed;
                 $DB->update_record('plagiarism_compilatio_files', $cmpfile);
@@ -334,7 +341,7 @@ class CompilatioDocumentFrame {
             }
 
             $html = "<div class='cmp-library' title='" . $title . "'>
-                " . CompilatioIcons::library() . "
+                " . icons::library() . "
                 <i class='" . $class . " fa'></i>
             </div>";
         }
@@ -343,10 +350,13 @@ class CompilatioDocumentFrame {
     }
 
     /**
-     * Get the indexing state HTML
+     * Get score area with icons HTML
      *
-     * @param  mixed  $indexingstate Indexing state
-     * @return string                Return the HTML
+     * @param  object  $cmpfile
+     * @param  object  $config
+     * @param  boolean $isteacher
+     * @param  boolean $nowrap
+     * @return string  Return score area HTML string
      */
     public static function get_score($cmpfile, $config, $isteacher, $nowrap = false) {
         global $DB;
@@ -379,9 +389,9 @@ class CompilatioDocumentFrame {
 
             if (in_array($score, $ignoredscores)) {
                 $icon = 'ignored' . $score;
-                $icons .= CompilatioIcons::$icon();
+                $icons .= icons::$icon();
             } else {
-                $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
+                $icons .= icons::$score($cmpfile->$score > 0 ? $color : null);
             }
         }
 
@@ -421,7 +431,7 @@ class CompilatioDocumentFrame {
         global $DB;
 
         if (empty($linkarray['cmid']) || empty($linkarray['content'])) {
-            $quba = question_engine::load_questions_usage_by_activity($linkarray['area']);
+            $quba = \question_engine::load_questions_usage_by_activity($linkarray['area']);
 
             if (empty($linkarray['cmid'])) {
                 // Try to get cm using the questions owning context.

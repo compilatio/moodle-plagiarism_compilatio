@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * csv.php - Contains methods to generate CSV files.
+ * csv_generator.php - Contains methods to generate CSV files.
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
@@ -23,10 +23,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_compilatio\compilatio;
+
+use plagiarism_compilatio\output\statistics;
+
 /**
  * Class to generate csv file
  */
-class CompilatioCsv {
+class csv_generator {
 
     /**
      * Get header
@@ -36,7 +40,6 @@ class CompilatioCsv {
      * @return void
      */
     protected static function get_header($filename, $content) {
-
         $filename = preg_replace('/[\r\n]/', '', $filename);
 
         header('HTTP/1.1 200 OK');
@@ -52,7 +55,6 @@ class CompilatioCsv {
             echo "\xEF\xBB\xBF";
             echo $content;
         }
-
     }
 
     /**
@@ -63,7 +65,6 @@ class CompilatioCsv {
      * @return  void
      */
     public static function generate_cm_csv($cmid, $module) {
-
         global $DB;
 
         $sql = "
@@ -85,7 +86,7 @@ class CompilatioCsv {
                 AND cm.instance = activity.id
             WHERE cm.id =?";
 
-        $record = $DB->get_field_sql($sql, [$cmid]);
+        $name = $DB->get_field_sql($sql, [$cmid]);
 
         $date = userdate(time());
         // Sanitize date for CSV.
@@ -135,7 +136,6 @@ class CompilatioCsv {
         self::get_header($filename, $csv);
 
         exit(0);
-
     }
 
     public static function generate_cm_csv_per_student($cmid, $userssubmittedtest) {
@@ -175,7 +175,7 @@ class CompilatioCsv {
 
         $csv .= '"' . implode('","', $line) . "\"\n";
         foreach ($userssubmittedtest as $user) {
-            $datas = CompilatioStatistics::get_question_data($cmid, $user->id);
+            $datas = statistics::get_question_data($cmid, $user->id);
             foreach ($datas as $question) {
                 $line = [];
                 $line["name"] = $user->lastname . ' ' . $user->firstname;
@@ -192,6 +192,113 @@ class CompilatioCsv {
 
                 $csv .= '"' . implode('","', $line) . "\"\n";
             }
+        }
+
+        self::get_header($filename, $csv);
+
+        exit(0);
+    }
+
+    public static function generate_global_csv() {
+        $rows = statistics::get_global_statistics(false);
+
+        $filename = "compilatio_moodle_" . date("Y_m_d") . ".csv";
+
+        $csv = "";
+
+        $csv .= '"' . implode('","', array_keys((array) reset($rows))) . "\"\n";
+        foreach ($rows as $row) {
+            $csv .= '"' . implode('","', $row) . "\"\n";
+        }
+
+        self::get_header($filename, $csv);
+
+        exit(0);
+    }
+    
+    public static function generate_global_raw_csv() {
+        global $DB;
+
+        $dbconfig = $DB->export_dbconfig();
+
+        $todate = $dbconfig->dbtype == 'pgsql' ? 'to_timestamp' : 'FROM_UNIXTIME';
+
+        $sql = "SELECT pcf.id id,
+                course.id course_id,
+                course.fullname course_name,
+                cm module_id,
+                CONCAT(COALESCE(assign.name, ''), COALESCE(forum.name, ''), COALESCE(workshop.name, ''),
+                COALESCE(quiz.name, '')) module_name,
+                student.id student_id,
+                student.firstname student_firstname,
+                student.lastname student_lastname,
+                student.email student_email,
+                pcf.id file_id,
+                pcf.filename file_name,
+                pcf.status file_status,
+                pcf.globalscore file_score,
+                {$todate} (pcf.timesubmitted) file_submitted_on
+            FROM {plagiarism_compilatio_files} pcf
+            JOIN {user} student ON pcf.userid=student.id
+            JOIN {course_modules} cm ON pcf.cm = cm.id
+            JOIN {modules} modules ON modules.id = cm.module
+            LEFT JOIN {assign} assign ON cm.instance = assign.id AND modules.name = 'assign'
+            LEFT JOIN {forum} forum ON cm.instance = forum.id AND modules.name = 'forum'
+            LEFT JOIN {workshop} workshop ON cm.instance = workshop.id AND modules.name = 'workshop'
+            LEFT JOIN {quiz} quiz ON cm.instance = quiz.id AND modules.name = 'quiz'
+            JOIN {course} course ON cm.course= course.id
+            ORDER BY cm DESC";
+
+        $rows = $DB->get_records_sql($sql);
+
+        $courseid = "";
+        foreach ($rows as $row) {
+            if ($row->course_id != $courseid) {
+                $query = "SELECT teacher.id teacher_id,
+                        teacher.firstname teacher_firstname,
+                        teacher.lastname teacher_lastname,
+                        teacher.email teacher_email
+                    FROM {course} course
+                    JOIN {context} context ON context.instanceid= course.id
+                    JOIN {role_assignments} role_assignments ON role_assignments.contextid= context.id
+                    JOIN {user} teacher ON role_assignments.userid= teacher.id
+                    WHERE context.contextlevel=50
+                        AND role_assignments.roleid=3
+                        AND course.id=" . $row->course_id;
+                $courseid = $row->course_id;
+                $teachers = $DB->get_records_sql($query);
+            }
+            $teacherid = [];
+            $teacherfirstname = [];
+            $teacherlastname = [];
+            $teacheremail = [];
+
+            foreach ($teachers as $teacher) {
+                array_push($teacherid, $teacher->teacher_id);
+                array_push($teacherfirstname, $teacher->teacher_firstname);
+                array_push($teacherlastname, $teacher->teacher_lastname);
+                array_push($teacheremail, $teacher->teacher_email);
+            }
+            $row->teacher_id = implode(', ', $teacherid);
+            $row->teacher_firstname = implode(', ', $teacherfirstname);
+            $row->teacher_lastname = implode(', ', $teacherlastname);
+            $row->teacher_email = implode(', ', $teacheremail);
+        }
+
+        $filename = "compilatio_moodle_" . date("Y_m_d") . ".csv";
+
+        $csv = "";
+
+        $header = (array) reset($rows);
+        unset($header["id"]);
+        $csv .= '"' . implode('","', array_keys($header)) . "\"\n";
+        foreach ($rows as $row) {
+            $row = (array) $row;
+            unset($row["id"]);
+            if ($row["file_status"] !== "scored") {
+                $row["file_score"] = "";
+            }
+            $csv .= '"' . implode('","', $row) . "\"\n";
         }
 
         self::get_header($filename, $csv);

@@ -25,6 +25,8 @@
 
 namespace plagiarism_compilatio\task;
 
+use plagiarism_compilatio\compilatio\analysis;
+
 /**
  * Get_scores task class
  */
@@ -47,7 +49,6 @@ class get_scores extends \core\task\scheduled_task {
         global $DB, $CFG;
 
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 
         $compilatio = new \plagiarism_plugin_compilatio();
 
@@ -70,7 +71,7 @@ class get_scores extends \core\task\scheduled_task {
             if (!empty($files)) {
                 foreach ($files as $plagiarismfile) {
                     mtrace('getting score for file ' . $plagiarismfile->id);
-                    \CompilatioAnalyses::check_analysis($plagiarismfile);
+                    analysis::check_analysis($plagiarismfile);
                 }
             }
         }

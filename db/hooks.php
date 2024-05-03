@@ -24,10 +24,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use plagiarism_compilatio\output\compilatio_frame;
+
 $callbacks = [
     [
         'hook' => core\hook\output\before_standard_top_of_body_html_generation::class,
-        'callback' => [plagiarism_compilatio\hook_callbacks::class, 'before_standard_top_of_body_html_generation'],
+        'callback' => [compilatio_frame::class, 'before_standard_top_of_body_html_generation'],
         'priority' => 0,
     ],
 ];

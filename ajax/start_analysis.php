@@ -17,6 +17,7 @@
 /**
  * Start a document analysis via Compilatio API
  *
+ * @package   plagiarism_compilatio
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -24,14 +25,8 @@
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
 
-// Get global class.
-require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+use plagiarism_compilatio\compilatio\analysis;
 
 require_login();
 
@@ -41,7 +36,7 @@ $docid = required_param('docId', PARAM_RAW);
 
 $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 
-$status = CompilatioAnalyses::start_analysis($plagiarismfile);
+$status = analysis::start_analysis($plagiarismfile);
 
 $res = new StdClass();
 

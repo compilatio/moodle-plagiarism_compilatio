@@ -26,13 +26,15 @@
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 global $CFG;
+
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/frame.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/csv.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/documentFrame.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/settings.php');
+
+use plagiarism_compilatio\compilatio\csv_generator;
+use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\compilatio\course_module_settings;
+use plagiarism_compilatio\compilatio\file;
+use plagiarism_compilatio\output\document_frame;
+use plagiarism_compilatio\output\compilatio_frame;
 
 /**
  * Compilatio Class
@@ -90,7 +92,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
      * @return string  HTML or blank.
      */
     public function get_links($linkarray) {
-        return CompilatioDocumentFrame::get_document_frame($linkarray);
+        return document_frame::get_document_frame($linkarray);
     }
 
     /**
@@ -136,7 +138,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
  * @param stdClass $course
  */
 function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
-    return CompilatioSettings::save_course_module_settings($data, $course);
+    return course_module_settings::save_course_module_settings($data, $course);
 }
 
 /**
@@ -146,7 +148,7 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
  * @param MoodleQuickForm $mform
  */
 function plagiarism_compilatio_coursemodule_standard_elements($formwrapper, $mform) {
-    CompilatioSettings::display_course_module_settings($formwrapper, $mform);
+    course_module_settings::display_course_module_settings($formwrapper, $mform);
 }
 
 /**
@@ -272,7 +274,7 @@ function plagiarism_compilatio_pre_course_delete($course) {
 function compilatio_delete_course_modules($cmconfigs) {
     if (is_array($cmconfigs)) {
         global $DB;
-        $compilatio = new CompilatioAPI();
+        $compilatio = new api();
 
         foreach ($cmconfigs as $cmconfig) {
             $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmconfig->cmid]);
@@ -299,7 +301,7 @@ function compilatio_delete_course_modules($cmconfigs) {
 function compilatio_delete_files($files, $keepfilesindexed = false) {
     if (is_array($files)) {
         global $DB;
-        $compilatio = new CompilatioAPI();
+        $compilatio = new api();
 
         foreach ($files as $doc) {
             if (is_null($doc->externalid)) {

@@ -17,6 +17,7 @@
 /**
  * Set document indexing state via Compilatio API
  *
+ * @package   plagiarism_compilatio
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -26,13 +27,11 @@
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+
+use plagiarism_compilatio\compilatio\api;
 
 require_login();
+
 global $DB;
 
 // Get global Compilatio settings.
@@ -45,7 +44,7 @@ if (isset($docid) && isset($indexingstatepost)) {
     $file = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 
     $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $file->cm]);
-    $compilatio = new CompilatioAPI($userid);
+    $compilatio = new api($userid);
 
     if ($compilatio->set_indexing_state($file->externalid, $indexingstate) === true) {
         $file->indexed = $indexingstate;

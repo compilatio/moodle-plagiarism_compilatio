@@ -17,17 +17,16 @@
 /**
  * Get Compilatio marketing notifications
  *
+ * @package   plagiarism_compilatio
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/icons.php');
+
+use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\output\icons;
 
 require_login();
 
@@ -35,7 +34,7 @@ $userid = required_param('userid', PARAM_TEXT);
 $read = optional_param_array('read', [], PARAM_TEXT);
 $ignored = optional_param_array('ignored', [], PARAM_TEXT);
 
-$compilatio = new CompilatioAPI($userid);
+$compilatio = new api($userid);
 $language = substr(current_language(), 0, 2);
 
 $notifications = $compilatio->get_marketing_notifications($language);
@@ -71,7 +70,7 @@ foreach ($notifications as $index => $notification) {
             $contents .= "
                 <div id='cmp-notifications-content-" . $notification->id . "' class='cmp-notifications-content' style='display: none;'>
                     <div class='cmp-show-notifications mb-2 cmp-cursor-pointer'>"
-                        . CompilatioIcons::arrow_left() . get_string('see_all_notifications', 'plagiarism_compilatio') . "
+                        . icons::arrow_left() . get_string('see_all_notifications', 'plagiarism_compilatio') . "
                     </div>
                     <div class='d-flex flex-column'>" . $body . "</div>
                 </div>";

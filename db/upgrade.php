@@ -26,6 +26,7 @@
  */
 
 use plagiarism_compilatio\task\update_meta;
+use plagiarism_compilatio\compilatio\api;
 
 /**
  * Method to upgrade the database between differents versions
@@ -259,8 +260,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
             $apiconfigid = get_config('plagiarism_compilatio', 'apiconfigid');
             $apikey = $DB->get_field('plagiarism_compilatio_apicon', 'api_key', ['id' => $apiconfigid]);
 
-            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-            $compilatio = new CompilatioAPI(null, $apikey);
+            $compilatio = new api(null, $apikey);
 
             $compilatioid = $compilatio->get_apikey_user_id();
             $DB->insert_record('plagiarism_compilatio_user', (object) ['userid' => 0, 'compilatioid' => $compilatioid]);
@@ -369,8 +369,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         if (!preg_match('/^[a-f0-9]{40}$/', $compilatioid)) {
             $apikey = get_config('plagiarism_compilatio', 'apikey');
             if (!empty($apikey)) {
-                require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-                $compilatio = new CompilatioAPI(null, $apikey);
+                $compilatio = new api(null, $apikey);
 
                 $compilatioid = $compilatio->get_apikey_user_id(false);
 

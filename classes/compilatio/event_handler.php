@@ -23,16 +23,19 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_compilatio\compilatio;
+
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+
+use plagiarism_compilatio\compilatio\file;
+use plagiarism_compilatio\compilatio\api;
 
 /**
- * CompilatioEventHandler class
+ * event_handler class
  */
-class CompilatioEventHandler {
+class event_handler {
 
     public static function deletion($event) {
         global $DB, $SESSION;
@@ -135,7 +138,7 @@ class CompilatioEventHandler {
             return;
         }
 
-        $compilatio = new CompilatioAPI($user->compilatioid);
+        $compilatio = new api($user->compilatioid);
 
         $sql = "SELECT cfg.*, {$modulename}.name FROM {plagiarism_compilatio_cm_cfg} cfg
             JOIN {course_modules} course_modules ON cfg.cmid = course_modules.id
@@ -254,11 +257,11 @@ class CompilatioEventHandler {
         if ($event['target'] == 'assessable' && $plugincm->studentanalyses === '1') {
 
             $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
-            $compilatio = new CompilatioAPI($plugincm->userid);
+            $compilatio = new api($plugincm->userid);
 
             foreach ($files as $file) {
                 compilatio_delete_files($files);
-                CompilatioSendFile::retrieve_and_send_file($file);
+                file::retrieve_and_send_file($file);
             }
         }
     }
@@ -285,14 +288,13 @@ class CompilatioEventHandler {
         $content = $event["other"]["content"];
 
         if ($event['objecttable'] == 'forum_posts') {
-            $identifier = sha1($DB->get_record('forum_posts', ['id' => $objectid])->message);
+            $identifier = sha1($DB->get_field('forum_posts', 'message', ['id' => $objectid]));
 
         } else if ($event['objecttable'] == 'workshop_submissions') {
-            $identifier = sha1($DB->get_record('workshop_submissions', ['id' => $objectid])->content);
+            $identifier = sha1($DB->get_field('workshop_submissions', 'content', ['id' => $objectid]));
 
         } else if ($event['objecttable'] == 'assign_submission') {
-            $params = ['submission' => $objectid, 'assignment' => $cmid];
-            $identifier = sha1($DB->get_record('assignsubmission_onlinetext', $params))->onlinetext;
+            $identifier = sha1($DB->get_field('assignsubmission_onlinetext', 'onlinetext', ['submission' => $objectid]));
         }
 
         $compifile = $DB->get_record('plagiarism_compilatio_files', ['filename' => $filename, 'identifier' => $identifier]);
@@ -305,7 +307,7 @@ class CompilatioEventHandler {
                 $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
 
                 if (str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) >= $nbmotsmin) {
-                    CompilatioSendFile::send_file($cmid, $userid, null, $filename, $content);
+                    file::send_file($cmid, $userid, null, $filename, $content);
                 }
             }
         }
@@ -381,7 +383,7 @@ class CompilatioEventHandler {
                 continue;
             }
 
-            CompilatioSendFile::send_file($cmid, $userid, $file, $filename ?? null);
+            file::send_file($cmid, $userid, $file, $filename ?? null);
         }
     }
 
@@ -424,11 +426,11 @@ class CompilatioEventHandler {
                         ['identifier' => $identifier, 'userid' => $userid, 'cm' => $cmid]);
                     compilatio_delete_files($duplicate);
 
-                    CompilatioSendFile::send_file($cmid, $userid, null, $filename, $content, $identifier);
+                    file::send_file($cmid, $userid, null, $filename, $content, $identifier);
                 }
 
                 // Files attachments.
-                $context = context_module::instance($cmid);
+                $context = \context_module::instance($cmid);
                 $files = $answer->get_last_qt_files('attachments', $context->id);
                 foreach ($files as $file) {
 
@@ -438,7 +440,7 @@ class CompilatioEventHandler {
                     $duplicates = $DB->get_records_sql($sql, [$cmid, $userid, $file->get_contenthash()]);
                     compilatio_delete_files($duplicates);
 
-                    CompilatioSendFile::send_file($cmid, $userid, $file);
+                    file::send_file($cmid, $userid, $file);
                 }
             }
         }

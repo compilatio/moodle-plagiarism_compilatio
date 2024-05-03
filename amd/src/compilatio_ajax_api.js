@@ -17,7 +17,7 @@ define(['jquery'], function($) {
 
     var exports = {};
 
-    function startAnalyses(message, basepath, cmid, selectedstudents = null, selectedquestions = null, quizid = null) {
+    function startAnalyses(message, basepath, cmid, selectedstudents = null, selectedquestions = [], quizid = null) {
         disableCompilatioButtons();
 
         $('#cmp-dropdown-menu').removeClass('show');

@@ -25,8 +25,6 @@
 
 namespace plagiarism_compilatio\privacy;
 
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-
 defined('MOODLE_INTERNAL') || die();
 
 if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
@@ -44,6 +42,7 @@ use core_privacy\local\request\contextlist;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\context;
 use core_privacy\local\request\writer;
+use plagiarism_compilatio\compilatio\api;
 
 /**
  * Class provider for exporting or deleting data
@@ -161,7 +160,7 @@ class provider implements
     public static function delete_plagiarism_for_context(\context $context) {
 
         global $DB, $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $files = $DB->get_records('plagiarism_compilatio_files', ["cm" => $context->instanceid]);
@@ -180,7 +179,6 @@ class provider implements
 
         global $DB, $CFG;
 
-        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $ownerfile = get_config('plagiarism_compilatio', 'owner_file');
@@ -203,7 +201,7 @@ class provider implements
     public static function delete_plagiarism_for_users(array $userids, \context $context) {
 
         global $DB, $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $cmid = $context->instanceid;
