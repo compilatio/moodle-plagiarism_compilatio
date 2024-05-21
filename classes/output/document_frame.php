@@ -222,7 +222,7 @@ class document_frame {
 
                 $documentframe =
                     "<a href='{$href}' target='_blank' class='cmp-btn cmp-btn-doc cmp-btn-primary'>"
-                        . icons::report() . get_string('report', 'core') .
+                        . icons::report() . htmlspecialchars(get_string('report', 'core')) .
                     "</a>";
             }
 
@@ -232,21 +232,21 @@ class document_frame {
             if (($config->analysistype ?? null) == 'planned') {
                 $documentframe =
                     "<div
-                        title='" . get_string('title_planned', 'plagiarism_compilatio', userdate($config->analysistime)) . "'
+                        title='" . htmlspecialchars(get_string('title_planned', 'plagiarism_compilatio', userdate($config->analysistime))) . "'
                         class='cmp-color-secondary'
                     >
                         <i class='cmp-icon-lg mx-2 fa fa-clock-o'></i>"
-                        . get_string('btn_planned', 'plagiarism_compilatio') .
+                        . htmlspecialchars(get_string('btn_planned', 'plagiarism_compilatio')) .
                     "</div>";
                 $bgcolor = 'primary';
             } else if ($cantriggeranalysis || ($isstudentanalyse && !$isteacher)) {
                 $documentframe =
                     "<div
-                        title='" . get_string('title_sent', 'plagiarism_compilatio') . "'
+                        title='" . htmlspecialchars(get_string('title_sent', 'plagiarism_compilatio')) . "'
                         class='cmp-btn cmp-btn-doc cmp-btn-primary cmp-start-btn'
                     >
                         <i class='cmp-icon-lg mr-2 fa fa-play-circle'></i>"
-                        . get_string('btn_sent', "plagiarism_compilatio") .
+                        . htmlspecialchars(get_string('btn_sent', "plagiarism_compilatio")) .
                     "</div>";
             } else if ($isstudentanalyse && $isteacher) {
                 $documentframe = '';
@@ -256,9 +256,9 @@ class document_frame {
 
         } else if ($status == "queue" || $status == "analysing") {
             $documentframe =
-                "<div title='" . get_string('title_' . $status, "plagiarism_compilatio") . "' class='cmp-color-secondary'>
+                "<div title='" . htmlspecialchars(get_string('title_' . $status, "plagiarism_compilatio")) . "' class='cmp-color-secondary'>
                     <i class='cmp-icon-lg mx-2 fa fa-spinner fa-spin'></i>"
-                    . get_string('btn_' . $status, "plagiarism_compilatio") .
+                    . htmlspecialchars(get_string('btn_' . $status, "plagiarism_compilatio")) .
                 "</div>";
             $bgcolor = 'primary';
         } else if (isset($status) && strpos($status, "error") === 0) {
@@ -271,9 +271,9 @@ class document_frame {
             }
 
             $documentframe =
-                "<div title='" . get_string("title_" . $status, "plagiarism_compilatio", $value ?? null) . "' class='cmp-color-error'>
+                "<div title='" . htmlspecialchars(get_string("title_" . $status, "plagiarism_compilatio", $value ?? null)) . "' class='cmp-color-error'>
                     <i class='mx-2 fa fa-exclamation-triangle'></i>"
-                    . get_string('btn_' . $status, "plagiarism_compilatio") .
+                    . htmlspecialchars(get_string('btn_' . $status, "plagiarism_compilatio")) .
                 "</div>";
             $bgcolor = 'error';
         } else if (isset($url) && ($cantriggeranalysis || ($isstudentanalyse && !$isteacher))) {
@@ -281,11 +281,11 @@ class document_frame {
                 "<a
                     href='" . $url . "'
                     target='_self'
-                    title='" . get_string('title_unsent', "plagiarism_compilatio") . "'
+                    title='" . htmlspecialchars(get_string('title_unsent', "plagiarism_compilatio")) . "'
                     class='cmp-btn cmp-btn-doc cmp-btn-primary'
                 >
                     <i class='mr-2 fa fa-paper-plane'></i>"
-                    . get_string('btn_unsent', "plagiarism_compilatio") .
+                    . htmlspecialchars(get_string('btn_unsent', "plagiarism_compilatio")) .
                 "</a>";
         } else {
             return '';
@@ -294,9 +294,9 @@ class document_frame {
         $info = '';
         if ($isstudentanalyse) {
             if ($isteacher) {
-                $info = "<div>" . get_string('student_analyse', 'plagiarism_compilatio') . "</div>";
+                $info = "<div>" . htmlspecialchars(get_string('student_analyse', 'plagiarism_compilatio')) . "</div>";
             } else {
-                $info = "<div>" . get_string('student_help', 'plagiarism_compilatio') . "</div>";
+                $info = "<div>" . htmlspecialchars(get_string('student_help', 'plagiarism_compilatio')) . "</div>";
             }
         }
 
@@ -340,7 +340,7 @@ class document_frame {
                 $title = get_string('not_indexed_document', 'plagiarism_compilatio');
             }
 
-            $html = "<div class='cmp-library' title='" . $title . "'>
+            $html = "<div class='cmp-library' title='" . htmlspecialchars($title) . "'>
                 " . icons::library() . "
                 <i class='" . $class . " fa'></i>
             </div>";
@@ -369,8 +369,8 @@ class document_frame {
 
         $ignoredscores = empty($cmpfile->ignoredscores) ? [] : explode(',', $cmpfile->ignoredscores);
 
-        $title = get_string('title_score', 'plagiarism_compilatio', $cmpfile->globalscore);
-        $title .= $isteacher ? ' ' . get_string('title_score_teacher', 'plagiarism_compilatio') : '';
+        $title = htmlspecialchars(get_string('title_score', 'plagiarism_compilatio', $cmpfile->globalscore));
+        $title .= $isteacher ? ' ' . htmlspecialchars(get_string('title_score_teacher', 'plagiarism_compilatio')) : '';
 
         $html = "<span title='{$title}' class='cmp-similarity cmp-color-{$color} align-middle'>
                     <i style='display: none;' class='fa fa-refresh'></i><span>{$cmpfile->globalscore}<small>%</small></span>
@@ -395,18 +395,18 @@ class document_frame {
             }
         }
 
-        $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
-        $ignoredtooltip = "<b>" . get_string('excluded_from_score', 'plagiarism_compilatio') . ' </b><br>';
+        $tooltip = "<b>{$cmpfile->globalscore}" . htmlspecialchars(get_string('tooltip_detailed_scores', 'plagiarism_compilatio')) . "</b><br>";
+        $ignoredtooltip = "<b>" . htmlspecialchars(get_string('excluded_from_score', 'plagiarism_compilatio')) . ' </b><br>';
 
         foreach ($scores as $score) {
-            $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
-            $message = get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
+            $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : htmlspecialchars(get_string('unmeasured', 'plagiarism_compilatio'));
+            $message = htmlspecialchars(get_string($score, 'plagiarism_compilatio')) . " : <b>{$message}</b><br>";
 
             in_array($score, $ignoredscores) ? $ignoredtooltip .= $message : $tooltip .= $message;
         }
 
         if ($recipe !== 'anasim-premium') {
-            $tooltip .= get_string('aiscore', 'plagiarism_compilatio') . " : <b>" . get_string('ai_score_not_included', 'plagiarism_compilatio') . "</b><br>";
+            $tooltip .= htmlspecialchars(get_string('aiscore', 'plagiarism_compilatio')) . " : <b>" . htmlspecialchars(get_string('ai_score_not_included', 'plagiarism_compilatio')) . "</b><br>";
         }
 
         if (!empty($ignoredscores)) {
