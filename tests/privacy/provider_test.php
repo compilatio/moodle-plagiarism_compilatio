@@ -48,7 +48,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $newcollection = provider::get_metadata($collection);
         $itemcollection = $newcollection->get_collection();
 
-        $this->assertCount(6, $itemcollection);
+        $this->assertCount(7, $itemcollection);
 
         $this->assertEquals('core_files', $itemcollection[0]->get_name());
         $this->assertEquals('privacy:metadata:core_files', $itemcollection[0]->get_summary());
@@ -56,24 +56,29 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->assertEquals('core_plagiarism', $itemcollection[1]->get_name());
         $this->assertEquals('privacy:metadata:core_plagiarism', $itemcollection[1]->get_summary());
 
-        $this->assertEquals('plagiarism_compilatio_files', $itemcollection[2]->get_name());
+        $this->assertEquals('plagiarism_compilatio_cm_cfg', $itemcollection[2]->get_name());
         $privacyfields = $itemcollection[2]->get_privacy_fields();
+        $this->assertArrayHasKey('userid', $privacyfields);
+        $this->assertArrayHasKey('cmid', $privacyfields);
+
+        $this->assertEquals('plagiarism_compilatio_files', $itemcollection[3]->get_name());
+        $privacyfields = $itemcollection[3]->get_privacy_fields();
         $this->assertArrayHasKey('userid', $privacyfields);
         $this->assertArrayHasKey('filename', $privacyfields);
 
-        $this->assertEquals('plagiarism_compilatio_user', $itemcollection[3]->get_name());
-        $privacyfields = $itemcollection[3]->get_privacy_fields();
+        $this->assertEquals('plagiarism_compilatio_user', $itemcollection[4]->get_name());
+        $privacyfields = $itemcollection[4]->get_privacy_fields();
         $this->assertArrayHasKey('userid', $privacyfields);
         $this->assertArrayHasKey('compilatioid', $privacyfields);
 
-        $this->assertEquals('External Compilatio Document', $itemcollection[4]->get_name());
-        $privacyfields = $itemcollection[4]->get_privacy_fields();
+        $this->assertEquals('External Compilatio Document', $itemcollection[5]->get_name());
+        $privacyfields = $itemcollection[5]->get_privacy_fields();
         $this->assertArrayHasKey('authors', $privacyfields);
         $this->assertArrayHasKey('depositor', $privacyfields);
         $this->assertArrayHasKey('filename', $privacyfields);
 
-        $this->assertEquals('External Compilatio User', $itemcollection[5]->get_name());
-        $privacyfields = $itemcollection[5]->get_privacy_fields();
+        $this->assertEquals('External Compilatio User', $itemcollection[6]->get_name());
+        $privacyfields = $itemcollection[6]->get_privacy_fields();
         $this->assertArrayHasKey('firstname', $privacyfields);
         $this->assertArrayHasKey('lastname', $privacyfields);
         $this->assertArrayHasKey('email', $privacyfields);
