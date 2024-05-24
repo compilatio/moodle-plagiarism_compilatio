@@ -77,6 +77,11 @@ class provider implements metadata_provider, plagiarism_provider, user_provider 
             'privacy:metadata:core_plagiarism'
         );
 
+        $collection->add_database_table('plagiarism_compilatio_cm_cfg', [
+            'userid'  => 'privacy:metadata:plagiarism_compilatio_cm_cfg:userid',
+            'cmid'    => 'privacy:metadata:plagiarism_compilatio_cm_cfg:cmid',
+        ], 'privacy:metadata:plagiarism_compilatio_cm_cfg');
+
         $collection->add_database_table('plagiarism_compilatio_files', [
             'userid'   => 'privacy:metadata:plagiarism_compilatio_files:userid',
             'filename' => 'privacy:metadata:plagiarism_compilatio_files:filename',
