@@ -375,3 +375,7 @@ $string['privacy:metadata:external_compilatio_user:firstname'] = 'First name of 
 $string['privacy:metadata:external_compilatio_user:lastname'] = 'Last name of the teacher';
 $string['privacy:metadata:external_compilatio_user:email'] = 'Email of the teacher';
 $string['privacy:metadata:external_compilatio_user:username'] = 'Email of the teacher';
+
+$string['privacy:metadata:plagiarism_compilatio_cm_cfg'] = 'Information about config files';
+$string['privacy:metadata:plagiarism_compilatio_cm_cfg:userid'] = 'The Moodle ID of the teacher';
+$string['privacy:metadata:plagiarism_compilatio_cm_cfg:cmid'] = 'Compilatio ID of the module';
