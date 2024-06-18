@@ -8,6 +8,9 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 
+v3.1.1
+- Add missing translations keys for v2 plugins
+
 v3.1.0
 - Added the option to run analyses only on selected questions in quizzes
 - Added a score settings tab with the possibility to ignore score elements (AI, similarities, unrecognized languages) on all documents in the activity
