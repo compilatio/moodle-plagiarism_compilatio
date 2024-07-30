@@ -307,11 +307,11 @@ class CompilatioDocumentFrame {
             $indexed = $cmpfile->indexed ? true : false;
         }
 
-        $output = $info . "
-            <div class='cmp-area cmp-border-" . $bgcolor . "'>
-                <img class='cmp-small-logo' src='" . new moodle_url("/plagiarism/compilatio/pix/c.svg") . "'>
-                " . self::get_indexing_state($indexed) . $score . $documentframe . "
-            </div>";
+        $output = $info . '
+            <div class="cmp-area cmp-border-' . $bgcolor . '" data-documentid="' . $cmpfile->externalid . '">
+                <img class="cmp-small-logo" src="' . new moodle_url("/plagiarism/compilatio/pix/c.svg") . '">
+                ' . self::get_indexing_state($indexed) . $score . $documentframe . '
+            </div>';
         return $output;
     }
 

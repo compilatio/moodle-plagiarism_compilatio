@@ -104,7 +104,7 @@ class CompilatioSendFile {
                 debugging("Error when sending the file to compilatio : failed to create compilatio temp directory");
             }
 
-            $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H-i-s') . ".txt";
+            $filepath = $CFG->dataroot . "/temp/compilatio/" . __FUNCTION__ . sha1(uniqid('',true)) . ".txt";
             $handle = fopen($filepath, "wb");
             fwrite($handle, $content);
             fclose($handle);

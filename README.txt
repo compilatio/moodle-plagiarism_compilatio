@@ -8,6 +8,10 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 
+v3.1.2
+- Fix errors in send files with unique filepath
+- Add Compilatio document id in a data- attribute
+
 v3.1.1
 - Add missing translations keys for v2 plugins
 
