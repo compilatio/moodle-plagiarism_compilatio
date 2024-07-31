@@ -128,7 +128,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
  * @return string
  */
 function plagiarism_compilatio_before_standard_top_of_body_html() {
-    return CompilatioFrame::get_frame();
+    return compilatio_frame::get_frame();
 }
 
 /**
@@ -155,7 +155,7 @@ function plagiarism_compilatio_coursemodule_standard_elements($formwrapper, $mfo
  * Get the plagiarism values for this course module
  *
  * @param  int          $cmid           Course module (cm) ID
- * @return array|false  $plag_values    Plagiarism values or false if the plugin is not enabled for this cm
+ * @return object|false  $plag_values    Plagiarism values or false if the plugin is not enabled for this cm
  */
 function compilatio_cm_use($cmid) {
     global $DB;

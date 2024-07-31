@@ -65,7 +65,8 @@ class get_scores extends \core\task\scheduled_task {
             // Get all files set that have been submitted.
             $sql = "SELECT cf.* FROM {plagiarism_compilatio_files} cf
                 JOIN {plagiarism_compilatio_cm_cfg} cfg ON cf.cm = cfg.cmid
-                WHERE cf.status = 'analysing' OR cf.status = 'queue' OR (cf.status = 'sent' AND cfg.analysistype = 'planned' AND cfg.analysistime < ?)";
+                WHERE cf.status = 'analysing' OR cf.status = 'queue' OR
+                (cf.status = 'sent' AND cfg.analysistype = 'planned' AND cfg.analysistime < ?)";
             $files = $DB->get_records_sql($sql, [time()]);
 
             if (!empty($files)) {

@@ -231,13 +231,16 @@ define(['jquery'], function($) {
                         var indexingState = 1;
                     }
                     i.removeClass();
+                    i.parent().attr('title', '');
                     $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php', {'docId': cmpfileid, 'indexingState': indexingState}, function(res) {
-                        if (res == 'true') {
+                        response = JSON.parse(res);
+                        if (response.status === 'ok') {
                             if (indexingState == 0) {
                                 i.addClass('cmp-library-out fa-times-circle fa');
                             } else {
                                 i.addClass('cmp-library-in fa-check-circle fa');
                             }
+                            i.parent().attr('title', response.text);
                         }
                     });
                 });

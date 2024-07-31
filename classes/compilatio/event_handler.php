@@ -31,12 +31,17 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 use plagiarism_compilatio\compilatio\file;
 use plagiarism_compilatio\compilatio\api;
+use logstore_standard\log\store;
 
 /**
  * event_handler class
  */
 class event_handler {
-
+    /**
+     * Deletion events
+     * @param  mixed $event Moodle event
+     * @return void
+     */
     public static function deletion($event) {
         global $DB, $SESSION;
 
@@ -87,8 +92,12 @@ class event_handler {
         // Course module delete.
         if ($event['objecttable'] == 'course_modules') {
             if (class_exists('\tool_recyclebin\course_bin') && \tool_recyclebin\course_bin::is_enabled()) {
-                $DB->set_field('plagiarism_compilatio_cm_cfg', 'recyclebinid',
-                    $SESSION->compilatio_bin_created, ['cmid' => $cmid]);
+                $DB->set_field(
+                    'plagiarism_compilatio_cm_cfg',
+                    'recyclebinid',
+                    $SESSION->compilatio_bin_created,
+                    ['cmid' => $cmid]
+                );
                 unset($SESSION->compilatio_bin_created);
             } else {
                 $cmcfgs = $DB->get_records('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
@@ -97,6 +106,11 @@ class event_handler {
         }
     }
 
+    /**
+     * Handle course reset event
+     * @param  mixed $event Moodle event
+     * @return void
+     */
     public static function course_reset($event) {
         global $DB;
 
@@ -128,9 +142,16 @@ class event_handler {
         }
     }
 
-    // Plugin v2 course modules management.
+    /**
+     * Plugin v2 course modules management
+     * - Create folders in Compilatio user account
+     * - Update configs of activities in cm_fcg table
+     * @param  int    $courseid   Course ID
+     * @param  string $modulename Activity name
+     * @return void
+     */
     private static function create_folder_if_not_set($courseid, $modulename) {
-        global $DB, $USER;
+        global $DB;
 
         $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => 0]);
 
@@ -167,6 +188,11 @@ class event_handler {
         }
     }
 
+    /**
+     * Handle recycle bin event
+     * @param  mixed $event Moodle event
+     * @return void
+     */
     public static function recycle_bin($event) {
         global $DB, $SESSION;
 
@@ -223,6 +249,11 @@ class event_handler {
         }
     }
 
+    /**
+     * Handle delete or submit an assign file
+     * @param  mixed $event Moodle event
+     * @return void
+     */
     public static function student_analyses($event) {
         global $DB;
 
@@ -242,8 +273,12 @@ class event_handler {
         if ($event['target'] == 'submission_status') {
             // The event is triggered when a submission is deleted and when the submission is passed to draft.
             $fs = get_file_storage();
-            $submissionfiles = $fs->get_area_files($event["contextid"], "assignsubmission_file",
-                'submission_files', $event["objectid"]);
+            $submissionfiles = $fs->get_area_files(
+                $event["contextid"],
+                "assignsubmission_file",
+                'submission_files',
+                $event["objectid"]
+            );
 
             // If the documents have been deleted in the mdl_files table, we also delete them on our side.
             if (empty($submissionfiles)) {
@@ -266,6 +301,11 @@ class event_handler {
         }
     }
 
+    /**
+     * Handle submit text
+     * @param  mixed $event Moodle event
+     * @return void
+     */
     public static function submit_text($event) {
         global $DB;
 
@@ -313,6 +353,11 @@ class event_handler {
         }
     }
 
+    /**
+     * Handle submit file
+     * @param  mixed $event Moodle event
+     * @return void
+     */
     public static function submit_file($event) {
         global $DB;
 
@@ -355,14 +400,18 @@ class event_handler {
         }
 
         foreach ($mdlfiles as $file) {
-            $cmpfile = $DB->get_record('plagiarism_compilatio_files',
-                ['cm' => $cmid, 'userid' => $userid, 'identifier' => $file->get_contenthash()]);
+            $cmpfile = $DB->get_record(
+                'plagiarism_compilatio_files',
+                ['cm' => $cmid, 'userid' => $userid, 'identifier' => $file->get_contenthash()]
+            );
             if ($cmpfile) {
                 array_push($cmpfilestokeep, $cmpfile);
             }
         }
 
-        $duplicates = array_udiff($allcmpfiles, $cmpfilestokeep,
+        $duplicates = array_udiff(
+            $allcmpfiles,
+            $cmpfilestokeep,
             function ($filea, $fileb) {
                 return $filea->id - $fileb->id;
             }
@@ -387,6 +436,11 @@ class event_handler {
         }
     }
 
+    /**
+     * Handle submit quiz
+     * @param  mixed $event Moodle event
+     * @return void
+     */
     public static function submit_quiz($event) {
         global $CFG, $DB;
 
@@ -422,8 +476,10 @@ class event_handler {
 
                     // Check for duplicates files.
                     $identifier = sha1($filename);
-                    $duplicate = $DB->get_records('plagiarism_compilatio_files',
-                        ['identifier' => $identifier, 'userid' => $userid, 'cm' => $cmid]);
+                    $duplicate = $DB->get_records(
+                        'plagiarism_compilatio_files',
+                        ['identifier' => $identifier, 'userid' => $userid, 'cm' => $cmid]
+                    );
                     compilatio_delete_files($duplicate);
 
                     file::send_file($cmid, $userid, null, $filename, $content, $identifier);
@@ -443,6 +499,81 @@ class event_handler {
                     file::send_file($cmid, $userid, $file);
                 }
             }
+        }
+    }
+
+    /**
+     * Handle grade item creation
+     * Update course module settings when a course module is imported or restored
+     * @param  \core\event\grade_item_created $event Event
+     * @return void
+     */
+    public static function grade_item_created($event): void {
+        global $DB;
+
+        if ($event['eventname'] === '\\core\\event\\grade_item_created'
+            && $event['objecttable'] === 'grade_items') {
+
+            $gradeitem = $DB->get_record('grade_items', ['id' => $event['objectid']]);
+            $module = $DB->get_record('modules', ['name' => $gradeitem->itemmodule]);
+            $coursemodule = $DB->get_record(
+                'course_modules',
+                ['module' => $module->id, 'instance' => $gradeitem->iteminstance]
+            );
+
+            if (!is_object($coursemodule)) {
+                return;
+            }
+
+            $compicmcfg = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $coursemodule->id]);
+
+            if (!is_object($compicmcfg)) {
+                return;
+            }
+
+            // Look for duplicate course module settings.
+            $anothercompicmcfg = $DB->get_record(
+                'plagiarism_compilatio_cm_cfg',
+                [
+                    'folderid' => $compicmcfg->folderid,
+                    'userid' => $compicmcfg->userid,
+                ]
+            );
+
+            if (!is_object($anothercompicmcfg)) {
+                return;
+            }
+
+            $compicmcfg->userid = null;
+            $compicmcfg->folderid = null;
+
+            $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => $event['userid']]);
+            if (empty($user)) {
+                $compilatio = new api();
+                $user = $compilatio->get_or_create_user();
+                if (!empty($user)) {
+                    $compilatio->set_user_id($user->compilatioid);
+                }
+            } else {
+                $compilatio = new api($user->compilatioid);
+            }
+
+            $compicmcfg->userid = $user->compilatioid;
+
+            $folderid = $compilatio->set_folder(
+                $event['other']['itemname'],
+                $compicmcfg->defaultindexing,
+                $compicmcfg->analysistype,
+                null,
+                $compicmcfg->warningthreshold,
+                $compicmcfg->criticalthreshold
+            );
+            if ($folderid !== false) {
+                $compicmcfg->folderid = $folderid;
+            }
+
+            $DB->update_record('plagiarism_compilatio_cm_cfg', $compicmcfg);
+            unset($compilatio);
         }
     }
 }

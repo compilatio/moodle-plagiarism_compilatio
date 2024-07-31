@@ -138,10 +138,15 @@ class csv_generator {
         exit(0);
     }
 
+    /**
+     * Export statistics for an activity as a csv file
+     *
+     * @param  int   $cmid               Activity number
+     * @param  array $userssubmittedtest Users
+     * @return void
+     */
     public static function generate_cm_csv_per_student($cmid, $userssubmittedtest) {
         global $DB;
-
-        $cmpcm = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
         // Get the name of the activity in order to generate header line and the filename.
         $sql = "
@@ -185,9 +190,13 @@ class csv_generator {
                 $scores = ['globalscore', 'simscore', 'utlscore', 'aiscore'];
 
                 foreach ($scores as $score) {
-                    $line[get_string($score, 'plagiarism_compilatio')] = $question['cmpfile']->status == 'scored'
-                        ? (isset($question['cmpfile']->$score) ? $question['cmpfile']->$score : get_string('unmeasured', 'plagiarism_compilatio'))
-                        : get_string('not_analysed', "plagiarism_compilatio");
+                    $line[get_string($score, 'plagiarism_compilatio')] =
+                        $question['cmpfile']->status == 'scored' ?
+                            (isset($question['cmpfile']->$score) ?
+                                $question['cmpfile']->$score :
+                                get_string('unmeasured', 'plagiarism_compilatio')
+                            ) :
+                            get_string('not_analysed', "plagiarism_compilatio");
                 }
 
                 $csv .= '"' . implode('","', $line) . "\"\n";
@@ -199,6 +208,11 @@ class csv_generator {
         exit(0);
     }
 
+    /**
+     * Export global statistics as a csv file
+     *
+     * @return void
+     */
     public static function generate_global_csv() {
         $rows = statistics::get_global_statistics(false);
 
@@ -215,7 +229,12 @@ class csv_generator {
 
         exit(0);
     }
-    
+
+    /**
+     * Export raw statistics as a csv file
+     *
+     * @return void
+     */
     public static function generate_global_raw_csv() {
         global $DB;
 

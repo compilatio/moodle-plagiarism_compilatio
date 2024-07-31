@@ -28,6 +28,9 @@ namespace plagiarism_compilatio\privacy;
 defined('MOODLE_INTERNAL') || die();
 
 if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
+    /**
+     * User provider interface
+     */
     interface user_provider extends \core_plagiarism\privacy\plagiarism_user_provider {
 
     }
@@ -69,7 +72,7 @@ class provider implements
      * @param   collection  $collection The initialised collection to add items to.
      * @return  collection  $collection The updated collection of user data.
      */
-    public static function get_metadata(collection $collection) : collection {
+    public static function get_metadata(collection $collection): collection {
 
         $collection->add_subsystem_link(
             'core_files',
@@ -114,7 +117,7 @@ class provider implements
      * @param   int         $userid         The user to search.
      * @return  contextlist $contextlist    The list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid(int $userid) : contextlist {
+    public static function get_contexts_for_userid(int $userid): contextlist {
 
         $sql = "SELECT c.id
                 FROM {context} c

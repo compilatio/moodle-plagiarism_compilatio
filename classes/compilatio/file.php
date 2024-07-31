@@ -37,7 +37,14 @@ use plagiarism_compilatio\compilatio\api;
  */
 class file {
 
+    /**
+     * @var mixed $depositor
+     */
     private static $depositor;
+
+    /**
+     * @var array $authors
+     */
     private static $authors;
 
     /**
@@ -107,7 +114,7 @@ class file {
                 debugging("Error when sending the file to compilatio : failed to create compilatio temp directory");
             }
 
-            $filepath = $CFG->dataroot . "/temp/compilatio/" . date('Y-m-d H-i-s') . ".txt";
+            $filepath = $CFG->dataroot . "/temp/compilatio/" . __FUNCTION__ . '_' . sha1(uniqid('', true)) . ".txt";
             $handle = fopen($filepath, "wb");
             fwrite($handle, $content);
             fclose($handle);
@@ -170,6 +177,13 @@ class file {
         }
     }
 
+    /**
+     * Get file or text content and send it to Compilatio
+     *
+     * @param  mixed   $cmpfile       Compilatio file record
+     * @param  boolean $startanalysis Start analysis directly after uploading
+     * @return boolean Result of sending file or text content to Compilatio
+     */
     public static function retrieve_and_send_file($cmpfile, $startanalysis = false) {
 
         global $DB;
@@ -211,7 +225,14 @@ class file {
             if (!empty($content)) {
                 $DB->delete_records('plagiarism_compilatio_files', ['id' => $cmpfile->id]);
 
-                $newcmpfile = self::send_file($cmpfile->cm, $cmpfile->userid, null, $cmpfile->filename, $content, $identifier ?? null);
+                $newcmpfile = self::send_file(
+                    $cmpfile->cm,
+                    $cmpfile->userid,
+                    null,
+                    $cmpfile->filename,
+                    $content,
+                    $identifier ?? null
+                );
             }
         } else { // File.
             $module = get_coursemodule_from_id(null, $cmpfile->cm);
@@ -266,6 +287,13 @@ class file {
         return false;
     }
 
+    /**
+     * Setter for authors and depositor
+     *
+     * @param  int $userid  User ID
+     * @param  int $cmid    Course module ID
+     * @return void
+     */
     private static function set_depositor_and_authors($userid, $cmid) {
         global $DB;
 

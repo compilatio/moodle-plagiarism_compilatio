@@ -29,15 +29,41 @@ namespace plagiarism_compilatio\compilatio;
  * api class
  */
 class api {
-    private $apikey;
-    private $urlrest;
-    private $userid;
-    private $recipe;
 
-    public function set_user_id($userid) {
+    /**
+     * @var string $apikey API key
+     */
+    private string $apikey;
+
+    /**
+     * @var string $urlrest Base REST url
+     */
+    private string $urlrest;
+
+    /**
+     * @var mixed $userid Compilatio user ID
+     */
+    private mixed $userid;
+
+    /**
+     * @var string $recipe Analysis recipe
+     */
+    private string $recipe;
+
+    /**
+     * User ID setter
+     * @param  string $userid
+     * @return void
+     */
+    public function set_user_id($userid): void {
         $this->userid = $userid;
     }
 
+    /**
+     * Class constructor
+     * @param  string $userid User ID
+     * @param  string $apikey API key
+     */
     public function __construct($userid = null, $apikey = null) {
         if (null === $apikey) {
             $apikey = get_config('plagiarism_compilatio', 'apikey');
@@ -53,6 +79,10 @@ class api {
         }
     }
 
+    /**
+     * Get Compilatio configuration
+     * @return stdClass|false Returns an object containing Compilatio configuration or false if an error occurs
+     */
     public function get_config() {
         $endpoint = '/api/public/config/config';
         $response = json_decode($this->build_curl($endpoint));
@@ -92,6 +122,11 @@ class api {
         return $error;
     }
 
+    /**
+     * Get Compilatio user ID of legacy account attached to Moodle instance
+     *
+     * @return string|false Returns user ID on success, or false otherwise
+     */
     public function get_apikey_user_id($updateapikey = true) {
         $endpoint = '/api/private/authentication/check-api-key';
 
@@ -111,6 +146,10 @@ class api {
         return false;
     }
 
+    /**
+     * Update API key for plugin v3 use
+     * @return boolean Returns true on success, false otherwise
+     */
     public function update_apikey() {
         $endpoint = '/api/private/moodle-configuration/update-api-key';
 
@@ -147,6 +186,11 @@ class api {
         return false;
     }
 
+    /**
+     * Get or create Compilatio user from current Moodle user id
+     *
+     * @param $teacher
+     */
     public function get_or_create_user($teacher = null) {
         global $USER, $DB;
 
@@ -314,6 +358,12 @@ class api {
         return $error;
     }
 
+    /**
+     * Replace forbidden characters
+     *
+     * @param  string $value
+     * @return string Returns sanitized string
+     */
     private function sanitize($value) {
         $forbiddencharacters = [
             ".", "!", "?", " => ", "%", "&", "*", "=", "#", "$", "@", "/", "\\", "<", ">", "(", ")", "[", "]", "{", "}",
@@ -328,6 +378,12 @@ class api {
         return str_replace($forbiddencharacters, '_', $value);
     }
 
+    /**
+     * Validate e-mail string
+     *
+     * @param  string $email
+     * @return string|null Returns e-mail if it's valid, null otherwise
+     */
     private function validate_email($email) {
         $email = filter_var($email, FILTER_SANITIZE_EMAIL);
         return filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
@@ -368,13 +424,13 @@ class api {
     /**
      * Create folder on Compilatio account
      *
-     * @param   string   $name              Folder's name
-     * @param   boolean  $defaultindexing   Folder's default indexing
-     * @param   string   $analysistype      Analysis type
-     * @param   string   $analysistime      Date for scheduled analysis
-     * @param   int      $warningthreshold  Folder's warning threshold
-     * @param   int      $criticalthreshold Folder's critical threshold
-     * @return  string   Return the folder's ID, an error message otherwise
+     * @param   string         $name              Folder's name
+     * @param   boolean        $defaultindexing   Folder's default indexing
+     * @param   string         $analysistype      Analysis type
+     * @param   string         $analysistime      Date for scheduled analysis
+     * @param   int            $warningthreshold  Folder's warning threshold
+     * @param   int            $criticalthreshold Folder's critical threshold
+     * @return  string|false   Return the folder's ID, an error message otherwise, or false
      */
     public function set_folder(
         $name,
@@ -705,7 +761,7 @@ class api {
 
     /**
      * Get a list of Compilatio marketing notifications.
-     * 
+     *
      * @param  string  $lang lang
      * @return array   Return an array of marketing notifications
      */
@@ -724,7 +780,7 @@ class api {
     /**
      * Get subscription info.
      *
-     * @return  array   Return subscription info.
+     * @return  stdClass   Return subscription info.
      */
     public function get_subscription_info() {
         $endpoint = '/api/private/authentication/check-api-key';
@@ -775,27 +831,43 @@ class api {
         return false;
     }
 
-    private function get_error_response($response, $expectedstatuscode) {
+    /**
+     * Get an eventually error message from an API response
+     * Compare API response with expected HTTP code
+     * @param  mixed $response           curl response
+     * @param  int   $expectedstatuscode Expected HTTP code
+     * @return false|string Returns false if expected HTTP code is found in API response, or a message otherwise
+     */
+    private function get_error_response(mixed $response, int $expectedstatuscode): false|string {
         if (!isset($response->status->code, $response->status->message)) {
             return 'Error response status not found';
-        } else if ($response->status->code == $expectedstatuscode) {
+        } else if ($response->status->code === $expectedstatuscode) {
             return false;
-        } else if ($response->status->code == 403) {
+        } else if ($response->status->code === 403) {
             foreach (($response->errors ?? []) as $error) {
-                if (isset($error->key) && $error->key == 'need_terms_of_service_validation') {
+                if (isset($error->key) && $error->key === 'need_terms_of_service_validation') {
                     if (!empty($this->userid)) {
                         $this->validate_terms_of_service();
                     }
                     return $error->key;
                 }
             }
-        } else if ($response->status->message == 'Forbidden ! Your read only API key cannot modify this resource') {
+        } else if ($response->status->message === 'Forbidden ! Your read only API key cannot modify this resource') {
             set_config('read_only_apikey', 1, 'plagiarism_compilatio');
         }
 
         return $response->status->message;
     }
 
+    /**
+     * Execute curl request with the custom HTTP header X-LMS-USER-ID
+     *
+     * @param  string   $endpoint API endpoint
+     * @param  string   $method   Desired action on endpoint
+     * @param  string   $data     Data to be send in CURLOPT_POSTFIELDS
+     * @param  resource $handle   File handler
+     * @return string curl response
+     */
     private function build_curl_on_behalf_of_user($endpoint, $method = null, $data = null, $handle = null) {
         global $DB;
 
@@ -808,6 +880,16 @@ class api {
         return $this->build_curl($endpoint, $method, $data, $handle, $header);
     }
 
+    /**
+     * Execute curl request
+     *
+     * @param  string   $endpoint API endpoint
+     * @param  string   $method   Desired action on endpoint
+     * @param  string   $data     Data to be send in CURLOPT_POSTFIELDS
+     * @param  resource $handle   File handler
+     * @param  array    $header   HTTP headers
+     * @return string curl response
+     */
     private function build_curl($endpoint, $method = null, $data = null, $handle = null, $header = []) {
         global $CFG;
 
@@ -884,6 +966,14 @@ class api {
         return $result;
     }
 
+    /**
+     * Returns an array containing data for curl request
+     *
+     * @param  mixed  $data
+     * @param  string $existingkeys
+     * @param  array  $returnarray
+     * @return array
+     */
     private function build_post_fields($data, $existingkeys = '', &$returnarray = []) {
         if (($data instanceof \CURLFile) || !(is_array($data) || is_object($data))) {
             $returnarray[$existingkeys] = $data;

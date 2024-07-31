@@ -68,7 +68,8 @@ foreach ($notifications as $index => $notification) {
             $titles .= $index !== (count($notifications) - 1) ? "<hr class='my-2'>" : '';
 
             $contents .= "
-                <div id='cmp-notifications-content-" . $notification->id . "' class='cmp-notifications-content' style='display: none;'>
+                <div id='cmp-notifications-content-" . $notification->id
+                    . "' class='cmp-notifications-content' style='display: none;'>
                     <div class='cmp-show-notifications mb-2 cmp-cursor-pointer'>"
                         . icons::arrow_left() . get_string('see_all_notifications', 'plagiarism_compilatio') . "
                     </div>

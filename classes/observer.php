@@ -318,4 +318,18 @@ class plagiarism_compilatio_observer {
             return $e->getMessage();
         }
     }
+
+    /**
+     * Grade item creation
+     * @param  \core\event\grade_item_created $event Event
+     * @return void
+     */
+    public static function grade_item_created(\core\event\grade_item_created $event) {
+        try {
+            event_handler::grade_item_created($event->get_data());
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
 }

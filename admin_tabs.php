@@ -39,13 +39,20 @@ $stradmintest          = get_string('tabs_title_error_management', 'plagiarism_c
 
 // Display Compilatio logo.
 echo "<img id='cmp-logo' class='mb-3' src='" . new moodle_url("/plagiarism/compilatio/pix/compilatio.png") . "'>";
-echo '<div class="float-right">[ version: ' . $plugin->version . ', release: ' . $plugin->release . ', instance id: ' . substr(get_config('plagiarism_compilatio', 'instance_key'), 0, 6) . ' ]</div>';
+echo '<div class="float-right">[ version: '. $plugin->version . ', release: ' . $plugin->release . ', instance id: '
+    . substr(get_config('plagiarism_compilatio', 'instance_key'), 0, 6) . ' ]</div>';
 echo '<div style="clear:both"></div>';
 
 // Create tabs.
 $tabs = [];
 $tabs[] = new tabobject('course_module_settings', 'settings.php', $strplagiarism, $strplagiarism, false);
-$tabs[] = new tabobject('compilatiodefaults', 'admin_tab_default_settings.php', $strplagiarismdefaults, $strplagiarismdefaults, false);
+$tabs[] = new tabobject(
+    'compilatiodefaults',
+    'admin_tab_default_settings.php',
+    $strplagiarismdefaults,
+    $strplagiarismdefaults,
+    false
+);
 $tabs[] = new tabobject('compilatioautodiagnosis', 'admin_tab_autodiagnosis.php', $strautodiagnosis, $strautodiagnosis, false);
 $tabs[] = new tabobject('statistics', 'admin_tab_statistics.php', $strstatistics, $strstatistics, false);
 $tabs[] = new tabobject('compilatiohelp', 'admin_tab_help.php', $strhelp, $strhelp, false);

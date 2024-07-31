@@ -316,7 +316,7 @@ class compilatio_frame {
         $output .= "<div id='cmp-help' class='cmp-tabs-content'>
             <p>" . get_string('similarities_disclaimer', 'plagiarism_compilatio') . "</p>";
 
-        // Elements included in subscription
+        // Elements included in subscription.
         $output .= "<p>" . get_string('element_included_in_subscription', 'plagiarism_compilatio');
 
         $output .= get_config('plagiarism_compilatio', 'recipe') === 'anasim-premium'
@@ -350,7 +350,8 @@ class compilatio_frame {
         // Stats tab.
         $url = $PAGE->url;
         $url->param('cmp_csv_export', true);
-        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") . "' class='cmp-icon position-absolute' style='right: 1rem;' href='$url' data-toggle='tooltip' >
+        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") .
+            "' class='cmp-icon position-absolute' style='right: 1rem;' href='$url' data-toggle='tooltip' >
                 <i class='fa fa-download'></i>
             </a>";
 
@@ -458,9 +459,16 @@ class compilatio_frame {
         return $output;
     }
 
+    /**
+     * Build HTML for Start all aalyses button
+     *
+     * @param  int    $cmid   Course module ID
+     * @param  string $module Module name
+     * @return string HTML
+     */
     private static function display_start_all_analyses_button($cmid, $module) {
         global $DB, $CFG, $PAGE;
-        
+
         $output = $questionselector = '';
 
         $output .=
@@ -499,10 +507,11 @@ class compilatio_frame {
 
                 $questionselector .= "
                     <div>
-                        <input class='checkbox-question-selector' type='checkbox' id='" . $quizquestion->questionid . "' value='" . $quizquestion->questionid . "'>
-                        <label class='form-check-label' for='" . $quizquestion->questionid . "'>
-                            " . get_string('question', 'core') . " " . $quizquestion->slot . "
-                        </label>
+                        <input class='checkbox-question-selector' type='checkbox' id='" . $quizquestion->questionid . "'
+                            value='" . $quizquestion->questionid . "'>
+                            <label class='form-check-label' for='" . $quizquestion->questionid . "'>
+                                " . get_string('question', 'core') . " " . $quizquestion->slot . "
+                            </label>
                     </div>";
             }
 
@@ -543,7 +552,7 @@ class compilatio_frame {
                         <div class='text-nowrap'>" . get_string('start_selected_files_analysis', 'plagiarism_compilatio') . "</div>
                     </div>
                     " . $questionselector . "
-                </div>  
+                </div>
             </div>";
 
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedStudents',
@@ -552,6 +561,12 @@ class compilatio_frame {
         return $output;
     }
 
+    /**
+     * Build HTML for score settings
+     *
+     * @param  int $cmid Course module ID
+     * @return string HTML
+     */
     private static function display_score_settings($cmid) {
         global $DB, $PAGE, $CFG;
 
@@ -570,9 +585,8 @@ class compilatio_frame {
         foreach ($scores as $score) {
             $output .= "
                 <div class='form-check mt-2 mr-1'>
-                    <input class='checkbox-score-settings' type='checkbox' id='" . $score . "' value='" . $score . "' " 
-                        . (in_array($score, $ignoredscores) ? '' : 'checked') .
-                    ">
+                    <input class='checkbox-score-settings' type='checkbox' id='" . $score . "' value='" . $score . "'
+                        " . (in_array($score, $ignoredscores) ? '' : 'checked') . ">
                     <label class='form-check-label' for='" . $score . "'>
                         " . get_string($score . '_percentage', 'plagiarism_compilatio') . "
                     </label>
@@ -581,13 +595,19 @@ class compilatio_frame {
 
         $output .= "
             <div class='mt-2'>
-                <span class='font-weight-lighter font-italic mt-4'>" . get_string('score_settings_info', 'plagiarism_compilatio') . "</span>
+                <span class='font-weight-lighter font-italic mt-4'>"
+                    . get_string('score_settings_info', 'plagiarism_compilatio') . "</span>
             </div>
             <div class='d-flex flex-row-reverse mr-1'>
-                <button id='score-settings-ignored' type='button' class='btn btn-primary'>" . get_string('update', 'core') . "</button>
+                <button id='score-settings-ignored' type='button' class='btn btn-primary'>"
+                    . get_string('update', 'core') . "</button>
             </div>";
 
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'updateScoreSettings', [$CFG->httpswwwroot, $cmid, $scores]);
+        $PAGE->requires->js_call_amd(
+            'plagiarism_compilatio/compilatio_ajax_api',
+            'updateScoreSettings',
+            [$CFG->httpswwwroot, $cmid, $scores]
+        );
 
         return $output;
     }

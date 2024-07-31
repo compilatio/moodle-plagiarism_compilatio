@@ -10,11 +10,21 @@ CHANGES
 
 3.2.0
 - Added a tab in the administration section of the plugin to manage documents in error
-- [Fix] Replace deprecated callback before_standard_top_of_body_html in Moodle 4.4 to new hook callback before_standard_top_of_body_html_generation
+- [Fix] Replace deprecated callback before_standard_top_of_body_html in Moodle 4.4 to new hook callback
+    before_standard_top_of_body_html_generation
+- Avoid duplicate course module settings when restoring or importing a course module
+
+v3.1.2
+- Fix errors in send files with unique filepath
+- Add Compilatio document id in a data- attribute
+
+v3.1.1
+- Add missing translations keys for v2 plugins
 
 v3.1.0
 - Added the option to run analyses only on selected questions in quizzes
-- Added a score settings tab with the possibility to ignore score elements (AI, similarities, unrecognized languages) on all documents in the activity
+- Added a score settings tab with the possibility to ignore score elements (AI, similarities, unrecognized languages) on all
+    documents in the activity
 - Small front adjustments in Compilatio container
 - Fix warning and email not displayed in Compilatio activity settings
 - Fix Javascript syntax error on obsolete versions of safari

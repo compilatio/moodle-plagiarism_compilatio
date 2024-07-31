@@ -45,16 +45,24 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
     $compilatio = new api();
 
-    $select =  "status = ? AND timesubmitted BETWEEN ? AND ?";
+    $select = "status = ? AND timesubmitted BETWEEN ? AND ?";
 
     if ($data->reset === 'documents') {
         // Send documents whose analysis failed and documents whose send failed.
-        $files = $DB->get_records_select('plagiarism_compilatio_files', $select, ['error_sending_failed', $data->startdate, $data->enddate]);
+        $files = $DB->get_records_select(
+            'plagiarism_compilatio_files',
+            $select,
+            ['error_sending_failed', $data->startdate, $data->enddate]
+        );
 
         $string = 'document_sent';
     } else if ($data->reset === 'analyses') {
         // Delete documents whose analysis failed.
-        $files = $DB->get_records_select('plagiarism_compilatio_files', $select, ['error_analysis_failed', $data->startdate, $data->enddate]);
+        $files = $DB->get_records_select(
+            'plagiarism_compilatio_files',
+            $select,
+            ['error_analysis_failed', $data->startdate, $data->enddate]
+        );
 
         if (!empty($files)) {
             // Check if files have been automatically relaunched and analyzed.
@@ -74,7 +82,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
     if (!empty($files)) {
         $countsuccess = 0;
-    
+
         foreach ($files as $cmpfile) {
             if (file::retrieve_and_send_file($cmpfile, $data->reset === 'analyses')) {
                 $countsuccess++;
@@ -85,11 +93,13 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             'class' => 'info',
             'content' => get_string($string, 'plagiarism_compilatio', $countsuccess),
         ];
-        
+
         if ($countsuccess < count($files)) {
             $alerts[] = [
                 'class' => 'danger',
-                'content' => '<div>' . get_string('document_reset_failures', 'plagiarism_compilatio', count($files) - $countsuccess) . '</div>',
+                'content' => '<div>'
+                    . get_string('document_reset_failures', 'plagiarism_compilatio', count($files) - $countsuccess)
+                    . '</div>',
             ];
         }
     } else {
@@ -111,7 +121,7 @@ echo '<h3>' . get_string('reset_documents_in_error', 'plagiarism_compilatio') . 
 
 $mform->display();
 
-foreach($alerts ?? [] as $alert) {
+foreach ($alerts ?? [] as $alert) {
     echo "<div class='cmp-alert cmp-alert-" . $alert['class'] . "'>
         <span class='mr-1 d-flex'>" . $alert['content'] . "</span>
     </div>";

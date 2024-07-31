@@ -46,11 +46,18 @@ if (isset($docid) && isset($indexingstatepost)) {
     $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $file->cm]);
     $compilatio = new api($userid);
 
+    $response = new stdClass();
     if ($compilatio->set_indexing_state($file->externalid, $indexingstate) === true) {
         $file->indexed = $indexingstate;
         $DB->update_record('plagiarism_compilatio_files', $file);
-        echo ('true');
+        $response->status = 'ok';
+        if ($indexingstate == '0') {
+            $response->text = get_string('not_indexed_document', 'plagiarism_compilatio');
+        } else {
+            $response->text = get_string('indexed_document', 'plagiarism_compilatio');
+        }
     } else {
-        echo ('false');
+        $response->status = 'error';
     }
+    echo(json_encode($response));
 }

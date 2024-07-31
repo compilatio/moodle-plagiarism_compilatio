@@ -49,21 +49,37 @@ if ($plugincm->analysistype == 'manual') {
     if (!empty($selectedquestions)) {
         $context = context_module::instance($cmid);
         $quizattempts = $DB->get_records('quiz_attempts', ['quiz' => $quizid]);
-        
+
         foreach ($quizattempts as $quizattempt) {
-            $attempt = $CFG->version < 2023100900 ? \quiz_attempt::create($quizattempt->id) : \mod_quiz\quiz_attempt::create($quizattempt->id);
-            
+            $attempt = $CFG->version < 2023100900 ?
+                \quiz_attempt::create($quizattempt->id) :
+                \mod_quiz\quiz_attempt::create($quizattempt->id);
+
             foreach ($attempt->get_slots() as $slot) {
                 if (in_array($attempt->get_question_attempt($slot)->get_question_id(), $selectedquestions)) {
                     $answer = $attempt->get_question_attempt($slot);
-                    $courseid = $DB->get_field('course_modules', 'course', array('id' => $cmid));
-                    $filename = "quiz-" . $courseid . "-" . $cmid . "-" . $quizattempt->id . "-Q" . $answer->get_question_id() . ".htm";
+                    $courseid = $DB->get_field('course_modules', 'course', ['id' => $cmid]);
+                    $filename = "quiz-"
+                        . $courseid
+                        . "-"
+                        . $cmid
+                        . "-"
+                        . $quizattempt->id
+                        . "-Q"
+                        . $answer->get_question_id()
+                        . ".htm";
 
-                    $cmpfiles[] = $DB->get_record('plagiarism_compilatio_files', ['cm' => $cmid, 'identifier' => sha1($filename), 'status' => 'sent']);
+                    $cmpfiles[] = $DB->get_record(
+                        'plagiarism_compilatio_files',
+                        ['cm' => $cmid, 'identifier' => sha1($filename), 'status' => 'sent']
+                    );
 
                     $files = $answer->get_last_qt_files('attachments', $context->id);
                     foreach ($files as $file) {
-                        $cmpfiles[] = $DB->get_record('plagiarism_compilatio_files', ['cm' => $cmid, 'identifier' => $file->get_contenthash(), 'status' => 'sent']);
+                        $cmpfiles[] = $DB->get_record(
+                            'plagiarism_compilatio_files',
+                            ['cm' => $cmid, 'identifier' => $file->get_contenthash(), 'status' => 'sent']
+                        );
                     }
                 }
             }
