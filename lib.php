@@ -180,7 +180,7 @@ function compilatio_get_unsent_documents($cmid) {
     $notuploadedfiles = [];
     $fs = get_file_storage();
 
-    $sql = 'SELECT ass.id as itemid, con.id as contextid
+    $sql = 'SELECT distinct(ass.id) as itemid, con.id as contextid
             FROM {course_modules} cm
                 JOIN {context} con ON cm.id = con.instanceid
                 JOIN {assignsubmission_file} assf ON assf.assignment = cm.instance
