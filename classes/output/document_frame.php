@@ -27,6 +27,7 @@ namespace plagiarism_compilatio\output;
 
 use plagiarism_compilatio\output\icons;
 use plagiarism_compilatio\compilatio\file;
+use plagiarism_compilatio\compilatio\analysis;
 use moodle_url;
 
 /**
@@ -193,7 +194,7 @@ class document_frame {
         global $DB, $CFG;
 
         if (!empty($cmpfileid)) {
-            $cmpfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $cmpfileid]);
+            $cmpfile = analysis::check_analysis($DB->get_record('plagiarism_compilatio_files', ['id' => $cmpfileid]));
         }
 
         $status = $cmpfile->status ?? null;
