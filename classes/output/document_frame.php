@@ -194,7 +194,7 @@ class document_frame {
         global $DB, $CFG;
 
         if (!empty($cmpfileid)) {
-            $cmpfile = analysis::check_analysis($DB->get_record('plagiarism_compilatio_files', ['id' => $cmpfileid]));
+            $cmpfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $cmpfileid]);
         }
 
         $status = $cmpfile->status ?? null;

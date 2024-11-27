@@ -180,7 +180,14 @@ define(['jquery'], function($) {
                     url: basepath + '/plagiarism/compilatio/ajax/update_score_settings.php',  
                     data: {cmid: cmid, checkedvalues: checkedvalues, scores: scores},
                     success: function() {
-                        window.location.reload();
+                        let url = new URL(window.location.href);
+
+                        if (!url.searchParams.get('refreshAllDocs')) {
+                            url.searchParams.append('refreshAllDocs', 'true');
+                            window.location.href = url.href;
+                        } else {
+                            window.location.reload();
+                        }
                     },
                     error: function(error) {
                         console.error('Error:', error);

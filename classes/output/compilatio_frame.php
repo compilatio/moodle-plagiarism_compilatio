@@ -36,6 +36,7 @@ use plagiarism_compilatio\compilatio\csv_generator;
 use plagiarism_compilatio\output\statistics;
 use plagiarism_compilatio\output\icons;
 use moodle_url;
+use plagiarism_compilatio\compilatio\analysis;
 
 /**
  * compilatio_frame class
@@ -59,7 +60,7 @@ class compilatio_frame {
      * Display compilatio frame
      * @return string Return the HTML formatted string.
      */
-    public static function get_frame() {
+    public static function get_frame(bool $refreshAllDocs) {
 
         global $CFG, $PAGE, $OUTPUT, $DB, $SESSION, $USER;
 
@@ -105,6 +106,13 @@ class compilatio_frame {
         // Store plagiarismfiles in $SESSION.
         $sql = 'cm = ? AND externalid IS NOT null';
         $SESSION->compilatio_plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, [$cmid]);
+
+        if($refreshAllDocs){
+            foreach ($SESSION->compilatio_plagiarismfiles as $file) {
+                analysis::check_analysis($file);
+            }
+        }
+
         $filesids = array_keys($SESSION->compilatio_plagiarismfiles);
 
         $alerts = [];

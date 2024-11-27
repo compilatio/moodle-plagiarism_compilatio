@@ -128,7 +128,8 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
  * @return string
  */
 function plagiarism_compilatio_before_standard_top_of_body_html() {
-    return compilatio_frame::get_frame();
+    $refreshAllDocs = optional_param('refreshAllDocs', false, PARAM_BOOL);
+     return compilatio_frame::get_frame($refreshAllDocs);
 }
 
 /**
