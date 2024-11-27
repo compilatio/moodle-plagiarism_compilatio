@@ -36,7 +36,6 @@ use plagiarism_compilatio\compilatio\csv_generator;
 use plagiarism_compilatio\output\statistics;
 use plagiarism_compilatio\output\icons;
 use moodle_url;
-use plagiarism_compilatio\compilatio\analysis;
 
 /**
  * compilatio_frame class
@@ -52,6 +51,7 @@ class compilatio_frame {
      */
     public static function before_standard_top_of_body_html_generation(before_standard_top_of_body_html_generation $hook): void {
         $output = self::get_frame();
+
         $hook->add_html($output);
     }
 
@@ -105,7 +105,6 @@ class compilatio_frame {
         // Store plagiarismfiles in $SESSION.
         $sql = 'cm = ? AND externalid IS NOT null';
         $SESSION->compilatio_plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, [$cmid]);
-
         $filesids = array_keys($SESSION->compilatio_plagiarismfiles);
 
         $alerts = [];
