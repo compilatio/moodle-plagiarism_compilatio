@@ -395,9 +395,9 @@ class course_module_settings {
         // File types allowed.
         $mform->addElement(
             'html',
-            '<div>' 
-            . get_string('help_compilatio_format_content', 'plagiarism_compilatio') 
-            . implode(', ', file::supported_extensions()) 
+            '<div>'
+            . get_string('help_compilatio_format_content', 'plagiarism_compilatio')
+            . implode(', ', file::supported_extensions())
             . '</div>'
         );
 

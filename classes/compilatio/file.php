@@ -279,6 +279,11 @@ class file {
         return in_array($extension, self::supported_extensions());
     }
 
+    /**
+     * Get supported extensions (excluding zip)
+     *
+     * @return array Supported extensions
+     */
     public static function supported_extensions() {
         $filetypes = json_decode(get_config('plagiarism_compilatio', 'file_types'));
         $extensions = array_keys((array) $filetypes);

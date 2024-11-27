@@ -72,7 +72,7 @@ class provider implements
      * @param   collection  $collection The initialised collection to add items to.
      * @return  collection  $collection The updated collection of user data.
      */
-    public static function get_metadata(collection $collection): collection {
+    public static function get_metadata(collection $collection):collection {
 
         $collection->add_subsystem_link(
             'core_files',
