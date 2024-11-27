@@ -35,6 +35,7 @@ use plagiarism_compilatio\compilatio\course_module_settings;
 use plagiarism_compilatio\compilatio\file;
 use plagiarism_compilatio\output\document_frame;
 use plagiarism_compilatio\output\compilatio_frame;
+use plagiarism_compilatio\compilatio\analysis;
 
 /**
  * Compilatio Class
@@ -128,8 +129,13 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
  * @return string
  */
 function plagiarism_compilatio_before_standard_top_of_body_html() {
-    $refreshAllDocs = optional_param('refreshAllDocs', false, PARAM_BOOL);
-     return compilatio_frame::get_frame($refreshAllDocs);
+    global $SESSION;
+        if(optional_param('refreshAllDocs', false, PARAM_BOOL)){
+            foreach ($SESSION->compilatio_plagiarismfiles as $file) {
+                analysis::check_analysis($file);
+            }
+        }
+     return compilatio_frame::get_frame();
 }
 
 /**
