@@ -393,15 +393,12 @@ class course_module_settings {
         $mform->addElement('html', '<p>' . get_string('word_limits', 'plagiarism_compilatio', $word) . '</p>');
 
         // File types allowed.
-        $filetypes = json_decode(get_config('plagiarism_compilatio', 'file_types'));
-        $filetypesstring = '';
-        foreach ($filetypes as $type => $value) {
-            $filetypesstring .= $type . ', ';
-        }
-        $filetypesstring = substr($filetypesstring, 0, -2);
         $mform->addElement(
             'html',
-            '<div>' . get_string('help_compilatio_format_content', 'plagiarism_compilatio') . $filetypesstring . '</div>'
+            '<div>' 
+            . get_string('help_compilatio_format_content', 'plagiarism_compilatio') 
+            . implode(', ', file::supported_extensions()) 
+            . '</div>'
         );
 
         // Used to append text nicely after the inputs.
