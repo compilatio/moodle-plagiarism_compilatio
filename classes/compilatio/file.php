@@ -276,15 +276,18 @@ class file {
             return false;
         }
         $extension = strtolower($pathinfo['extension']);
+        return in_array($extension, self::supported_extensions());
+    }
 
+    /**
+     * Get supported extensions (excluding zip)
+     *
+     * @return array Supported extensions
+     */
+    public static function supported_extensions() {
         $filetypes = json_decode(get_config('plagiarism_compilatio', 'file_types'));
-
-        foreach ($filetypes as $type => $value) {
-            if ($extension == $type) {
-                return true;
-            }
-        }
-        return false;
+        $extensions = array_keys((array) $filetypes);
+        return array_diff($extensions, ['zip']); ;
     }
 
     /**
