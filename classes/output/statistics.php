@@ -357,14 +357,10 @@ class statistics {
             if ($wordcount >= $nbmotsmin) {
                 $courseid = $DB->get_field('course_modules', 'course', ['id' => $cmid]);
                 $filename = "quiz-" . $courseid . "-" . $cmid . "-" . $attemptid . "-Q" . $answer->get_question_id() . ".htm";
-                debugging(var_export($cmid, true));
-                debugging(var_export($studentid, true));
-                debugging(var_export(sha1($filename), true));
                 $cmpfile = $DB->get_record(
                     'plagiarism_compilatio_files',
                     ['cm' => $cmid, 'userid' => $studentid, 'identifier' => sha1($filename)]
                 );
-                debugging(var_export($cmpfile, true));
                 if (!empty($cmpfile)) {
                     $cmpfile->wordcount = $wordcount;
                     $cmpfiles[] = $cmpfile;
