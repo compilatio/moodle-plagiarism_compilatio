@@ -13,6 +13,8 @@ CHANGES
 - [Fix] Replace deprecated callback before_standard_top_of_body_html in Moodle 4.4 to new hook callback
     before_standard_top_of_body_html_generation
 - Avoid duplicate course module settings when restoring or importing a course module
+- [Fix] Reload page after update scores options for all docs
+- [Fix] Prevent sending .zip files that cause bugs
 
 v3.1.2
 - Fix errors in send files with unique filepath

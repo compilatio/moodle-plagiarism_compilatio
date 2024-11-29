@@ -45,9 +45,9 @@ class trigger_analyses extends \core\task\scheduled_task {
      * @return void
      */
     public function execute() {
-        global $CFG, $DB;
+        global $DB;
 
-        // Plugin v2 docs management.
+        // Return all files with Compilatio activated and to analyze.
         $sql = "SELECT file.* FROM {plagiarism_compilatio_files} file
             JOIN {plagiarism_compilatio_cm_cfg} config ON config.cmid = file.cm
             WHERE file.status = 'sent' AND config.activated = '1' AND config.analysistype = 'planned' AND config.analysistime < ?";

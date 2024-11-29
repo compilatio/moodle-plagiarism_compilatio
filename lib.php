@@ -130,12 +130,16 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
  */
 function plagiarism_compilatio_before_standard_top_of_body_html() {
     global $SESSION;
-    if (optional_param('refreshAllDocs', false, PARAM_BOOL)) {
-        foreach ($SESSION->compilatio_plagiarismfiles as $file) {
-            analysis::check_analysis($file);
-        }
+
+    if (!optional_param('refreshAllDocs', false, PARAM_BOOL)) {
+        return compilatio_frame::get_frame();
     }
-     return compilatio_frame::get_frame();
+
+    foreach ($SESSION->compilatio_plagiarismfiles as $file) {
+        analysis::check_analysis($file);
+    }
+
+    return compilatio_frame::get_frame();
 }
 
 /**
