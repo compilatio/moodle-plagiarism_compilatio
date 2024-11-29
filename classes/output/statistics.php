@@ -380,8 +380,10 @@ class statistics {
 
                 if (!empty($cmpfile)) {
                     $cmpfiles[] = $cmpfile;
-                    $document = $compilatio->get_document($cmpfile->externalid);
-                    $cmpfile->wordcount = $document->words_count ?? 0;
+                    if (!empty($cmpfile->externalid)) {
+                        $document = $compilatio->get_document($cmpfile->externalid);
+                        $cmpfile->wordcount = $document->words_count ?? 0;
+                    }
                 }
             }
 
