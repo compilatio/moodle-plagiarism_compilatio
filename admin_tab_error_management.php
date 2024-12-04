@@ -105,7 +105,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
     } else {
         $alerts[] = [
             'class' => 'info',
-            'content' => '<div>' . get_string('no_documents_to_reset', 'plagiarism_compilatio', $countsuccess) . '</div>',
+            'content' => '<div>' . get_string('no_documents_to_reset', 'plagiarism_compilatio') . '</div>',
         ];
     }
 }
