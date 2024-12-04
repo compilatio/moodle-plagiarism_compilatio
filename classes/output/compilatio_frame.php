@@ -35,6 +35,7 @@ use plagiarism_compilatio\compilatio\api;
 use plagiarism_compilatio\compilatio\csv_generator;
 use plagiarism_compilatio\output\statistics;
 use plagiarism_compilatio\output\icons;
+use plagiarism_compilatio\compilatio\analysis;
 use moodle_url;
 
 /**
@@ -50,9 +51,16 @@ class compilatio_frame {
      * @param before_standard_top_of_body_html_generation $hook
      */
     public static function before_standard_top_of_body_html_generation(before_standard_top_of_body_html_generation $hook): void {
-        $output = self::get_frame();
+        
+        global $SESSION;
 
-        $hook->add_html($output);
+        if (optional_param('refreshAllDocs', false, PARAM_BOOL)) {
+            foreach ($SESSION->compilatio_plagiarismfiles as $file) {
+                analysis::check_analysis($file);
+            }
+        }
+
+        $hook->add_html(self::get_frame());
     }
 
     /**
