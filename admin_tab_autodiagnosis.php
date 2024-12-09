@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * autodiagnosis.php - check that the plugin is working properly
+ * admin_tab_autodiagnosis.php - check that the plugin is working properly
  *
  * @package   plagiarism_compilatio
  * @author    Compilatio <support@compilatio.net>
@@ -27,8 +27,9 @@ require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+
+use plagiarism_compilatio\compilatio\api;
+
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -47,7 +48,7 @@ if (isset($plagiarismsettings['enabled'])) {
 }
 
 // Connection test.
-$compilatio = new CompilatioAPI(null, 'test');
+$compilatio = new api(null, 'test');
 if ($compilatio->check_apikey() == 'Forbidden ! Your api key is invalid') {
     $connectionsuccess = true;
 } else {
@@ -83,7 +84,7 @@ if (isset($plagiarismsettings['enable_mod_quiz'])) {
 }
 
 // API key test.
-$compilatio = new CompilatioAPI();
+$compilatio = new api();
 if ($compilatio->check_apikey() === true) {
     $apikeysuccess = true;
 } else {
@@ -92,7 +93,7 @@ if ($compilatio->check_apikey() === true) {
 
 echo $OUTPUT->header();
 $currenttab = 'compilatioautodiagnosis';
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/admin_tabs.php');
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 
 $alerts = [];

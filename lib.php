@@ -26,13 +26,16 @@
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 global $CFG;
+
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/frame.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/csv.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/documentFrame.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/settings.php');
+
+use plagiarism_compilatio\compilatio\csv_generator;
+use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\compilatio\course_module_settings;
+use plagiarism_compilatio\compilatio\file;
+use plagiarism_compilatio\output\document_frame;
+use plagiarism_compilatio\output\compilatio_frame;
+use plagiarism_compilatio\compilatio\analysis;
 
 /**
  * Compilatio Class
@@ -90,7 +93,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
      * @return string  HTML or blank.
      */
     public function get_links($linkarray) {
-        return CompilatioDocumentFrame::get_document_frame($linkarray);
+        return document_frame::get_document_frame($linkarray);
     }
 
     /**
@@ -118,6 +121,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
 }
 
 /**
+ * DEPRECATED in Moodle versions > 4.4 2024042200 (required for versions < 4.4)
  * Output callback to insert a chunk of html at the start of the html document.
  * This allow us to display the Compilatio frame with statistics, alerts,
  * author search tool and buttons to launch all analyses and update submitted files status.
@@ -125,7 +129,17 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
  * @return string
  */
 function plagiarism_compilatio_before_standard_top_of_body_html() {
-    return CompilatioFrame::get_frame();
+    global $SESSION;
+
+    if (!optional_param('refreshAllDocs', false, PARAM_BOOL)) {
+        return compilatio_frame::get_frame();
+    }
+
+    foreach ($SESSION->compilatio_plagiarismfiles as $file) {
+        analysis::check_analysis($file);
+    }
+
+    return compilatio_frame::get_frame();
 }
 
 /**
@@ -135,7 +149,7 @@ function plagiarism_compilatio_before_standard_top_of_body_html() {
  * @param stdClass $course
  */
 function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
-    return CompilatioSettings::save_course_module_settings($data, $course);
+    return course_module_settings::save_course_module_settings($data, $course);
 }
 
 /**
@@ -145,14 +159,14 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
  * @param MoodleQuickForm $mform
  */
 function plagiarism_compilatio_coursemodule_standard_elements($formwrapper, $mform) {
-    CompilatioSettings::display_course_module_settings($formwrapper, $mform);
+    course_module_settings::display_course_module_settings($formwrapper, $mform);
 }
 
 /**
  * Get the plagiarism values for this course module
  *
  * @param  int          $cmid           Course module (cm) ID
- * @return array|false  $plag_values    Plagiarism values or false if the plugin is not enabled for this cm
+ * @return object|false  $plag_values    Plagiarism values or false if the plugin is not enabled for this cm
  */
 function compilatio_cm_use($cmid) {
     global $DB;
@@ -177,7 +191,7 @@ function compilatio_get_unsent_documents($cmid) {
     $notuploadedfiles = [];
     $fs = get_file_storage();
 
-    $sql = 'SELECT ass.id as itemid, con.id as contextid
+    $sql = 'SELECT distinct(ass.id) as itemid, con.id as contextid
             FROM {course_modules} cm
                 JOIN {context} con ON cm.id = con.instanceid
                 JOIN {assignsubmission_file} assf ON assf.assignment = cm.instance
@@ -271,7 +285,7 @@ function plagiarism_compilatio_pre_course_delete($course) {
 function compilatio_delete_course_modules($cmconfigs) {
     if (is_array($cmconfigs)) {
         global $DB;
-        $compilatio = new CompilatioAPI();
+        $compilatio = new api();
 
         foreach ($cmconfigs as $cmconfig) {
             $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmconfig->cmid]);
@@ -298,7 +312,7 @@ function compilatio_delete_course_modules($cmconfigs) {
 function compilatio_delete_files($files, $keepfilesindexed = false) {
     if (is_array($files)) {
         global $DB;
-        $compilatio = new CompilatioAPI();
+        $compilatio = new api();
 
         foreach ($files as $doc) {
             if (is_null($doc->externalid)) {

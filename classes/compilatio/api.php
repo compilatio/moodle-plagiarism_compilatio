@@ -23,19 +23,47 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * CompilatioAPI class
- */
-class CompilatioAPI {
-    private $apikey;
-    private $urlrest;
-    private $userid;
-    private $recipe;
+namespace plagiarism_compilatio\compilatio;
 
-    public function set_user_id($userid) {
+/**
+ * api class
+ */
+class api {
+
+    /**
+     * @var string $apikey API key
+     */
+    private string $apikey;
+
+    /**
+     * @var string $urlrest Base REST url
+     */
+    private string $urlrest;
+
+    /**
+     * @var mixed $userid Compilatio user ID
+     */
+    private mixed $userid;
+
+    /**
+     * @var string $recipe Analysis recipe
+     */
+    private string $recipe;
+
+    /**
+     * User ID setter
+     * @param  string $userid
+     * @return void
+     */
+    public function set_user_id($userid): void {
         $this->userid = $userid;
     }
 
+    /**
+     * Class constructor
+     * @param  string $userid User ID
+     * @param  string $apikey API key
+     */
     public function __construct($userid = null, $apikey = null) {
         if (null === $apikey) {
             $apikey = get_config('plagiarism_compilatio', 'apikey');
@@ -51,6 +79,10 @@ class CompilatioAPI {
         }
     }
 
+    /**
+     * Get Compilatio configuration
+     * @return stdClass|false Returns an object containing Compilatio configuration or false if an error occurs
+     */
     public function get_config() {
         $endpoint = '/api/public/config/config';
         $response = json_decode($this->build_curl($endpoint));
@@ -90,6 +122,11 @@ class CompilatioAPI {
         return $error;
     }
 
+    /**
+     * Get Compilatio user ID of legacy account attached to Moodle instance
+     *
+     * @return string|false Returns user ID on success, or false otherwise
+     */
     public function get_apikey_user_id($updateapikey = true) {
         $endpoint = '/api/private/authentication/check-api-key';
 
@@ -109,6 +146,10 @@ class CompilatioAPI {
         return false;
     }
 
+    /**
+     * Update API key for plugin v3 use
+     * @return boolean Returns true on success, false otherwise
+     */
     public function update_apikey() {
         $endpoint = '/api/private/moodle-configuration/update-api-key';
 
@@ -145,6 +186,11 @@ class CompilatioAPI {
         return false;
     }
 
+    /**
+     * Get or create Compilatio user from current Moodle user id
+     *
+     * @param $teacher
+     */
     public function get_or_create_user($teacher = null) {
         global $USER, $DB;
 
@@ -157,15 +203,14 @@ class CompilatioAPI {
 
         // Create the user if doesn't exists.
         if ($compilatioid == 404) {
-            $lang = substr(current_language(), 0, 2);
-            $compilatioid = $this->set_user($teacher->firstname, $teacher->lastname, $teacher->email, $lang);
+            $compilatioid = $this->set_user($teacher->firstname, $teacher->lastname, $teacher->email);
         }
 
         if (!preg_match('/^[a-f0-9]{40}$/', $compilatioid)) {
             return null;
         }
 
-        $user = new stdClass();
+        $user = new \stdClass();
         $user->compilatioid = $compilatioid;
         $user->userid = $teacher->id;
         $user->id = $DB->insert_record('plagiarism_compilatio_user', $user);
@@ -181,7 +226,9 @@ class CompilatioAPI {
      * @param   string  $email          User's email
      * @return  string                  Return the user's ID, an error message otherwise
      */
-    private function set_user($firstname, $lastname, $email, $lang) {
+    private function set_user($firstname, $lastname, $email) {
+        $lang = substr(current_language(), 0, 2);
+
         $endpoint = '/api/private/user/create';
         $params = [
             'firstname' => $firstname,
@@ -241,6 +288,7 @@ class CompilatioAPI {
     /**
      * Update Elastisafe user
      *
+     * @param   string  $userid         User's identifier
      * @param   string  $firstname      User's firstname
      * @param   string  $lastname       User's lastname
      * @param   string  $email          User's email
@@ -266,8 +314,11 @@ class CompilatioAPI {
      * Load document on Compilatio account
      *
      * @param   string  $filename       Filename
-     * @param   string  $content        Document's content
      * @param   string  $folderid       Document's folder ID
+     * @param   string  $filepath       File path
+     * @param   boolean $indexed        Document's indexing state
+     * @param   object  $depositor      Document's depositor
+     * @param   array   $authors        Document's authors
      * @return  string                  Return the document's ID, an error message otherwise
      */
     public function set_document($filename, $folderid, $filepath, $indexed, $depositor, $authors) {
@@ -307,6 +358,12 @@ class CompilatioAPI {
         return $error;
     }
 
+    /**
+     * Replace forbidden characters
+     *
+     * @param  string $value
+     * @return string Returns sanitized string
+     */
     private function sanitize($value) {
         $forbiddencharacters = [
             ".", "!", "?", " => ", "%", "&", "*", "=", "#", "$", "@", "/", "\\", "<", ">", "(", ")", "[", "]", "{", "}",
@@ -321,6 +378,12 @@ class CompilatioAPI {
         return str_replace($forbiddencharacters, '_', $value);
     }
 
+    /**
+     * Validate e-mail string
+     *
+     * @param  string $email
+     * @return string|null Returns e-mail if it's valid, null otherwise
+     */
     private function validate_email($email) {
         $email = filter_var($email, FILTER_SANITIZE_EMAIL);
         return filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
@@ -361,8 +424,13 @@ class CompilatioAPI {
     /**
      * Create folder on Compilatio account
      *
-     * @param   string  $name          Folder's name
-     * @return  string                  Return the folder's ID, an error message otherwise
+     * @param   string         $name              Folder's name
+     * @param   boolean        $defaultindexing   Folder's default indexing
+     * @param   string         $analysistype      Analysis type
+     * @param   string         $analysistime      Date for scheduled analysis
+     * @param   int            $warningthreshold  Folder's warning threshold
+     * @param   int            $criticalthreshold Folder's critical threshold
+     * @return  string|false   Return the folder's ID, an error message otherwise, or false
      */
     public function set_folder(
         $name,
@@ -403,8 +471,14 @@ class CompilatioAPI {
     /**
      * Update folder on Compilatio account
      *
-     * @param   int  $folderid          Folder ID
-     * @return  string                  Return true if succeed, an error message otherwise
+     * @param   int      $folderid          Folder ID
+     * @param   string   $name              Folder's name
+     * @param   boolean  $defaultindexing   Folder's default indexing
+     * @param   string   $analysistype      Analysis type
+     * @param   string   $analysistime      Date for scheduled analysis
+     * @param   int      $warningthreshold  Folder's warning threshold
+     * @param   int      $criticalthreshold Folder's critical threshold
+     * @return  string   Return true if succeed, an error message otherwise
      */
     public function update_folder(
         $folderid,
@@ -615,6 +689,7 @@ class CompilatioAPI {
      * @param  string   $releaseplugin  Plugin version
      * @param  string   $language       Language
      * @param  int      $cronfrequency  CRON frequency
+     * @param  int      $instancekey    Instance key
      * @return mixed                    Return true if succeed, an error message otherwise
      */
     public function set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency, $instancekey) {
@@ -687,7 +762,8 @@ class CompilatioAPI {
     /**
      * Get a list of Compilatio marketing notifications.
      *
-     * @return  array   Return an array of marketing notifications
+     * @param  string  $lang lang
+     * @return array   Return an array of marketing notifications
      */
     public function get_marketing_notifications($lang) {
         $endpoint = '/api/private/marketing-notifications/' . $lang;
@@ -704,7 +780,7 @@ class CompilatioAPI {
     /**
      * Get subscription info.
      *
-     * @return  array   Return subscription info.
+     * @return  stdClass   Return subscription info.
      */
     public function get_subscription_info() {
         $endpoint = '/api/private/authentication/check-api-key';
@@ -755,27 +831,43 @@ class CompilatioAPI {
         return false;
     }
 
-    private function get_error_response($response, $expectedstatuscode) {
+    /**
+     * Get an eventually error message from an API response
+     * Compare API response with expected HTTP code
+     * @param  mixed $response           curl response
+     * @param  int   $expectedstatuscode Expected HTTP code
+     * @return false|string Returns false if expected HTTP code is found in API response, or a message otherwise
+     */
+    private function get_error_response(mixed $response, int $expectedstatuscode): false|string {
         if (!isset($response->status->code, $response->status->message)) {
             return 'Error response status not found';
-        } else if ($response->status->code == $expectedstatuscode) {
+        } else if ($response->status->code === $expectedstatuscode) {
             return false;
-        } else if ($response->status->code == 403) {
+        } else if ($response->status->code === 403) {
             foreach (($response->errors ?? []) as $error) {
-                if (isset($error->key) && $error->key == 'need_terms_of_service_validation') {
+                if (isset($error->key) && $error->key === 'need_terms_of_service_validation') {
                     if (!empty($this->userid)) {
                         $this->validate_terms_of_service();
                     }
                     return $error->key;
                 }
             }
-        } else if ($response->status->message == 'Forbidden ! Your read only API key cannot modify this resource') {
+        } else if ($response->status->message === 'Forbidden ! Your read only API key cannot modify this resource') {
             set_config('read_only_apikey', 1, 'plagiarism_compilatio');
         }
 
         return $response->status->message;
     }
 
+    /**
+     * Execute curl request with the custom HTTP header X-LMS-USER-ID
+     *
+     * @param  string   $endpoint API endpoint
+     * @param  string   $method   Desired action on endpoint
+     * @param  string   $data     Data to be send in CURLOPT_POSTFIELDS
+     * @param  resource $handle   File handler
+     * @return string curl response
+     */
     private function build_curl_on_behalf_of_user($endpoint, $method = null, $data = null, $handle = null) {
         global $DB;
 
@@ -788,6 +880,16 @@ class CompilatioAPI {
         return $this->build_curl($endpoint, $method, $data, $handle, $header);
     }
 
+    /**
+     * Execute curl request
+     *
+     * @param  string   $endpoint API endpoint
+     * @param  string   $method   Desired action on endpoint
+     * @param  string   $data     Data to be send in CURLOPT_POSTFIELDS
+     * @param  resource $handle   File handler
+     * @param  array    $header   HTTP headers
+     * @return string curl response
+     */
     private function build_curl($endpoint, $method = null, $data = null, $handle = null, $header = []) {
         global $CFG;
 
@@ -864,6 +966,14 @@ class CompilatioAPI {
         return $result;
     }
 
+    /**
+     * Returns an array containing data for curl request
+     *
+     * @param  mixed  $data
+     * @param  string $existingkeys
+     * @param  array  $returnarray
+     * @return array
+     */
     private function build_post_fields($data, $existingkeys = '', &$returnarray = []) {
         if (($data instanceof \CURLFile) || !(is_array($data) || is_object($data))) {
             $returnarray[$existingkeys] = $data;

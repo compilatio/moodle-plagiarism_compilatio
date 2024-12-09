@@ -102,4 +102,8 @@ $observers = [
         'eventname' => '\mod_assign\event\assessable_submitted',
         'callback' => 'plagiarism_compilatio_observer::assign_assessable_submitted',
     ],
+    [
+        'eventname' => '\core\event\grade_item_created',
+        'callback' => 'plagiarism_compilatio_observer::grade_item_created',
+    ],
 ];

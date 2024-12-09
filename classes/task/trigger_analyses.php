@@ -24,7 +24,9 @@
  */
 
 namespace plagiarism_compilatio\task;
-// Plugin v2 docs management.
+
+use plagiarism_compilatio\compilatio\analysis;
+
 /**
  * Trigger_analyses task class
  */
@@ -43,21 +45,21 @@ class trigger_analyses extends \core\task\scheduled_task {
      * @return void
      */
     public function execute() {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
+        global $DB;
 
+        // Return all files with Compilatio activated and to analyze.
         $sql = "SELECT file.* FROM {plagiarism_compilatio_files} file
             JOIN {plagiarism_compilatio_cm_cfg} config ON config.cmid = file.cm
             WHERE file.status = 'sent' AND config.activated = '1' AND config.analysistype = 'planned' AND config.analysistime < ?";
         $files = $DB->get_records_sql($sql, [time()]);
 
         foreach ($files as $file) {
-            \CompilatioAnalyses::start_analysis($file);
+            analysis::start_analysis($file);
         }
 
         $files = $DB->get_records('plagiarism_compilatio_files', ['status' => 'to_analyze']);
         foreach ($files as $file) {
-            \CompilatioAnalyses::start_analysis($file);
+            analysis::start_analysis($file);
         }
     }
 }

@@ -17,6 +17,7 @@
 /**
  * Start analysis for all document in course module
  *
+ * @package   plagiarism_compilatio
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -24,13 +25,10 @@
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
-
-require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+
+use plagiarism_compilatio\compilatio\analysis;
 
 require_login();
 
@@ -51,21 +49,37 @@ if ($plugincm->analysistype == 'manual') {
     if (!empty($selectedquestions)) {
         $context = context_module::instance($cmid);
         $quizattempts = $DB->get_records('quiz_attempts', ['quiz' => $quizid]);
-        
+
         foreach ($quizattempts as $quizattempt) {
-            $attempt = $CFG->version < 2023100900 ? \quiz_attempt::create($quizattempt->id) : \mod_quiz\quiz_attempt::create($quizattempt->id);
-            
+            $attempt = $CFG->version < 2023100900 ?
+                \quiz_attempt::create($quizattempt->id) :
+                \mod_quiz\quiz_attempt::create($quizattempt->id);
+
             foreach ($attempt->get_slots() as $slot) {
                 if (in_array($attempt->get_question_attempt($slot)->get_question_id(), $selectedquestions)) {
                     $answer = $attempt->get_question_attempt($slot);
-                    $courseid = $DB->get_field('course_modules', 'course', array('id' => $cmid));
-                    $filename = "quiz-" . $courseid . "-" . $cmid . "-" . $quizattempt->id . "-Q" . $answer->get_question_id() . ".htm";
+                    $courseid = $DB->get_field('course_modules', 'course', ['id' => $cmid]);
+                    $filename = "quiz-"
+                        . $courseid
+                        . "-"
+                        . $cmid
+                        . "-"
+                        . $quizattempt->id
+                        . "-Q"
+                        . $answer->get_question_id()
+                        . ".htm";
 
-                    $cmpfiles[] = $DB->get_record('plagiarism_compilatio_files', ['cm' => $cmid, 'identifier' => sha1($filename), 'status' => 'sent']);
+                    $cmpfiles[] = $DB->get_record(
+                        'plagiarism_compilatio_files',
+                        ['cm' => $cmid, 'identifier' => sha1($filename), 'status' => 'sent']
+                    );
 
                     $files = $answer->get_last_qt_files('attachments', $context->id);
                     foreach ($files as $file) {
-                        $cmpfiles[] = $DB->get_record('plagiarism_compilatio_files', ['cm' => $cmid, 'identifier' => $file->get_contenthash(), 'status' => 'sent']);
+                        $cmpfiles[] = $DB->get_record(
+                            'plagiarism_compilatio_files',
+                            ['cm' => $cmid, 'identifier' => $file->get_contenthash(), 'status' => 'sent']
+                        );
                     }
                 }
             }
@@ -88,7 +102,7 @@ if ($plugincm->analysistype == 'manual') {
             continue;
         }
 
-        $status = CompilatioAnalyses::start_analysis($file);
+        $status = analysis::start_analysis($file);
 
         if ($status == 'queue') {
             $countsuccess++;

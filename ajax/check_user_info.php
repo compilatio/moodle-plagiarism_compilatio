@@ -17,6 +17,7 @@
 /**
  * Get Compilatio user and update his info if necessary
  *
+ * @package   plagiarism_compilatio
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -24,11 +25,8 @@
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+
+use plagiarism_compilatio\compilatio\api;
 
 require_login();
 
@@ -36,7 +34,7 @@ global $DB, $USER;
 
 $userid = required_param('userid', PARAM_RAW);
 
-$compilatio = new CompilatioAPI();
+$compilatio = new api();
 $cmpuser = $compilatio->get_user($userid);
 
 if (

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * documentFrame.php - Contains method to get Compilatio document frame with score, report, indexing state, ...
+ * document_frame.php - Contains method to get Compilatio document frame with score, report, indexing state, ...
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
@@ -23,14 +23,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+namespace plagiarism_compilatio\output;
 
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/icons.php');
+use plagiarism_compilatio\output\icons;
+use plagiarism_compilatio\compilatio\file;
+use moodle_url;
 
 /**
- * CompilatioDocumentFrame class
+ * document_frame class
  */
-class CompilatioDocumentFrame {
+class document_frame {
 
     /**
      * Display plagiarism document area
@@ -76,7 +78,7 @@ class CompilatioDocumentFrame {
         }
 
         // Don't show Compilatio if not allowed.
-        $modulecontext = context_module::instance($linkarray['cmid']);
+        $modulecontext = \context_module::instance($linkarray['cmid']);
         $isteacher = $canviewscore = $canviewreport = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
         $cantriggeranalysis = has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext);
         $isstudentanalyse = compilatio_student_analysis($plugincm->studentanalyses, $linkarray['cmid'], $userid);
@@ -136,7 +138,7 @@ class CompilatioDocumentFrame {
                 $trigger = optional_param('sendfile', 0, PARAM_INT);
                 $fileid = $linkarray['file']->get_id();
                 if ($trigger == $fileid) {
-                    CompilatioSendFile::send_unsent_files([$linkarray['file']], $linkarray['cmid']);
+                    file::send_unsent_files([$linkarray['file']], $linkarray['cmid']);
                     return self::get_document_frame($linkarray);
                 }
 
@@ -170,9 +172,15 @@ class CompilatioDocumentFrame {
     }
 
     /**
-     * Display plagiarism document area
-     * @param string  $linkarray
-     * @return string Return the HTML formatted string.
+     * Display plagiarism document frame
+     *
+     * @param boolean  $cantriggeranalysis
+     * @param boolean  $isstudentanalyse
+     * @param string   $cmpfileid
+     * @param boolean  $canviewreport
+     * @param boolean  $isteacher
+     * @param string   $url
+     * @return string  Return document frame HTML string.
      */
     public static function display_document_frame(
         $cantriggeranalysis,
@@ -190,7 +198,6 @@ class CompilatioDocumentFrame {
 
         $status = $cmpfile->status ?? null;
 
-        // Plugin v2 docs management.
         $status = $status == 'to_analyze' ? 'queue' : $status;
 
         $config = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmpfile->cm ?? null]);
@@ -215,7 +222,7 @@ class CompilatioDocumentFrame {
 
                 $documentframe =
                     "<a href='{$href}' target='_blank' class='cmp-btn cmp-btn-doc cmp-btn-primary'>"
-                        . CompilatioIcons::report() . get_string('report', 'core') .
+                        . icons::report() . self::formatstring('report', 'core') .
                     "</a>";
             }
 
@@ -225,21 +232,25 @@ class CompilatioDocumentFrame {
             if (($config->analysistype ?? null) == 'planned') {
                 $documentframe =
                     "<div
-                        title='" . get_string('title_planned', 'plagiarism_compilatio', userdate($config->analysistime)) . "'
-                        class='cmp-color-secondary'
-                    >
+                        title='"
+                            . self::formatstring(
+                                'title_planned',
+                                'plagiarism_compilatio',
+                                userdate($config->analysistime)
+                            ) . "'
+                        class='cmp-color-secondary'>
                         <i class='cmp-icon-lg mx-2 fa fa-clock-o'></i>"
-                        . get_string('btn_planned', 'plagiarism_compilatio') .
+                        . self::formatstring('btn_planned') .
                     "</div>";
                 $bgcolor = 'primary';
             } else if ($cantriggeranalysis || ($isstudentanalyse && !$isteacher)) {
                 $documentframe =
                     "<div
-                        title='" . get_string('title_sent', 'plagiarism_compilatio') . "'
+                        title='" . self::formatstring('title_sent') . "'
                         class='cmp-btn cmp-btn-doc cmp-btn-primary cmp-start-btn'
                     >
-                        <i class='cmp-icon-lg mr-2 fa fa-play-circle'></i>"
-                        . get_string('btn_sent', "plagiarism_compilatio") .
+                        <i class='cmp-icon-lg mr-1 fa fa-play-circle'></i>"
+                        . self::formatstring('btn_sent') .
                     "</div>";
             } else if ($isstudentanalyse && $isteacher) {
                 $documentframe = '';
@@ -249,9 +260,9 @@ class CompilatioDocumentFrame {
 
         } else if ($status == "queue" || $status == "analysing") {
             $documentframe =
-                "<div title='" . get_string('title_' . $status, "plagiarism_compilatio") . "' class='cmp-color-secondary'>
+                "<div title='" . self::formatstring('title_' . $status) . "' class='cmp-color-secondary'>
                     <i class='cmp-icon-lg mx-2 fa fa-spinner fa-spin'></i>"
-                    . get_string('btn_' . $status, "plagiarism_compilatio") .
+                    . self::formatstring('btn_' . $status) .
                 "</div>";
             $bgcolor = 'primary';
         } else if (isset($status) && strpos($status, "error") === 0) {
@@ -264,21 +275,24 @@ class CompilatioDocumentFrame {
             }
 
             $documentframe =
-                "<div title='" . get_string("title_" . $status, "plagiarism_compilatio", $value ?? null) . "' class='cmp-color-error'>
-                    <i class='mx-2 fa fa-exclamation-triangle'></i>"
-                    . get_string('btn_' . $status, "plagiarism_compilatio") .
-                "</div>";
+                "<div title='"
+                    . self::formatstring(
+                        'title_' . $status,
+                        'plagiarism_compilatio',
+                        $value ?? null
+                    ) . "' class='cmp-color-error'>
+                    <i class='mx-2 fa fa-exclamation-triangle'></i>" . self::formatstring('btn_' . $status) . "</div>";
             $bgcolor = 'error';
         } else if (isset($url) && ($cantriggeranalysis || ($isstudentanalyse && !$isteacher))) {
             $documentframe =
                 "<a
                     href='" . $url . "'
                     target='_self'
-                    title='" . get_string('title_unsent', "plagiarism_compilatio") . "'
+                    title='" . self::formatstring('title_unsent') . "'
                     class='cmp-btn cmp-btn-doc cmp-btn-primary'
                 >
                     <i class='mr-2 fa fa-paper-plane'></i>"
-                    . get_string('btn_unsent', "plagiarism_compilatio") .
+                    . self::formatstring('btn_unsent') .
                 "</a>";
         } else {
             return '';
@@ -287,9 +301,9 @@ class CompilatioDocumentFrame {
         $info = '';
         if ($isstudentanalyse) {
             if ($isteacher) {
-                $info = "<div>" . get_string('student_analyse', 'plagiarism_compilatio') . "</div>";
+                $info = "<div>" . self::formatstring('student_analyse') . "</div>";
             } else {
-                $info = "<div>" . get_string('student_help', 'plagiarism_compilatio') . "</div>";
+                $info = "<div>" . self::formatstring('student_help') . "</div>";
             }
         }
 
@@ -298,7 +312,7 @@ class CompilatioDocumentFrame {
         if (!empty($cmpfile->externalid) && $cantriggeranalysis && !$isstudentanalyse) {
             // Plugin v2 docs management.
             if (null === $cmpfile->indexed) {
-                $compilatio = new CompilatioAPI($config->userid);
+                $compilatio = new api($config->userid);
                 $document = $compilatio->get_document($cmpfile->externalid);
                 $cmpfile->indexed = $document->indexed;
                 $DB->update_record('plagiarism_compilatio_files', $cmpfile);
@@ -307,8 +321,9 @@ class CompilatioDocumentFrame {
             $indexed = $cmpfile->indexed ? true : false;
         }
 
+        $documentid = $cmpfile->externalid ?? '';
         $output = $info . '
-            <div class="cmp-area cmp-border-' . $bgcolor . '" data-documentid="' . $cmpfile->externalid . '">
+            <div class="cmp-area cmp-border-' . $bgcolor . '" data-documentid="' . $documentid . '">
                 <img class="cmp-small-logo" src="' . new moodle_url("/plagiarism/compilatio/pix/c.svg") . '">
                 ' . self::get_indexing_state($indexed) . $score . $documentframe . '
             </div>';
@@ -327,14 +342,14 @@ class CompilatioDocumentFrame {
         if (isset($indexingstate)) {
             if ($indexingstate === true) {
                 $class = 'cmp-library-in fa-check-circle';
-                $title = get_string('indexed_document', 'plagiarism_compilatio');
+                $title = self::formatstring('indexed_document');
             } else if ($indexingstate === false) {
                 $class = 'cmp-library-out fa-times-circle';
-                $title = get_string('not_indexed_document', 'plagiarism_compilatio');
+                $title = self::formatstring('not_indexed_document');
             }
 
             $html = "<div class='cmp-library' title='" . $title . "'>
-                " . CompilatioIcons::library() . "
+                " . icons::library() . "
                 <i class='" . $class . " fa'></i>
             </div>";
         }
@@ -343,13 +358,15 @@ class CompilatioDocumentFrame {
     }
 
     /**
-     * Get the indexing state HTML
+     * Get score area with icons HTML
      *
-     * @param  mixed  $indexingstate Indexing state
-     * @return string                Return the HTML
+     * @param  object  $cmpfile
+     * @param  object  $config
+     * @param  boolean $isteacher
+     * @param  boolean $nowrap
+     * @return string  Return score area HTML string
      */
     public static function get_score($cmpfile, $config, $isteacher, $nowrap = false) {
-        global $DB;
 
         $color = $cmpfile->globalscore <= ($config->warningthreshold ?? 10)
             ? 'green'
@@ -359,8 +376,8 @@ class CompilatioDocumentFrame {
 
         $ignoredscores = empty($cmpfile->ignoredscores) ? [] : explode(',', $cmpfile->ignoredscores);
 
-        $title = get_string('title_score', 'plagiarism_compilatio', $cmpfile->globalscore);
-        $title .= $isteacher ? ' ' . get_string('title_score_teacher', 'plagiarism_compilatio') : '';
+        $title = self::formatstring('title_score', 'plagiarism_compilatio', $cmpfile->globalscore);
+        $title .= $isteacher ? ' ' . self::formatstring('title_score_teacher') : '';
 
         $html = "<span title='{$title}' class='cmp-similarity cmp-color-{$color} align-middle'>
                     <i style='display: none;' class='fa fa-refresh'></i><span>{$cmpfile->globalscore}<small>%</small></span>
@@ -379,24 +396,24 @@ class CompilatioDocumentFrame {
 
             if (in_array($score, $ignoredscores)) {
                 $icon = 'ignored' . $score;
-                $icons .= CompilatioIcons::$icon();
+                $icons .= icons::$icon();
             } else {
-                $icons .= CompilatioIcons::$score($cmpfile->$score > 0 ? $color : null);
+                $icons .= icons::$score($cmpfile->$score > 0 ? $color : null);
             }
         }
 
-        $tooltip = "<b>{$cmpfile->globalscore}" . get_string('tooltip_detailed_scores', 'plagiarism_compilatio') . "</b><br>";
-        $ignoredtooltip = "<b>" . get_string('excluded_from_score', 'plagiarism_compilatio') . ' </b><br>';
+        $tooltip = "<b>{$cmpfile->globalscore}" . self::formatstring('tooltip_detailed_scores') . "</b><br>";
+        $ignoredtooltip = "<b>" . self::formatstring('excluded_from_score') . ' </b><br>';
 
         foreach ($scores as $score) {
-            $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : get_string('unmeasured', 'plagiarism_compilatio');
-            $message = get_string($score, 'plagiarism_compilatio') . " : <b>{$message}</b><br>";
+            $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : self::formatstring('unmeasured');
+            $message = self::formatstring($score) . " : <b>{$message}</b><br>";
 
             in_array($score, $ignoredscores) ? $ignoredtooltip .= $message : $tooltip .= $message;
         }
 
         if ($recipe !== 'anasim-premium') {
-            $tooltip .= get_string('aiscore', 'plagiarism_compilatio') . " : <b>" . get_string('ai_score_not_included', 'plagiarism_compilatio') . "</b><br>";
+            $tooltip .= self::formatstring('aiscore') . " : <b>" . self::formatstring('ai_score_not_included') . "</b><br>";
         }
 
         if (!empty($ignoredscores)) {
@@ -412,6 +429,22 @@ class CompilatioDocumentFrame {
     }
 
     /**
+     * Format translation string if needed
+     *
+     * @param  string $stringid  String identifier
+     * @param  string $component moodle component
+     * @param  string $a         optional string to include in translation
+     * @return string Formated string
+     */
+    private static function formatstring(string $stringid, string $component = 'plagiarism_compilatio', string $a = null) {
+        $str = get_string($stringid, $component, $a);
+        if (preg_match("/&#[0-9]+;|&[a-z]+;/", $str)) {
+            return $str;
+        }
+        return htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
+    }
+
+    /**
      * Complete linkarray informations for quizzes
      *
      * @param array $linkarray
@@ -421,7 +454,7 @@ class CompilatioDocumentFrame {
         global $DB;
 
         if (empty($linkarray['cmid']) || empty($linkarray['content'])) {
-            $quba = question_engine::load_questions_usage_by_activity($linkarray['area']);
+            $quba = \question_engine::load_questions_usage_by_activity($linkarray['area']);
 
             if (empty($linkarray['cmid'])) {
                 // Try to get cm using the questions owning context.
@@ -442,8 +475,8 @@ class CompilatioDocumentFrame {
                     if (empty($linkarray['content']) && empty($linkarray['file'])) {
                         $courseid = $DB->get_field('course_modules', 'course', ['id' => $linkarray['cmid']]);
                         $attemptid = $DB->get_field('quiz_attempts', 'id', ['uniqueid' => $attempt->get_usage_id()]);
-                        $linkarray['cmp_filename'] = "quiz-" . $courseid . "-" . $linkarray['cmid'] . "-" . $attemptid . "-Q" . $attempt->get_question_id() . ".htm";
-
+                        $linkarray['cmp_filename'] = "quiz-" . $courseid . "-" . $linkarray['cmid']
+                            . "-" . $attemptid . "-Q" . $attempt->get_question_id() . ".htm";
                         $linkarray['content'] = $attempt->get_response_summary();
                     }
                 }

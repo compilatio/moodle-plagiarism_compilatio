@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * settings.php - Contains methods to display and save settings.
+ * course_module_settings.php - Contains methods to display and save settings.
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
@@ -23,15 +23,19 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_compilatio\compilatio;
+
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+
+use plagiarism_compilatio\compilatio\api;
+use moodle_url;
 
 /**
- * CompilatioSettings class
+ * course_module_settings class
  */
-class CompilatioSettings {
+class course_module_settings {
     /**
      * Save Compilatio settings from a course module settings page
      *
@@ -40,7 +44,7 @@ class CompilatioSettings {
      */
     public static function save_course_module_settings($data, $course) {
         global $DB, $USER;
-        $plugin = new plagiarism_plugin_compilatio();
+        $plugin = new \plagiarism_plugin_compilatio();
         if (!$plugin->get_settings()) {
             return $data;
         }
@@ -52,7 +56,7 @@ class CompilatioSettings {
             $newconfig = false;
             if (empty($cmconfig)) {
                 $newconfig = true;
-                $cmconfig = new stdClass();
+                $cmconfig = new \stdClass();
                 $cmconfig->cmid = $data->coursemodule;
             }
 
@@ -75,12 +79,11 @@ class CompilatioSettings {
                     $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => $USER->id]);
 
                     if (empty($user)) {
-                        $compilatio = new CompilatioAPI();
+                        $compilatio = new api();
                         $user = $compilatio->get_or_create_user();
 
                         if (!empty($user)) {
                             $compilatio->set_user_id($user->compilatioid);
-                            $compilatio->validate_terms_of_service();
                         }
                     }
 
@@ -88,10 +91,10 @@ class CompilatioSettings {
                 }
 
                 if (isset($cmconfig->userid)) {
-                    $compilatio ??= new CompilatioAPI($cmconfig->userid);
+                    $compilatio ??= new api($cmconfig->userid);
 
                     // Get Datetime for Compilatio folder.
-                    $date = new DateTime();
+                    $date = new \DateTime();
                     $date->setTimestamp($data->analysistime);
                     $analysistime = $date->format('Y-m-d H:i:s');
 
@@ -149,7 +152,7 @@ class CompilatioSettings {
     public static function display_course_module_settings($formwrapper, $mform) {
         global $DB, $USER;
 
-        $plugin = new plagiarism_plugin_compilatio();
+        $plugin = new \plagiarism_plugin_compilatio();
         $plagiarismsettings = $plugin->get_settings();
         if (!$plagiarismsettings) {
             return;
@@ -172,7 +175,7 @@ class CompilatioSettings {
         if (empty($plagiarismsettings[$modname])) {
             return;
         }
-        $context = context_course::instance($formwrapper->get_course()->id);
+        $context = \context_course::instance($formwrapper->get_course()->id);
 
         $defaultconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => 0]);
         if (!empty($cmid)) {
@@ -384,21 +387,18 @@ class CompilatioSettings {
         $size = (get_config('plagiarism_compilatio', 'max_size') / 1024 / 1024);
         $mform->addElement('html', '<p>' . get_string('max_file_size', 'plagiarism_compilatio', $size) . '</p>');
 
-        $word = new stdClass();
+        $word = new \stdClass();
         $word->max = get_config('plagiarism_compilatio', 'max_word');
         $word->min = get_config('plagiarism_compilatio', 'min_word');
         $mform->addElement('html', '<p>' . get_string('word_limits', 'plagiarism_compilatio', $word) . '</p>');
 
         // File types allowed.
-        $filetypes = json_decode(get_config('plagiarism_compilatio', 'file_types'));
-        $filetypesstring = '';
-        foreach ($filetypes as $type => $value) {
-            $filetypesstring .= $type . ', ';
-        }
-        $filetypesstring = substr($filetypesstring, 0, -2);
         $mform->addElement(
             'html',
-            '<div>' . get_string('help_compilatio_format_content', 'plagiarism_compilatio') . $filetypesstring . '</div>'
+            '<div>'
+            . get_string('help_compilatio_format_content', 'plagiarism_compilatio')
+            . implode(', ', file::supported_extensions())
+            . '</div>'
         );
 
         // Used to append text nicely after the inputs.
