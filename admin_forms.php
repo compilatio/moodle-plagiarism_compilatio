@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * compilatio_form.php - Contains plugin global settings form.
+ * admin_forms.php - Contains plugin admin forms.
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
@@ -26,9 +26,9 @@
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 
 require_once($CFG->dirroot . '/lib/formslib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/settings.php');
+
+use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\compilatio\course_module_settings;
 
 /**
  * Setup form class
@@ -88,7 +88,7 @@ class compilatio_setup_form extends moodleform {
 
         $apikey = get_config('plagiarism_compilatio', 'apikey');
         if (!empty($apikey)) {
-            $compilatio = new CompilatioAPI($apikey);
+            $compilatio = new api($apikey);
 
             if ($compilatio->check_allow_student_analyses()) {
                 $mform->addElement('checkbox', 'enable_student_analyses',
@@ -144,8 +144,35 @@ class compilatio_defaults_form extends moodleform {
      */
     protected function definition() {
         $mform = & $this->_form;
-        CompilatioSettings::get_form_elements($mform, true);
+        course_module_settings::get_form_elements($mform, true);
         $this->add_action_buttons(true);
+    }
+}
+
+/**
+ * Class
+ * @copyright  2024 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class compilatio_restart_form extends moodleform {
+
+    /**
+     * Define the form
+     * @return void
+     */
+    protected function definition() {
+        $mform = & $this->_form;
+
+        $mform->addElement('select', 'reset', get_string('selectanaction', 'core'), [
+            'documents' => get_string('resend_document_in_error', 'plagiarism_compilatio'),
+            'analyses' => get_string('restart_failed_analyses', 'plagiarism_compilatio'),
+        ]);
+        $mform->setDefault('reset', 'documents');
+
+        $mform->addElement('date_time_selector', 'startdate', get_string('selectperiod', 'core'));
+        $mform->addElement('date_time_selector', 'enddate', '');
+
+        $this->add_action_buttons(false, get_string('go', 'core'));
     }
 }
 

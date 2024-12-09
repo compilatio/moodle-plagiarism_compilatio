@@ -17,6 +17,7 @@
 /**
  * Reset failed analyses and unsent documents of the course module
  *
+ * @package   plagiarism_compilatio
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -24,19 +25,18 @@
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
-
-require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+
+use plagiarism_compilatio\compilatio\file;
+use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\compilatio\analysis;
 
 require_login();
 global $DB;
 
 $cmid = required_param('cmid', PARAM_TEXT);
 
-$compilatio = new CompilatioAPI();
+$compilatio = new api();
 
 $SESSION->compilatio_alerts = [];
 
@@ -44,6 +44,17 @@ $SESSION->compilatio_alerts = [];
 $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'error_analysis_failed']);
 
 if (!empty($files)) {
+    // Check if files have been automatically relaunched and analyzed.
+    foreach ($files as $key => $cmpfile) {
+        $cmpfile = analysis::check_analysis($cmpfile);
+
+        if ($cmpfile->status !== 'error_analysis_failed') {
+            unset($files[$key]);
+        }
+
+        $cmpfile->startanalysis = true;
+    }
+
     compilatio_delete_files($files);
 }
 
@@ -55,7 +66,7 @@ if (!empty($files)) {
     $docsfailed = [];
 
     foreach ($files as $cmpfile) {
-        $success = CompilatioSendFile::retrieve_and_send_file($cmpfile);
+        $success = file::retrieve_and_send_file($cmpfile, ($cmpfile->startanalysis ?? false) === true);
 
         if ($success) {
             $countsuccess++;

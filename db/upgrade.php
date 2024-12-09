@@ -13,19 +13,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-// This file keeps track of upgrades to
-// the plagiarism compilatio plugin.
 
 /**
  * upgrade.php - Contains class to upgrade the plugin database between differents versions.
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2024 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use plagiarism_compilatio\task\update_meta;
+use plagiarism_compilatio\compilatio\api;
 
 /**
  * Method to upgrade the database between differents versions
@@ -259,8 +258,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
             $apiconfigid = get_config('plagiarism_compilatio', 'apiconfigid');
             $apikey = $DB->get_field('plagiarism_compilatio_apicon', 'api_key', ['id' => $apiconfigid]);
 
-            require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-            $compilatio = new CompilatioAPI(null, $apikey);
+            $compilatio = new api(null, $apikey);
 
             $compilatioid = $compilatio->get_apikey_user_id();
             $DB->insert_record('plagiarism_compilatio_user', (object) ['userid' => 0, 'compilatioid' => $compilatioid]);
@@ -369,8 +367,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         if (!preg_match('/^[a-f0-9]{40}$/', $compilatioid)) {
             $apikey = get_config('plagiarism_compilatio', 'apikey');
             if (!empty($apikey)) {
-                require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-                $compilatio = new CompilatioAPI(null, $apikey);
+                $compilatio = new api(null, $apikey);
 
                 $compilatioid = $compilatio->get_apikey_user_id(false);
 

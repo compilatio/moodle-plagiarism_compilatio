@@ -25,9 +25,7 @@
 
 namespace plagiarism_compilatio\task;
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+use plagiarism_compilatio\compilatio\api;
 
 /**
  * Update_meta task class
@@ -52,7 +50,7 @@ class update_meta extends \core\task\scheduled_task {
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         // Update the 'Compilatio unavailable' marker in the database.
-        $compilatio = new \CompilatioAPI(null, 'test');
+        $compilatio = new api(null, 'test');
         if ($compilatio->check_apikey() == 'Forbidden ! Your api key is invalid') {
             set_config('connection_webservice', 1, 'plagiarism_compilatio');
         } else {
@@ -65,7 +63,7 @@ class update_meta extends \core\task\scheduled_task {
             set_config('instance_key', $instancekey, 'plagiarism_compilatio');
         }
 
-        $compilatio = new \CompilatioAPI();
+        $compilatio = new api();
         $compilatio->check_apikey();
         $compilatio->set_moodle_configuration(
             phpversion(),

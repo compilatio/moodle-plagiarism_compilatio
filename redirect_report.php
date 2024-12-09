@@ -27,7 +27,8 @@ require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+
+use plagiarism_compilatio\compilatio\api;
 
 require_login();
 
@@ -41,7 +42,7 @@ $modulecontext = context_module::instance($cmid);
 $isteacher = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
 
 $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmid]);
-$compilatio = new CompilatioAPI($userid);
+$compilatio = new api($userid);
 
 if ($isteacher) {
     $jwt = $compilatio->get_report_token($docid);

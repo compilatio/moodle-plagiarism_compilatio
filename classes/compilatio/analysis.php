@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * analyses.php - Contains methods to start an analysis and get the analysis result.
+ * analysis.php - Contains methods to start an analysis and get the analysis result.
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
@@ -23,15 +23,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+namespace plagiarism_compilatio\compilatio;
 
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+use plagiarism_compilatio\compilatio\api;
 
 /**
- * CompilatioAnalyses class
+ * analysis class
  */
-class CompilatioAnalyses {
+class analysis {
     /**
      * Start an analyse
      *
@@ -43,7 +42,7 @@ class CompilatioAnalyses {
         global $DB, $OUTPUT;
 
         $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmpfile->cm]);
-        $compilatio = new CompilatioAPI($userid);
+        $compilatio = new api($userid);
 
         $analyse = $compilatio->start_analyse($cmpfile->externalid);
 
@@ -70,16 +69,15 @@ class CompilatioAnalyses {
     /**
      * Check an analysis
      *
-     * @param  object $cmpfile    File
-     * @param  bool   $manuallytriggered Manually triggered
-     * @return object $cmpfile    File
+     * @param  object $cmpfile File
+     * @return object $cmpfile File with updated status
      */
     public static function check_analysis($cmpfile) {
 
         global $DB;
 
         $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmpfile->cm]);
-        $compilatio = new CompilatioAPI($userid);
+        $compilatio = new api($userid);
 
         $doc = $compilatio->get_document($cmpfile->externalid);
 

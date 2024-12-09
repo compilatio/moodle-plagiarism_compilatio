@@ -25,6 +25,8 @@
 
 namespace plagiarism_compilatio\task;
 
+use plagiarism_compilatio\compilatio\analysis;
+
 /**
  * Get_scores task class
  */
@@ -47,7 +49,6 @@ class get_scores extends \core\task\scheduled_task {
         global $DB, $CFG;
 
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
 
         $compilatio = new \plagiarism_plugin_compilatio();
 
@@ -59,18 +60,20 @@ class get_scores extends \core\task\scheduled_task {
         }
         set_config('last_cron', strtotime('now'), 'plagiarism_compilatio');
 
-        if ($plagiarismsettings = $compilatio->get_settings()) {
+        if ($compilatio->get_settings()) {
             mtrace('getting Compilatio similarity scores');
             // Get all files set that have been submitted.
             $sql = "SELECT cf.* FROM {plagiarism_compilatio_files} cf
                 JOIN {plagiarism_compilatio_cm_cfg} cfg ON cf.cm = cfg.cmid
-                WHERE cf.status = 'analysing' OR cf.status = 'queue' OR (cf.status = 'sent' AND cfg.analysistype = 'planned' AND cfg.analysistime < ?)";
+                WHERE cf.status = 'analysing'
+                OR cf.status = 'queue'
+                OR (cf.status = 'sent' AND cfg.analysistype = 'planned' AND cfg.analysistime < ?)";
             $files = $DB->get_records_sql($sql, [time()]);
 
             if (!empty($files)) {
                 foreach ($files as $plagiarismfile) {
                     mtrace('getting score for file ' . $plagiarismfile->id);
-                    \CompilatioAnalyses::check_analysis($plagiarismfile);
+                    analysis::check_analysis($plagiarismfile);
                 }
             }
         }

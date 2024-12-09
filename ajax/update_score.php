@@ -17,6 +17,7 @@
 /**
  * Update similarity score state for a document
  *
+ * @package   plagiarism_compilatio
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -25,14 +26,12 @@
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/documentFrame.php');
+
+use plagiarism_compilatio\compilatio\analysis;
+use plagiarism_compilatio\output\document_frame;
 
 require_login();
+
 global $DB, $USER;
 
 $docid = required_param('docId', PARAM_TEXT);
@@ -40,9 +39,9 @@ $docid = required_param('docId', PARAM_TEXT);
 $file = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 
 if (!empty($file)) {
-    $file = CompilatioAnalyses::check_analysis($file);
+    $file = analysis::check_analysis($file);
 
     $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $file->cm]);
 
-    echo CompilatioDocumentFrame::get_score($file, $cmconfig, true);
+    echo document_frame::get_score($file, $cmconfig, true);
 }

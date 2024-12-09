@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * send_file.php - Contains methods to send files.
+ * file.php - Contains methods to send files.
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
@@ -23,29 +23,39 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-/**
- * CompilatioSendFile class
- */
+namespace plagiarism_compilatio\compilatio;
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
 
-class CompilatioSendFile {
+use plagiarism_compilatio\compilatio\analysis;
+use plagiarism_compilatio\compilatio\api;
 
+/**
+ * file class
+ */
+class file {
+
+    /**
+     * @var mixed $depositor
+     */
     private static $depositor;
+
+    /**
+     * @var array $authors
+     */
     private static $authors;
 
     /**
      * Send file to compilatio
      *
-     * @param int    $cmid      Course module identifier
-     * @param int    $userid    User identifier
-     * @param object $file      File to send to Compilatio
-     * @param object $filename  Filename for text content
-     * @param object $content   Text content
+     * @param int    $cmid       Course module identifier
+     * @param int    $userid     User identifier
+     * @param object $file       File to send to Compilatio
+     * @param string $filename   Filename for text content
+     * @param string $content    Text content
+     * @param string $identifier File identifier
      */
     public static function send_file($cmid, $userid, $file = null, $filename = null, $content = null, $identifier = null) {
 
@@ -53,7 +63,7 @@ class CompilatioSendFile {
 
         $send = true;
 
-        $cmpfile = new stdClass();
+        $cmpfile = new \stdClass();
         $cmpfile->cm = $cmid;
         $cmpfile->userid = $userid;
         $cmpfile->timesubmitted = time();
@@ -104,14 +114,14 @@ class CompilatioSendFile {
                 debugging("Error when sending the file to compilatio : failed to create compilatio temp directory");
             }
 
-            $filepath = $CFG->dataroot . "/temp/compilatio/" . __FUNCTION__ . sha1(uniqid('',true)) . ".txt";
+            $filepath = $CFG->dataroot . "/temp/compilatio/" . __FUNCTION__ . '_' . sha1(uniqid('', true)) . ".txt";
             $handle = fopen($filepath, "wb");
             fwrite($handle, $content);
             fclose($handle);
 
             $cmconfig = $DB->get_record("plagiarism_compilatio_cm_cfg", ["cmid" => $cmid]);
 
-            $compilatio = new CompilatioAPI($cmconfig->userid);
+            $compilatio = new api($cmconfig->userid);
 
             self::set_depositor_and_authors($userid, $cmid);
 
@@ -139,8 +149,8 @@ class CompilatioSendFile {
                     }
                 }
 
-                $DB->insert_record('plagiarism_compilatio_files', $cmpfile);
-                return true;
+                $cmpfile->id = $DB->insert_record('plagiarism_compilatio_files', $cmpfile);
+                return $cmpfile;
             } else {
                 $cmpfile->status = 'error_sending_failed';
             }
@@ -167,11 +177,18 @@ class CompilatioSendFile {
         }
     }
 
-    public static function retrieve_and_send_file($cmpfile) {
+    /**
+     * Get file or text content and send it to Compilatio
+     *
+     * @param  mixed   $cmpfile       Compilatio file record
+     * @param  boolean $startanalysis Start analysis directly after uploading
+     * @return boolean Result of sending file or text content to Compilatio
+     */
+    public static function retrieve_and_send_file($cmpfile, $startanalysis = false) {
 
         global $DB;
 
-        $success = false;
+        $newcmpfile = null;
 
         if (preg_match('~.htm$~', $cmpfile->filename)) { // Text content.
             $objectid = explode(".", explode("-", $cmpfile->filename)[1])[0];
@@ -195,6 +212,8 @@ class CompilatioSendFile {
                     $questionid = substr(explode('.', $cmpfile->filename)[0], strpos($cmpfile->filename, "Q") + 1);
                     $attemptid = explode("-", $cmpfile->filename)[3];
 
+                    $identifier = sha1($cmpfile->filename);
+
                     $sql = "SELECT responsesummary
                         FROM {quiz_attempts} quiz
                         JOIN {question_attempts} qa ON quiz.uniqueid = qa.questionusageid
@@ -206,12 +225,19 @@ class CompilatioSendFile {
             if (!empty($content)) {
                 $DB->delete_records('plagiarism_compilatio_files', ['id' => $cmpfile->id]);
 
-                $success = self::send_file($cmpfile->cm, $cmpfile->userid, null, $cmpfile->filename, $content);
+                $newcmpfile = self::send_file(
+                    $cmpfile->cm,
+                    $cmpfile->userid,
+                    null,
+                    $cmpfile->filename,
+                    $content,
+                    $identifier ?? null
+                );
             }
         } else { // File.
             $module = get_coursemodule_from_id(null, $cmpfile->cm);
 
-            $modulecontext = context_module::instance($cmpfile->cm);
+            $modulecontext = \context_module::instance($cmpfile->cm);
             $contextid = $modulecontext->id;
             $sql = 'SELECT * FROM {files} f WHERE f.contenthash= ? AND contextid = ?';
             $f = $DB->get_record_sql($sql, [$cmpfile->identifier, $contextid]);
@@ -225,10 +251,15 @@ class CompilatioSendFile {
 
             $DB->delete_records('plagiarism_compilatio_files', ['id' => $cmpfile->id]);
 
-            $success = self::send_file($cmpfile->cm, $cmpfile->userid, $file);
+            $newcmpfile = self::send_file($cmpfile->cm, $cmpfile->userid, $file);
         }
 
-        return $success;
+        if (is_object($newcmpfile) && $startanalysis) {
+            $newcmpfile->status = 'to_analyze';
+            $DB->update_record('plagiarism_compilatio_files', $newcmpfile);
+        }
+
+        return is_object($newcmpfile);
     }
 
     /**
@@ -245,17 +276,27 @@ class CompilatioSendFile {
             return false;
         }
         $extension = strtolower($pathinfo['extension']);
-
-        $filetypes = json_decode(get_config('plagiarism_compilatio', 'file_types'));
-
-        foreach ($filetypes as $type => $value) {
-            if ($extension == $type) {
-                return true;
-            }
-        }
-        return false;
+        return in_array($extension, self::supported_extensions());
     }
 
+    /**
+     * Get supported extensions (excluding zip)
+     *
+     * @return array Supported extensions
+     */
+    public static function supported_extensions() {
+        $filetypes = json_decode(get_config('plagiarism_compilatio', 'file_types'));
+        $extensions = array_keys((array) $filetypes);
+        return array_diff($extensions, ['zip']); ;
+    }
+
+    /**
+     * Setter for authors and depositor
+     *
+     * @param  int $userid  User ID
+     * @param  int $cmid    Course module ID
+     * @return void
+     */
     private static function set_depositor_and_authors($userid, $cmid) {
         global $DB;
 
