@@ -17,7 +17,7 @@ define(['jquery'], function($) {
 
     var exports = {};
 
-    function startAnalyses(message, basepath, cmid, selectedstudents = null, selectedquestions = null, quizid = null) {
+    function startAnalyses(message, basepath, cmid, selectedstudents = null, selectedquestions = [], quizid = null) {
         disableCompilatioButtons();
 
         $('#cmp-dropdown-menu').removeClass('show');
@@ -180,7 +180,14 @@ define(['jquery'], function($) {
                     url: basepath + '/plagiarism/compilatio/ajax/update_score_settings.php',  
                     data: {cmid: cmid, checkedvalues: checkedvalues, scores: scores},
                     success: function() {
-                        window.location.reload();
+                        let url = new URL(window.location.href);
+
+                        if (!url.searchParams.get('refreshAllDocs')) {
+                            url.searchParams.append('refreshAllDocs', 'true');
+                            window.location.href = url.href;
+                        } else {
+                            window.location.reload();
+                        }
                     },
                     error: function(error) {
                         console.error('Error:', error);
@@ -231,13 +238,16 @@ define(['jquery'], function($) {
                         var indexingState = 1;
                     }
                     i.removeClass();
+                    i.parent().attr('title', '');
                     $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php', {'docId': cmpfileid, 'indexingState': indexingState}, function(res) {
-                        if (res == 'true') {
+                        response = JSON.parse(res);
+                        if (response.status === 'ok') {
                             if (indexingState == 0) {
                                 i.addClass('cmp-library-out fa-times-circle fa');
                             } else {
                                 i.addClass('cmp-library-in fa-check-circle fa');
                             }
+                            i.parent().attr('title', response.text);
                         }
                     });
                 });

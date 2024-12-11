@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * statistics.php - Display global statistics about course modules
+ * admin_tab_statistics.php - Display global statistics about course modules
  *
  * @package   plagiarism_compilatio
  * @author    Compilatio <support@compilatio.net>
@@ -27,8 +27,10 @@ require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
+
+use plagiarism_compilatio\output\statistics;
+use plagiarism_compilatio\compilatio\csv_generator;
+
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
 
@@ -36,22 +38,31 @@ $PAGE->requires->jquery();
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
 
-$plagiarismplugin = new plagiarism_plugin_compilatio();
+$export = optional_param('export', '', PARAM_RAW);
+if ($export === 'raw') {
+    csv_generator::generate_global_raw_csv();
+} else if ($export === 'global') {
+    csv_generator::generate_global_csv();
+}
 
-$plagiarismsettings = (array) get_config('plagiarism_compilatio');
+$dataurl = optional_param('dataurl', false, PARAM_BOOL);
+if ($dataurl) {
+    echo json_encode(statistics::get_global_statistics());
+    exit(0);
+}
 
 echo $OUTPUT->header();
-$currenttab = 'compilatiostatistics';
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
+$currenttab = 'statistics';
+require_once($CFG->dirroot . '/plagiarism/compilatio/admin_tabs.php');
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 
-$rows = CompilatioStatistics::get_global_statistics();
+$rows = statistics::get_global_statistics();
 
 if (count($rows) === 0) {
     echo get_string('no_statistics_yet', 'plagiarism_compilatio');
 } else {
-
-    $url = new moodle_url('/plagiarism/compilatio/CSV.php');
+    $url = new moodle_url('/plagiarism/compilatio/admin_tab_statistics.php');
+    $url->param('export', 'raw');
     echo html_writer::tag('legend', get_string('global_statistics', 'plagiarism_compilatio'), [
         'class' => 'cmp-legend',
     ]);
@@ -73,7 +84,8 @@ if (count($rows) === 0) {
     // Scripts function.
     echo html_writer::script('', $CFG->wwwroot . '/plagiarism/compilatio/js/statistics_functions.js');
 
-    $url = new moodle_url('/plagiarism/compilatio/stats_json.php');
+    $url = new moodle_url('/plagiarism/compilatio/admin_tab_statistics.php');
+    $url->param('dataurl', 1);
 
     echo html_writer::tag('h5', 'Compilatio - ' . get_string('similarities', 'plagiarism_compilatio'), ['colspan' => '4']);
 
@@ -125,7 +137,8 @@ if (count($rows) === 0) {
     }
 
     echo html_writer::table($tablenojs);
-    $url = new moodle_url('/plagiarism/compilatio/CSV.php', ['raw' => 0]);
+    $url = new moodle_url('/plagiarism/compilatio/admin_tab_statistics.php');
+    $url->param('export', 'global');
     echo html_writer::tag('a', get_string('export_global_csv', 'plagiarism_compilatio'), [
         'href' => $url,
         'class' => 'mb-3 cmp-btn cmp-btn-primary',

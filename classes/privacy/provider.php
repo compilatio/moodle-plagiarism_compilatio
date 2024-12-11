@@ -25,11 +25,22 @@
 
 namespace plagiarism_compilatio\privacy;
 
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+use core_privacy\local\metadata\collection;
+use core_privacy\local\request\contextlist;
+use core_privacy\local\request\userlist;
+use core_privacy\local\request\context;
+use core_privacy\local\request\writer;
+use plagiarism_compilatio\compilatio\api;
+use core_privacy\local\metadata\provider as metadata_provider;
+use core_plagiarism\privacy\plagiarism_provider;
+use core_privacy\local\legacy_polyfil as local_polyfill;
+use core_plagiarism\privacy\legacy_polyfill as privacy_polyfill;
+
 
 defined('MOODLE_INTERNAL') || die();
 
 if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
+
     interface user_provider extends \core_plagiarism\privacy\plagiarism_user_provider {
 
     }
@@ -39,38 +50,21 @@ if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
     }
 }
 
-use core_privacy\local\metadata\collection;
-use core_privacy\local\request\contextlist;
-use core_privacy\local\request\userlist;
-use core_privacy\local\request\context;
-use core_privacy\local\request\writer;
-
 /**
  * Class provider for exporting or deleting data
+ * This plugin has data and must therefore define the metadata provider in order to describe it.
+ * This is a plagiarism plugin. It interacts with the plagiarism subsystem rather than with core.
  */
-class provider implements
-    // This plugin has data and must therefore define the metadata provider in order to describe it.
-    \core_privacy\local\metadata\provider,
+class provider implements metadata_provider, plagiarism_provider, user_provider {
 
-    // This is a plagiarism plugin. It interacts with the plagiarism subsystem rather than with core.
-    \core_plagiarism\privacy\plagiarism_provider,
+    use local_polyfill, privacy_polyfill;
 
-    user_provider {
-
-    // This trait must be included to provide the relevant polyfill for the metadata provider.
-    use \core_privacy\local\legacy_polyfill;
-
-    // This trait must be included to provide the relevant polyfill for the plagirism provider.
-    use \core_plagiarism\privacy\legacy_polyfill;
-
-    // The required methods must be in this format starting with an underscore.
     /**
-     * Return the fields where personal data is stored
      *
      * @param   collection  $collection The initialised collection to add items to.
-     * @return  collection  $collection The updated collection of user data.
+     * @return  collection  The updated collection of user data.
      */
-    public static function get_metadata(collection $collection) : collection {
+    public static function get_metadata(collection $collection):collection {
 
         $collection->add_subsystem_link(
             'core_files',
@@ -115,12 +109,11 @@ class provider implements
     }
 
     /**
-     * Get the list of contexts that contain user information for the specified user.
      *
      * @param   int         $userid         The user to search.
-     * @return  contextlist $contextlist    The list of contexts used in this plugin.
+     * @return  contextlist The list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid(int $userid) : contextlist {
+    public static function get_contexts_for_userid(int $userid): contextlist {
 
         $sql = "SELECT c.id
                 FROM {context} c
@@ -134,9 +127,7 @@ class provider implements
         return $contextlist;
     }
 
-    // This is one of the polyfilled methods from the plagiarism provider.
     /**
-     * Export all data for the specified userid and context.
      *
      * @param   int         $userid     The user to export.
      * @param   \context    $context    The context to export.
@@ -159,14 +150,13 @@ class provider implements
     }
 
     /**
-     * Delete all data for all users for the specified context.
      *
      * @param   \context    $context    The context to delete in.
      */
     public static function delete_plagiarism_for_context(\context $context) {
 
         global $DB, $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $files = $DB->get_records('plagiarism_compilatio_files', ["cm" => $context->instanceid]);
@@ -176,7 +166,6 @@ class provider implements
     }
 
     /**
-     * Delete all data for the specified user in the specified context.
      *
      * @param   int         $userid     The user to delete.
      * @param   \context    $context    The context to refine the deletion.
@@ -185,7 +174,6 @@ class provider implements
 
         global $DB, $CFG;
 
-        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $ownerfile = get_config('plagiarism_compilatio', 'owner_file');
@@ -200,7 +188,6 @@ class provider implements
     }
 
     /**
-     * Deletes all user content information for the provided users and context.
      *
      * @param  array    $userids   The users to delete.
      * @param  \context $context   The context to refine the deletion.
@@ -208,7 +195,7 @@ class provider implements
     public static function delete_plagiarism_for_users(array $userids, \context $context) {
 
         global $DB, $CFG;
-        require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         $cmid = $context->instanceid;

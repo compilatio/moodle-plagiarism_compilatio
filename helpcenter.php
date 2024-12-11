@@ -26,7 +26,8 @@
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+
+use plagiarism_compilatio\compilatio\api;
 
 require_login();
 
@@ -49,7 +50,7 @@ if ($page == 'service_status') {
     exit;
 }
 
-$compilatio = new CompilatioAPI($userid);
+$compilatio = new api($userid);
 $token = $compilatio->get_zendesk_jwt();
 
 header('Location: https://compilatio.zendesk.com/access/jwt?jwt=' . $token . '&return_to=' . urlencode($helpcenterpage));

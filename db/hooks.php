@@ -15,19 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * version.php - Contains plugin version settings.
+ * Hook callbacks for Compilatio
  *
- * @package   plagiarism_compilatio
- * @author    Compilatio <support@compilatio.net>
- * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    plagiarism_compilatio
+ * @copyright  2024 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+defined('MOODLE_INTERNAL') || die();
 
-$plugin->version    = 2024120400;
-$plugin->requires   = 2022041900;
-$plugin->cron       = 300; // Only run every 5 minutes.
-$plugin->component  = 'plagiarism_compilatio';
-$plugin->maturity   = MATURITY_STABLE;
-$plugin->release    = '3.2.0';
+use plagiarism_compilatio\output\compilatio_frame;
+
+global $CFG;
+
+$callbacks = [];
+
+if ($CFG->version >= 2024042200) {
+    $callbacks[] = [
+        'hook' => core\hook\output\before_standard_top_of_body_html_generation::class,
+        'callback' => [compilatio_frame::class, 'before_standard_top_of_body_html_generation'],
+        'priority' => 0,
+    ];
+}

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * frame.php - Contains method to get Compilatio Frame.
+ * compilatio_frame.php - Contains method to get Compilatio frame.
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
@@ -23,18 +23,45 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_compilatio\output;
+
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-use mod_quiz\question\bank\qbank_helper;
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/statistics.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/csv.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/icons.php');
+use mod_quiz\question\bank\qbank_helper;
+use core\hook\output\before_standard_top_of_body_html_generation;
+use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\compilatio\csv_generator;
+use plagiarism_compilatio\output\statistics;
+use plagiarism_compilatio\output\icons;
+use plagiarism_compilatio\compilatio\analysis;
+use moodle_url;
 
 /**
- * CompilatioFrame class
+ * compilatio_frame class
  */
-class CompilatioFrame {
+class compilatio_frame {
+
+    /**
+     * Hook callback to insert a chunk of html at the start of the html document.
+     * This allow us to display the Compilatio frame with statistics, alerts,
+     * author search tool and buttons to launch all analyses and update submitted files status.
+     *
+     * @param before_standard_top_of_body_html_generation $hook
+     */
+    public static function before_standard_top_of_body_html_generation(before_standard_top_of_body_html_generation $hook): void {
+        
+        global $SESSION;
+
+        if (optional_param('refreshAllDocs', false, PARAM_BOOL)) {
+            foreach ($SESSION->compilatio_plagiarismfiles as $file) {
+                analysis::check_analysis($file);
+            }
+        }
+
+        $hook->add_html(self::get_frame());
+    }
 
     /**
      * Display compilatio frame
@@ -80,7 +107,7 @@ class CompilatioFrame {
 
         $export = optional_param('cmp_csv_export', '', PARAM_BOOL);
         if ($export) {
-            CompilatioCsv::generate_cm_csv($cmid, $module);
+            csv_generator::generate_cm_csv($cmid, $module);
         }
 
         // Store plagiarismfiles in $SESSION.
@@ -152,7 +179,7 @@ class CompilatioFrame {
             $countunsend = 0;
         }
 
-        $compilatio = new CompilatioAPI();
+        $compilatio = new api();
         $language = substr(current_language(), 0, 2);
 
         foreach ($compilatio->get_alerts() as $alert) {
@@ -227,7 +254,7 @@ class CompilatioFrame {
                 title='" . get_string('display_stats_per_student', 'plagiarism_compilatio') . "'
                 class='cmp-icon'
                 data-toggle='tooltip'
-            >" . CompilatioIcons::statistics_per_student() . "
+            >" . icons::statistics_per_student() . "
             </span>";
         }
 
@@ -297,7 +324,7 @@ class CompilatioFrame {
         $output .= "<div id='cmp-help' class='cmp-tabs-content'>
             <p>" . get_string('similarities_disclaimer', 'plagiarism_compilatio') . "</p>";
 
-        // Elements included in subscription
+        // Elements included in subscription.
         $output .= "<p>" . get_string('element_included_in_subscription', 'plagiarism_compilatio');
 
         $output .= get_config('plagiarism_compilatio', 'recipe') === 'anasim-premium'
@@ -331,21 +358,22 @@ class CompilatioFrame {
         // Stats tab.
         $url = $PAGE->url;
         $url->param('cmp_csv_export', true);
-        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") . "' class='cmp-icon position-absolute' style='right: 1rem;' href='$url' data-toggle='tooltip' >
+        $exportbutton = "<a title='" . get_string("export_csv", "plagiarism_compilatio") .
+            "' class='cmp-icon position-absolute' style='right: 1rem;' href='$url' data-toggle='tooltip' >
                 <i class='fa fa-download'></i>
             </a>";
 
         $output .= "
             <div id='cmp-stats' class='cmp-tabs-content'>
                 <div class='row text-center position-relative'>"
-                . CompilatioStatistics::get_statistics($cmid) . $exportbutton .
+                . statistics::get_statistics($cmid) . $exportbutton .
                 "</div>
             </div>";
 
         $output .= "
             <div id='cmp-stats-per-student' class='cmp-tabs-content'>
                 <div class='text-center'>"
-                . CompilatioStatistics::get_quiz_students_statistics($cmid) . "</div>
+                . statistics::get_quiz_students_statistics($cmid) . "</div>
             </div>";
 
         // Notifications tab.
@@ -439,9 +467,16 @@ class CompilatioFrame {
         return $output;
     }
 
+    /**
+     * Build HTML for Start all aalyses button
+     *
+     * @param  int    $cmid   Course module ID
+     * @param  string $module Module name
+     * @return string HTML
+     */
     private static function display_start_all_analyses_button($cmid, $module) {
         global $DB, $CFG, $PAGE;
-        
+
         $output = $questionselector = '';
 
         $output .=
@@ -468,7 +503,7 @@ class CompilatioFrame {
 
             $quizid = $DB->get_field_sql($sql, [$cmid]);
 
-            $modulecontext = context_module::instance($cmid);
+            $modulecontext = \context_module::instance($cmid);
             $quizquestions = qbank_helper::get_question_structure($quizid, $modulecontext);
 
             $questionselector .= "<div class='text-center'>";
@@ -480,10 +515,11 @@ class CompilatioFrame {
 
                 $questionselector .= "
                     <div>
-                        <input class='checkbox-question-selector' type='checkbox' id='" . $quizquestion->questionid . "' value='" . $quizquestion->questionid . "'>
-                        <label class='form-check-label' for='" . $quizquestion->questionid . "'>
-                            " . get_string('question', 'core') . " " . $quizquestion->slot . "
-                        </label>
+                        <input class='checkbox-question-selector' type='checkbox' id='" . $quizquestion->questionid . "'
+                            value='" . $quizquestion->questionid . "'>
+                            <label class='form-check-label' for='" . $quizquestion->questionid . "'>
+                                " . get_string('question', 'core') . " " . $quizquestion->slot . "
+                            </label>
                     </div>";
             }
 
@@ -524,7 +560,7 @@ class CompilatioFrame {
                         <div class='text-nowrap'>" . get_string('start_selected_files_analysis', 'plagiarism_compilatio') . "</div>
                     </div>
                     " . $questionselector . "
-                </div>  
+                </div>
             </div>";
 
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedStudents',
@@ -533,6 +569,12 @@ class CompilatioFrame {
         return $output;
     }
 
+    /**
+     * Build HTML for score settings
+     *
+     * @param  int $cmid Course module ID
+     * @return string HTML
+     */
     private static function display_score_settings($cmid) {
         global $DB, $PAGE, $CFG;
 
@@ -551,9 +593,8 @@ class CompilatioFrame {
         foreach ($scores as $score) {
             $output .= "
                 <div class='form-check mt-2 mr-1'>
-                    <input class='checkbox-score-settings' type='checkbox' id='" . $score . "' value='" . $score . "' " 
-                        . (in_array($score, $ignoredscores) ? '' : 'checked') .
-                    ">
+                    <input class='checkbox-score-settings' type='checkbox' id='" . $score . "' value='" . $score . "'
+                        " . (in_array($score, $ignoredscores) ? '' : 'checked') . ">
                     <label class='form-check-label' for='" . $score . "'>
                         " . get_string($score . '_percentage', 'plagiarism_compilatio') . "
                     </label>
@@ -562,13 +603,19 @@ class CompilatioFrame {
 
         $output .= "
             <div class='mt-2'>
-                <span class='font-weight-lighter font-italic mt-4'>" . get_string('score_settings_info', 'plagiarism_compilatio') . "</span>
+                <span class='font-weight-lighter font-italic mt-4'>"
+                    . get_string('score_settings_info', 'plagiarism_compilatio') . "</span>
             </div>
             <div class='d-flex flex-row-reverse mr-1'>
-                <button id='score-settings-ignored' type='button' class='btn btn-primary'>" . get_string('update', 'core') . "</button>
+                <button id='score-settings-ignored' type='button' class='btn btn-primary'>"
+                    . get_string('update', 'core') . "</button>
             </div>";
 
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'updateScoreSettings', [$CFG->httpswwwroot, $cmid, $scores]);
+        $PAGE->requires->js_call_amd(
+            'plagiarism_compilatio/compilatio_ajax_api',
+            'updateScoreSettings',
+            [$CFG->httpswwwroot, $cmid, $scores]
+        );
 
         return $output;
     }

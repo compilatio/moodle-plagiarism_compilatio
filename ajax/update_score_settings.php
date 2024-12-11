@@ -17,6 +17,7 @@
 /**
  * Update report with ignored scores for documents of course module
  *
+ * @package   plagiarism_compilatio
  * @copyright 2024 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -26,8 +27,9 @@
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/analyses.php');
+
+use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\compilatio\analysis;
 
 require_login();
 
@@ -38,7 +40,7 @@ $checkedvalues = optional_param_array('checkedvalues', [], PARAM_TEXT);
 $scores = required_param_array('scores', PARAM_TEXT);
 
 $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
-$compilatio = new CompilatioAPI($cmconfig->userid);
+$compilatio = new api($cmconfig->userid);
 
 $ignoredscores = array_diff($scores, $checkedvalues);
 
@@ -68,7 +70,7 @@ $ignoredtypes = json_encode(['ignored_types' => array_values($ignoredtypes)]);
 
 foreach ($files as $file) {
     if ($file->analysisid === null) {
-        $file = CompilatioAnalyses::check_analysis($file);
+        $file = analysis::check_analysis($file);
     }
 
     $file->updatetaskid = $compilatio->update_and_rebuild_report($file->analysisid, $ignoredtypes);

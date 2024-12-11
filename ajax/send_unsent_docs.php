@@ -17,6 +17,7 @@
 /**
  * Start analysis for all document in course module
  *
+ * @package   plagiarism_compilatio
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
@@ -24,12 +25,9 @@
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/plagiarismlib.php');
-
-require_once($CFG->dirroot . '/plagiarism/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/send_file.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+
+use plagiarism_compilatio\compilatio\file;
 
 require_login();
 
@@ -41,7 +39,7 @@ $cmid = required_param('cmid', PARAM_TEXT);
 $files = compilatio_get_unsent_documents($cmid);
 
 if (count($files) != 0) {
-    CompilatioSendFile::send_unsent_files($files, $cmid);
+    file::send_unsent_files($files, $cmid);
     $countsuccess = count($files) - count(compilatio_get_unsent_documents($cmid));
 }
 

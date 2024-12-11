@@ -28,8 +28,9 @@ require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_form.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/api.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/admin_forms.php');
+
+use plagiarism_compilatio\compilatio\api;
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -101,14 +102,14 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 }
 
 echo $OUTPUT->header();
-$currenttab = 'compilatiosettings';
-require_once($CFG->dirroot . '/plagiarism/compilatio/compilatio_tabs.php');
+$currenttab = 'course_module_settings';
+require_once($CFG->dirroot . '/plagiarism/compilatio/admin_tabs.php');
 
 $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $mform->set_data($plagiarismsettings);
 
 if (!empty($plagiarismsettings['enabled'])) {
-    $compilatio = new CompilatioAPI();
+    $compilatio = new api();
     $validapikey = $compilatio->check_apikey();
 
     if (get_config('plagiarism_compilatio', 'read_only_apikey') === '1') {
