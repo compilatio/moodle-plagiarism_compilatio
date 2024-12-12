@@ -41,9 +41,9 @@ class api {
     private string $urlrest;
 
     /**
-     * @var mixed $userid Compilatio user ID
+     * @var string $userid Compilatio user ID
      */
-    private mixed $userid;
+    private ?string $userid;
 
     /**
      * @var string $recipe Analysis recipe
@@ -838,7 +838,7 @@ class api {
      * @param  int   $expectedstatuscode Expected HTTP code
      * @return false|string Returns false if expected HTTP code is found in API response, or a message otherwise
      */
-    private function get_error_response(mixed $response, int $expectedstatuscode): false|string {
+    private function get_error_response($response, int $expectedstatuscode) {
         if (!isset($response->status->code, $response->status->message)) {
             return 'Error response status not found';
         } else if ($response->status->code === $expectedstatuscode) {
