@@ -8,6 +8,9 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 
+3.2.1
+- Fix for Moodle instances using php7
+
 3.2.0
 - Added a tab in the administration section of the plugin to manage documents in error
 - [Fix] Replace deprecated callback before_standard_top_of_body_html in Moodle 4.4 to new hook callback
