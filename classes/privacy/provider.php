@@ -33,7 +33,7 @@ use core_privacy\local\request\writer;
 use plagiarism_compilatio\compilatio\api;
 use core_privacy\local\metadata\provider as metadata_provider;
 use core_plagiarism\privacy\plagiarism_provider;
-use core_privacy\local\legacy_polyfil as local_polyfill;
+use core_privacy\local\legacy_polyfill as local_polyfill;
 use core_plagiarism\privacy\legacy_polyfill as privacy_polyfill;
 
 
