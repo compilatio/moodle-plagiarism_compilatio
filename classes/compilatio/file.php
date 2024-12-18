@@ -240,26 +240,29 @@ class file {
             $modulecontext = \context_module::instance($cmpfile->cm);
             $contextid = $modulecontext->id;
             $sql = 'SELECT * FROM {files} f WHERE f.contenthash= ? AND contextid = ?';
-            $f = $DB->get_record_sql($sql, [$cmpfile->identifier, $contextid]);
+            $files = $DB->get_records_sql($sql, [$cmpfile->identifier, $contextid]);
 
-            if (empty($f)) {
+            if (empty($files)) {
                 return;
             }
-
+            
             $fs = get_file_storage();
-            $file = $fs->get_file_by_id($f->id);
+            
+            foreach ($files as $f) {
+                $file = $fs->get_file_by_id($f->id);
+            
+                $DB->delete_records('plagiarism_compilatio_files', ['id' => $cmpfile->id]);
+            
+                $newcmpfile = self::send_file($cmpfile->cm, $cmpfile->userid, $file);
+            
+                if (is_object($newcmpfile) && $startanalysis) {
+                    $newcmpfile->status = 'to_analyze';
+                    $DB->update_record('plagiarism_compilatio_files', $newcmpfile);
+                }
 
-            $DB->delete_records('plagiarism_compilatio_files', ['id' => $cmpfile->id]);
-
-            $newcmpfile = self::send_file($cmpfile->cm, $cmpfile->userid, $file);
+                return is_object($newcmpfile);
+            }
         }
-
-        if (is_object($newcmpfile) && $startanalysis) {
-            $newcmpfile->status = 'to_analyze';
-            $DB->update_record('plagiarism_compilatio_files', $newcmpfile);
-        }
-
-        return is_object($newcmpfile);
     }
 
     /**
