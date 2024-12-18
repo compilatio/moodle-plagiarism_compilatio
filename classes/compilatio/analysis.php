@@ -85,7 +85,7 @@ class analysis {
             $cmpfile->status = 'error_not_found';
         }
 
-        $recipe = key($doc->analyses);
+        $recipe = array_key_first((array)$doc->analyses);
 
         if (isset($doc->analyses->$recipe->state)) {
             $state = $doc->analyses->$recipe->state;
