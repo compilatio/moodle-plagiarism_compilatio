@@ -85,7 +85,7 @@ class analysis {
             $cmpfile->status = 'error_not_found';
         }
 
-        $recipe = get_config('plagiarism_compilatio', 'recipe');
+        $recipe = key($doc->analyses);
 
         if (isset($doc->analyses->$recipe->state)) {
             $state = $doc->analyses->$recipe->state;
