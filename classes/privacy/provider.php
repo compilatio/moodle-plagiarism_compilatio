@@ -33,7 +33,7 @@ use core_privacy\local\request\writer;
 use plagiarism_compilatio\compilatio\api;
 use core_privacy\local\metadata\provider as metadata_provider;
 use core_plagiarism\privacy\plagiarism_provider;
-use core_privacy\local\legacy_polyfil as local_polyfill;
+use core_privacy\local\legacy_polyfill as local_polyfill;
 use core_plagiarism\privacy\legacy_polyfill as privacy_polyfill;
 
 
@@ -76,6 +76,11 @@ class provider implements metadata_provider, plagiarism_provider, user_provider 
             [],
             'privacy:metadata:core_plagiarism'
         );
+
+        $collection->add_database_table('plagiarism_compilatio_cm_cfg', [
+            'userid'  => 'privacy:metadata:plagiarism_compilatio_cm_cfg:userid',
+            'cmid'    => 'privacy:metadata:plagiarism_compilatio_cm_cfg:cmid',
+        ], 'privacy:metadata:plagiarism_compilatio_cm_cfg');
 
         $collection->add_database_table('plagiarism_compilatio_files', [
             'userid'   => 'privacy:metadata:plagiarism_compilatio_files:userid',
