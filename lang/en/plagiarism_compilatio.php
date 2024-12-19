@@ -385,6 +385,9 @@ $string['privacy:metadata:external_compilatio_user:firstname'] = 'First name of 
 $string['privacy:metadata:external_compilatio_user:lastname'] = 'Last name of the teacher';
 $string['privacy:metadata:external_compilatio_user:email'] = 'Email of the teacher';
 $string['privacy:metadata:external_compilatio_user:username'] = 'Email of the teacher';
+$string['privacy:metadata:plagiarism_compilatio_cm_cfg'] = 'Information about config files';
+$string['privacy:metadata:plagiarism_compilatio_cm_cfg:userid'] = 'The Moodle ID of the teacher';
+$string['privacy:metadata:plagiarism_compilatio_cm_cfg:cmid'] = 'Compilatio ID of the module';
 
 // Legacy strings for plugin v2.
 $string['read_only_apikey_title'] = 'Read-only API key.';
@@ -554,3 +557,7 @@ $string['reset_failed_document'] = 'Reset documents in error';
 $string['reset_failed_document_title'] = 'Reset documents in error:';
 $string['reset_failed_document_in_progress'] = 'Reset documents in error in progress';
 $string['max_attempts_reach_files'] = 'Analysis has been interrupted for the following files. Analyses were sent too many times, you cannot restart them anymore :';
+
+$string['privacy:metadata:plagiarism_compilatio_cm_cfg'] = 'Information about config files';
+$string['privacy:metadata:plagiarism_compilatio_cm_cfg:userid'] = 'The Moodle ID of the teacher';
+$string['privacy:metadata:plagiarism_compilatio_cm_cfg:cmid'] = 'Compilatio ID of the module';
