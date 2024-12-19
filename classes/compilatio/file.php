@@ -245,16 +245,16 @@ class file {
             if (empty($files)) {
                 return;
             }
-            
+
             $fs = get_file_storage();
-            
+
             foreach ($files as $f) {
                 $file = $fs->get_file_by_id($f->id);
-            
+
                 $DB->delete_records('plagiarism_compilatio_files', ['id' => $cmpfile->id]);
-            
+
                 $newcmpfile = self::send_file($cmpfile->cm, $cmpfile->userid, $file);
-            
+
                 if (is_object($newcmpfile) && $startanalysis) {
                     $newcmpfile->status = 'to_analyze';
                     $DB->update_record('plagiarism_compilatio_files', $newcmpfile);
