@@ -1,18 +1,18 @@
 .cmp-box {
-  background-color: #fff;
-  -webkit-box-shadow: 0 0 35px 0 rgba(130, 130, 130, 0.2);
-          box-shadow: 0 0 35px 0 rgba(130, 130, 130, 0.2);
-  border-radius: 10px;
+    background-color: #fff;
+    -webkit-box-shadow: 0 0 35px 0 rgba(130, 130, 130, 0.2);
+            box-shadow: 0 0 35px 0 rgba(130, 130, 130, 0.2);
+    border-radius: 10px;
 }
 
-#cmp-stats h5, #cmp-stats h4 {
+#cmp-stats h5,
+#cmp-stats h4 {
     font-weight: 500;
 }
 
 .cmp-cursor-pointer {
     cursor: pointer;
 }
-
 
 /* Colors */
 .cmp-color-green {
@@ -37,7 +37,7 @@
 
 /* Icon sizing */
 .cmp-icon-lg {
-  font-size: 1.1em !important;
+    font-size: 1.1em;
 }
 
 /*
@@ -54,16 +54,20 @@ Compilatio frame area
     cursor: pointer;
 }
 .cmp-icon {
-    color: #6D6D6D;
-    font-size: 1.75em !important;
+    color: #6d6d6d;
+    font-size: 1.75em;
 }
-.cmp-icon.active, .cmp-icon:hover, .cmp-icon:focus{
+.cmp-icon.active,
+.cmp-icon:hover,
+.cmp-icon:focus {
     color: #202121;
 }
 .cmp-icon > svg {
-    fill: #6D6D6D;
+    fill: #6d6d6d;
 }
-.cmp-icon.active > svg, .cmp-icon > svg:hover, .cmp-icon > svg:focus{
+.cmp-icon.active > svg,
+.cmp-icon > svg:hover,
+.cmp-icon > svg:focus {
     fill: #202121;
 }
 
@@ -82,8 +86,8 @@ Compilatio frame area
 }
 
 #cmp-update-progress {
-  vertical-align: middle;
-  margin: auto 10px;
+    vertical-align: middle;
+    margin: auto 10px;
 }
 
 /* Notifications Badge */
@@ -99,8 +103,8 @@ Compilatio frame area
 
 #cmp-navbar {
     padding: 0.5rem 1rem 0.5rem 1rem;
-    background-color: #F5F6F8;
-    border: 1px solid #EBEBF0;
+    background-color: #f5f6f8;
+    border: 1px solid #ebebf0;
     border-radius: 5px;
     color: #444;
     display: flex;
@@ -116,13 +120,13 @@ Compilatio frame area
 }
 
 .cmp-alert {
-  display: flex;
-  padding: 0.75rem;
-  margin-top: 0.5rem;
-  background-color: #F5F6F8;
-  border-left: 6px solid #7f7f84;
-  border-radius: 5px;
-  align-items: center;
+    display: flex;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    background-color: #f5f6f8;
+    border-left: 6px solid #7f7f84;
+    border-radius: 5px;
+    align-items: center;
 }
 .cmp-alert-success {
     border-color: #38ba7d;
@@ -137,8 +141,8 @@ Compilatio frame area
     font-weight: bold;
 }
 .cmp-alert-warning {
-    border-color: #FEAF20;
-    color: #FEAF20;
+    border-color: #feaf20;
+    color: #feaf20;
 }
 .cmp-alert-danger {
     border-color: #d73814;
@@ -203,12 +207,11 @@ Compilatio frame area
 /* Indexing state button */
 .cmp-library-in {
     background-color: white;
-    color: rgb(110, 231, 183) !important;
-    
+    color: rgb(110, 231, 183);
 }
 .cmp-library-out {
     background-color: white;
-    color: rgb(248, 113, 113) !important;
+    color: rgb(248, 113, 113);
 }
 .cmp-library {
     cursor: pointer;
@@ -245,8 +248,8 @@ Compilatio frame area
 }
 
 a.cmp-btn-primary:hover {
-  text-decoration: none;
-  color: #494c4e;
+    text-decoration: none;
+    color: #494c4e;
 }
 .cmp-btn-primary {
     background-color: #ced4da;
@@ -259,7 +262,7 @@ a.cmp-btn-primary:hover {
 }
 
 .dropdown-menu > .cmp-action-btn:hover {
-    background-color: #F5F6F8;
+    background-color: #f5f6f8;
 }
 
 /* Similarities */
@@ -296,7 +299,7 @@ a.cmp-btn-primary:hover {
 }
 
 #cmp-notifications .color-service {
-    color: #006fbf !important;
+    color: #006fbf;
 }
 
 #cmp-notifications .margin-small {
@@ -342,7 +345,7 @@ a.cmp-btn-primary:hover {
 
 /* Compilatio links color CSV download */
 .cmp-links-color {
-    color: #5A51E7 !important;
+    color: #5a51e7;
 }
 
 /* Compilatio whitespace no wrap */
@@ -361,10 +364,11 @@ a.cmp-btn-primary:hover {
     overflow-y: auto;
 }
 
-.cmp-table.table-hover tbody tr:hover td, .cmp-table.table-hover tbody tr:hover th {
+.cmp-table.table-hover tbody tr:hover td,
+.cmp-table.table-hover tbody tr:hover th {
     background-color: rgb(243, 242, 242);
 }
 
 .cmp-border-none {
-    border: none !important;
+    border: none;
 }
