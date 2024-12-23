@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_compilatio\tests\privacy;
+
 use core_privacy\local\metadata\collection;
 use plagiarism_compilatio\privacy\provider;
 use core_privacy\local\request\writer;
@@ -34,11 +36,13 @@ global $CFG;
 
 /**
  * Class plagiarism_compilatio_privacy_provider_testcase
+ * @covers \plagiarism_compilatio\privacy\provider
  */
 class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\tests\provider_testcase {
 
     /**
-     * Test fonction _get_metadata
+     * Test function get_metadata
+     * @covers \plagiarism_compilatio\privacy\provider::get_metadata
      */
     public function test_get_metadata() {
 
@@ -86,7 +90,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
     }
 
     /**
-     * Test fonction _get_contexts_for_userid
+     * Test function get_contexts_for_userid
+     * @covers \plagiarism_compilatio\privacy\provider::get_contexts_for_userid
      */
     public function test_get_contexts_for_userid() {
 
@@ -108,7 +113,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
     }
 
     /**
-     * Test fonction _export_plagiarism_user_data
+     * Test function export_plagiarism_user_data
+     * @covers \plagiarism_compilatio\privacy\provider::export_plagiarism_user_data
      */
     public function test_export_plagiarism_user_data() {
 
@@ -135,7 +141,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
     }
 
     /**
-     * Test fonction _delete_plagiarism_for_context
+     * Test function delete_plagiarism_for_context
+     * @covers \plagiarism_compilatio\privacy\provider::delete_plagiarism_for_context
      */
     public function test_delete_plagiarism_for_context() {
 
@@ -168,6 +175,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
 
     /**
      * Test fonction _delete_plagiarism_for_user (cas où les fichiers appartiennent à l'établissement)
+     * @covers \plagiarism_compilatio\privacy\provider::delete_plagiarism_for_user
      */
     public function test_delete_plagiarism_for_user_owner_school() {
 
@@ -204,7 +212,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
     }
 
     /**
-     * Test fonction _delete_plagiarism_for_user (cas où les fichiers appartiennent à l'étudiant)
+     * Test function delete_plagiarism_for_user_owner_student
+     * @covers \plagiarism_compilatio\privacy\provider::delete_plagiarism_for_user
      */
     public function test_delete_plagiarism_for_user_owner_student() {
 
@@ -241,7 +250,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
     }
 
     /**
-     * Test fonction delete_plagiarism_for_users
+     * Test function delete_plagiarism_for_users
+     * @covers \plagiarism_compilatio\privacy\provider::delete_plagiarism_for_users
      */
     public function test_delete_plagiarism_for_users() {
 
