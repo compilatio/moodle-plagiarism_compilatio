@@ -17,12 +17,21 @@ define(['jquery'], function($) {
 
     var exports = {};
 
+    /**
+     * Start analyses
+     * @param {string} message
+     * @param {string} basepath
+     * @param {number} cmid
+     * @param {Array|null} selectedstudents
+     * @param {Array} selectedquestions
+     * @param {number|null} quizid
+     */
     function startAnalyses(message, basepath, cmid, selectedstudents = null, selectedquestions = [], quizid = null) {
         disableCompilatioButtons();
 
         $('#cmp-dropdown-menu').removeClass('show');
 
-        $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");        
+        $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
 
         let params = {
             'cmid': cmid,
@@ -30,23 +39,30 @@ define(['jquery'], function($) {
             'quizid': quizid
         };
 
-        if (selectedstudents != null) params.selectedstudents = selectedstudents.toString();
+        if (selectedstudents !== null) {
+            params.selectedstudents = selectedstudents.toString();
+        }
 
         $.post(basepath + '/plagiarism/compilatio/ajax/start_multiple_analyses.php', params, function() {
             window.location.reload();
         });
     }
 
+    /**
+     * Get selected student
+     * @param {string} basepath
+     * @param {number} cmid
+     */
     exports.getSelectedStudent = function(basepath, cmid) {
-        $(document).ready(function(){
+        $(document).ready(function() {
             const studentSelector = $('#student-select');
             const statisticsContainer = $('#statistics-container');
-            
+
             studentSelector.on('change', function() {
                 const selectedstudent = $(this).val();
                 $.ajax({
                     type: 'POST',
-                    url: basepath + '/plagiarism/compilatio/ajax/stats_per_student.php',  
+                    url: basepath + '/plagiarism/compilatio/ajax/stats_per_student.php',
                     data: { selectedstudent: selectedstudent, cmid: cmid },
                     success: function(response) {
                         statisticsContainer.html(response);
@@ -58,18 +74,18 @@ define(['jquery'], function($) {
             });
 
             $('#previous-student').on('click', function() {
-                changeSelectedStudent(studentSelector.prop('selectedIndex'), -1)
+                changeSelectedStudent(studentSelector.prop('selectedIndex'), -1);
             });
 
             $('#next-student').on('click', function() {
-                changeSelectedStudent(studentSelector.prop('selectedIndex'), 1)
+                changeSelectedStudent(studentSelector.prop('selectedIndex'), 1);
             });
 
             function changeSelectedStudent(selectedIndex, direction) {
                 var newIndex = selectedIndex + direction;
                 const maxIndex = studentSelector.find('option').length - 1;
 
-                if (newIndex == -1) {
+                if (newIndex === -1) {
                     newIndex = maxIndex;
                 } else if (newIndex > maxIndex) {
                     newIndex = 0;
@@ -78,11 +94,17 @@ define(['jquery'], function($) {
                 studentSelector.prop('selectedIndex', newIndex).change();
             }
         });
-    }
+    };
 
+    /**
+     * Start all analyses
+     * @param {string} basepath
+     * @param {number} cmid
+     * @param {string} message
+     */
     exports.startAllAnalysis = function(basepath, cmid, message) {
         $(document).ready(function() {
-            $('#cmp-dropdown-menu').on('click', function(event){
+            $('#cmp-dropdown-menu').on('click', function(event) {
                 event.stopPropagation();
             });
 
@@ -93,31 +115,47 @@ define(['jquery'], function($) {
         });
     };
 
+    /**
+     * Start analyses on selected students
+     * @param {string} basepath
+     * @param {number} cmid
+     * @param {string} message
+     */
     exports.startAnalysesOnSelectedStudents = function(basepath, cmid, message) {
         $(document).ready(function() {
             const startSelectedStudentsBtn = $('#start-selected-students-btn').hide();
             const checkboxes = $('td.c0 input, #selectall');
+
             function getSelectedLines() {
                 return checkboxes.filter(':checked').map(function() {
-                    return $(this).val() != 'on' ? $(this).val() : null;
+                    return $(this).val() !== 'on' ? $(this).val() : null;
                 }).get();
             }
+
             function updateButtonVisibility() {
                 const selectedUsers = getSelectedLines();
                 selectedUsers.length > 0 ? startSelectedStudentsBtn.show() : startSelectedStudentsBtn.hide();
             }
+
             checkboxes.on('change', updateButtonVisibility);
             startSelectedStudentsBtn.click(function() {
                 startAnalyses(message, basepath, cmid, getSelectedLines());
             });
         });
-    };    
-    
-    exports.startAnalysesOnSelectedQuestions = function (basepath, cmid, message, quizid) {
-        $(document).ready(function () {
+    };
+
+    /**
+     * Start analyses on selected questions
+     * @param {string} basepath
+     * @param {number} cmid
+     * @param {string} message
+     * @param {number} quizid
+     */
+    exports.startAnalysesOnSelectedQuestions = function(basepath, cmid, message, quizid) {
+        $(document).ready(function() {
             const startSelectedQuestionsBtn = $('#start-selected-questions-btn');
-    
-            startSelectedQuestionsBtn.click(function () {
+
+            startSelectedQuestionsBtn.click(function() {
                 var checkedcheckboxes = $('.checkbox-question-selector:checked');
                 var selectedquestions = [];
                 checkedcheckboxes.each(function() {
@@ -130,35 +168,51 @@ define(['jquery'], function($) {
             });
         });
     };
-    
+
+    /**
+     * Send unsent documents
+     * @param {string} basepath
+     * @param {number} cmid
+     * @param {string} message
+     */
     exports.sendUnsentDocs = function(basepath, cmid, message) {
         $(document).ready(function() {
             var sendUnsentDocs = $('#cmp-send-btn');
             sendUnsentDocs.click(function() {
                 disableCompilatioButtons();
                 $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
-                $.post(basepath + '/plagiarism/compilatio/ajax/send_unsent_docs.php',
-                {'cmid': cmid}, function() {
+                $.post(basepath + '/plagiarism/compilatio/ajax/send_unsent_docs.php', { 'cmid': cmid }, function() {
                     window.location.reload();
                 });
             });
         });
     };
 
+    /**
+     * Reset documents in error
+     * @param {string} basepath
+     * @param {number} cmid
+     * @param {string} message
+     */
     exports.resetDocsInError = function(basepath, cmid, message) {
         $(document).ready(function() {
             var resetDocsInError = $('#cmp-reset-btn');
             resetDocsInError.click(function() {
                 disableCompilatioButtons();
                 $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
-                $.post(basepath + '/plagiarism/compilatio/ajax/reset_docs_in_error.php',
-                {'cmid': cmid}, function() {
+                $.post(basepath + '/plagiarism/compilatio/ajax/reset_docs_in_error.php', { 'cmid': cmid }, function() {
                     window.location.reload();
                 });
             });
         });
     };
 
+    /**
+     * Update score settings
+     * @param {string} basepath
+     * @param {number} cmid
+     * @param {Array} scores
+     */
     exports.updateScoreSettings = function(basepath, cmid, scores) {
         $(document).ready(function() {
             var scoresettings = $('#score-settings-ignored');
@@ -177,8 +231,8 @@ define(['jquery'], function($) {
 
                 $.ajax({
                     type: 'POST',
-                    url: basepath + '/plagiarism/compilatio/ajax/update_score_settings.php',  
-                    data: {cmid: cmid, checkedvalues: checkedvalues, scores: scores},
+                    url: basepath + '/plagiarism/compilatio/ajax/update_score_settings.php',
+                    data: { cmid: cmid, checkedvalues: checkedvalues, scores: scores },
                     success: function() {
                         let url = new URL(window.location.href);
 
@@ -196,33 +250,49 @@ define(['jquery'], function($) {
             });
         });
     };
-    
+
+    /**
+     * Check user info
+     * @param {string} basepath
+     * @param {number} userid
+     */
     exports.checkUserInfo = function(basepath, userid) {
         $(document).ready(function() {
-            $.post(basepath + '/plagiarism/compilatio/ajax/check_user_info.php', {'userid': userid});
+            $.post(basepath + '/plagiarism/compilatio/ajax/check_user_info.php', { 'userid': userid });
         });
     };
 
+    /**
+     * Display document frame
+     * @param {string} basepath
+     * @param {boolean} cantriggeranalysis
+     * @param {boolean} isstudentanalyse
+     * @param {number} cmpfileid
+     * @param {boolean} canviewreport
+     * @param {boolean} isteacher
+     * @param {string} url
+     * @param {string} domid
+     */
     function displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, domid) {
-        $.post(basepath + '/plagiarism/compilatio/ajax/display_document_frame.php', {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url}, function(button) {
+        $.post(basepath + '/plagiarism/compilatio/ajax/display_document_frame.php', { cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url }, function(button) {
             let el = $('#cmp-' + domid);
             el.empty().append(button);
 
-            setTimeout(e => {
+            setTimeout(() => {
                 if (isteacher) {
                     var refreshScoreBtn = $('#cmp-' + domid + ' .cmp-similarity');
-                    refreshScoreBtn.on("mouseover", (e) => {
+                    refreshScoreBtn.on("mouseover", () => {
                         refreshScoreBtn.find('i').show();
                         refreshScoreBtn.find('span').hide();
                     });
-                    refreshScoreBtn.on("mouseout", (e) => {
+                    refreshScoreBtn.on("mouseout", () => {
                         refreshScoreBtn.find('i').hide();
                         refreshScoreBtn.find('span').show();
                     });
                     refreshScoreBtn.click(function() {
                         $('#cmp-' + domid + ' #cmp-score-icons').remove();
                         refreshScoreBtn.empty();
-                        $.post(basepath + '/plagiarism/compilatio/ajax/update_score.php', {'docId': cmpfileid}, function(res) {
+                        $.post(basepath + '/plagiarism/compilatio/ajax/update_score.php', { 'docId': cmpfileid }, function(res) {
                             refreshScoreBtn.replaceWith(res);
                         });
                     });
@@ -231,18 +301,13 @@ define(['jquery'], function($) {
                 var toogleIndexingStateBtn = $('#cmp-' + domid + ' .cmp-library');
                 toogleIndexingStateBtn.click(function() {
                     var i = $(this).find('i');
-                    if (i.is('.cmp-library-in')) {
-                        var indexingState = 0;
-                    }
-                    if (i.is('.cmp-library-out')) {
-                        var indexingState = 1;
-                    }
+                    var indexingState = i.is('.cmp-library-in') ? 0 : 1;
                     i.removeClass();
                     i.parent().attr('title', '');
-                    $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php', {'docId': cmpfileid, 'indexingState': indexingState}, function(res) {
-                        response = JSON.parse(res);
+                    $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php', { 'docId': cmpfileid, 'indexingState': indexingState }, function(res) {
+                        let response = JSON.parse(res);
                         if (response.status === 'ok') {
-                            if (indexingState == 0) {
+                            if (indexingState === 0) {
                                 i.addClass('cmp-library-out fa-times-circle fa');
                             } else {
                                 i.addClass('cmp-library-in fa-check-circle fa');
@@ -256,8 +321,7 @@ define(['jquery'], function($) {
                 startAnalysisBtn.click(function() {
                     startAnalysisBtn.find('i').removeClass('fa-play-circle').addClass('fa-spinner fa-spin');
 
-                    $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis.php',
-                    {'docId': cmpfileid}, function(res) {
+                    $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis.php', { 'docId': cmpfileid }, function(res) {
                         res = JSON.parse(res);
 
                         if ('error' in res) {
@@ -273,6 +337,17 @@ define(['jquery'], function($) {
         });
     }
 
+    /**
+     * Display document frame
+     * @param {string} basepath
+     * @param {boolean} cantriggeranalysis
+     * @param {boolean} isstudentanalyse
+     * @param {number} cmpfileid
+     * @param {boolean} canviewreport
+     * @param {boolean} isteacher
+     * @param {string} url
+     * @param {string} domid
+     */
     exports.displayDocumentFrame = function(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, domid) {
         $(document).ready(function() {
             displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, domid);
@@ -283,10 +358,15 @@ define(['jquery'], function($) {
         });
     };
 
+    /**
+     * Get notifications
+     * @param {string} basepath
+     * @param {number} userid
+     */
     exports.getNotifications = function(basepath, userid) {
         $(document).ready(function() {
-            let notificationsRead = localStorage.getItem("notifications-read")
-            let notificationsIgnored = localStorage.getItem("notifications-ignored")
+            let notificationsRead = localStorage.getItem("notifications-read");
+            let notificationsIgnored = localStorage.getItem("notifications-ignored");
 
             $.post(basepath + '/plagiarism/compilatio/ajax/get_notifications.php', {
                 'userid': userid,
@@ -295,7 +375,7 @@ define(['jquery'], function($) {
             }, function(notifications) {
                 notifications = JSON.parse(notifications);
 
-                $('#cmp-count-notifications').html(notifications.count == 0 ? '' : notifications.count);
+                $('#cmp-count-notifications').html(notifications.count === 0 ? '' : notifications.count);
                 $('#cmp-notifications').html(notifications.content);
 
                 $('#cmp-alerts').append(notifications.floating);
@@ -305,7 +385,7 @@ define(['jquery'], function($) {
                     count--;
                     $('#cmp-count-notifications').html(count <= 0 ? '' : count);
 
-                    ignoreNotifications()
+                    ignoreNotifications();
 
                     $('#cmp-show-notifications').toggleClass('active');
 
@@ -315,37 +395,41 @@ define(['jquery'], function($) {
                     let notifId = $(this).attr('id').split("-").pop();
                     $('#cmp-notifications-content-' + notifId).show();
 
-                    $('#cmp-notifications-' + notifId).children().first().removeClass('text-primary')
+                    $('#cmp-notifications-' + notifId).children().first().removeClass('text-primary');
 
-                    let notificationsRead = localStorage.getItem("notifications-read")
-                    notificationsRead ? JSON.parse(notificationsRead) : [];
+                    let notificationsRead = localStorage.getItem("notifications-read");
+                    notificationsRead = notificationsRead ? JSON.parse(notificationsRead) : [];
                     if (!notificationsRead.includes(notifId)) {
-                        notificationsRead.push(notifId)
-                        localStorage.setItem("notifications-read", JSON.stringify(notificationsRead))
+                        notificationsRead.push(notifId);
+                        localStorage.setItem("notifications-read", JSON.stringify(notificationsRead));
                     }
                 });
-    
+
                 $('.cmp-show-notifications').on('click', function() {
                     $('#cmp-notifications-titles').show();
                     $('.cmp-notifications-content').hide();
                 });
 
                 $('#cmp-ignore-notifications').on('click', function() {
-                    ignoreNotifications()
+                    ignoreNotifications();
                 });
 
                 $('#cmp-show-notifications').on('click', function() {
-                    ignoreNotifications()
+                    ignoreNotifications();
                 });
 
                 function ignoreNotifications() {
                     $('.cmp-alert-notifications').remove();
-                    localStorage.setItem("notifications-ignored", JSON.stringify(notifications.ids))
+                    localStorage.setItem("notifications-ignored", JSON.stringify(notifications.ids));
                 }
             });
         });
     };
 
+    /**
+     * Compilatio tabs
+     * @param {number} docid
+     */
     exports.compilatioTabs = function(docid) {
         $(document).ready(function() {
             if ($('.moove.secondary-navigation')[0]) {
@@ -354,13 +438,13 @@ define(['jquery'], function($) {
 
             // Convert markdown to HTML.
             $('.cmp-md').each(function() {
-                $(this).html(markdown($.trim($(this).text())))
+                $(this).html(markdown($.trim($(this).text())));
             });
 
             $('#cmp-tabs').show();
 
             $('#cmp-alerts > .cmp-alert > .fa-times').on('click', function() {
-                $('#cmp-alert-' + $(this).attr('id').split("-").pop()).parent().remove()
+                $('#cmp-alert-' + $(this).attr('id').split("-").pop()).parent().remove();
             });
 
             if (docid) {
