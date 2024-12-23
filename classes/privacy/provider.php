@@ -40,11 +40,20 @@ use core_plagiarism\privacy\legacy_polyfill as privacy_polyfill;
 defined('MOODLE_INTERNAL') || die();
 
 if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
-
+    /**
+     * Interface user_provider (extends plagiarism_user_provider)
+     *
+     * This interface extends the core plagiarism user provider interface.
+     */
     interface user_provider extends \core_plagiarism\privacy\plagiarism_user_provider {
 
     }
 } else {
+    /**
+     * Interface user_provider
+     *
+     * This interface is used if the core plagiarism user provider interface does not exist.
+     */
     interface user_provider {
 
     }
