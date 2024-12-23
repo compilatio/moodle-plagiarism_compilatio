@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace plagiarism_compilatio\tests\privacy;
+
 use core_privacy\local\metadata\collection;
 use plagiarism_compilatio\privacy\provider;
 use core_privacy\local\request\writer;
@@ -34,11 +36,13 @@ global $CFG;
 
 /**
  * Class plagiarism_compilatio_privacy_provider_testcase
+ * @covers \plagiarism_compilatio\privacy\provider
  */
 class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\tests\provider_testcase {
 
     /**
-     * Test fonction _get_metadata
+     * Test function get_metadata
+     * @covers \plagiarism_compilatio\privacy\provider::get_metadata
      */
     public function test_get_metadata() {
 
@@ -48,7 +52,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $newcollection = provider::get_metadata($collection);
         $itemcollection = $newcollection->get_collection();
 
-        $this->assertCount(6, $itemcollection);
+        $this->assertCount(7, $itemcollection);
 
         $this->assertEquals('core_files', $itemcollection[0]->get_name());
         $this->assertEquals('privacy:metadata:core_files', $itemcollection[0]->get_summary());
@@ -56,24 +60,29 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
         $this->assertEquals('core_plagiarism', $itemcollection[1]->get_name());
         $this->assertEquals('privacy:metadata:core_plagiarism', $itemcollection[1]->get_summary());
 
-        $this->assertEquals('plagiarism_compilatio_files', $itemcollection[2]->get_name());
+        $this->assertEquals('plagiarism_compilatio_cm_cfg', $itemcollection[2]->get_name());
         $privacyfields = $itemcollection[2]->get_privacy_fields();
+        $this->assertArrayHasKey('userid', $privacyfields);
+        $this->assertArrayHasKey('cmid', $privacyfields);
+
+        $this->assertEquals('plagiarism_compilatio_files', $itemcollection[3]->get_name());
+        $privacyfields = $itemcollection[3]->get_privacy_fields();
         $this->assertArrayHasKey('userid', $privacyfields);
         $this->assertArrayHasKey('filename', $privacyfields);
 
-        $this->assertEquals('plagiarism_compilatio_user', $itemcollection[3]->get_name());
-        $privacyfields = $itemcollection[3]->get_privacy_fields();
+        $this->assertEquals('plagiarism_compilatio_user', $itemcollection[4]->get_name());
+        $privacyfields = $itemcollection[4]->get_privacy_fields();
         $this->assertArrayHasKey('userid', $privacyfields);
         $this->assertArrayHasKey('compilatioid', $privacyfields);
 
-        $this->assertEquals('External Compilatio Document', $itemcollection[4]->get_name());
-        $privacyfields = $itemcollection[4]->get_privacy_fields();
+        $this->assertEquals('External Compilatio Document', $itemcollection[5]->get_name());
+        $privacyfields = $itemcollection[5]->get_privacy_fields();
         $this->assertArrayHasKey('authors', $privacyfields);
         $this->assertArrayHasKey('depositor', $privacyfields);
         $this->assertArrayHasKey('filename', $privacyfields);
 
-        $this->assertEquals('External Compilatio User', $itemcollection[5]->get_name());
-        $privacyfields = $itemcollection[5]->get_privacy_fields();
+        $this->assertEquals('External Compilatio User', $itemcollection[6]->get_name());
+        $privacyfields = $itemcollection[6]->get_privacy_fields();
         $this->assertArrayHasKey('firstname', $privacyfields);
         $this->assertArrayHasKey('lastname', $privacyfields);
         $this->assertArrayHasKey('email', $privacyfields);
@@ -81,7 +90,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
     }
 
     /**
-     * Test fonction _get_contexts_for_userid
+     * Test function get_contexts_for_userid
+     * @covers \plagiarism_compilatio\privacy\provider::get_contexts_for_userid
      */
     public function test_get_contexts_for_userid() {
 
@@ -103,7 +113,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
     }
 
     /**
-     * Test fonction _export_plagiarism_user_data
+     * Test function export_plagiarism_user_data
+     * @covers \plagiarism_compilatio\privacy\provider::export_plagiarism_user_data
      */
     public function test_export_plagiarism_user_data() {
 
@@ -130,7 +141,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
     }
 
     /**
-     * Test fonction _delete_plagiarism_for_context
+     * Test function delete_plagiarism_for_context
+     * @covers \plagiarism_compilatio\privacy\provider::delete_plagiarism_for_context
      */
     public function test_delete_plagiarism_for_context() {
 
@@ -163,6 +175,7 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
 
     /**
      * Test fonction _delete_plagiarism_for_user (cas où les fichiers appartiennent à l'établissement)
+     * @covers \plagiarism_compilatio\privacy\provider::delete_plagiarism_for_user
      */
     public function test_delete_plagiarism_for_user_owner_school() {
 
@@ -199,7 +212,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
     }
 
     /**
-     * Test fonction _delete_plagiarism_for_user (cas où les fichiers appartiennent à l'étudiant)
+     * Test function delete_plagiarism_for_user_owner_student
+     * @covers \plagiarism_compilatio\privacy\provider::delete_plagiarism_for_user
      */
     public function test_delete_plagiarism_for_user_owner_student() {
 
@@ -236,7 +250,8 @@ class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\test
     }
 
     /**
-     * Test fonction delete_plagiarism_for_users
+     * Test function delete_plagiarism_for_users
+     * @covers \plagiarism_compilatio\privacy\provider::delete_plagiarism_for_users
      */
     public function test_delete_plagiarism_for_users() {
 

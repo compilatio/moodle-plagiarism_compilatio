@@ -40,11 +40,20 @@ use core_plagiarism\privacy\legacy_polyfill as privacy_polyfill;
 defined('MOODLE_INTERNAL') || die();
 
 if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
-
+    /**
+     * Interface user_provider (extends plagiarism_user_provider)
+     *
+     * This interface extends the core plagiarism user provider interface.
+     */
     interface user_provider extends \core_plagiarism\privacy\plagiarism_user_provider {
 
     }
 } else {
+    /**
+     * Interface user_provider
+     *
+     * This interface is used if the core plagiarism user provider interface does not exist.
+     */
     interface user_provider {
 
     }
@@ -64,7 +73,7 @@ class provider implements metadata_provider, plagiarism_provider, user_provider 
      * @param   collection  $collection The initialised collection to add items to.
      * @return  collection  The updated collection of user data.
      */
-    public static function get_metadata(collection $collection):collection {
+    public static function get_metadata(collection $collection): collection {
 
         $collection->add_subsystem_link(
             'core_files',
@@ -76,6 +85,11 @@ class provider implements metadata_provider, plagiarism_provider, user_provider 
             [],
             'privacy:metadata:core_plagiarism'
         );
+
+        $collection->add_database_table('plagiarism_compilatio_cm_cfg', [
+            'userid'  => 'privacy:metadata:plagiarism_compilatio_cm_cfg:userid',
+            'cmid'    => 'privacy:metadata:plagiarism_compilatio_cm_cfg:cmid',
+        ], 'privacy:metadata:plagiarism_compilatio_cm_cfg');
 
         $collection->add_database_table('plagiarism_compilatio_files', [
             'userid'   => 'privacy:metadata:plagiarism_compilatio_files:userid',

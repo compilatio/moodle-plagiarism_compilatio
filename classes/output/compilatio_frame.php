@@ -51,7 +51,7 @@ class compilatio_frame {
      * @param before_standard_top_of_body_html_generation $hook
      */
     public static function before_standard_top_of_body_html_generation(before_standard_top_of_body_html_generation $hook): void {
-        
+
         global $SESSION;
 
         if (optional_param('refreshAllDocs', false, PARAM_BOOL)) {
