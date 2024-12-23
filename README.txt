@@ -8,6 +8,12 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 
+3.2.2
+- [Fix] Fix unit tests
+- [Fix] Addition of plagiarism_compilatio_cm_cfg metadata for unit tests
+- [Fix] Error when resending documents in error from admin tab if a file is present multiple times
+- [Fix] Old scores no longer update when switching from Magister to Magister+.
+
 3.2.1
 - Fix for Moodle instances using php7
 
