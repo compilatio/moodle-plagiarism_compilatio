@@ -75,7 +75,7 @@ class api
         $this->urlrest = 'https://app.compilatio.net';
         $this->userid = $userid;
 
-        if (!empty($apikey)) {
+        if (isset($apikey) && $apikey !== '') {
             $this->apikey = $apikey;
         } else {
             return 'API key not available';
