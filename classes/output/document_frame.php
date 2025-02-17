@@ -27,6 +27,7 @@ namespace plagiarism_compilatio\output;
 
 use plagiarism_compilatio\output\icons;
 use plagiarism_compilatio\compilatio\file;
+use plagiarism_compilatio\compilatio\api;
 use moodle_url;
 
 /**

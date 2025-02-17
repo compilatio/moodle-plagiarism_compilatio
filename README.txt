@@ -7,6 +7,9 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+3.2.4
+- [Fix] Documents analyzed with a v2 plugin returned 404 when displaying document frame
+
 3.2.3
 - [Fix] Enhance code quality
 
