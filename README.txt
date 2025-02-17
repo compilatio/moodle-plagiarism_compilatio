@@ -9,6 +9,8 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 CHANGES
 3.2.4
 - [Fix] Documents analyzed with a v2 plugin returned 404 when displaying document frame
+- [Fix] Add checks on APIkey field to prevent scheduled tasks errors
+- Remove recipe_name from api analysis start
 
 3.2.3
 - [Fix] Enhance code quality
