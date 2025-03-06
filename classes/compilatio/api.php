@@ -68,7 +68,7 @@ class api {
             $apikey = get_config('plagiarism_compilatio', 'apikey');
         }
 
-        $this->urlrest = 'https://app.compilatio.net';
+        $this->urlrest = 'https://moodle.zygarde.compilatio.net';
         $this->userid = $userid;
 
         if (isset($apikey) && $apikey !== '') {
@@ -223,7 +223,7 @@ class api {
      * @param   string  $firstname      User's firstname
      * @param   string  $lastname       User's lastname
      * @param   string  $email          User's email
-     * @return  string                  Return the user's ID, an error message otherwise
+     * @return  string|false            Return the user's ID, an error message otherwise or false
      */
     private function set_user($firstname, $lastname, $email) {
         $lang = substr(current_language(), 0, 2);
@@ -270,7 +270,7 @@ class api {
      * Get user if exist for email
      *
      * @param   string  $email          Teacher's moodle email
-     * @return  string                  Return the user's ID if exist, an error message otherwise
+     * @return  string|false            Return the user's ID if exist, the status error code or false
      */
     private function get_user_by_email($email) {
         $endpoint = '/api/private/user/lms/' . strtolower($email);
@@ -865,14 +865,33 @@ class api {
      * @return string curl response
      */
     private function build_curl_on_behalf_of_user($endpoint, $method = null, $data = null, $handle = null) {
-        global $DB;
+        global $DB, $USER;
 
         $header = [];
 
+        $userid = $this->userid;
+
+        if ($userid === null) {
+            $userid = $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => 0]);
+            if ($userid === false) {
+                $user0compilatioemail = 'moodle-' . substr($this->apikey, 0, 10) . '@' . preg_replace('/^.*@/', '', $USER->email);
+
+                $userid = $this->get_user_by_email($user0compilatioemail);
+
+                if (!preg_match('/^[a-f0-9]{40}$/', $userid)) {
+                    $userid = $this->set_user($USER->firstname, $USER->lastname, $user0compilatioemail);
+                }
+
+                if ($userid === false) {
+                    return json_encode(['status' => ['code' => 500, 'message' => 'User could not be created']]);
+                }
+
+                $DB->insert_record('plagiarism_compilatio_user', (object) ['userid' => 0, 'compilatioid' => $userid]);
+            }
+        }
+
         // Plugin v2 docs management.
-        $header[] = null === $this->userid
-            ? 'X-LMS-USER-ID: ' . $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => 0])
-            : 'X-LMS-USER-ID: ' . $this->userid;
+        $header[] = 'X-LMS-USER-ID: ' . $userid;
         return $this->build_curl($endpoint, $method, $data, $handle, $header);
     }
 
