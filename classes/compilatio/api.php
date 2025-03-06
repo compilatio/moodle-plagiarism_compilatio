@@ -869,29 +869,29 @@ class api {
 
         $header = [];
 
-        $userId = $this->userid;
+        $userid = $this->userid;
 
-        if ($userId === null) {
-            $userId = $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => 0]);
-            if ($userId === false) {
-                $user0CompilatioEmail = 'moodle-' . substr($this->apikey, 0, 10) . '@' . preg_replace('/^.*@/', '', $USER->email);
+        if ($userid === null) {
+            $userid = $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => 0]);
+            if ($userid === false) {
+                $user0compilatioemail = 'moodle-' . substr($this->apikey, 0, 10) . '@' . preg_replace('/^.*@/', '', $USER->email);
 
-                $userId = $this->get_user_by_email($user0CompilatioEmail);
+                $userid = $this->get_user_by_email($user0compilatioemail);
 
-                if(!preg_match('/^[a-f0-9]{40}$/', $userId)) {
-                    $userId = $this->set_user($USER->firstname, $USER->lastname, $user0CompilatioEmail);
+                if (!preg_match('/^[a-f0-9]{40}$/', $userid)) {
+                    $userid = $this->set_user($USER->firstname, $USER->lastname, $user0compilatioemail);
                 }
 
-                if ($userId === false) {
+                if ($userid === false) {
                     return json_encode(['status' => ['code' => 500, 'message' => 'User could not be created']]);
                 }
 
-                $DB->insert_record('plagiarism_compilatio_user', (object) ['userid' => 0, 'compilatioid' => $userId]);
+                $DB->insert_record('plagiarism_compilatio_user', (object) ['userid' => 0, 'compilatioid' => $userid]);
             }
         }
 
         // Plugin v2 docs management.
-        $header[] = 'X-LMS-USER-ID: ' . $userId;
+        $header[] = 'X-LMS-USER-ID: ' . $userid;
         return $this->build_curl($endpoint, $method, $data, $handle, $header);
     }
 
