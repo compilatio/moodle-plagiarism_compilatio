@@ -59,7 +59,10 @@ if (!empty($files)) {
 }
 
 // Send failed files.
-$files = array_merge($files, $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'error_sending_failed']));
+$sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = :cmid AND status IN (:status1, :status2)";
+$params = ['cmid' => $cmid, 'status1' => 'error_sending_failed', 'status2' => 'error_extraction_failed'];
+
+$files = array_merge($files, $DB->get_records_sql($sql, $params));
 
 if (!empty($files)) {
     $countsuccess = 0;

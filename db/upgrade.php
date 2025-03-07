@@ -340,6 +340,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
             414 => 'error_too_long',
             415 => 'error_unsupported',
             416 => 'error_sending_failed',
+            417 => 'error_extraction_failed',
             418 => 'error_analysis_failed',
             'Analyzed' => 'scored',
             'In queue' => 'queue',
