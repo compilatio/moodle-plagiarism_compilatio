@@ -50,10 +50,10 @@ class trigger_analyses extends \core\task\scheduled_task {
         // Return all files with Compilatio activated and to analyze.
         $sql = "SELECT file.* FROM {plagiarism_compilatio_files} file
             JOIN {plagiarism_compilatio_cm_cfg} config ON config.cmid = file.cm
-            WHERE (file.status = 'sent' 
-                AND config.activated = '1' 
-                AND config.analysistype = 'planned' 
-                AND config.analysistime < ?) 
+            WHERE (file.status = 'sent'
+                AND config.activated = '1'
+                AND config.analysistype = 'planned'
+                AND config.analysistime < ?)
             OR file.status = 'to_analyze'";
         $files = $DB->get_records_sql($sql, [time()]);
 
