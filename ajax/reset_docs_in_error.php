@@ -59,7 +59,7 @@ if (!empty($files)) {
 }
 
 // Send failed files.
-$files = array_merge($files, $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'error_sending_failed']));
+$files = array_merge($files, $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'status' => 'error_sending_failed', 'status' => 'error_extraction_failed']));
 
 if (!empty($files)) {
     $countsuccess = 0;
