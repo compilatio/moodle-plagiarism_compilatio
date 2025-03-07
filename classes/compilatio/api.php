@@ -871,7 +871,7 @@ class api {
 
         $userid = $this->userid;
 
-        if ($userid === null) {
+        if ($userid === null || $userid === '') {
             $userid = $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => 0]);
             if ($userid === false) {
                 $user0compilatioemail = 'moodle-' . substr($this->apikey, 0, 10) . '@' . preg_replace('/^.*@/', '', $USER->email);
