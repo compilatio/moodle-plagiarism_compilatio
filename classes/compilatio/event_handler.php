@@ -515,13 +515,15 @@ class event_handler {
             && $event['objecttable'] === 'grade_items') {
 
             $gradeitem = $DB->get_record('grade_items', ['id' => $event['objectid']]);
-            $module = $DB->get_record('modules', ['name' => $gradeitem->itemmodule]);
-            $coursemodule = $DB->get_record(
+            
+            if (false === $module = $DB->get_record('modules', ['name' => $gradeitem->itemmodule])) {
+                return;
+            }
+
+            if (false === $coursemodule = $DB->get_record(
                 'course_modules',
                 ['module' => $module->id, 'instance' => $gradeitem->iteminstance]
-            );
-
-            if (!is_object($coursemodule)) {
+            )) {
                 return;
             }
 
