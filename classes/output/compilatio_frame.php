@@ -71,6 +71,8 @@ class compilatio_frame {
 
         global $CFG, $PAGE, $OUTPUT, $DB, $SESSION, $USER;
 
+        $compilatio = new api();
+
         if (!$PAGE->context instanceof \context_module) {
             return;
         }
@@ -143,7 +145,13 @@ class compilatio_frame {
         }
 
         $webservicestatus = get_config('plagiarism_compilatio', 'connection_webservice');
-        if ($webservicestatus != null && $webservicestatus === '0') {
+
+        if ($compilatio->isInMaintenance()) {
+            $alerts[] = [
+                'class'   => 'maintenance',
+                'content' => get_string('compilatio_maintenance', 'plagiarism_compilatio'),
+            ];
+        } else if ($webservicestatus != null && $webservicestatus === '0') {
             $alerts[] = [
                 'class' => 'danger',
                 'content' => get_string('webservice_unreachable', 'plagiarism_compilatio'),
@@ -291,7 +299,7 @@ class compilatio_frame {
                     "<button
                         data-toggle='tooltip'
                         id='cmp-send-btn'
-                        title='" . get_string('send_all_documents', 'plagiarism_compilatio') . "'
+                        title='" . ($compilatio->isInMaintenance() ? get_string('disabled_in_maintenance', 'plagiarism_compilatio') : get_string('send_all_documents', 'plagiarism_compilatio')) . "'
                         class='btn btn-outline-primary cmp-action-btn'
                     >
                         <i class='cmp-icon-lg fa fa-paper-plane'></i>
@@ -306,7 +314,7 @@ class compilatio_frame {
                     "<button
                         data-toggle='tooltip'
                         id='cmp-reset-btn'
-                        title='" . get_string('reset_docs_in_error', 'plagiarism_compilatio') . "'
+                        title='" . ($compilatio->isInMaintenance() ? get_string('disabled_in_maintenance', 'plagiarism_compilatio') : get_string('reset_docs_in_error', 'plagiarism_compilatio')) . "'
                         class='btn btn-outline-primary cmp-action-btn'
                     >
                         <i class='cmp-icon-lg fa fa-rotate-right'></i>
@@ -434,8 +442,8 @@ class compilatio_frame {
                     case 'warning':
                         $icon = 'fa-exclamation-circle';
                         break;
-                    case 'danger':
-                        $icon = 'fa-exclamation-triangle';
+                    case 'danger' || 'maintenance':
+                        $icon = 'fa-exclamation-triangle text-danger';
                         break;
                     case 'success':
                         $icon = 'fa-check-circle';
@@ -476,12 +484,13 @@ class compilatio_frame {
      */
     private static function display_start_all_analyses_button($cmid, $module) {
         global $DB, $CFG, $PAGE;
+        $compilatio = new api();
 
         $output = $questionselector = '';
 
         $output .=
             "<button
-                title='" . get_string('start_all_analysis', 'plagiarism_compilatio') . "'
+                title='" . ($compilatio->isInMaintenance() ? get_string('disabled_in_maintenance', 'plagiarism_compilatio') : get_string('start_all_analysis', 'plagiarism_compilatio')) . "'
                 class='btn btn-primary cmp-action-btn cmp-start-btn'
                 data-toggle='tooltip'
             >
@@ -541,8 +550,8 @@ class compilatio_frame {
             <div
                 class='dropdown btn btn-outline-primary cmp-action-btn'
                 role='button'
-                data-toggle='dropdown'
-                title='" . get_string('other_analysis_options', 'plagiarism_compilatio') . "'
+                data-toggle= ". ($compilatio->isInMaintenance() ? 'tooltip' : 'dropdown') . "
+                title='" . ($compilatio->isInMaintenance() ? get_string('disabled_in_maintenance', 'plagiarism_compilatio') : get_string('other_analysis_options', 'plagiarism_compilatio')) . "'
             >
                 <i class='cmp-icon-lg fa fa-ellipsis-v'></i>
                 <div id='cmp-dropdown-menu' class='dropdown-menu overflow-hidden p-0' aria-labelledby='dropdownMenuButton'>
@@ -578,6 +587,8 @@ class compilatio_frame {
     private static function display_score_settings($cmid) {
         global $DB, $PAGE, $CFG;
 
+        $compilatio = new api();
+
         $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
         $ignoredscores = $cmconfig->ignoredscores;
@@ -607,7 +618,13 @@ class compilatio_frame {
                     . get_string('score_settings_info', 'plagiarism_compilatio') . "</span>
             </div>
             <div class='d-flex flex-row-reverse mr-1'>
-                <button id='score-settings-ignored' type='button' class='btn btn-primary'>"
+                <button 
+                    id='score-settings-ignored' 
+                    type='button' 
+                    class='btn btn-primary cmp-action-btn'
+                    data-toggle='tooltip'
+                    title='" . ($compilatio->isInMaintenance() ? get_string('disabled_in_maintenance', 'plagiarism_compilatio') : '') . "'
+                >"
                     . get_string('update', 'core') . "</button>
             </div>";
 

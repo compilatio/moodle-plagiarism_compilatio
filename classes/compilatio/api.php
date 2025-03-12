@@ -827,6 +827,10 @@ class api {
         return false;
     }
 
+    public function isInMaintenance() {
+        return get_config('plagiarism_compilatio', 'compilatio_maintenance') === '1';
+    }
+
     /**
      * Get an eventually error message from an API response
      * Compare API response with expected HTTP code
@@ -972,6 +976,18 @@ class api {
         curl_setopt_array($ch, $params);
 
         $result = curl_exec($ch);
+        $isInMaintenance = json_decode($result)->status->code === 503 && isset(json_decode($result)->data->maintenance) && json_decode($result)->data->maintenance === true;
+
+        if ($isInMaintenance && (get_config('plagiarism_compilatio', 'compilatio_maintenance') === '0' || get_config('plagiarism_compilatio', 'compilatio_maintenance') === false)) {
+            set_config('compilatio_maintenance', '1', 'plagiarism_compilatio');
+            return json_encode(['status' => ['code' => 503, 'message' => 'Compilation services undergoing maintenance']]);
+        } else if ($isInMaintenance) {
+            return json_encode(['status' => ['code' => 503, 'message' => 'Compilation services undergoing maintenance']]);
+        }
+
+        if (!$isInMaintenance && (get_config('plagiarism_compilatio', 'compilatio_maintenance') === '1' || get_config('plagiarism_compilatio', 'compilatio_maintenance') === false)) {
+            set_config('compilatio_maintenance', '0', 'plagiarism_compilatio');
+        }
 
         if ($method == 'download') {
             $result = curl_getinfo($ch, CURLINFO_HTTP_CODE);

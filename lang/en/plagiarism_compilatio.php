@@ -131,6 +131,21 @@ $string['compilatio_display_student_score'] = 'Show similarity score to student'
 $string['compilatio_display_student_score_help'] = 'The similarity score is the percentage of the submission that has been matched with other content.';
 $string['compilatio_help_assign'] = 'Display help about Compilatio plugin';
 $string['compilatio_iddocument'] = 'Document identifier';
+$string['compilatio_maintenance'] = '
+                    <div id="maintenance-modal" class="mt-3">
+                        <strong>Application Compilatio en cours de maintenance</strong>
+                        <p class="cmp-alert-description">
+                            Les services Compilatio sont en cours de maintenance programmée. 
+                            Cette interruption devrait être de courte durée.<br>
+                            Abonnez-vous à notre page 
+                            <a href="https://support.compilatio.net/hc/fr/articles/13326036778769-Compilatio-Etat-des-services" target="_blank"
+                            style="text-decoration: none;">
+                            <strong>état des services</strong>
+                            </a> 
+                            pour être informé du retour à la normale de l\'application.
+                        </p>
+                    </div>
+                ';
 $string['compilatio_search'] = 'Search';
 $string['compilatio_search_help'] = 'You can find the depositor of a document by retrieving the document identifier from the sources of the analysis report.';
 $string['compilatio_search_notfound'] = 'No document was found for this identifier among the documents loaded on your Moodle platform.';
@@ -166,6 +181,7 @@ $string['detailed_error_too_large'] = 'These documents could not be analysed by 
 $string['detailed_error_too_long'] = 'These documents could not be analysed by Compilatio because they contained too many words (Maximum size: {$a} words).';
 $string['detailed_error_too_short'] = 'These documents could not be analysed by Compilatio because they didn\'t contain enough words (Minimum size: {$a} words).';
 $string['detailed_error_unsupported'] = 'These documents could not be analysed by Compilatio because their format is not supported.';
+$string['disabled_in_maintenance'] = 'Disabled during maintenance';
 $string['disable_ssl_verification'] = 'Ignore SSL certificate verification.';
 $string['disable_ssl_verification_help'] = 'Enable this option if you have problems verifying SSL certificates or if you experience errors when sending files to Compilatio.';
 $string['disclaimer_data'] = 'By enabling Compilatio, you accept the fact that data about your Moodle configuration will be collected in order to improve support and maintenance of this service.';
