@@ -135,13 +135,13 @@ $string['compilatio_maintenance'] = '
                     <div id="maintenance-modal" class="mt-3">
                         <strong>Application Compilatio en cours de maintenance</strong>
                         <p class="cmp-alert-description">
-                            Les services Compilatio sont en cours de maintenance programmée. 
+                            Les services Compilatio sont en cours de maintenance programmée.
                             Cette interruption devrait être de courte durée.<br>
-                            Abonnez-vous à notre page 
+                            Abonnez-vous à notre page
                             <a href="https://support.compilatio.net/hc/fr/articles/13326036778769-Compilatio-Etat-des-services" target="_blank"
                             style="text-decoration: none;">
                             <strong>état des services</strong>
-                            </a> 
+                            </a>
                             pour être informé du retour à la normale de l\'application.
                         </p>
                     </div>

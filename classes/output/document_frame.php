@@ -249,7 +249,9 @@ class document_frame {
             } else if ($cantriggeranalysis || ($isstudentanalyse && !$isteacher)) {
                 $documentframe =
                     "<div
-                        title='" . ($compilatio->isInMaintenance() ? self::formatstring('disabled_in_maintenance') : self::formatstring('title_sent')) . "'
+                        title='" . ($compilatio->is_in_maintenance() ?
+                            self::formatstring('disabled_in_maintenance') :
+                            self::formatstring('title_sent')) . "'
                         class='cmp-btn cmp-btn-doc cmp-btn-primary cmp-start-btn'
                     >
                         <i class='cmp-icon-lg mr-1 fa fa-play-circle'></i>"
@@ -291,7 +293,8 @@ class document_frame {
                 "<a
                     href='" . $url . "'
                     target='_self'
-                    title='" . ( $compilatio->isInMaintenance() ? self::formatstring('disabled_in_maintenance')  : self::formatstring('title_unsent')) . "'
+                    title='" . ( $compilatio->is_in_maintenance() ?
+                        self::formatstring('disabled_in_maintenance') : self::formatstring('title_unsent')) . "'
                     class='cmp-btn cmp-btn-doc cmp-btn-primary'
                 >
                     <i class='mr-2 fa fa-paper-plane'></i>"
@@ -353,7 +356,7 @@ class document_frame {
                 $title = self::formatstring('not_indexed_document');
             }
 
-            if ($compialtio->isInMaintenance()) {
+            if ($compialtio->is_in_maintenance()) {
                 $title = self::formatstring('disabled_in_maintenance');
             }
 
@@ -388,7 +391,11 @@ class document_frame {
         $ignoredscores = empty($cmpfile->ignoredscores) ? [] : explode(',', $cmpfile->ignoredscores);
 
         $title = self::formatstring('title_score', 'plagiarism_compilatio', $cmpfile->globalscore);
-        $title .= $isteacher ? ( $compilatio->isInMaintenance() ? ' ' . self::formatstring('disabled_in_maintenance') : ' ' . self::formatstring('title_score_teacher')) : '';
+        $title .= $isteacher ?
+            ( $compilatio->is_in_maintenance() ?
+                ' ' . self::formatstring('disabled_in_maintenance')
+                : ' ' . self::formatstring('title_score_teacher'))
+            : '';
 
         $html = "<span title='{$title}' class='cmp-similarity cmp-color-{$color} align-middle'>
                     <i style='display: none;' class='fa fa-refresh'></i><span>{$cmpfile->globalscore}<small>%</small></span>
