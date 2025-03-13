@@ -133,16 +133,16 @@ $string['compilatio_help_assign'] = 'Display help about Compilatio plugin';
 $string['compilatio_iddocument'] = 'Document identifier';
 $string['compilatio_maintenance'] = '
                     <div id="maintenance-modal" class="mt-3">
-                        <strong>Application Compilatio en cours de maintenance</strong>
+                        <strong>Compilatio application undergoing maintenance</strong>
                         <p class="cmp-alert-description">
-                            Les services Compilatio sont en cours de maintenance programmée.
-                            Cette interruption devrait être de courte durée.<br>
-                            Abonnez-vous à notre page
+                            Compilatio services are undergoing scheduled maintenance.
+                            This interruption should be of short duration.<br>
+                            Subscribe to our page
                             <a href="https://support.compilatio.net/hc/fr/articles/13326036778769-Compilatio-Etat-des-services" target="_blank"
                             style="text-decoration: none;">
-                            <strong>état des services</strong>
+                            <strong>service status</strong>
                             </a>
-                            pour être informé du retour à la normale de l\'application.
+                            to be informed when the application returns to normal.
                         </p>
                     </div>
                 ';

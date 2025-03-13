@@ -146,12 +146,7 @@ class compilatio_frame {
 
         $webservicestatus = get_config('plagiarism_compilatio', 'connection_webservice');
 
-        if ($compilatio->is_in_maintenance()) {
-            $alerts[] = [
-                'class'   => 'maintenance',
-                'content' => get_string('compilatio_maintenance', 'plagiarism_compilatio'),
-            ];
-        } else if ($webservicestatus != null && $webservicestatus === '0') {
+        if ($webservicestatus != null && $webservicestatus === '0' && !$compilatio->is_in_maintenance()) {
             $alerts[] = [
                 'class' => 'danger',
                 'content' => get_string('webservice_unreachable', 'plagiarism_compilatio'),
@@ -212,6 +207,14 @@ class compilatio_frame {
                     'content' => "<span class='cmp-md'>" . $text . '</span>',
                 ];
             }
+        }
+
+        // Check if compilatio is under maintenance.
+        if ($compilatio->is_in_maintenance()) {
+            $alerts[] = [
+                'class'   => 'maintenance',
+                'content' => get_string('compilatio_maintenance', 'plagiarism_compilatio'),
+            ];
         }
 
         $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => $USER->id]);

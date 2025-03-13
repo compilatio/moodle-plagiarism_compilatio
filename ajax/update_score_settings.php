@@ -73,6 +73,10 @@ foreach ($files as $file) {
         $file = analysis::check_analysis($file);
     }
 
+    if ($file === null) {
+        continue;
+    }
+
     $file->updatetaskid = $compilatio->update_and_rebuild_report($file->analysisid, $ignoredtypes);
 }
 

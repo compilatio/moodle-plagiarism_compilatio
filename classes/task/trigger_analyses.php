@@ -47,6 +47,10 @@ class trigger_analyses extends \core\task\scheduled_task {
     public function execute() {
         global $DB;
 
+        if (get_config('plagiarism_compilatio', 'compilatio_maintenance') === "1") {
+            return;
+        }
+
         // Return all files with Compilatio activated and to analyze.
         $sql = "SELECT file.* FROM {plagiarism_compilatio_files} file
             JOIN {plagiarism_compilatio_cm_cfg} config ON config.cmid = file.cm

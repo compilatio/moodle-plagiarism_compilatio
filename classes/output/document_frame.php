@@ -223,10 +223,18 @@ class document_frame {
                     $href = $cmpfile->reporturl;
                 }
 
-                $documentframe =
-                    "<a href='{$href}' target='_blank' class='cmp-btn cmp-btn-doc cmp-btn-primary'>"
-                        . icons::report() . self::formatstring('report', 'core') .
-                    "</a>";
+                // Display fake report button if under maintenance.
+                if ($compilatio->is_in_maintenance()) {
+                    $documentframe =
+                        "<div class='cmp-btn cmp-btn-doc cmp-btn-primary disabled' title='" . self::formatstring('disabled_in_maintenance') . "'>"
+                            . icons::report() . self::formatstring('report', 'core') .
+                        "</div>";
+                } else {
+                    $documentframe =
+                        "<a href='{$href}' target='_blank' class='cmp-btn cmp-btn-doc cmp-btn-primary'>"
+                            . icons::report() . self::formatstring('report', 'core') .
+                        "</a>";
+                }
             }
 
             $score = self::get_score($cmpfile, $config, $isteacher);

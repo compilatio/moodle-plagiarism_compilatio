@@ -52,6 +52,10 @@ class get_scores extends \core\task\scheduled_task {
 
         $compilatio = new \plagiarism_plugin_compilatio();
 
+        if (get_config("plagiarism_compilatio", "compilatio_maintenance") === "1") {
+            return;
+        }
+
         // Keep track of the last cron execution.
         $lastcron = get_config('plagiarism_compilatio', 'last_cron');
         if ($lastcron != null) {

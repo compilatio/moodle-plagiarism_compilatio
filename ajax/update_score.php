@@ -41,6 +41,10 @@ $file = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 if (!empty($file)) {
     $file = analysis::check_analysis($file);
 
+    if ($file === null) {
+        return;
+    }
+
     $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $file->cm]);
 
     echo document_frame::get_score($file, $cmconfig, true);

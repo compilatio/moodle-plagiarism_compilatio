@@ -1021,27 +1021,25 @@ class api {
      * @return boolean
      */
     private function check_if_under_maintenance($result) {
-        $isinmaintenance = json_decode($result)->status->code === 503 &&
-            isset(json_decode($result)->data->maintenance) &&
-            json_decode($result)->data->maintenance === true;
 
-        if ($isinmaintenance && (
-                get_config('plagiarism_compilatio', 'compilatio_maintenance') === '0' ||
-                get_config('plagiarism_compilatio', 'compilatio_maintenance') === false
-        )) {
+        $decodedresult = json_decode($result);
 
+        $isinmaintenance = $decodedresult->status->code === 503
+            && isset($decodedresult->data->maintenance)
+            && $decodedresult->data->maintenance;
+
+        if ($isinmaintenance) {
             set_config('compilatio_maintenance', '1', 'plagiarism_compilatio');
-            return true;
-        } else if ($isinmaintenance) {
             return true;
         }
 
         if (!$isinmaintenance &&
                 (get_config('plagiarism_compilatio', 'compilatio_maintenance') === '1' ||
-                get_config('plagiarism_compilatio', 'compilatio_maintenance') === false
+                !get_config('plagiarism_compilatio', 'compilatio_maintenance')
         )) {
             set_config('compilatio_maintenance', '0', 'plagiarism_compilatio');
         }
+
         return false;
     }
 }
