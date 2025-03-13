@@ -83,10 +83,6 @@ foreach ($files as $file) {
 foreach ($files as $file) {
     $report = $compilatio->get_updated_report($file->analysisid, $file->updatetaskid);
 
-    if ($report === false) {
-        continue;
-    }
-
     $file->globalscore = round($report->scores->global_score_percent ?? 0);
 
     $file->simscore = isset($report->scores->similarity_percent)

@@ -78,7 +78,7 @@ class analysis {
      * Check an analysis
      *
      * @param  object $cmpfile File
-     * @return object|void $cmpfile File with updated status, void if get_document returns an error
+     * @return object $cmpfile File with updated status, old cmpfile if get_document returns an error
      */
     public static function check_analysis($cmpfile) {
 
@@ -91,10 +91,8 @@ class analysis {
 
         if ($doc == 'Not Found') {
             $cmpfile->status = 'error_not_found';
-        }
-
-        if (!is_object($doc)) {
-            return;
+        } else if ($doc == 'Compilation services undergoing maintenance') {
+            return $cmpfile;
         }
 
         $recipe = array_key_first((array)$doc->analyses);

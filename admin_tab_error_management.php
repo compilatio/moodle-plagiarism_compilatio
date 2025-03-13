@@ -69,10 +69,6 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
             foreach ($files as $key => $cmpfile) {
                 $cmpfile = analysis::check_analysis($cmpfile);
 
-                if ($cmpfile === null) {
-                    return;
-                }
-
                 if ($cmpfile->status !== 'error_analysis_failed') {
                     unset($files[$key]);
                 }
