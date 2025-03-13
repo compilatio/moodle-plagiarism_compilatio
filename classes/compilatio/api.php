@@ -828,6 +828,15 @@ class api {
     }
 
     /**
+     * Returns a boolean to know if the API is under maintenance
+     *
+     * @return boolean
+     */
+    public function is_in_maintenance() {
+        return get_config('plagiarism_compilatio', 'compilatio_maintenance') === '1';
+    }
+
+    /**
      * Get an eventually error message from an API response
      * Compare API response with expected HTTP code
      * @param  mixed $response           curl response
@@ -973,6 +982,10 @@ class api {
 
         $result = curl_exec($ch);
 
+        if ($this->check_if_under_maintenance($result)) {
+            return json_encode(['status' => ['code' => 503, 'message' => 'Compilation services undergoing maintenance']]);
+        }
+
         if ($method == 'download') {
             $result = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         }
@@ -999,5 +1012,34 @@ class api {
             }
             return $returnarray;
         }
+    }
+
+    /**
+     * Check if Compilatio API is under maintenance by the CURL result.
+     *
+     * @param  mixed  $result
+     * @return boolean
+     */
+    private function check_if_under_maintenance($result) {
+
+        $decodedresult = json_decode($result);
+
+        $isinmaintenance = $decodedresult->status->code === 503
+            && isset($decodedresult->data->maintenance)
+            && $decodedresult->data->maintenance;
+
+        if ($isinmaintenance) {
+            set_config('compilatio_maintenance', '1', 'plagiarism_compilatio');
+            return true;
+        }
+
+        if (!$isinmaintenance &&
+                (get_config('plagiarism_compilatio', 'compilatio_maintenance') === '1' ||
+                !get_config('plagiarism_compilatio', 'compilatio_maintenance')
+        )) {
+            set_config('compilatio_maintenance', '0', 'plagiarism_compilatio');
+        }
+
+        return false;
     }
 }
