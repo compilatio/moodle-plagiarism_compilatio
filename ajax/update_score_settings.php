@@ -73,15 +73,15 @@ foreach ($files as $file) {
         $file = analysis::check_analysis($file);
     }
 
-    if ($file === null) {
-        continue;
-    }
-
     $file->updatetaskid = $compilatio->update_and_rebuild_report($file->analysisid, $ignoredtypes);
 }
 
 foreach ($files as $file) {
     $report = $compilatio->get_updated_report($file->analysisid, $file->updatetaskid);
+
+    if ($report === false) {
+        continue;
+    }
 
     $file->globalscore = round($report->scores->global_score_percent ?? 0);
 
