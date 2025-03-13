@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * admin_tab_error_management.php
+ * admin_tab_technical_tools.php
  *
  * @package   plagiarism_compilatio
  * @author    Compilatio <support@compilatio.net>
@@ -126,6 +126,11 @@ foreach ($alerts ?? [] as $alert) {
         <span class='mr-1 d-flex'>" . $alert['content'] . "</span>
     </div>";
 }
+
+echo '<h3> Download Compilatio Database Tables </h3>';
+echo '<form action="admin_tab_export_compilatio_database_tables.php" method="post">
+        <button type="submit" class="btn btn-warning mt-2">Download Compilatio Tables</button>
+      </form>';
 
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();
