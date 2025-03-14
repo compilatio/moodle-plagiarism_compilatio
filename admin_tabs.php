@@ -34,7 +34,7 @@ $strplagiarismdefaults = get_string('compilatiodefaults', 'plagiarism_compilatio
 $strautodiagnosis      = get_string('auto_diagnosis_title', 'plagiarism_compilatio');
 $strstatistics         = get_string('tabs_title_stats', 'plagiarism_compilatio');
 $strhelp               = get_string('tabs_title_help', 'plagiarism_compilatio');
-$stradmintest          = get_string('tabs_title_error_management', 'plagiarism_compilatio');
+$stradmintest          = get_string('tabs_title_technical_tools', 'plagiarism_compilatio');
 
 
 // Display Compilatio logo.
@@ -56,7 +56,7 @@ $tabs[] = new tabobject(
 $tabs[] = new tabobject('compilatioautodiagnosis', 'admin_tab_autodiagnosis.php', $strautodiagnosis, $strautodiagnosis, false);
 $tabs[] = new tabobject('statistics', 'admin_tab_statistics.php', $strstatistics, $strstatistics, false);
 $tabs[] = new tabobject('compilatiohelp', 'admin_tab_help.php', $strhelp, $strhelp, false);
-$tabs[] = new tabobject('compilatioadmintest', 'admin_tab_error_management.php', $stradmintest, $stradmintest, false);
+$tabs[] = new tabobject('compilatioadmintest', 'admin_tab_technical_tools.php', $stradmintest, $stradmintest, false);
 
 // Display tabs.
 print_tabs([$tabs], $currenttab);

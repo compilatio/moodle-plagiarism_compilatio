@@ -166,6 +166,7 @@ class compilatio_frame {
                                 OR status = 'error_sending_failed'
                                 OR status = 'error_extraction_failed'
             )";
+
         if ($DB->count_records_sql($sql, [$cmid]) !== 0) {
             $resetdocsinerror = true;
         }
