@@ -131,7 +131,10 @@ echo '<h3>' . get_string('download_compilatio_database_title', 'plagiarism_compi
     <div class="d-flex align-items-center pt-4">
         <p class="mb-0">' . get_string('download_compilatio_database_content', 'plagiarism_compilatio') . '</p>
         <form class="ml-2" action="admin_tab_export_compilatio_database_tables.php" method="post">
-            <button type="submit" class="btn btn-primary"><i class="fa fa-download mx-1"></i>' . get_string('download_compilatio_database_button', 'plagiarism_compilatio') . '</button>
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-download mx-1"></i>
+                ' . get_string('download_compilatio_database_button', 'plagiarism_compilatio') . '
+            </button>
         </form>
     </div>';
 
