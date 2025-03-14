@@ -324,6 +324,7 @@ class csv_generator {
 
         exit(0);
     }
+
     /**
      * Export database data as csv files
      *
@@ -331,20 +332,19 @@ class csv_generator {
      */
     public static function generate_database_data_csv() {
         global $DB;
-    
+
         $compilatiotables = ["cm_cfg", "files", "user"];
-    
-        // Crée une archive temporaire.
+
         $zip = new \ZipArchive();
         $zipfilename = tempnam(sys_get_temp_dir(), 'compilatio_') . '.zip';
         $zip->open($zipfilename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-    
+
         foreach ($compilatiotables as $table) {
             $sql = "SELECT * FROM {plagiarism_compilatio_" . $table . "}";
             $rows = $DB->get_records_sql($sql);
-    
+
             $filename = "compilatio_moodle_" . $table . "_" . date("Y_m_d") . ".csv";
-    
+
             $csv = "";
             if (!empty($rows)) {
                 $header = (array) reset($rows);
@@ -354,22 +354,19 @@ class csv_generator {
                     $csv .= '"' . implode('","', $row) . "\"\n";
                 }
             }
-    
-            // Ajoute le fichier CSV au zip.
+
             $zip->addFromString($filename, $csv);
         }
-    
+
         $zip->close();
-    
-        // Envoie le fichier ZIP en tant que téléchargement.
+
         header('Content-Type: application/zip');
         header('Content-disposition: attachment; filename=compilatio_data_' . date('Y_m_d') . '.zip');
         header('Content-Length: ' . filesize($zipfilename));
         readfile($zipfilename);
-    
-        // Supprime le fichier temporaire.
+
         unlink($zipfilename);
-    
+
         exit(0);
     }
 }

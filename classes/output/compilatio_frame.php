@@ -159,7 +159,8 @@ class compilatio_frame {
 
         // Display reset docs in error button if necesseary.
         $sql = "SELECT COUNT(DISTINCT pcf.id) FROM {plagiarism_compilatio_files} pcf
-            WHERE pcf.cm=? AND (status = 'error_analysis_failed' OR status = 'error_sending_failed' OR status = 'error_extraction_failed')";
+            WHERE pcf.cm=? AND
+            (status = 'error_analysis_failed' OR status = 'error_sending_failed' OR status = 'error_extraction_failed')";
         if ($DB->count_records_sql($sql, [$cmid]) !== 0) {
             $resetdocsinerror = true;
         }
