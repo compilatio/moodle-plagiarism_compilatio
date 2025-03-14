@@ -68,7 +68,7 @@ class compilatio_setup_form extends moodleform {
 
         $mform->addElement('html', get_string('enable_activities_title', 'plagiarism_compilatio'));
 
-        $mods = get_plugin_list('mod');
+        $mods = core_component::get_plugin_list('mod');
         foreach ($mods as $mod => $modname) {
             if (plugin_supports('mod', $mod, FEATURE_PLAGIARISM)) {
                 $modstring = 'enable_mod_' . $mod;
