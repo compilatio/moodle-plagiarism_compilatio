@@ -16,6 +16,14 @@ define(['jquery'], function($) {
     }
 
     var exports = {};
+    var isInMaintenance = false;
+
+    $(document).ready(function() {
+        if ($('#maintenance-modal').length) {
+            isInMaintenance = true;
+            disableCompilatioButtons();
+        }
+    });
 
     /**
      * Start analyses
@@ -314,6 +322,9 @@ define(['jquery'], function($) {
                         refreshScoreBtn.find('span').show();
                     });
                     refreshScoreBtn.click(function() {
+                        if (isInMaintenance) {
+                            return;
+                        }
                         $('#cmp-' + domid + ' #cmp-score-icons').remove();
                         refreshScoreBtn.empty();
                         $.post(basepath + '/plagiarism/compilatio/ajax/update_score.php', {'docId': cmpfileid}, function(res) {
@@ -324,6 +335,9 @@ define(['jquery'], function($) {
 
                 var toogleIndexingStateBtn = $('#cmp-' + domid + ' .cmp-library');
                 toogleIndexingStateBtn.click(function() {
+                    if (isInMaintenance) {
+                        return;
+                    }
                     var i = $(this).find('i');
                     var indexingState = i.is('.cmp-library-in') ? 0 : 1;
                     i.removeClass();
@@ -345,6 +359,9 @@ define(['jquery'], function($) {
 
                 var startAnalysisBtn = $('#cmp-' + domid + ' .cmp-start-btn');
                 startAnalysisBtn.click(function() {
+                    if (isInMaintenance) {
+                        return;
+                    }
                     startAnalysisBtn.find('i').removeClass('fa-play-circle').addClass('fa-spinner fa-spin');
 
                     $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis.php', {'docId': cmpfileid}, function(res) {

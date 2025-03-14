@@ -10,7 +10,12 @@ CHANGES
 3.2.4
 - [Fix] Documents analyzed with a v2 plugin returned 404 when displaying document frame
 - [Fix] Add checks on APIkey field to prevent scheduled tasks errors
+- [Fix] Create user 0 in database if not exist
+- [Fix] Change file status if extraction error during scheduled analyses
+- [Fix] Add new extraction error type
+- [Fix] Avoid warnings on module id in event handler
 - Remove recipe_name from api analysis start
+- Block actions that use Compilatio API if Compilatio is under maintenance
 
 3.2.3
 - [Fix] Enhance code quality
