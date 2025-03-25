@@ -30,6 +30,9 @@ use plagiarism_compilatio\compilatio\analysis;
 
 require_login();
 
+$context = context_system::instance();
+require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+
 global $DB;
 
 $docid = required_param('docId', PARAM_RAW);

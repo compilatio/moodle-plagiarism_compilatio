@@ -34,7 +34,6 @@ use plagiarism_compilatio\compilatio\api;
  */
 function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     global $CFG, $DB, $OUTPUT;
-
     $dbman = $DB->get_manager();
 
     $filestable = new xmldb_table('plagiarism_compilatio_files');

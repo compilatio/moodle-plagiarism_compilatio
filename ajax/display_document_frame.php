@@ -29,6 +29,9 @@ use plagiarism_compilatio\output\document_frame;
 
 require_login();
 
+$context = context_system::instance();
+require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+
 $cantriggeranalysis = required_param('cantriggeranalysis', PARAM_BOOL);
 $isstudentanalyse = required_param('isstudentanalyse', PARAM_BOOL);
 $cmpfileid = required_param('cmpfileid', PARAM_RAW);

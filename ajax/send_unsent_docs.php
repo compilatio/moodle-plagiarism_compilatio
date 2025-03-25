@@ -31,6 +31,9 @@ use plagiarism_compilatio\compilatio\file;
 
 require_login();
 
+$context = context_system::instance();
+require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+
 global $SESSION;
 
 $cmid = required_param('cmid', PARAM_TEXT);
