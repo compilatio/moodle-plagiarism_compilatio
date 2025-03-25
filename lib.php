@@ -191,6 +191,7 @@ function compilatio_get_unsent_documents($cmid) {
     $notuploadedfiles = [];
     $fs = get_file_storage();
 
+    // Search unsent files.
     $sql = 'SELECT distinct(ass.id) as itemid, con.id as contextid
             FROM {course_modules} cm
                 JOIN {context} con ON cm.id = con.instanceid
@@ -216,6 +217,29 @@ function compilatio_get_unsent_documents($cmid) {
                     array_push($notuploadedfiles, $file);
                 }
             }
+        }
+    }
+
+    // Search unsend online texts.
+    $sql = 'SELECT assot.id, assot.onlinetext, assot.submission
+    FROM {course_modules} cm
+        JOIN {context} con ON cm.id = con.instanceid
+        JOIN {assignsubmission_onlinetext} assot ON assot.assignment = cm.instance
+        JOIN {assign_submission} ass ON assot.submission = ass.id
+        JOIN {user_enrolments} ue ON ass.userid = ue.userid
+        JOIN {enrol} enr ON ue.enrolid = enr.id
+    WHERE cm.id = ? AND con.contextlevel = 70 AND  enr.courseid = cm.course';
+
+    $onlineassignments = $DB->get_records_sql($sql, [$cmid]);
+
+    foreach ($onlineassignments as $onlineassignment) {
+        $countfiles = $DB->count_records(
+            'plagiarism_compilatio_files',
+            ['identifier' => sha1($onlineassignment->onlinetext), 'cm' => $cmid]
+        );
+
+        if ($countfiles == 0) {
+            array_push($notuploadedfiles, $onlineassignment);
         }
     }
 
