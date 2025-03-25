@@ -220,7 +220,7 @@ function compilatio_get_unsent_documents($cmid) {
         }
     }
 
-    // Search unsend online texts.
+    // Search unsent online texts.
     $sql = 'SELECT assot.id, assot.onlinetext, assot.submission
     FROM {course_modules} cm
         JOIN {context} con ON cm.id = con.instanceid
