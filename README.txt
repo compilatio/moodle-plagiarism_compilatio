@@ -85,3 +85,5 @@ QUICK INSTALL
 
 
 For more information see: http://docs.moodle.org/en/Plagiarism_Prevention
+
+For all security vulnerability subject, please contact support@compilatio.net.
