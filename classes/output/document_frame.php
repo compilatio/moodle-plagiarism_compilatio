@@ -273,7 +273,7 @@ class document_frame {
 
         } else if ($status == "queue" || $status == "analysing") {
             $documentframe =
-                "<div title='" . self::formatstring('title_' . $status) . "' class='cmp-color-secondary'>
+                "<div title='" . self::formatstring('title_' . $status) . "' class='cmp-color-secondary cmp-action-btn'>
                     <i class='cmp-icon-lg mx-2 fa fa-spinner fa-spin'></i>"
                     . self::formatstring('btn_' . $status) .
                 "</div>";
@@ -297,17 +297,26 @@ class document_frame {
                     <i class='mx-2 fa fa-exclamation-triangle'></i>" . self::formatstring('btn_' . $status) . "</div>";
             $bgcolor = 'error';
         } else if (isset($url) && ($cantriggeranalysis || ($isstudentanalyse && !$isteacher))) {
-            $documentframe =
-                "<a
-                    href='" . $url . "'
-                    target='_self'
-                    title='" . ( $compilatio->is_in_maintenance() ?
-                        self::formatstring('disabled_in_maintenance') : self::formatstring('title_unsent')) . "'
-                    class='cmp-btn cmp-btn-doc cmp-btn-primary'
-                >
-                    <i class='mr-2 fa fa-paper-plane'></i>"
-                    . self::formatstring('btn_unsent') .
-                "</a>";
+
+            // Display fake unset button if under maintenance.
+            if ($compilatio->is_in_maintenance()) {
+                $documentframe =
+                    "<div class='cmp-btn cmp-btn-doc cmp-btn-primary disabled' title='" . self::formatstring('disabled_in_maintenance') . "'>"
+                        . "<i class='mr-2 fa fa-paper-plane'></i>"
+                        . self::formatstring('btn_unsent') .
+                    "</div>";
+            } else {
+                $documentframe =
+                    "<a
+                        href='" . $url . "'
+                        target='_self'
+                        title='" . self::formatstring('title_unsent') . "'
+                        class='cmp-btn cmp-btn-doc cmp-btn-primary'
+                    >
+                        <i class='mr-2 fa fa-paper-plane'></i>"
+                        . self::formatstring('btn_unsent') .
+                    "</a>";
+            }
         } else {
             return '';
         }
