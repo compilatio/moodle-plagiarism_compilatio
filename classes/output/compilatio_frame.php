@@ -214,7 +214,13 @@ class compilatio_frame {
         if ($compilatio->is_in_maintenance()) {
             $alerts[] = [
                 'class'   => 'maintenance',
-                'content' => get_string('compilatio_maintenance', 'plagiarism_compilatio'),
+                'content' => '
+                    <div id="maintenance-modal" class="mt-3">
+                        ' . get_string('compilatio_maintenance_title', 'plagiarism_compilatio') . '
+                        <p class="cmp-alert-description">
+                        ' . get_string('compilatio_maintenance_content', 'plagiarism_compilatio', current_language()) . '
+                        </p>
+                    </div>',
             ];
         }
 

@@ -131,21 +131,17 @@ $string['compilatio_display_student_score'] = 'Show similarity score to student'
 $string['compilatio_display_student_score_help'] = 'The similarity score is the percentage of the submission that has been matched with other content.';
 $string['compilatio_help_assign'] = 'Display help about Compilatio plugin';
 $string['compilatio_iddocument'] = 'Document identifier';
-$string['compilatio_maintenance'] = '
-                    <div id="maintenance-modal" class="mt-3">
-                        <strong>Compilatio application undergoing maintenance</strong>
-                        <p class="cmp-alert-description">
+$string['compilatio_maintenance_title'] = 'Compilatio application undergoing maintenance';
+$string['compilatio_maintenance_content'] = '
                             Compilatio services are undergoing scheduled maintenance.
                             This interruption should be of short duration.<br>
                             Subscribe to our page
-                            <a href="https://support.compilatio.net/hc/fr/articles/13326036778769-Compilatio-Etat-des-services" target="_blank"
+                            <a href="https://support.compilatio.net/hc/{$a}/articles/13326036778769-Compilatio-Etat-des-services" target="_blank"
                             style="text-decoration: none;">
                             <strong>service status</strong>
                             </a>
                             to be informed when the application returns to normal.
-                        </p>
-                    </div>
-                ';
+                        ';
 $string['compilatio_search'] = 'Search';
 $string['compilatio_search_help'] = 'You can find the depositor of a document by retrieving the document identifier from the sources of the analysis report.';
 $string['compilatio_search_notfound'] = 'No document was found for this identifier among the documents loaded on your Moodle platform.';
