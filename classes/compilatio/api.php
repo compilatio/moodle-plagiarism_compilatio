@@ -922,6 +922,7 @@ class api {
         $params = [
             CURLOPT_URL => $this->urlrest . $endpoint,
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
         ];
 
         $header[] = 'X-Auth-Token: ' . $this->apikey;
