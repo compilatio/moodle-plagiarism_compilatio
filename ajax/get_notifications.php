@@ -30,6 +30,9 @@ use plagiarism_compilatio\output\icons;
 
 require_login();
 
+$context = context_system::instance();
+require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+
 $userid = required_param('userid', PARAM_TEXT);
 $read = optional_param_array('read', [], PARAM_TEXT);
 $ignored = optional_param_array('ignored', [], PARAM_TEXT);
