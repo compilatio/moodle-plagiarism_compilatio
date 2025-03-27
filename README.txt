@@ -14,8 +14,15 @@ CHANGES
 - [Fix] Change file status if extraction error during scheduled analyses
 - [Fix] Add new extraction error type
 - [Fix] Avoid warnings on module id in event handler
+- [Fix] Update deprecated get_plugin_method in admin_form.php for moodle versions higher than 4.5
+- [Fix] Impossible to retrieve and send to compilatio online texts if upload before plugin activations
+- [Fix] require_login() vulnerability into php script if connected as anonymous user
+- [Fix] Online text on assignment where not retrieve if upload before Compilatio plugin activation
 - Remove recipe_name from api analysis start
 - Block actions that use Compilatio API if Compilatio is under maintenance
+- Rename Error management tabs into Technicals tools in admin part
+- Add button into Technicals tools tabs to download compilatio database tables
+- Add support contact into README.txt to report about vulnerability subjects
 
 3.2.3
 - [Fix] Enhance code quality
