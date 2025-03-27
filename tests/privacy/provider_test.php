@@ -38,7 +38,7 @@ global $CFG;
  * Class plagiarism_compilatio_privacy_provider_testcase
  * @covers \plagiarism_compilatio\privacy\provider
  */
-class plagiarism_compilatio_privacy_provider_testcase extends \core_privacy\tests\provider_testcase {
+class provider_test extends \core_privacy\tests\provider_testcase {
 
     /**
      * Test function get_metadata

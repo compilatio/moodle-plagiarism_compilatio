@@ -226,7 +226,10 @@ class document_frame {
                 // Display fake report button if under maintenance.
                 if ($compilatio->is_in_maintenance()) {
                     $documentframe =
-                        "<div class='cmp-btn cmp-btn-doc cmp-btn-primary disabled' title='" . self::formatstring('disabled_in_maintenance') . "'>"
+                        "<div
+                            class='cmp-btn cmp-btn-doc cmp-btn-primary disabled'
+                            title='" .self::formatstring('disabled_in_maintenance') .
+                        "'>"
                             . icons::report() . self::formatstring('report', 'core') .
                         "</div>";
                 } else {
@@ -301,7 +304,10 @@ class document_frame {
             // Display fake unset button if under maintenance.
             if ($compilatio->is_in_maintenance()) {
                 $documentframe =
-                    "<div class='cmp-btn cmp-btn-doc cmp-btn-primary disabled' title='" . self::formatstring('disabled_in_maintenance') . "'>"
+                    "<div
+                        class='cmp-btn cmp-btn-doc cmp-btn-primary disabled'
+                        title='" . self::formatstring('disabled_in_maintenance') .
+                    "'>"
                         . "<i class='mr-2 fa fa-paper-plane'></i>"
                         . self::formatstring('btn_unsent') .
                     "</div>";

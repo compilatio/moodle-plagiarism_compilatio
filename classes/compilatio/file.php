@@ -178,7 +178,11 @@ class file {
         global $DB;
 
         foreach ($files as $file) {
-            $userid = $DB->get_field('assign_submission', 'userid', ['id' => isset($file->onlinetext) ? $file->submission : $file->get_itemid()]);
+            $userid = $DB->get_field('assign_submission', 'userid', [
+                    'id' => isset($file->onlinetext) ?
+                        $file->submission :
+                        $file->get_itemid()]
+                    );
 
             self::send_file($cmid, $userid, $file);
         }
