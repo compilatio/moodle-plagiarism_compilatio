@@ -420,7 +420,7 @@ class document_frame {
                 : ' ' . self::formatstring('title_score_teacher'))
             : '';
 
-        $html = "<span title='{$title}' class='cmp-similarity cmp-color-{$color} align-middle'>
+        $html = "<span title='{$title}' class='cmp-similarity cmp-color-{$color} d-flex align-items-center justify-content-center'>
                     <i style='display: none;' class='fa fa-refresh'></i><span>{$cmpfile->globalscore}<small>%</small></span>
                 </span>";
 
