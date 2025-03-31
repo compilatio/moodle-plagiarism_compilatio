@@ -296,7 +296,7 @@ class document_frame {
                         'title_' . $status,
                         'plagiarism_compilatio',
                         $value ?? null
-                    ) . "' class='cmp-color-error'>
+                    ) . "' class='cmp-color-error mx-2 text-nowrap'>
                     <i class='mx-2 fa fa-exclamation-triangle'></i>" . self::formatstring('btn_' . $status) . "</div>";
             $bgcolor = 'error';
         } else if (isset($url) && ($cantriggeranalysis || ($isstudentanalyse && !$isteacher))) {
