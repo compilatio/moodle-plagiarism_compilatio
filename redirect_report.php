@@ -60,7 +60,7 @@ if ($isteacher) {
             '</div>';
         echo $OUTPUT->footer();
     } else {
-        header('location: https://moodle.zygarde.compilatio.net/api/private/reports/redirect/' . $jwt);
+        header('location: https://app.compilatio.net/api/private/reports/redirect/' . $jwt);
     }
 } else {
     $doc = $compilatio->get_document($docid);
