@@ -39,7 +39,7 @@ use core_plagiarism\privacy\legacy_polyfill as privacy_polyfill;
 
 defined('MOODLE_INTERNAL') || die();
 
-if () {
+if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
     /**
      * Interface user_provider (extends plagiarism_user_provider)
      *
