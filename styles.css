@@ -149,6 +149,10 @@ Compilatio frame area
     border-color: #d73814;
     color: #d73814;
 }
+.cmp-alert-maintenance {
+    background-color: #fae4e4;
+    border-left: 6px solid #b71c1c;
+}
 .cmp-alert-icon {
     margin-right: 1rem;
     margin-block: auto;

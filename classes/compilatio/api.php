@@ -29,7 +29,6 @@ namespace plagiarism_compilatio\compilatio;
  * api class
  */
 class api {
-
     /**
      * @var string $apikey API key
      */
@@ -72,7 +71,7 @@ class api {
         $this->urlrest = 'https://app.compilatio.net';
         $this->userid = $userid;
 
-        if (!empty($apikey)) {
+        if (isset($apikey) && $apikey !== '') {
             $this->apikey = $apikey;
         } else {
             return 'API key not available';
@@ -224,7 +223,7 @@ class api {
      * @param   string  $firstname      User's firstname
      * @param   string  $lastname       User's lastname
      * @param   string  $email          User's email
-     * @return  string                  Return the user's ID, an error message otherwise
+     * @return  string|false            Return the user's ID, an error message otherwise or false
      */
     private function set_user($firstname, $lastname, $email) {
         $lang = substr(current_language(), 0, 2);
@@ -271,7 +270,7 @@ class api {
      * Get user if exist for email
      *
      * @param   string  $email          Teacher's moodle email
-     * @return  string                  Return the user's ID if exist, an error message otherwise
+     * @return  string|false            Return the user's ID if exist, the status error code or false
      */
     private function get_user_by_email($email) {
         $endpoint = '/api/private/user/lms/' . strtolower($email);
@@ -640,12 +639,9 @@ class api {
      * @return mixed    Return true if succeed, an error message otherwise
      */
     public function start_analyse($docid) {
-        $this->recipe = $this->recipe ?? get_config('plagiarism_compilatio', 'recipe');
-
         $endpoint = '/api/private/analysis/';
         $params = [
             'doc_id' => $docid,
-            'recipe_name' => $this->recipe,
             'tags' => [
                 'stable',
             ],
@@ -832,6 +828,15 @@ class api {
     }
 
     /**
+     * Returns a boolean to know if the API is under maintenance
+     *
+     * @return boolean
+     */
+    public function is_in_maintenance() {
+        return get_config('plagiarism_compilatio', 'compilatio_maintenance') === '1';
+    }
+
+    /**
      * Get an eventually error message from an API response
      * Compare API response with expected HTTP code
      * @param  mixed $response           curl response
@@ -869,14 +874,33 @@ class api {
      * @return string curl response
      */
     private function build_curl_on_behalf_of_user($endpoint, $method = null, $data = null, $handle = null) {
-        global $DB;
+        global $DB, $USER;
 
         $header = [];
 
+        $userid = $this->userid;
+
+        if ($userid === null || $userid === '') {
+            $userid = $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => 0]);
+            if ($userid === false) {
+                $user0compilatioemail = 'moodle-' . substr($this->apikey, 0, 10) . '@' . preg_replace('/^.*@/', '', $USER->email);
+
+                $userid = $this->get_user_by_email($user0compilatioemail);
+
+                if (!preg_match('/^[a-f0-9]{40}$/', $userid)) {
+                    $userid = $this->set_user($USER->firstname, $USER->lastname, $user0compilatioemail);
+                }
+
+                if ($userid === false) {
+                    return json_encode(['status' => ['code' => 500, 'message' => 'User could not be created']]);
+                }
+
+                $DB->insert_record('plagiarism_compilatio_user', (object) ['userid' => 0, 'compilatioid' => $userid]);
+            }
+        }
+
         // Plugin v2 docs management.
-        $header[] = null === $this->userid
-            ? 'X-LMS-USER-ID: ' . $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => 0])
-            : 'X-LMS-USER-ID: ' . $this->userid;
+        $header[] = 'X-LMS-USER-ID: ' . $userid;
         return $this->build_curl($endpoint, $method, $data, $handle, $header);
     }
 
@@ -898,6 +922,7 @@ class api {
         $params = [
             CURLOPT_URL => $this->urlrest . $endpoint,
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
         ];
 
         $header[] = 'X-Auth-Token: ' . $this->apikey;
@@ -958,6 +983,10 @@ class api {
 
         $result = curl_exec($ch);
 
+        if ($this->check_if_under_maintenance($result)) {
+            return json_encode(['status' => ['code' => 503, 'message' => 'Compilation services undergoing maintenance']]);
+        }
+
         if ($method == 'download') {
             $result = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         }
@@ -984,5 +1013,34 @@ class api {
             }
             return $returnarray;
         }
+    }
+
+    /**
+     * Check if Compilatio API is under maintenance by the CURL result.
+     *
+     * @param  mixed  $result
+     * @return boolean
+     */
+    private function check_if_under_maintenance($result) {
+
+        $decodedresult = json_decode($result);
+
+        $isinmaintenance = $decodedresult->status->code === 503
+            && isset($decodedresult->data->maintenance)
+            && $decodedresult->data->maintenance;
+
+        if ($isinmaintenance) {
+            set_config('compilatio_maintenance', '1', 'plagiarism_compilatio');
+            return true;
+        }
+
+        if (!$isinmaintenance &&
+                (get_config('plagiarism_compilatio', 'compilatio_maintenance') === '1' ||
+                !get_config('plagiarism_compilatio', 'compilatio_maintenance')
+        )) {
+            set_config('compilatio_maintenance', '0', 'plagiarism_compilatio');
+        }
+
+        return false;
     }
 }

@@ -31,6 +31,9 @@ use plagiarism_compilatio\output\statistics;
 
 require_login();
 
+$context = context_system::instance();
+require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+
 global $DB;
 
 $selectedstudent = required_param('selectedstudent', PARAM_TEXT);

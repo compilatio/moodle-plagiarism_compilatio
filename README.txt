@@ -7,6 +7,23 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+3.2.4
+- [Fix] Documents analyzed with a v2 plugin returned 404 when displaying document frame
+- [Fix] Add checks on APIkey field to prevent scheduled tasks errors
+- [Fix] Create user 0 in database if not exist
+- [Fix] Change file status if extraction error during scheduled analyses
+- [Fix] Add new extraction error type
+- [Fix] Avoid warnings on module id in event handler
+- [Fix] Update deprecated get_plugin_method in admin_form.php for moodle versions higher than 4.5
+- [Fix] Impossible to retrieve and send to compilatio online texts if upload before plugin activations
+- [Fix] require_login() vulnerability into php script if connected as anonymous user
+- [Fix] Online text on assignment where not retrieve if upload before Compilatio plugin activation
+- Remove recipe_name from api analysis start
+- Block actions that use Compilatio API if Compilatio is under maintenance
+- Rename Error management tabs into Technicals tools in admin part
+- Add button into Technicals tools tabs to download compilatio database tables
+- Add support contact into README.txt to report about vulnerability subjects
+
 3.2.3
 - [Fix] Enhance code quality
 
@@ -75,3 +92,5 @@ QUICK INSTALL
 
 
 For more information see: http://docs.moodle.org/en/Plagiarism_Prevention
+
+For all security vulnerability subject, please contact support@compilatio.net.

@@ -30,9 +30,12 @@ use plagiarism_compilatio\compilatio\api;
 
 require_login();
 
+$context = context_system::instance();
+require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+
 global $DB, $USER;
 
-$userid = required_param('userid', PARAM_RAW);
+$userid = $DB->get_record('plagiarism_compilatio_user', ['userid' => $USER->id]);
 
 $compilatio = new api();
 $cmpuser = $compilatio->get_user($userid);

@@ -53,7 +53,7 @@ class update_meta extends \core\task\scheduled_task {
         $compilatio = new api(null, 'test');
         if ($compilatio->check_apikey() == 'Forbidden ! Your api key is invalid') {
             set_config('connection_webservice', 1, 'plagiarism_compilatio');
-        } else {
+        } else if (!$compilatio->is_in_maintenance()) {
             set_config('connection_webservice', 0, 'plagiarism_compilatio');
         }
 

@@ -80,22 +80,29 @@ class file {
             $cmpfile->identifier = $identifier ?? sha1($content);
 
         } else {
-            $content = $file->get_content();
-            if (null === $filename) {
-                $cmpfile->filename = $file->get_filename();
-            } else {
-                $cmpfile->filename = $filename . "-" . $file->get_filename(); // Forum.
-            }
-            $cmpfile->identifier = $file->get_contenthash();
+            if (isset($file->onlinetext)) { // Online text.
+                $content = $file->onlinetext;
+                $cmpfile->filename = 'assign-' . $file->submission . '.htm';
+                $cmpfile->identifier = sha1($file->onlinetext);
 
-            if (!self::supported_file_type($cmpfile->filename)) {
-                $cmpfile->status = "error_unsupported";
-                $send = false;
-            }
+            } else { // File.
+                $content = $file->get_content();
+                if (null === $filename) {
+                    $cmpfile->filename = $file->get_filename();
+                } else {
+                    $cmpfile->filename = $filename . "-" . $file->get_filename(); // Forum.
+                }
+                $cmpfile->identifier = $file->get_contenthash();
 
-            if ((int) $file->get_filesize() > get_config('plagiarism_compilatio', 'max_size')) {
-                $cmpfile->status = "error_too_large";
-                $send = false;
+                if (!self::supported_file_type($cmpfile->filename)) {
+                    $cmpfile->status = "error_unsupported";
+                    $send = false;
+                }
+
+                if ((int) $file->get_filesize() > get_config('plagiarism_compilatio', 'max_size')) {
+                    $cmpfile->status = "error_too_large";
+                    $send = false;
+                }
             }
         }
 
@@ -171,7 +178,11 @@ class file {
         global $DB;
 
         foreach ($files as $file) {
-            $userid = $DB->get_field('assign_submission', 'userid', ['id' => $file->get_itemid()]);
+            $userid = $DB->get_field('assign_submission', 'userid', [
+                    'id' => isset($file->onlinetext) ?
+                        $file->submission :
+                        $file->get_itemid()]
+                    );
 
             self::send_file($cmid, $userid, $file);
         }

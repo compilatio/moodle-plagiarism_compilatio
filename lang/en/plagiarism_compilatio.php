@@ -104,6 +104,7 @@ $string['average_similarities'] = 'In this activity, the average suspicious text
 $string['badqualityanalysis'] = 'Issues were encountered while analysing the document. It is possible that certain sources may not have been identified, or the result may be incomplete.';
 $string['btn_analysing'] = 'Analysis in progress';
 $string['btn_error_analysis_failed'] = 'Analysis failed';
+$string['btn_error_extraction_failed'] = 'Extraction failed';
 $string['btn_error_not_found'] = 'Document not found';
 $string['btn_error_sending_failed'] = 'Sending failed';
 $string['btn_error_too_large'] = 'File too large';
@@ -130,6 +131,17 @@ $string['compilatio_display_student_score'] = 'Show similarity score to student'
 $string['compilatio_display_student_score_help'] = 'The similarity score is the percentage of the submission that has been matched with other content.';
 $string['compilatio_help_assign'] = 'Display help about Compilatio plugin';
 $string['compilatio_iddocument'] = 'Document identifier';
+$string['compilatio_maintenance_title'] = 'Compilatio application undergoing maintenance';
+$string['compilatio_maintenance_content'] = '
+                            Compilatio services are undergoing scheduled maintenance.
+                            This interruption should be of short duration.<br>
+                            Subscribe to our page
+                            <a href="https://support.compilatio.net/hc/{$a}/articles/13326036778769-Compilatio-Etat-des-services" target="_blank"
+                            style="text-decoration: none;">
+                            <strong>service status</strong>
+                            </a>
+                            to be informed when the application returns to normal.
+                        ';
 $string['compilatio_search'] = 'Search';
 $string['compilatio_search_help'] = 'You can find the depositor of a document by retrieving the document identifier from the sources of the analysis report.';
 $string['compilatio_search_notfound'] = 'No document was found for this identifier among the documents loaded on your Moodle platform.';
@@ -158,12 +170,14 @@ $string['defaults_desc'] = 'The following settings are the defaults set when ena
 $string['defaultupdated'] = 'Default values updated';
 $string['detailed'] = 'Detailed report';
 $string['detailed_error_analysis_failed'] = 'The analysis of these documents didn\'t work correctly. You can reset these documents.';
+$string['detailed_error_extraction_failed'] = 'The extraction of these documents didn\'t work correctly. You can reset these documents.';
 $string['detailed_error_not_found'] = 'These documents were not found. Please contact your Moodle administrator. Error : document not found for this API key.';
 $string['detailed_error_sending_failed'] = 'These documents could not be sent to Compilatio. You can resend these documents.';
 $string['detailed_error_too_large'] = 'These documents could not be analysed by Compilatio because they are too large (Maximum size: {$a} MB).';
 $string['detailed_error_too_long'] = 'These documents could not be analysed by Compilatio because they contained too many words (Maximum size: {$a} words).';
 $string['detailed_error_too_short'] = 'These documents could not be analysed by Compilatio because they didn\'t contain enough words (Minimum size: {$a} words).';
 $string['detailed_error_unsupported'] = 'These documents could not be analysed by Compilatio because their format is not supported.';
+$string['disabled_in_maintenance'] = 'Disabled during maintenance';
 $string['disable_ssl_verification'] = 'Ignore SSL certificate verification.';
 $string['disable_ssl_verification_help'] = 'Enable this option if you have problems verifying SSL certificates or if you experience errors when sending files to Compilatio.';
 $string['disclaimer_data'] = 'By enabling Compilatio, you accept the fact that data about your Moodle configuration will be collected in order to improve support and maintenance of this service.';
@@ -183,6 +197,9 @@ $string['documents_failed'] = '{$a} document(s) whose analysis did not work corr
 $string['documents_in_queue'] = '{$a} document(s) are in the queue to be analysed.';
 $string['documents_notfound'] = '{$a} document(s) were not found.';
 $string['documents_number'] = 'Analysed documents';
+$string['download_compilatio_database_button'] = 'Download Compilatio Tables';
+$string['download_compilatio_database_content'] = 'Export compilatio database tables into a ZIP file:';
+$string['download_compilatio_database_title'] = 'Download Compilatio Database Tables';
 $string['download_report_failed'] = 'An error occurred while downloading the analysis report.';
 $string['element_included_in_subscription'] = 'Your subscription includes: <ul><li>similarity detection</li><li>altered texts detection';
 $string['enable_activities_title'] = 'Enable Compilatio for activities';
@@ -387,6 +404,7 @@ $string['send_documents_in_progress'] = 'Sending documents in progress';
 $string['send_files'] = 'Upload files to Compilatio for plagiarism detection';
 $string['sending_failed'] = 'File upload to Compilatio failed {$a}';
 $string['short_error_analysis_failed'] = 'failed analyses.';
+$string['short_error_extraction_failed'] = 'documents extraction failed.';
 $string['short_error_not_found'] = 'documents not found.';
 $string['short_error_sending_failed'] = 'sending failed.';
 $string['short_error_too_large'] = 'documents too large.';
@@ -448,7 +466,7 @@ $string['subscription_start'] = 'Start date:';
 $string['subscription_will_expire'] = 'Your Compilatio subscription will expire at the end of';
 $string['suspect_words/total_words'] = 'words suspect / total words';
 $string['suspect_words_quiz_on_total'] = 'words suspect / <br>total words';
-$string['tabs_title_error_management'] = 'Error management';
+$string['tabs_title_technical_tools'] = 'Technical tools';
 $string['tabs_title_help'] = 'Help';
 $string['tabs_title_notifications'] = 'Notifications';
 $string['tabs_title_stats'] = 'Statistics';
@@ -461,6 +479,7 @@ $string['thresholds_settings'] = 'Limits :';
 $string['timesubmitted'] = 'Submitted to Compilatio on';
 $string['title_analysing'] = 'Compilatio is analysing this file.';
 $string['title_error_analysis_failed'] = 'The analysis of this document did not work correctly.';
+$string['title_error_extraction_failed'] = 'The extraction of this document did not work correctly.';
 $string['title_error_not_found'] = 'This document was not found. Please contact your moodle administrator. Error : document not found for this API key.';
 $string['title_error_sending_failed'] = 'An error occurred trying to send this file to Compilatio';
 $string['title_error_too_large'] = 'This file is too large for Compilatio to process. Maximum size : {$a} MB';

@@ -15,42 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Start analysis for all document in course module
+ * admin_tab_export_compilatio_database_tables.php - Download a ZIP file containing CSV files of the Compilatio database tables
  *
  * @package   plagiarism_compilatio
+ * @author    Compilatio <support@compilatio.net>
  * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * @param string $_POST['cmid']
  */
 
-require_once(dirname(dirname(__FILE__)) . '/../../config.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once(dirname(dirname(__FILE__)) . '/../config.php');
+require_once($CFG->libdir.'/adminlib.php');
 
-use plagiarism_compilatio\compilatio\file;
+use plagiarism_compilatio\compilatio\csv_generator;
 
 require_login();
-
+admin_externalpage_setup('plagiarismcompilatio');
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
 
-global $SESSION;
-
-$cmid = required_param('cmid', PARAM_TEXT);
-
-// Handle not sent documents :.
-$files = compilatio_get_unsent_documents($cmid);
-
-if (count($files) != 0) {
-    file::send_unsent_files($files, $cmid);
-    $countsuccess = count($files) - count(compilatio_get_unsent_documents($cmid));
-}
-
-if ($countsuccess > 0) {
-    $SESSION->compilatio_alerts = [
-        [
-            'class' => 'info',
-            'content' => get_string('document_sent', 'plagiarism_compilatio', $countsuccess),
-        ],
-    ];
-}
+csv_generator::generate_database_data_csv();

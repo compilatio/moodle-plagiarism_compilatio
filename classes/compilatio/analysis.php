@@ -25,7 +25,8 @@
 
 namespace plagiarism_compilatio\compilatio;
 
-use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\compilatio\api as compilatioApi;
+
 
 /**
  * analysis class
@@ -39,10 +40,10 @@ class analysis {
      */
     public static function start_analysis($cmpfile) {
 
-        global $DB, $OUTPUT;
+        global $DB;
 
         $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmpfile->cm]);
-        $compilatio = new api($userid);
+        $compilatio = new compilatioApi($userid);
 
         $analyse = $compilatio->start_analyse($cmpfile->externalid);
 
@@ -57,7 +58,14 @@ class analysis {
             $cmpfile->status = 'error_too_long';
 
         } else if (strpos($analyse, 'is not extracted, wait few seconds and retry.') !== false) {
-            return get_string('extraction_in_progress', 'plagiarism_compilatio');
+
+            if (is_object($document = $compilatio->get_document($cmpfile->externalid))
+                && in_array('extraction_error', $document->tags)) {
+                $cmpfile->status = 'error_extraction_failed';
+            } else {
+                return get_string('extraction_in_progress', 'plagiarism_compilatio');
+            }
+
         } else {
             return $analyse;
         }
@@ -70,7 +78,7 @@ class analysis {
      * Check an analysis
      *
      * @param  object $cmpfile File
-     * @return object $cmpfile File with updated status
+     * @return object $cmpfile File with updated status, old cmpfile if get_document returns an error
      */
     public static function check_analysis($cmpfile) {
 
@@ -83,6 +91,8 @@ class analysis {
 
         if ($doc == 'Not Found') {
             $cmpfile->status = 'error_not_found';
+        } else if ($doc == 'Compilation services undergoing maintenance') {
+            return $cmpfile;
         }
 
         $recipe = array_key_first((array)$doc->analyses);
