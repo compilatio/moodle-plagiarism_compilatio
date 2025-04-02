@@ -31,13 +31,14 @@ use plagiarism_compilatio\output\statistics;
 
 require_login();
 
-$context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
 
-global $DB;
+$cmid = required_param('cmid', PARAM_TEXT);
+
+$context = context_module::instance($cmid);
+require_capability('moodle/course:manageactivities', $context);
 
 $selectedstudent = required_param('selectedstudent', PARAM_TEXT);
-$cmid = required_param('cmid', PARAM_TEXT);
+global $DB;
 
 $output = is_numeric($selectedstudent)
     ? statistics::get_statistics_by_student($selectedstudent, $cmid)['output']

@@ -33,12 +33,13 @@ use plagiarism_compilatio\compilatio\analysis;
 
 require_login();
 
-$context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+$cmid = required_param('cmid', PARAM_TEXT);
+
+$context = context_module::instance($cmid);
+require_capability('moodle/course:manageactivities', $context);
 
 global $DB;
 
-$cmid = required_param('cmid', PARAM_TEXT);
 $checkedvalues = optional_param_array('checkedvalues', [], PARAM_TEXT);
 $scores = required_param_array('scores', PARAM_TEXT);
 

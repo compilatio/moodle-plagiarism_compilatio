@@ -29,12 +29,15 @@ use plagiarism_compilatio\output\document_frame;
 
 require_login();
 
-$context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+$cmpfileid = required_param('cmpfileid', PARAM_RAW);
+
+$cmid = $DB->get_field('plagiarism_compilatio_files', 'cm', ['id' => $cmpfileid]);
+
+$context = context_module::instance($cmid);
+require_capability('moodle/course:manageactivities', $context);
 
 $cantriggeranalysis = required_param('cantriggeranalysis', PARAM_BOOL);
 $isstudentanalyse = required_param('isstudentanalyse', PARAM_BOOL);
-$cmpfileid = required_param('cmpfileid', PARAM_RAW);
 $canviewreport = required_param('canviewreport', PARAM_BOOL);
 $isteacher = required_param('isteacher', PARAM_BOOL);
 $url = required_param('url', PARAM_RAW);

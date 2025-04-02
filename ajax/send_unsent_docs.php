@@ -31,12 +31,11 @@ use plagiarism_compilatio\compilatio\file;
 
 require_login();
 
-$context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+$cmid = required_param('cmid', PARAM_TEXT);
+$context = context_module::instance($cmid);
+require_capability('moodle/course:manageactivities', $context);
 
 global $SESSION;
-
-$cmid = required_param('cmid', PARAM_TEXT);
 
 // Handle not sent documents :.
 $files = compilatio_get_unsent_documents($cmid);

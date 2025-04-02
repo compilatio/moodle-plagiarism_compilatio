@@ -230,7 +230,7 @@ class compilatio_frame {
             $PAGE->requires->js_call_amd(
                 'plagiarism_compilatio/compilatio_ajax_api',
                 'checkUserInfo',
-                [$CFG->httpswwwroot, $user->compilatioid]
+                [$CFG->httpswwwroot, $cmid]
             );
         }
 
@@ -366,7 +366,7 @@ class compilatio_frame {
                 . "<a href='https://support.compilatio.net/'>https://support.compilatio.net</a></p>";
         } else {
             $output .= "<p>
-                <a href='../../plagiarism/compilatio/helpcenter.php?userid=" . $user->compilatioid . "' target='_blank' >"
+                <a href='../../plagiarism/compilatio/helpcenter.php' target='_blank' >"
                     . get_string('helpcenter', 'plagiarism_compilatio') .
                     "<i class='ml-2 fa fa-external-link'></i>
                 </a>
