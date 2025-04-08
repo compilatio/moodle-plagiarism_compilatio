@@ -32,14 +32,14 @@ use plagiarism_compilatio\output\document_frame;
 
 require_login();
 
-$context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
-
 global $DB, $USER;
 
 $docid = required_param('docId', PARAM_TEXT);
 
 $file = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
+
+$context = context_module::instance($file->cm);
+require_capability('moodle/course:manageactivities', $context);
 
 if (!empty($file)) {
     $file = analysis::check_analysis($file);

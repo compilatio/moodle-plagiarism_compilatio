@@ -31,15 +31,20 @@ use plagiarism_compilatio\compilatio\api;
 
 require_login();
 
-$context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+global $USER;
+
+$lang = substr(current_language(), 0, 2);
+$lang = in_array($lang, ['fr', 'en', 'it', 'es', 'de', 'pt']) ? $lang : 'fr';
+
+$userid = $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => $USER->id]);
+if ($userid === false) {
+    header("Location: https://support.compilatio.net/hc/" . $lang);
+    exit;
+}
 
 // Check GET parameter.
 $availpages = ['admin', 'teacher', 'service_status'];
-
 $page = optional_param('page', 'teacher', PARAM_RAW);
-$userid = optional_param('userid', null, PARAM_RAW);
-
 if (in_array($page, $availpages) === false) {
     $page = 'teacher';
 }
@@ -47,8 +52,6 @@ if (in_array($page, $availpages) === false) {
 $helpcenterpage = get_config('plagiarism_compilatio', 'helpcenter_' . $page);
 
 if ($page == 'service_status') {
-    $lang = substr(current_language(), 0, 2);
-    $lang = in_array($lang, ['fr', 'en', 'it', 'es', 'de', 'pt']) ? $lang : 'fr';
     header("Location: https://support.compilatio.net/hc/{$lang}/" . $helpcenterpage);
     exit;
 }

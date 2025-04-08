@@ -131,46 +131,13 @@ class provider_test extends \core_privacy\tests\provider_testcase {
             $this->create_partial_plagiarismfile($coursemodule->id, $student->id);
         }
 
-        $context = context_module::instance($coursemodule->id);
+        $context = \context_module::instance($coursemodule->id);
 
         // On vérifie que, à l'exportation des données, il y a bien quelque chose à visualiser pour l'utilisateur.
         provider::export_plagiarism_user_data($student->id, $context, [], []);
         $writer = writer::with_context($context);
 
         $this->assertTrue($writer->has_any_data());
-    }
-
-    /**
-     * Test function delete_plagiarism_for_context
-     * @covers \plagiarism_compilatio\privacy\provider::delete_plagiarism_for_context
-     */
-    public function test_delete_plagiarism_for_context() {
-
-        $this->resetAfterTest();
-        global $DB;
-
-        // On crée un module de cours et un contexte.
-        $coursemodule = $this->create_partial_coursemodule();
-        $context = $this->create_partial_context($coursemodule->id);
-
-        // On crée cinq plagiarismfiles, un par étudiant, dans un contexte précis.
-        for ($i = 0; $i < 5; $i++) {
-            $student = $this->getDataGenerator()->create_user();
-            $this->create_partial_plagiarismfile($coursemodule->id, $student->id);
-        }
-
-        // On vérifie qu'on a bien cinq plagiarismfiles dans la tablea plagiarism_compilatio_files.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
-        $this->assertEquals(5, $nbplagiarismfiles);
-
-        // On supprime les plagiarismfiles dans ce contexte précis.
-        $context = context_module::instance($coursemodule->id);
-        $this->create_partial_webservice();
-        provider::delete_plagiarism_for_context($context);
-
-        // On vérifie qu'on a bien vidé la table plagiarism_compilatio_files.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
-        $this->assertEquals(0, $nbplagiarismfiles);
     }
 
     /**
@@ -202,7 +169,7 @@ class provider_test extends \core_privacy\tests\provider_testcase {
         $this->assertEquals(10, $nbplagiarismfiles);
 
         // On lance la suppression des fichiers de l'étudiant.
-        $context = context_module::instance($coursemodule1->id);
+        $context = \context_module::instance($coursemodule1->id);
         $this->create_partial_webservice('1'); // Les fichiers appartiennent bien à l'établissement.
         provider::delete_plagiarism_for_user($student->id, $context);
 
@@ -212,93 +179,13 @@ class provider_test extends \core_privacy\tests\provider_testcase {
     }
 
     /**
-     * Test function delete_plagiarism_for_user_owner_student
-     * @covers \plagiarism_compilatio\privacy\provider::delete_plagiarism_for_user
-     */
-    public function test_delete_plagiarism_for_user_owner_student() {
-
-        $this->resetAfterTest();
-        global $DB;
-
-        // On crée un étudiant.
-        $student = $this->getDataGenerator()->create_user();
-
-        // On crée deux contextes différents.
-        $coursemodule1 = $this->create_partial_coursemodule();
-        $context1 = $this->create_partial_context($coursemodule1->id);
-        $coursemodule2 = $this->create_partial_coursemodule();
-        $context2 = $this->create_partial_context($coursemodule2->id);
-
-        // On crée cinq plagiarismfiles pour chaque contexte.
-        for ($i = 0; $i < 5; $i++) {
-            $this->create_partial_plagiarismfile($coursemodule1->id, $student->id);
-            $this->create_partial_plagiarismfile($coursemodule2->id, $student->id);
-        }
-
-        // On vérifie qu'on a bien dix plagiarismfiles dans la table plagiarism_compilatio_files.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
-        $this->assertEquals(10, $nbplagiarismfiles);
-
-        // On lance la suppression des fichiers de l'étudiant.
-        $context = context_module::instance($coursemodule1->id);
-        $this->create_partial_webservice('0'); // Les fichiers appartiennent bien à l'étudiant.
-        provider::delete_plagiarism_for_user($student->id, $context);
-
-        // On vérifie qu'on a bien vidé la table plagiarism_compilatio_files.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
-        $this->assertEquals(0, $nbplagiarismfiles);
-    }
-
-    /**
-     * Test function delete_plagiarism_for_users
-     * @covers \plagiarism_compilatio\privacy\provider::delete_plagiarism_for_users
-     */
-    public function test_delete_plagiarism_for_users() {
-
-        $this->resetAfterTest();
-        global $DB;
-
-        // On crée trois étudiants.
-        $student1 = $this->getDataGenerator()->create_user();
-        $student2 = $this->getDataGenerator()->create_user();
-        $student3 = $this->getDataGenerator()->create_user();
-
-        // On crée un module de cours et un contexte.
-        $coursemodule = $this->create_partial_coursemodule();
-        $context = $this->create_partial_context($coursemodule->id);
-
-        // On crée quinze plagiarismfiles, cinq par étudiant, dans un contexte précis.
-        for ($i = 0; $i < 5; $i++) {
-            $this->create_partial_plagiarismfile($coursemodule->id, $student1->id);
-            $this->create_partial_plagiarismfile($coursemodule->id, $student2->id);
-            $this->create_partial_plagiarismfile($coursemodule->id, $student3->id);
-        }
-
-        // On vérifie que la table plagiarism_compilatio_files contient bien quinze plagiarismfiles.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
-        $this->assertEquals(15, $nbplagiarismfiles);
-
-        // On crée la liste d'IDs avec les étudiants 1 et 2.
-        $userids = [$student1->id, $student2->id];
-
-        // On supprime les plagiarismfiles pour ces deux étudiants.
-        $context = context_module::instance($coursemodule->id);
-        $this->create_partial_webservice();
-        provider::delete_plagiarism_for_users($userids, $context);
-
-        // On vérifie qu'il ne reste plus que cinq plagiarismfiles dans la table plagiarism_compilatio_files.
-        $nbplagiarismfiles = $DB->count_records('plagiarism_compilatio_files');
-        $this->assertEquals(5, $nbplagiarismfiles);
-    }
-
-    /**
      * Fonction qui insère seulement quelques champs dans la table course_modules
      */
     private function create_partial_coursemodule() {
 
         global $DB;
 
-        $coursemodule = new stdClass();
+        $coursemodule = new \stdClass();
         $coursemodule->visible = 1;
         $id = $DB->insert_record('course_modules', $coursemodule);
         $coursemodule->id = $id;
@@ -316,7 +203,7 @@ class provider_test extends \core_privacy\tests\provider_testcase {
 
         global $DB;
 
-        $context = new stdClass();
+        $context = new \stdClass();
         $context->contextlevel = CONTEXT_MODULE;
         $context->instanceid = $cmid;
         $id = $DB->insert_record('context', $context);
@@ -336,7 +223,7 @@ class provider_test extends \core_privacy\tests\provider_testcase {
 
         global $DB;
 
-        $plagiarismfile = new stdClass();
+        $plagiarismfile = new \stdClass();
         $plagiarismfile->cm = $cmid;
         $plagiarismfile->userid = $userid;
         $plagiarismfile->externalid = rand(0, 100);

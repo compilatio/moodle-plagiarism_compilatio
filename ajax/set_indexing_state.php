@@ -31,20 +31,20 @@ require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 use plagiarism_compilatio\compilatio\api;
 
 require_login();
-
-$context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
-
 global $DB;
+
+$docid = optional_param('docId', '', PARAM_TEXT);
+$file = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
+
+$context = context_module::instance($file->cm);
+require_capability('moodle/course:manageactivities', $context);
 
 // Get global Compilatio settings.
 $plagiarismsettings = (array) get_config('plagiarism_compilatio');
-$docid = optional_param('docId', '', PARAM_TEXT);
 $indexingstatepost = optional_param('indexingState', '', PARAM_TEXT);
 
 if (isset($docid) && isset($indexingstatepost)) {
     $indexingstate = (int) ((boolean) $indexingstatepost);
-    $file = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 
     $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $file->cm]);
     $compilatio = new api($userid);

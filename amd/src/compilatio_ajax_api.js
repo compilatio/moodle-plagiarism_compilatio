@@ -286,9 +286,9 @@ define(['jquery'], function($) {
      * @param {string} basepath
      * @param {number} userid
      */
-    exports.checkUserInfo = function(basepath, userid) {
+    exports.checkUserInfo = function(basepath, cmid) {
         $(document).ready(function() {
-            $.post(basepath + '/plagiarism/compilatio/ajax/check_user_info.php', {'userid': userid});
+            $.post(basepath + '/plagiarism/compilatio/ajax/check_user_info.php', {'cmid': cmid});
         });
     };
 

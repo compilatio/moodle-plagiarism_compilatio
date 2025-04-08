@@ -32,13 +32,14 @@ use plagiarism_compilatio\compilatio\api;
 
 require_login();
 
-$context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+$cmid = required_param('cmid', PARAM_TEXT);
+
+$context = context_module::instance($cmid);
+require_capability('moodle/course:manageactivities', $context);
 
 global $OUTPUT;
 
 $docid = required_param('docid', PARAM_RAW);
-$cmid = required_param('cmid', PARAM_RAW);
 $reporttype = optional_param('type', 'detailed', PARAM_RAW);
 
 $modulecontext = context_module::instance($cmid);

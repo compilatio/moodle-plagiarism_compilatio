@@ -30,14 +30,15 @@ use plagiarism_compilatio\compilatio\analysis;
 
 require_login();
 
-$context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
 
 global $DB;
 
 $docid = required_param('docId', PARAM_RAW);
 
 $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
+
+$context = context_module::instance($plagiarismfile->cm);
+require_capability('moodle/course:manageactivities', $context);
 
 $status = analysis::start_analysis($plagiarismfile);
 

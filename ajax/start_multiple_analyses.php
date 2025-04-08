@@ -32,12 +32,14 @@ use plagiarism_compilatio\compilatio\analysis;
 
 require_login();
 
-$context = context_system::instance();
-require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
+
+$cmid = required_param('cmid', PARAM_TEXT);
+
+$context = context_module::instance($cmid);
+require_capability('moodle/course:manageactivities', $context);
 
 global $DB, $SESSION;
 
-$cmid = required_param('cmid', PARAM_TEXT);
 $selectedstudents = optional_param('selectedstudents', '', PARAM_TEXT);
 $selectedquestions = array_values(optional_param_array('selectedquestions', [], PARAM_TEXT));
 $quizid = optional_param('quizid', '', PARAM_TEXT);
