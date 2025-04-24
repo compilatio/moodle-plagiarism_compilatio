@@ -983,7 +983,7 @@ class api {
 
         $result = curl_exec($ch);
 
-        if ($this->check_if_under_maintenance($result)) {
+        if ($method !== 'download' && $this->check_if_under_maintenance($result)) {
             return json_encode(['status' => ['code' => 503, 'message' => 'Compilation services undergoing maintenance']]);
         }
 

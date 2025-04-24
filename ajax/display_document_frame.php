@@ -33,9 +33,6 @@ $cmpfileid = required_param('cmpfileid', PARAM_RAW);
 
 $cmid = $DB->get_field('plagiarism_compilatio_files', 'cm', ['id' => $cmpfileid]);
 
-$context = context_module::instance($cmid);
-require_capability('moodle/course:manageactivities', $context);
-
 $cantriggeranalysis = required_param('cantriggeranalysis', PARAM_BOOL);
 $isstudentanalyse = required_param('isstudentanalyse', PARAM_BOOL);
 $canviewreport = required_param('canviewreport', PARAM_BOOL);

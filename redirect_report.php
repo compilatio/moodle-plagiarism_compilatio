@@ -34,9 +34,6 @@ require_login();
 
 $cmid = required_param('cmid', PARAM_TEXT);
 
-$context = context_module::instance($cmid);
-require_capability('moodle/course:manageactivities', $context);
-
 global $OUTPUT;
 
 $docid = required_param('docid', PARAM_RAW);
