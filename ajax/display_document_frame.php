@@ -28,11 +28,11 @@ require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 use plagiarism_compilatio\output\document_frame;
 
 require_login();
+if (isguestuser()) {
+    throw new moodle_exception('nopermissions', 'error', '', get_string('nopermissions', 'error'));
+}
 
 $cmpfileid = required_param('cmpfileid', PARAM_RAW);
-
-$cmid = $DB->get_field('plagiarism_compilatio_files', 'cm', ['id' => $cmpfileid]);
-
 $cantriggeranalysis = required_param('cantriggeranalysis', PARAM_BOOL);
 $isstudentanalyse = required_param('isstudentanalyse', PARAM_BOOL);
 $canviewreport = required_param('canviewreport', PARAM_BOOL);

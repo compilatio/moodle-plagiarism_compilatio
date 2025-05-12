@@ -31,6 +31,9 @@ require_once($CFG->dirroot . '/plagiarism/lib.php');
 use plagiarism_compilatio\compilatio\api;
 
 require_login();
+if (isguestuser()) {
+    throw new moodle_exception('nopermissions', 'error', '', get_string('nopermissions', 'error'));
+}
 
 $cmid = required_param('cmid', PARAM_TEXT);
 

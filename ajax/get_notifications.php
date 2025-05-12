@@ -29,6 +29,9 @@ use plagiarism_compilatio\compilatio\api;
 use plagiarism_compilatio\output\icons;
 
 require_login();
+if (isguestuser()) {
+    throw new moodle_exception('nopermissions', 'error', '', get_string('nopermissions', 'error'));
+}
 
 $userid = required_param('userid', PARAM_TEXT);
 $read = optional_param_array('read', [], PARAM_TEXT);

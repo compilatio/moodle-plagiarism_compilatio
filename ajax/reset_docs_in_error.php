@@ -33,7 +33,6 @@ use plagiarism_compilatio\compilatio\analysis;
 
 require_login();
 
-
 $cmid = required_param('cmid', PARAM_TEXT);
 
 $context = context_module::instance($cmid);

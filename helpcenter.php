@@ -30,6 +30,9 @@ require_once($CFG->libdir . '/plagiarismlib.php');
 use plagiarism_compilatio\compilatio\api;
 
 require_login();
+if (isguestuser()) {
+    throw new moodle_exception('nopermissions', 'error', '', get_string('nopermissions', 'error'));
+}
 
 global $USER;
 
