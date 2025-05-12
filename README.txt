@@ -10,6 +10,7 @@ CHANGES
 3.2.5
 - [Fix] Student doesn't have the capability to view reports
 - [Fix] Error when analysistime is null while saving a course module
+- [Fix] Check if not empty search tab in compilatio_frame.php
 
 3.2.4
 - [Fix] Documents analyzed with a v2 plugin returned 404 when displaying document frame
