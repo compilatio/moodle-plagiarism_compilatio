@@ -30,6 +30,10 @@ require_once($CFG->libdir . '/plagiarismlib.php');
 use plagiarism_compilatio\compilatio\api;
 
 require_login();
+if (isguestuser()) {
+    redirect(new moodle_url('/'));
+    die();
+}
 
 global $USER;
 
