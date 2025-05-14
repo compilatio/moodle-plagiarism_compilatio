@@ -221,14 +221,14 @@ function compilatio_get_unsent_documents($cmid) {
     }
 
     // Search unsent online texts.
-    $sql = 'SELECT assot.id, assot.onlinetext, assot.submission
+    $sql = 'SELECT DISTINCT assot.id, assot.onlinetext, assot.submission
     FROM {course_modules} cm
         JOIN {context} con ON cm.id = con.instanceid
         JOIN {assignsubmission_onlinetext} assot ON assot.assignment = cm.instance
         JOIN {assign_submission} ass ON assot.submission = ass.id
         JOIN {user_enrolments} ue ON ass.userid = ue.userid
         JOIN {enrol} enr ON ue.enrolid = enr.id
-    WHERE cm.id = ? AND con.contextlevel = 70 AND  enr.courseid = cm.course';
+    WHERE cm.id = ? AND con.contextlevel = 70 AND enr.courseid = cm.course';
 
     $onlineassignments = $DB->get_records_sql($sql, [$cmid]);
 

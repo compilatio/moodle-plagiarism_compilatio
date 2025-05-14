@@ -96,7 +96,7 @@ class course_module_settings {
                     // Get Datetime for Compilatio folder if it exist.
                     $analysistime = $data->analysistime ?? null;
 
-                    if(isset($analysistime)){
+                    if (isset($analysistime)) {
                         $date = new \DateTime();
                         $date->setTimestamp($data->analysistime);
                         $analysistime = $date->format('Y-m-d H:i:s');

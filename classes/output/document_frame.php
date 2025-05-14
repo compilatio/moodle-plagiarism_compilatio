@@ -130,27 +130,63 @@ class document_frame {
         if (empty($cmpfile)) {
             if ($cantriggeranalysis) {
                 // Only works for assign.
-                if (!isset($linkarray['file']) || $cm->modname != 'assign'
-                    || $linkarray['file']->get_filearea() == 'introattachment') {
+                if ($cm->modname != 'assign') {
                     return $output;
                 }
 
-                // Catch GET 'sendfile' param.
-                $trigger = optional_param('sendfile', 0, PARAM_INT);
-                $fileid = $linkarray['file']->get_id();
-                if ($trigger == $fileid) {
-                    file::send_unsent_files([$linkarray['file']], $linkarray['cmid']);
-                    return self::get_document_frame($linkarray);
-                }
+                // Handle online text submissions.
+                if (isset($linkarray['content'])) {
+                    // Catch GET 'sendcontent' and 'documentuserid' param.
+                    $trigger = optional_param('sendcontent', 0, PARAM_TEXT);
+                    $documentuserid = optional_param('userid', 0, PARAM_TEXT);
+                    $contentid = sha1($linkarray['content']);
 
-                $urlparams = [
-                    'id' => $linkarray['cmid'],
-                    'sendfile' => $fileid,
-                    'action' => 'grading',
-                    'page' => optional_param('page', null, PARAM_INT),
-                ];
-                $url = new moodle_url('/mod/assign/view.php', $urlparams);
-                $url = $url->__toString();
+                    if ($trigger === $contentid && $userid === $documentuserid) {
+                        $sql = 'SELECT assot.submission
+                        FROM {assignsubmission_onlinetext} assot
+                        JOIN {assign_submission} ass ON assot.submission = ass.id
+                        WHERE ass.assignment = ? AND ass.userid = ?';
+
+                        $onlineassignment = $DB->get_record_sql($sql, [$linkarray['assignment'], $linkarray['userid']]);
+                        $filename = 'assign-' . $onlineassignment->submission . '.htm';
+
+                        file::send_file($linkarray['cmid'], $userid,  null, $filename, $linkarray['content']);
+                        return self::get_document_frame($linkarray);
+                    }
+
+                    $urlparams = [
+                        'id' => $linkarray['cmid'],
+                        'sendcontent' => sha1($linkarray['content']),
+                        'userid' => $userid,
+                        'action' => 'grading',
+                        'page' => optional_param('page', null, PARAM_INT),
+                    ];
+                    $url = new moodle_url('/mod/assign/view.php', $urlparams);
+                    $url = $url->__toString();
+                } else if (isset($linkarray['file']) && $linkarray['file']->get_filearea() != 'introattachment') {
+                    // Handle file submissions.
+                    // Catch GET 'sendfile' and 'documentuserid' param.
+                    $trigger = optional_param('sendfile', 0, PARAM_TEXT);
+                    $documentuserid = optional_param('userid', 0, PARAM_TEXT);
+                    $fileid = $linkarray['file']->get_id();
+                    if ($trigger === $fileid && $userid == $documentuserid) {
+                        file::send_unsent_files([$linkarray['file']], $linkarray['cmid']);
+                        return self::get_document_frame($linkarray);
+                    }
+
+                    $urlparams = [
+                        'id' => $linkarray['cmid'],
+                        'sendfile' => $fileid,
+                        'userid' => $userid,
+                        'action' => 'grading',
+                        'page' => optional_param('page', null, PARAM_INT),
+                    ];
+                    $url = new moodle_url('/mod/assign/view.php', $urlparams);
+                    $url = $url->__toString();
+                } else {
+                    // Neither content or valid file, return empty output.
+                    return $output;
+                }
             } else {
                 return '';
             }
