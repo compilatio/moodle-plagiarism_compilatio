@@ -65,6 +65,8 @@ class analysis {
             } else {
                 return get_string('extraction_in_progress', 'plagiarism_compilatio');
             }
+        } else if (strpos($analyse, 'is already analysed') !== false) {
+            $cmpfile->status = 'queue';
 
         } else {
             return $analyse;

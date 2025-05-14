@@ -14,6 +14,7 @@ CHANGES
 - [Fix] Use isguestuser instead of require_capability to check if the user is not anonymously logged in Ajax
 - [Fix] Add DISTINCT to unsent document retrieval to avoid errors
 - [Fix] Online texts were not detected if downloaded before activation of the Compilatio plugin.
+- [Fix] If a document has already been analysed but is not displayed as, change the status to queue to retreive the score via the API.
 
 3.2.4
 - [Fix] Documents analyzed with a v2 plugin returned 404 when displaying document frame
