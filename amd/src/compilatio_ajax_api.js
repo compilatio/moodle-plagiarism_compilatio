@@ -303,9 +303,9 @@ define(['jquery'], function($) {
      * @param {string} url
      * @param {string} domid
      */
-    function displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, domid) {
+    function displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, userid, domid) {
         $.post(basepath + '/plagiarism/compilatio/ajax/display_document_frame.php',
-            {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url},
+            {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, userid},
         function(button) {
             let el = $('#cmp-' + domid);
             el.empty().append(button);
@@ -398,6 +398,7 @@ define(['jquery'], function($) {
         canviewreport,
         isteacher,
         url,
+        userid,
         domid
     ) {
 
@@ -409,6 +410,7 @@ define(['jquery'], function($) {
                 canviewreport,
                 isteacher,
                 url,
+                userid,
                 domid
             );
 
@@ -420,6 +422,7 @@ define(['jquery'], function($) {
                     canviewreport,
                     isteacher,
                     url,
+                    userid,
                     domid
                 );
             }, 3 * 60000);

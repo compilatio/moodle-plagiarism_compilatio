@@ -138,7 +138,7 @@ class document_frame {
                 if (isset($linkarray['content'])) {
                     // Catch GET 'sendcontent' and 'documentuserid' param.
                     $trigger = optional_param('sendcontent', 0, PARAM_TEXT);
-                    $documentuserid = optional_param('userid', 0, PARAM_TEXT);
+                    $documentuserid = optional_param('documentuserid', 0, PARAM_TEXT);
                     $contentid = sha1($linkarray['content']);
 
                     if ($trigger === $contentid && $userid === $documentuserid) {
@@ -157,7 +157,7 @@ class document_frame {
                     $urlparams = [
                         'id' => $linkarray['cmid'],
                         'sendcontent' => sha1($linkarray['content']),
-                        'userid' => $userid,
+                        'documentuserid' => $userid,
                         'action' => 'grading',
                         'page' => optional_param('page', null, PARAM_INT),
                     ];
@@ -167,7 +167,7 @@ class document_frame {
                     // Handle file submissions.
                     // Catch GET 'sendfile' and 'documentuserid' param.
                     $trigger = optional_param('sendfile', 0, PARAM_TEXT);
-                    $documentuserid = optional_param('userid', 0, PARAM_TEXT);
+                    $documentuserid = optional_param('documentuserid', 0, PARAM_TEXT);
                     $fileid = $linkarray['file']->get_id();
                     if ($trigger === $fileid && $userid == $documentuserid) {
                         file::send_unsent_files([$linkarray['file']], $linkarray['cmid']);
@@ -177,7 +177,7 @@ class document_frame {
                     $urlparams = [
                         'id' => $linkarray['cmid'],
                         'sendfile' => $fileid,
-                        'userid' => $userid,
+                        'documentuserid' => $userid,
                         'action' => 'grading',
                         'page' => optional_param('page', null, PARAM_INT),
                     ];
@@ -202,6 +202,7 @@ class document_frame {
             $canviewreport,
             $isteacher,
             $url,
+            $userid,
             $domid,
         ]);
 
@@ -225,14 +226,15 @@ class document_frame {
         $cmpfileid,
         $canviewreport,
         $isteacher,
-        $url
+        $url,
+        $userid
     ) {
         global $DB, $CFG;
 
         $compilatio = new api();
 
         if (!empty($cmpfileid)) {
-            $cmpfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $cmpfileid]);
+            $cmpfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $cmpfileid, 'userid' => $userid]);
         }
 
         $status = $cmpfile->status ?? null;
