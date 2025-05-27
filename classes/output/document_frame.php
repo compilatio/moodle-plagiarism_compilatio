@@ -136,12 +136,11 @@ class document_frame {
 
                 // Handle online text submissions.
                 if (isset($linkarray['content'])) {
-                    // Catch GET 'sendcontent' and 'documentuserid' param.
+                    // Catch GET 'sendcontent'
                     $trigger = optional_param('sendcontent', 0, PARAM_TEXT);
-                    $documentuserid = optional_param('documentuserid', 0, PARAM_TEXT);
                     $contentid = sha1($linkarray['content']);
 
-                    if ($trigger === $contentid && $userid === $documentuserid) {
+                    if ($trigger === $contentid) {
                         $sql = 'SELECT assot.submission
                         FROM {assignsubmission_onlinetext} assot
                         JOIN {assign_submission} ass ON assot.submission = ass.id
@@ -157,7 +156,6 @@ class document_frame {
                     $urlparams = [
                         'id' => $linkarray['cmid'],
                         'sendcontent' => sha1($linkarray['content']),
-                        'documentuserid' => $userid,
                         'action' => 'grading',
                         'page' => optional_param('page', null, PARAM_INT),
                     ];
@@ -165,11 +163,10 @@ class document_frame {
                     $url = $url->__toString();
                 } else if (isset($linkarray['file']) && $linkarray['file']->get_filearea() != 'introattachment') {
                     // Handle file submissions.
-                    // Catch GET 'sendfile' and 'documentuserid' param.
+                    // Catch GET 'sendfile'
                     $trigger = optional_param('sendfile', 0, PARAM_TEXT);
-                    $documentuserid = optional_param('documentuserid', 0, PARAM_TEXT);
                     $fileid = $linkarray['file']->get_id();
-                    if ($trigger === $fileid && $userid == $documentuserid) {
+                    if ($trigger === $fileid) {
                         file::send_unsent_files([$linkarray['file']], $linkarray['cmid']);
                         return self::get_document_frame($linkarray);
                     }
@@ -177,7 +174,6 @@ class document_frame {
                     $urlparams = [
                         'id' => $linkarray['cmid'],
                         'sendfile' => $fileid,
-                        'documentuserid' => $userid,
                         'action' => 'grading',
                         'page' => optional_param('page', null, PARAM_INT),
                     ];
@@ -191,6 +187,7 @@ class document_frame {
                 return '';
             }
         }
+        Global $CFG; file_put_contents($CFG->dataroot . '/temp/compilatio/curl.log', var_export($cmpfile, true) . '\n', FILE_APPEND);
 
         $output .= "<div id='cmp-" . $domid . "'></div>";
 
@@ -202,7 +199,6 @@ class document_frame {
             $canviewreport,
             $isteacher,
             $url,
-            $userid,
             $domid,
         ]);
 
@@ -226,15 +222,14 @@ class document_frame {
         $cmpfileid,
         $canviewreport,
         $isteacher,
-        $url,
-        $userid
+        $url
     ) {
         global $DB, $CFG;
 
         $compilatio = new api();
 
         if (!empty($cmpfileid)) {
-            $cmpfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $cmpfileid, 'userid' => $userid]);
+            $cmpfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $cmpfileid]);
         }
 
         $status = $cmpfile->status ?? null;
