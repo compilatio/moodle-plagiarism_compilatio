@@ -348,7 +348,7 @@ class file {
                     $authors = $DB->get_records_sql(
                         'SELECT firstname, lastname, email FROM {groups} g
                             JOIN {groups_members} gm ON g.id = gm.groupid
-                            JOIN {user} user ON user.id = gm.userid
+                            JOIN {user} u ON u.id = gm.userid
                             WHERE courseid = ? AND g.id = ?',
                         [$module->course, $groupid[0]]
                     );

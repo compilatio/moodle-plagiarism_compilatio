@@ -15,6 +15,7 @@ CHANGES
 - [Fix] Add DISTINCT to unsent document retrieval to avoid errors
 - [Fix] Online texts were not detected if downloaded before activation of the Compilatio plugin.
 - [Fix] If a document has already been analysed but is not displayed as, change the status to queue to retreive the score via the API.
+- [Fix] Change reserved term 'user' by PostGreSQL to 'u' in sql query in "set_depositor_and_authors"
 
 3.2.4
 - [Fix] Documents analyzed with a v2 plugin returned 404 when displaying document frame
