@@ -40,6 +40,8 @@ require_capability('moodle/course:manageactivities', $context);
 
 global $DB, $SESSION;
 
+$compilatiofile = new \plagiarism_compilatio\compilatio\file();
+
 $selectedstudents = optional_param('selectedstudents', '', PARAM_TEXT);
 $selectedquestions = array_values(optional_param_array('selectedquestions', [], PARAM_TEXT));
 $quizid = optional_param('quizid', '', PARAM_TEXT);
@@ -74,17 +76,29 @@ if ($plugincm->analysistype == 'manual') {
                         . $answer->get_question_id()
                         . ".htm";
 
-                    $cmpfiles[] = $DB->get_record(
-                        'plagiarism_compilatio_files',
-                        ['cm' => $cmid, 'identifier' => sha1($filename), 'status' => 'sent']
+                    $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+                        $cmid, 
+                        $filename . $answer->userid, 
+                        $answer->userid, 
+                        'sent'
                     );
+
+                    if ($cmpfile) {
+                        $cmpfiles[] = $cmpfile;
+                    }
 
                     $files = $answer->get_last_qt_files('attachments', $context->id);
                     foreach ($files as $file) {
-                        $cmpfiles[] = $DB->get_record(
-                            'plagiarism_compilatio_files',
-                            ['cm' => $cmid, 'identifier' => $file->get_contenthash(), 'status' => 'sent']
+                        $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+                            $cmid, 
+                            $file->get_content(), 
+                            $file->userid, 
+                            'sent'
                         );
+                        
+                        if ($cmpfile) {
+                            $cmpfiles[] = $cmpfile;
+                        }
                     }
                 }
             }

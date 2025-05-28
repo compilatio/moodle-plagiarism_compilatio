@@ -71,9 +71,9 @@ class document_frame {
         }
 
         if (!empty($linkarray['content'])) {
-            $identifier = sha1($linkarray['content']);
+            $content = $linkarray['content'];
         } else if (!empty($linkarray['file'])) {
-            $identifier = $linkarray['file']->get_contenthash();
+            $content = $linkarray['file']->get_content();
         } else {
             return $output;
         }
@@ -109,19 +109,19 @@ class document_frame {
         if (!$canviewscore) {
             return '';
         }
-
+        $compilatiofile = new file();
         // Get compilatio file record.
-        $cmpfile = $DB->get_record('plagiarism_compilatio_files',
-            ['cm' => $linkarray['cmid'], 'userid' => $userid, 'identifier' => $identifier]);
-
+        $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+            $linkarray['cmid'], $content, $userid
+        );
         if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
-            $cmpfile = $DB->get_record('plagiarism_compilatio_files',
-                ['cm' => $linkarray['cmid'], 'userid' => $userid, 'identifier' => sha1($linkarray['cmp_filename'])]);
+            $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+                $linkarray['cmid'], $linkarray['cmp_filename'], $userid);
         }
 
         if (empty($cmpfile)) { // Try to get record without userid in forums.
-            $sql = 'SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND identifier = ?';
-            $cmpfile = $DB->get_record_sql($sql, [$linkarray['cmid'], $identifier]);
+            $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+                $linkarray['cmid'], $content);
         }
 
         $url = null;
@@ -187,7 +187,6 @@ class document_frame {
                 return '';
             }
         }
-        Global $CFG; file_put_contents($CFG->dataroot . '/temp/compilatio/curl.log', var_export($cmpfile, true) . '\n', FILE_APPEND);
 
         $output .= "<div id='cmp-" . $domid . "'></div>";
 

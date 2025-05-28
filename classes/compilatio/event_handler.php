@@ -308,7 +308,7 @@ class event_handler {
      */
     public static function submit_text($event) {
         global $DB;
-
+        $compilatiofile = new file();
         $cmid = $event["contextinstanceid"];
 
         if (!compilatio_enabled($cmid)) {
@@ -337,7 +337,13 @@ class event_handler {
             $identifier = sha1($DB->get_field('assignsubmission_onlinetext', 'onlinetext', ['submission' => $objectid]));
         }
 
-        $compifile = $DB->get_record('plagiarism_compilatio_files', ['filename' => $filename, 'identifier' => $identifier]);
+        $compifile = $compilatiofile->compilatio_get_document_with_failover(
+                        $cmid,
+                        $identifier,
+                        $userid,
+                        null,
+                        ['filename' => $filename]
+                    );
 
         if (!$compifile) {
             $duplicates = $DB->get_records('plagiarism_compilatio_files', ['filename' => $filename]);
@@ -360,7 +366,7 @@ class event_handler {
      */
     public static function submit_file($event) {
         global $DB;
-
+        $compilatiofile = new file();
         $cmid = $event["contextinstanceid"];
 
         if (!compilatio_enabled($cmid)) {
@@ -400,9 +406,10 @@ class event_handler {
         }
 
         foreach ($mdlfiles as $file) {
-            $cmpfile = $DB->get_record(
-                'plagiarism_compilatio_files',
-                ['cm' => $cmid, 'userid' => $userid, 'identifier' => $file->get_contenthash()]
+            $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+                $cmid,
+                $file->get_content(),
+                $userid
             );
             if ($cmpfile) {
                 array_push($cmpfilestokeep, $cmpfile);
@@ -443,7 +450,7 @@ class event_handler {
      */
     public static function submit_quiz($event) {
         global $CFG, $DB;
-
+        $compilatiofile = new file();
         require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
         $fs = get_file_storage();
@@ -475,10 +482,13 @@ class event_handler {
                     $filename = "quiz-{$courseid}-{$cmid}-{$attemptid}-{$question}.htm";
 
                     // Check for duplicates files.
-                    $identifier = sha1($filename);
-                    $duplicate = $DB->get_records(
-                        'plagiarism_compilatio_files',
-                        ['identifier' => $identifier, 'userid' => $userid, 'cm' => $cmid]
+                    $duplicate = $compilatiofile->compilatio_get_document_with_failover(
+                        $cmid,
+                        $filename,
+                        $userid,
+                        null,
+                        [],
+                        true
                     );
                     compilatio_delete_files($duplicate);
 
@@ -491,9 +501,14 @@ class event_handler {
                 foreach ($files as $file) {
 
                     // Check for duplicate files.
-                    $sql = "SELECT * FROM {plagiarism_compilatio_files}
-                        WHERE cm = ? AND userid = ? AND identifier = ?";
-                    $duplicates = $DB->get_records_sql($sql, [$cmid, $userid, $file->get_contenthash()]);
+                    $duplicate = $compilatiofile->compilatio_get_document_with_failover(
+                        $cmid,
+                        $file->get_content(),
+                        $userid,
+                        null,
+                        [],
+                        true
+                    );
                     compilatio_delete_files($duplicates);
 
                     file::send_file($cmid, $userid, $file);

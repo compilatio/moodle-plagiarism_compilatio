@@ -187,12 +187,13 @@ function compilatio_cm_use($cmid) {
  */
 function compilatio_get_unsent_documents($cmid) {
     global $DB;
+    $compilatiofile = new file();
 
     $notuploadedfiles = [];
     $fs = get_file_storage();
 
     // Search unsent files.
-    $sql = 'SELECT distinct(ass.id) as itemid, con.id as contextid
+    $sql = 'SELECT distinct(ass.id) as itemid, con.id as contextid, ass.userid
             FROM {course_modules} cm
                 JOIN {context} con ON cm.id = con.instanceid
                 JOIN {assignsubmission_file} assf ON assf.assignment = cm.instance
@@ -208,10 +209,7 @@ function compilatio_get_unsent_documents($cmid) {
 
         foreach ($files as $file) {
             if ($file->get_filename() != '.') {
-                $countfiles = $DB->count_records(
-                    'plagiarism_compilatio_files',
-                    ['identifier' => $file->get_contenthash(), 'cm' => $cmid]
-                );
+                $countfiles = count($compilatiofile->compilatio_get_document_with_failover($cmid, $file->get_content(), 3, null, null, true));
 
                 if ($countfiles == 0) {
                     array_push($notuploadedfiles, $file);
@@ -221,7 +219,7 @@ function compilatio_get_unsent_documents($cmid) {
     }
 
     // Search unsent online texts.
-    $sql = 'SELECT DISTINCT assot.id, assot.onlinetext, assot.submission
+    $sql = 'SELECT DISTINCT assot.id, assot.onlinetext, assot.submission, ass.userid
     FROM {course_modules} cm
         JOIN {context} con ON cm.id = con.instanceid
         JOIN {assignsubmission_onlinetext} assot ON assot.assignment = cm.instance
@@ -233,9 +231,10 @@ function compilatio_get_unsent_documents($cmid) {
     $onlineassignments = $DB->get_records_sql($sql, [$cmid]);
 
     foreach ($onlineassignments as $onlineassignment) {
-        $countfiles = $DB->count_records(
-            'plagiarism_compilatio_files',
-            ['identifier' => sha1($onlineassignment->onlinetext), 'cm' => $cmid]
+        $countfiles = $compilatiofile->compilatio_count_documents_with_failover(
+            $onlineassignment->onlinetext, 
+            $onlineassignment->userid, 
+            $cmid
         );
 
         if ($countfiles == 0) {
