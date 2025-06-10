@@ -138,7 +138,7 @@ class document_frame {
                 if (isset($linkarray['content'])) {
                     // Catch GET 'sendcontent'
                     $trigger = optional_param('sendcontent', 0, PARAM_TEXT);
-                    $contentid = sha1($linkarray['content']);
+                    $contentid = sha1($linkarray['content'] . $userid . $linkarray['cmid']);
 
                     if ($trigger === $contentid) {
                         $sql = 'SELECT assot.submission
@@ -155,7 +155,7 @@ class document_frame {
 
                     $urlparams = [
                         'id' => $linkarray['cmid'],
-                        'sendcontent' => sha1($linkarray['content']),
+                        'sendcontent' => sha1($linkarray['content'] . $userid . $linkarray['cmid']),
                         'action' => 'grading',
                         'page' => optional_param('page', null, PARAM_INT),
                     ];

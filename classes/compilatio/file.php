@@ -77,13 +77,13 @@ class file {
 
         if (null === $file) {
             $cmpfile->filename = $filename;
-            $cmpfile->identifier = $identifier ?? sha1($content . $userid);
+            $cmpfile->identifier = $identifier ?? sha1($content . $userid . $cmid);
 
         } else {
             if (isset($file->onlinetext)) { // Online text.
                 $content = $file->onlinetext;
                 $cmpfile->filename = 'assign-' . $file->submission . '.htm';
-                $cmpfile->identifier = sha1($file->onlinetext . $userid);
+                $cmpfile->identifier = sha1($file->onlinetext . $userid . $cmid);
 
             } else { // File.
                 $content = $file->get_content();
@@ -92,7 +92,7 @@ class file {
                 } else {
                     $cmpfile->filename = $filename . "-" . $file->get_filename(); // Forum.
                 }
-                $cmpfile->identifier = sha1($file->get_content() . $userid);
+                $cmpfile->identifier = sha1($file->get_content() . $userid . $cmid);
 
                 if (!self::supported_file_type($cmpfile->filename)) {
                     $cmpfile->status = "error_unsupported";
@@ -219,7 +219,7 @@ class file {
                     $questionid = substr(explode('.', $cmpfile->filename)[0], strpos($cmpfile->filename, "Q") + 1);
                     $attemptid = explode("-", $cmpfile->filename)[3];
 
-                    $identifier = sha1($cmpfile->filename . $cmpfile->userid);
+                    $identifier = sha1($cmpfile->filename . $cmpfile->userid . $cmpfile->cm);
 
                     $sql = "SELECT responsesummary
                         FROM {quiz_attempts} quiz
@@ -400,7 +400,7 @@ class file {
             $params = array_merge($params, $additionalparams);
         }
         
-        $params['identifier'] = sha1($content . $userid ?? '');
+        $params['identifier'] = sha1($content . $userid . $cmid ?? '');
         
         if ($multiple) {
             $documents = $DB->get_records('plagiarism_compilatio_files', $params);
@@ -435,7 +435,7 @@ class file {
     public function compilatio_count_documents_with_failover($content, $userid, $cmid) {
         global $DB;
         
-        $newidentifier = sha1($content . $userid);
+        $newidentifier = sha1($content . $userid . $cmid);
         $count = $DB->count_records('plagiarism_compilatio_files', 
             ['identifier' => $newidentifier, 'cm' => $cmid]);
         
