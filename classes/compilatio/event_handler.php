@@ -317,7 +317,6 @@ class event_handler {
 
         $userid = $event['relateduserid'];
 
-
         if ($event['objecttable'] == 'assign_submission') {
             $cm = get_coursemodule_from_id('assign', $cmid);
             if ($cm) {

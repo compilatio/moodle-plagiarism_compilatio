@@ -234,7 +234,7 @@ function compilatio_get_unsent_documents($cmid) {
         foreach ($onlineassignments as $onlineassignment) {
             $countfiles = count($compilatiofile->compilatio_get_document_with_failover(
                 $cmid,
-                $onlineassignment->onlinetext, 
+                $onlineassignment->onlinetext,
                 0,
                 null,
                 null,
@@ -248,7 +248,7 @@ function compilatio_get_unsent_documents($cmid) {
         }
 
     } else {
-        //normal submission.
+        // Normal submission.
 
         $sql = 'SELECT distinct(ass.id) as itemid, con.id as contextid
                 FROM {course_modules} cm
@@ -293,7 +293,7 @@ function compilatio_get_unsent_documents($cmid) {
         foreach ($onlineassignments as $onlineassignment) {
             $countfiles = count($compilatiofile->compilatio_get_document_with_failover(
                 $cmid,
-                $onlineassignment->onlinetext, 
+                $onlineassignment->onlinetext,
                 $onlineassignment->userid,
                 null,
                 null,

@@ -16,6 +16,8 @@ CHANGES
 - [Fix] Online texts were not detected if downloaded before activation of the Compilatio plugin.
 - [Fix] If a document has already been analysed but is not displayed as, change the status to queue to retreive the score via the API.
 - [Fix] Change reserved term 'user' by PostGreSQL to 'u' in sql query in "set_depositor_and_authors"
+- [Fix] Compilatio didn't work in group assignment
+- [Fix] Update way to create identifier to avoid similarities in case of same content
 
 3.2.4
 - [Fix] Documents analyzed with a v2 plugin returned 404 when displaying document frame

@@ -77,9 +77,9 @@ if ($plugincm->analysistype == 'manual') {
                         . ".htm";
 
                     $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
-                        $cmid, 
-                        $filename . $answer->userid, 
-                        $answer->userid, 
+                        $cmid,
+                        $filename . $answer->userid,
+                        $answer->userid,
                         'sent'
                     );
 
@@ -90,12 +90,12 @@ if ($plugincm->analysistype == 'manual') {
                     $files = $answer->get_last_qt_files('attachments', $context->id);
                     foreach ($files as $file) {
                         $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
-                            $cmid, 
-                            $file->get_content(), 
-                            $file->userid, 
+                            $cmid,
+                            $file->get_content(),
+                            $file->userid,
                             'sent'
                         );
-                        
+
                         if ($cmpfile) {
                             $cmpfiles[] = $cmpfile;
                         }

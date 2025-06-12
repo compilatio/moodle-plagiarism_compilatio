@@ -136,7 +136,7 @@ class document_frame {
 
                 // Handle online text submissions.
                 if (isset($linkarray['content'])) {
-                    // Catch GET 'sendcontent'
+                    // Catch GET 'sendcontent'.
                     $trigger = optional_param('sendcontent', 0, PARAM_TEXT);
                     $contentid = sha1($linkarray['content'] . $userid . $linkarray['cmid']);
 
@@ -163,7 +163,7 @@ class document_frame {
                     $url = $url->__toString();
                 } else if (isset($linkarray['file']) && $linkarray['file']->get_filearea() != 'introattachment') {
                     // Handle file submissions.
-                    // Catch GET 'sendfile'
+                    // Catch GET 'sendfile'.
                     $trigger = optional_param('sendfile', 0, PARAM_TEXT);
                     $fileid = $linkarray['file']->get_id();
                     if ($trigger === $fileid) {

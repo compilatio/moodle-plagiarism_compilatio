@@ -242,28 +242,28 @@ class file {
                 );
             }
         } else { // File.
-            
+
             $module = get_coursemodule_from_id(null, $cmpfile->cm);
 
             $modulecontext = \context_module::instance($cmpfile->cm);
             $contextid = $modulecontext->id;
 
-            $files = $DB->get_records_sql('SELECT * FROM {files} f WHERE f.contenthash = ? AND contextid = ?', 
+            $files = $DB->get_records_sql('SELECT * FROM {files} f WHERE f.contenthash = ? AND contextid = ?',
                 [$cmpfile->identifier, $contextid]);
 
             if (empty($files)) {
                 $allfiles = $DB->get_records('files', ['contextid' => $contextid]);
-                $matchedFiles = [];
-                
+                $matchedfiles = [];
+
                 foreach ($allfiles as $file) {
                     $tmpidentifier = sha1($file->contenthash . $cmpfile->userid);
                     if ($tmpidentifier === $cmpfile->identifier || $file->contenthash === $cmpfile->identifier) {
-                        $matchedFiles[] = $file;
+                        $matchedfiles[] = $file;
                     }
                 }
-                
-                if (!empty($matchedFiles)) {
-                    $files = $matchedFiles;
+
+                if (!empty($matchedfiles)) {
+                    $files = $matchedfiles;
                 }
             }
 
@@ -389,31 +389,31 @@ class file {
      */
     public function compilatio_get_document_with_failover($cmid, $content, $userid = null, $status = null, $additionalparams = [], $multiple = false) {
         global $DB;
-        
+
         $params = ['cm' => $cmid];
-        
+
         if ($status !== null) {
             $params['status'] = $status;
         }
-        
+
         if (!empty($additionalparams)) {
             $params = array_merge($params, $additionalparams);
         }
-        
+
         $params['identifier'] = sha1($content . $userid . $cmid ?? '');
-        
+
         if ($multiple) {
             $documents = $DB->get_records('plagiarism_compilatio_files', $params);
-            
+
             if (empty($documents)) {
                 $params['identifier'] = sha1($content);
                 $documents = $DB->get_records('plagiarism_compilatio_files', $params);
             }
-            
+
             return $documents;
         } else {
             $document = $DB->get_record('plagiarism_compilatio_files', $params);
-            
+
             if (!$document) {
                 $params['identifier'] = sha1($content);
                 $document = $DB->get_record('plagiarism_compilatio_files', $params);
