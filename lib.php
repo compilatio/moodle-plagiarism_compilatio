@@ -226,7 +226,7 @@ function compilatio_get_unsent_documents($cmid) {
         JOIN {assign_submission} ass ON assot.submission = ass.id
         JOIN {user_enrolments} ue ON ass.userid = ue.userid
         JOIN {enrol} enr ON ue.enrolid = enr.id
-    WHERE cm.id = ? AND con.contextlevel = 70 AND enr.courseid = cm.course';
+    WHERE cm.id = ? AND con.contextlevel = 70 AND enr.courseid = cm.course AND assot.onlinetext != ""';
 
     $onlineassignments = $DB->get_records_sql($sql, [$cmid]);
 
