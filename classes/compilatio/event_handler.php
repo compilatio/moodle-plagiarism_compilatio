@@ -368,7 +368,19 @@ class event_handler {
         }
 
         $userid = $event['relateduserid'];
-        if ($userid == null) {
+
+        if ($event['objecttable'] == 'assign_submission') {
+            $cm = get_coursemodule_from_id('assign', $cmid);
+            if ($cm) {
+                global $DB;
+                $assign = $DB->get_record('assign', ['id' => $cm->instance]);
+                if ($assign && $assign->teamsubmission == 1) {
+                    $userid = 0;
+                }
+            }
+        }
+
+        if ($userid === null) {
             $userid = $event['userid'];
         }
 
