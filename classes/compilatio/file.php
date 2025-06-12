@@ -77,13 +77,13 @@ class file {
 
         if (null === $file) {
             $cmpfile->filename = $filename;
-            $cmpfile->identifier = $identifier ?? sha1($content);
+            $cmpfile->identifier = $identifier ?? sha1($content . $userid . $cmid);
 
         } else {
             if (isset($file->onlinetext)) { // Online text.
                 $content = $file->onlinetext;
                 $cmpfile->filename = 'assign-' . $file->submission . '.htm';
-                $cmpfile->identifier = sha1($file->onlinetext);
+                $cmpfile->identifier = sha1($file->onlinetext . $userid . $cmid);
 
             } else { // File.
                 $content = $file->get_content();
@@ -92,7 +92,7 @@ class file {
                 } else {
                     $cmpfile->filename = $filename . "-" . $file->get_filename(); // Forum.
                 }
-                $cmpfile->identifier = $file->get_contenthash();
+                $cmpfile->identifier = sha1($file->get_content() . $userid . $cmid);
 
                 if (!self::supported_file_type($cmpfile->filename)) {
                     $cmpfile->status = "error_unsupported";
@@ -107,12 +107,8 @@ class file {
         }
 
         // Check if file has already been sent.
-        $params = [
-            "cm" => $cmid,
-            "userid" => $userid,
-            "identifier" => $cmpfile->identifier,
-        ];
-        if (!empty($DB->get_record("plagiarism_compilatio_files", $params))) {
+        $compilatiofile = new file();
+        if (!empty($compilatiofile->compilatio_get_document_with_failover($cmid, $cmpfile->identifier, $userid))) {
             return false;
         }
 
@@ -223,7 +219,7 @@ class file {
                     $questionid = substr(explode('.', $cmpfile->filename)[0], strpos($cmpfile->filename, "Q") + 1);
                     $attemptid = explode("-", $cmpfile->filename)[3];
 
-                    $identifier = sha1($cmpfile->filename);
+                    $identifier = sha1($cmpfile->filename . $cmpfile->userid . $cmpfile->cm);
 
                     $sql = "SELECT responsesummary
                         FROM {quiz_attempts} quiz
@@ -246,15 +242,33 @@ class file {
                 );
             }
         } else { // File.
+
             $module = get_coursemodule_from_id(null, $cmpfile->cm);
 
             $modulecontext = \context_module::instance($cmpfile->cm);
             $contextid = $modulecontext->id;
-            $sql = 'SELECT * FROM {files} f WHERE f.contenthash= ? AND contextid = ?';
-            $files = $DB->get_records_sql($sql, [$cmpfile->identifier, $contextid]);
+
+            $files = $DB->get_records_sql('SELECT * FROM {files} f WHERE f.contenthash = ? AND contextid = ?',
+                [$cmpfile->identifier, $contextid]);
 
             if (empty($files)) {
-                return;
+                $allfiles = $DB->get_records('files', ['contextid' => $contextid]);
+                $matchedfiles = [];
+
+                foreach ($allfiles as $file) {
+                    $tmpidentifier = sha1($file->contenthash . $cmpfile->userid);
+                    if ($tmpidentifier === $cmpfile->identifier || $file->contenthash === $cmpfile->identifier) {
+                        $matchedfiles[] = $file;
+                    }
+                }
+
+                if (!empty($matchedfiles)) {
+                    $files = $matchedfiles;
+                }
+            }
+
+            if (empty($files)) {
+                return false;
             }
 
             $fs = get_file_storage();
@@ -358,5 +372,54 @@ class file {
 
         self::$authors = $authors;
         self::$depositor = $depositor;
+    }
+
+    /**
+     * Get document record(s) with identifier failover.
+     * First tries with new identifier format (sha1(content+userid))
+     * If not found, falls back to old format (sha1(content))
+     *
+     * @param int $cmid Course module ID
+     * @param string $content Content to hash for identifier
+     * @param int $userid User ID
+     * @param string $status Document status (optional)
+     * @param array $additionalparams Additional parameters for the query (optional)
+     * @param bool $multiple Whether to return multiple records (true) or a single record (false)
+     * @return mixed Single document object, array of document objects, or false/empty array if not found
+     */
+    public function compilatio_get_document_with_failover($cmid, $content, $userid = null, $status = null, $additionalparams = [], $multiple = false) {
+        global $DB;
+
+        $params = ['cm' => $cmid];
+
+        if ($status !== null) {
+            $params['status'] = $status;
+        }
+
+        if (!empty($additionalparams)) {
+            $params = array_merge($params, $additionalparams);
+        }
+
+        $params['identifier'] = sha1($content . $userid . $cmid ?? '');
+
+        if ($multiple) {
+            $documents = $DB->get_records('plagiarism_compilatio_files', $params);
+
+            if (empty($documents)) {
+                $params['identifier'] = sha1($content);
+                $documents = $DB->get_records('plagiarism_compilatio_files', $params);
+            }
+
+            return $documents;
+        } else {
+            $document = $DB->get_record('plagiarism_compilatio_files', $params);
+
+            if (!$document) {
+                $params['identifier'] = sha1($content);
+                $document = $DB->get_record('plagiarism_compilatio_files', $params);
+            }
+
+            return $document;
+        }
     }
 }

@@ -39,7 +39,6 @@ $isstudentanalyse = required_param('isstudentanalyse', PARAM_BOOL);
 $canviewreport = required_param('canviewreport', PARAM_BOOL);
 $isteacher = required_param('isteacher', PARAM_BOOL);
 $url = required_param('url', PARAM_RAW);
-$userid = required_param('userid', PARAM_RAW);
 
 echo document_frame::display_document_frame(
     $cantriggeranalysis,
@@ -47,6 +46,5 @@ echo document_frame::display_document_frame(
     $cmpfileid,
     $canviewreport,
     $isteacher,
-    $url,
-    $userid
+    $url
 );
