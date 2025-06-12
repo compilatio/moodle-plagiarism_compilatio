@@ -418,33 +418,8 @@ class file {
                 $params['identifier'] = sha1($content);
                 $document = $DB->get_record('plagiarism_compilatio_files', $params);
             }
-            
+
             return $document;
         }
-    }
-
-    /**
-     * Helper function to count document records with identifier failover
-     *
-     * @param string $content The document content
-     * @param int $userid User ID
-     * @param int $cmid Course module ID
-     * @param object $DB Database object
-     * @return int Number of matching documents
-     */
-    public function compilatio_count_documents_with_failover($content, $userid, $cmid) {
-        global $DB;
-        
-        $newidentifier = sha1($content . $userid . $cmid);
-        $count = $DB->count_records('plagiarism_compilatio_files', 
-            ['identifier' => $newidentifier, 'cm' => $cmid]);
-        
-        if ($count == 0) {
-            $oldidentifier = sha1($content);
-            $count = $DB->count_records('plagiarism_compilatio_files', 
-                ['identifier' => $oldidentifier, 'cm' => $cmid]);
-        }
-        
-        return $count;
     }
 }
