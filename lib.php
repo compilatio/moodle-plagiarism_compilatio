@@ -213,7 +213,11 @@ function compilatio_get_unsent_documents($cmid) {
             $files = $fs->get_area_files($fileid->contextid, 'assignsubmission_file', 'submission_files', $fileid->itemid);
             foreach ($files as $file) {
                 if ($file->get_filename() != '.') {
-                    $countfiles = count($compilatiofile->compilatio_get_document_with_failover($cmid, $file->get_content(), 0, null, null, true));
+
+                    $countfiles = count(
+                        $compilatiofile->compilatio_get_document_with_failover($cmid, $file->get_content(), 0, null, null, true)
+                    );
+
                     if ($countfiles === 0) {
                         array_push($notuploadedfiles, $file);
                     }
@@ -269,7 +273,16 @@ function compilatio_get_unsent_documents($cmid) {
                     $userid = $DB->get_field('assign_submission', 'userid', [
                         'id' => isset($file->onlinetext) ? $file->submission : $file->get_itemid()]);
 
-                    $countfiles = count($compilatiofile->compilatio_get_document_with_failover($cmid, $file->get_content(), $userid, null, null, true));
+                    $countfiles = count(
+                        $compilatiofile->compilatio_get_document_with_failover(
+                            $cmid,
+                            $file->get_content(),
+                            $userid,
+                            null,
+                            null,
+                            true
+                        )
+                    );
 
                     if ($countfiles === 0) {
                         array_push($notuploadedfiles, $file);

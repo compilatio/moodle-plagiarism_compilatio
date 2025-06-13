@@ -90,7 +90,6 @@ define(['jquery'], function($) {
             });
 
             /**
-            * changeSelectedStudent
             * Change selected student.
             */
             function changeSelectedStudent(selectedIndex, direction) {
@@ -139,7 +138,6 @@ define(['jquery'], function($) {
             const checkboxes = $('td.c0 input, #selectall');
 
             /**
-            * getSelectedLines
             * Get selected lines.
             */
             function getSelectedLines() {
@@ -149,7 +147,6 @@ define(['jquery'], function($) {
             }
 
             /**
-            * updateButtonVisibility
             * Update button visibility.
             */
             function updateButtonVisibility() {
@@ -284,7 +281,7 @@ define(['jquery'], function($) {
     /**
      * Check user info
      * @param {string} basepath
-     * @param {number} userid
+     * @param {number} cmid
      */
     exports.checkUserInfo = function(basepath, cmid) {
         $(document).ready(function() {

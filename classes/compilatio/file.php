@@ -387,7 +387,14 @@ class file {
      * @param bool $multiple Whether to return multiple records (true) or a single record (false)
      * @return mixed Single document object, array of document objects, or false/empty array if not found
      */
-    public function compilatio_get_document_with_failover($cmid, $content, $userid = null, $status = null, $additionalparams = [], $multiple = false) {
+    public function compilatio_get_document_with_failover(
+            $cmid,
+            $content,
+            $userid = null,
+            $status = null,
+            $additionalparams = [],
+            $multiple = false
+        ) {
         global $DB;
 
         $params = ['cm' => $cmid];

@@ -14,7 +14,8 @@ CHANGES
 - [Fix] Use isguestuser instead of require_capability to check if the user is not anonymously logged in Ajax
 - [Fix] Add DISTINCT to unsent document retrieval to avoid errors
 - [Fix] Online texts were not detected if downloaded before activation of the Compilatio plugin.
-- [Fix] If a document has already been analysed but is not displayed as, change the status to queue to retreive the score via the API.
+- [Fix] If a document has already been analysed but is not displayed as,
+    change the status to queue to retreive the score via the API.
 - [Fix] Change reserved term 'user' by PostGreSQL to 'u' in sql query in "set_depositor_and_authors"
 - [Fix] Compilatio didn't work in group assignment
 - [Fix] Update way to create identifier to avoid similarities in case of same content

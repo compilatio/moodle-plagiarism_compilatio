@@ -269,6 +269,13 @@ class event_handler {
             $userid = $event['userid'];
         }
 
+        $assign = null;
+        if ($event['objecttable'] === 'assign_submission') {
+            if ($cm = get_coursemodule_from_id('assign', $cmid)) {
+                $assign = $DB->get_record('assign', ['id' => $cm->instance]);
+            }
+        }
+
         // Delete in assign.
         if ($event['target'] == 'submission_status') {
             // The event is triggered when a submission is deleted and when the submission is passed to draft.
@@ -282,7 +289,23 @@ class event_handler {
 
             // If the documents have been deleted in the mdl_files table, we also delete them on our side.
             if (empty($submissionfiles)) {
-                $duplicates = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
+                if ($assign && $assign->teamsubmission == 1) {
+                    // Group submission.
+                    $duplicates = $DB->get_records_sql(
+                        "SELECT pcf.* FROM {plagiarism_compilatio_files} pcf
+                        WHERE pcf.cm = ? AND pcf.userid = 0
+                        AND (pcf.filename LIKE ? OR pcf.filename = ?)",
+                        [
+                            $cmid,
+                            'assign-' . $event["objectid"] . '%',
+                            'assign-' . $event["objectid"] . '.htm',
+                        ]
+                    );
+                } else {
+                    // Normal submission.
+                    $duplicates = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
+                }
+
                 compilatio_delete_files($duplicates);
             }
         }
