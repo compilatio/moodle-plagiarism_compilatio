@@ -539,7 +539,7 @@ class event_handler {
                     );
                     compilatio_delete_files($duplicate);
 
-                    file::send_file($cmid, $userid, null, $filename, $content, $identifier);
+                    file::send_file($cmid, $userid, null, $filename, $content);
                 }
 
                 // Files attachments.
