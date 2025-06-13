@@ -226,15 +226,16 @@ function compilatio_get_unsent_documents($cmid) {
         }
 
         // Search unsent online texts.
-        $sql = 'SELECT DISTINCT assot.id, assot.onlinetext, assot.submission, ass.userid
-            FROM mdl_course_modules cm
-                JOIN mdl_context con ON cm.id = con.instanceid
-                JOIN mdl_assignsubmission_onlinetext assot ON assot.assignment = cm.instance
-                JOIN mdl_assign_submission ass ON assot.submission = ass.id
-            WHERE cm.id = ? AND con.contextlevel = 70 AND ass.groupid != 0 AND assot.onlinetext != ""';
+        $sql = "SELECT DISTINCT assot.id, assot.onlinetext, assot.submission, ass.userid
+            FROM {course_modules} cm
+                JOIN {context} con ON cm.id = con.instanceid
+                JOIN {assignsubmission_onlinetext} assot ON assot.assignment = cm.instance
+                JOIN {assign_submission} ass ON assot.submission = ass.id
+                JOIN {user_enrolments} ue ON ass.userid = ue.userid
+                JOIN {enrol} enr ON ue.enrolid = enr.id
+            WHERE cm.id = ? AND con.contextlevel = 70 AND enr.courseid = cm.course AND assot.onlinetext != '' AND ass.groupid != 0";
 
         $onlineassignments = $DB->get_records_sql($sql, [$cmid]);
-
         foreach ($onlineassignments as $onlineassignment) {
             $countfiles = count($compilatiofile->compilatio_get_document_with_failover(
                 $cmid,
@@ -292,14 +293,14 @@ function compilatio_get_unsent_documents($cmid) {
         }
 
         // Search unsent online texts.
-        $sql = 'SELECT DISTINCT assot.id, assot.onlinetext, assot.submission, ass.userid
+        $sql = "SELECT DISTINCT assot.id, assot.onlinetext, assot.submission, ass.userid
             FROM {course_modules} cm
                 JOIN {context} con ON cm.id = con.instanceid
                 JOIN {assignsubmission_onlinetext} assot ON assot.assignment = cm.instance
                 JOIN {assign_submission} ass ON assot.submission = ass.id
                 JOIN {user_enrolments} ue ON ass.userid = ue.userid
                 JOIN {enrol} enr ON ue.enrolid = enr.id
-            WHERE cm.id = ? AND con.contextlevel = 70 AND enr.courseid = cm.course AND assot.onlinetext != ""';
+            WHERE cm.id = ? AND con.contextlevel = 70 AND enr.courseid = cm.course AND assot.onlinetext != ''";
 
         $onlineassignments = $DB->get_records_sql($sql, [$cmid]);
 
