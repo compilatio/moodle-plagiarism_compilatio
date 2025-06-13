@@ -269,6 +269,13 @@ class event_handler {
             $userid = $event['userid'];
         }
 
+        $assign = null;
+        if ($event['objecttable'] === 'assign_submission') {
+            if ($cm = get_coursemodule_from_id('assign', $cmid)) {
+                $assign = $DB->get_record('assign', ['id' => $cm->instance]);
+            }
+        }
+
         // Delete in assign.
         if ($event['target'] == 'submission_status') {
             // The event is triggered when a submission is deleted and when the submission is passed to draft.
@@ -282,7 +289,23 @@ class event_handler {
 
             // If the documents have been deleted in the mdl_files table, we also delete them on our side.
             if (empty($submissionfiles)) {
-                $duplicates = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
+                if ($assign && $assign->teamsubmission == 1) {
+                    // Group submission.
+                    $duplicates = $DB->get_records_sql(
+                        "SELECT pcf.* FROM {plagiarism_compilatio_files} pcf
+                        WHERE pcf.cm = ? AND pcf.userid = 0
+                        AND (pcf.filename LIKE ? OR pcf.filename = ?)",
+                        [
+                            $cmid,
+                            'assign-' . $event["objectid"] . '%',
+                            'assign-' . $event["objectid"] . '.htm',
+                        ]
+                    );
+                } else {
+                    // Normal submission.
+                    $duplicates = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
+                }
+
                 compilatio_delete_files($duplicates);
             }
         }
@@ -308,7 +331,7 @@ class event_handler {
      */
     public static function submit_text($event) {
         global $DB;
-
+        $compilatiofile = new file();
         $cmid = $event["contextinstanceid"];
 
         if (!compilatio_enabled($cmid)) {
@@ -316,7 +339,19 @@ class event_handler {
         }
 
         $userid = $event['relateduserid'];
-        if ($userid == null) {
+
+        if ($event['objecttable'] == 'assign_submission') {
+            $cm = get_coursemodule_from_id('assign', $cmid);
+            if ($cm) {
+                global $DB;
+                $assign = $DB->get_record('assign', ['id' => $cm->instance]);
+                if ($assign && $assign->teamsubmission == 1) {
+                    $userid = 0;
+                }
+            }
+        }
+
+        if ($userid === null) {
             $userid = $event['userid'];
         }
 
@@ -337,7 +372,13 @@ class event_handler {
             $identifier = sha1($DB->get_field('assignsubmission_onlinetext', 'onlinetext', ['submission' => $objectid]));
         }
 
-        $compifile = $DB->get_record('plagiarism_compilatio_files', ['filename' => $filename, 'identifier' => $identifier]);
+        $compifile = $compilatiofile->compilatio_get_document_with_failover(
+                        $cmid,
+                        $identifier,
+                        $userid,
+                        null,
+                        ['filename' => $filename]
+                    );
 
         if (!$compifile) {
             $duplicates = $DB->get_records('plagiarism_compilatio_files', ['filename' => $filename]);
@@ -360,7 +401,7 @@ class event_handler {
      */
     public static function submit_file($event) {
         global $DB;
-
+        $compilatiofile = new file();
         $cmid = $event["contextinstanceid"];
 
         if (!compilatio_enabled($cmid)) {
@@ -368,7 +409,19 @@ class event_handler {
         }
 
         $userid = $event['relateduserid'];
-        if ($userid == null) {
+
+        if ($event['objecttable'] == 'assign_submission') {
+            $cm = get_coursemodule_from_id('assign', $cmid);
+            if ($cm) {
+                global $DB;
+                $assign = $DB->get_record('assign', ['id' => $cm->instance]);
+                if ($assign && $assign->teamsubmission == 1) {
+                    $userid = 0;
+                }
+            }
+        }
+
+        if ($userid === null) {
             $userid = $event['userid'];
         }
 
@@ -400,9 +453,10 @@ class event_handler {
         }
 
         foreach ($mdlfiles as $file) {
-            $cmpfile = $DB->get_record(
-                'plagiarism_compilatio_files',
-                ['cm' => $cmid, 'userid' => $userid, 'identifier' => $file->get_contenthash()]
+            $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+                $cmid,
+                $file->get_content(),
+                $userid
             );
             if ($cmpfile) {
                 array_push($cmpfilestokeep, $cmpfile);
@@ -443,7 +497,7 @@ class event_handler {
      */
     public static function submit_quiz($event) {
         global $CFG, $DB;
-
+        $compilatiofile = new file();
         require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
         $fs = get_file_storage();
@@ -475,10 +529,13 @@ class event_handler {
                     $filename = "quiz-{$courseid}-{$cmid}-{$attemptid}-{$question}.htm";
 
                     // Check for duplicates files.
-                    $identifier = sha1($filename);
-                    $duplicate = $DB->get_records(
-                        'plagiarism_compilatio_files',
-                        ['identifier' => $identifier, 'userid' => $userid, 'cm' => $cmid]
+                    $duplicate = $compilatiofile->compilatio_get_document_with_failover(
+                        $cmid,
+                        $filename,
+                        $userid,
+                        null,
+                        [],
+                        true
                     );
                     compilatio_delete_files($duplicate);
 
@@ -491,9 +548,14 @@ class event_handler {
                 foreach ($files as $file) {
 
                     // Check for duplicate files.
-                    $sql = "SELECT * FROM {plagiarism_compilatio_files}
-                        WHERE cm = ? AND userid = ? AND identifier = ?";
-                    $duplicates = $DB->get_records_sql($sql, [$cmid, $userid, $file->get_contenthash()]);
+                    $duplicate = $compilatiofile->compilatio_get_document_with_failover(
+                        $cmid,
+                        $file->get_content(),
+                        $userid,
+                        null,
+                        [],
+                        true
+                    );
                     compilatio_delete_files($duplicates);
 
                     file::send_file($cmid, $userid, $file);

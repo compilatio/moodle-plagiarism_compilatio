@@ -93,10 +93,14 @@ class course_module_settings {
                 if (isset($cmconfig->userid)) {
                     $compilatio ??= new api($cmconfig->userid);
 
-                    // Get Datetime for Compilatio folder.
-                    $date = new \DateTime();
-                    $date->setTimestamp($data->analysistime);
-                    $analysistime = $date->format('Y-m-d H:i:s');
+                    // Get Datetime for Compilatio folder if it exist.
+                    $analysistime = $data->analysistime ?? null;
+
+                    if (isset($analysistime)) {
+                        $date = new \DateTime();
+                        $date->setTimestamp($data->analysistime);
+                        $analysistime = $date->format('Y-m-d H:i:s');
+                    }
 
                     if ($newconfig || (!isset($cmconfig->folderid) && $cmconfig->activated === '0')) {
                         $folderid = $compilatio->set_folder(

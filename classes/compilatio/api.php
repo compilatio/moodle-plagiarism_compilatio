@@ -124,6 +124,7 @@ class api {
     /**
      * Get Compilatio user ID of legacy account attached to Moodle instance
      *
+     * @param $updateapikey
      * @return string|false Returns user ID on success, or false otherwise
      */
     public function get_apikey_user_id($updateapikey = true) {
@@ -189,6 +190,7 @@ class api {
      * Get or create Compilatio user from current Moodle user id
      *
      * @param $teacher
+     * @return mixed return the user if find, null instead.
      */
     public function get_or_create_user($teacher = null) {
         global $USER, $DB;
@@ -983,7 +985,7 @@ class api {
 
         $result = curl_exec($ch);
 
-        if ($this->check_if_under_maintenance($result)) {
+        if ($method !== 'download' && $this->check_if_under_maintenance($result)) {
             return json_encode(['status' => ['code' => 503, 'message' => 'Compilation services undergoing maintenance']]);
         }
 

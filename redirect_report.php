@@ -31,11 +31,12 @@ require_once($CFG->dirroot . '/plagiarism/lib.php');
 use plagiarism_compilatio\compilatio\api;
 
 require_login();
+if (isguestuser()) {
+    redirect(new moodle_url('/'));
+    die();
+}
 
 $cmid = required_param('cmid', PARAM_TEXT);
-
-$context = context_module::instance($cmid);
-require_capability('moodle/course:manageactivities', $context);
 
 global $OUTPUT;
 

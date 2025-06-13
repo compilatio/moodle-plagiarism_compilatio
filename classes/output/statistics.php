@@ -343,7 +343,7 @@ class statistics {
         $compilatio = new api($userid);
 
         $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
-
+        $compilatiofile = new \plagiarism_compilatio\compilatio\file();
         foreach ($attempt->get_slots() as $slot) {
 
             $answer = $attempt->get_question_attempt($slot);
@@ -357,9 +357,11 @@ class statistics {
             if ($wordcount >= $nbmotsmin) {
                 $courseid = $DB->get_field('course_modules', 'course', ['id' => $cmid]);
                 $filename = "quiz-" . $courseid . "-" . $cmid . "-" . $attemptid . "-Q" . $answer->get_question_id() . ".htm";
-                $cmpfile = $DB->get_record(
-                    'plagiarism_compilatio_files',
-                    ['cm' => $cmid, 'userid' => $studentid, 'identifier' => sha1($filename)]
+
+                $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+                    $cmid,
+                    $filename,
+                    $studentid
                 );
                 if (!empty($cmpfile)) {
                     $cmpfile->wordcount = $wordcount;
@@ -369,9 +371,10 @@ class statistics {
 
             $files = $answer->get_last_qt_files('attachments', $context->id);
             foreach ($files as $file) {
-                $cmpfile = $DB->get_record(
-                    'plagiarism_compilatio_files',
-                    ['cm' => $cmid, 'userid' => $studentid, 'identifier' => $file->get_contenthash()]
+                $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+                    $cmid,
+                    $file->get_content(),
+                    $studentid
                 );
 
                 if (!empty($cmpfile)) {
