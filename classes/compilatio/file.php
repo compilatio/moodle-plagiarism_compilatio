@@ -108,9 +108,30 @@ class file {
             }
         }
 
+        $groupid = null;
+
+        if ($file !== null) {
+            $cm = get_coursemodule_from_id(null, $cmid);
+
+            if ($cm->modname === 'assign') {
+
+                $filerecord = $DB->get_record('files', ['id' => $file->id]);
+                if ($filerecord) {
+                    $submission = $DB->get_record('assign_submission', ['id' => $filerecord->itemid]);
+                    if ($submission && $submission->groupid != 0) {
+                        $groupid = $submission->groupid;
+                        $userid = 0;
+                    }
+                }
+            }
+        }
+
+        $cmpfile->groupid = $groupid;
+
         // Check if file has already been sent.
         $compilatiofile = new file();
-        if (!empty($compilatiofile->compilatio_get_document_with_failover($cmid, $content, $userid))) {
+
+        if (!empty($compilatiofile->compilatio_get_document_with_failover($cmid, $content, $userid, null, ['groupid' => $groupid]))) {
             return false;
         }
 
@@ -405,11 +426,21 @@ class file {
             $params['status'] = $status;
         }
 
-        if (!empty($additionalparams)) {
-            $params = array_merge($params, $additionalparams);
+        if (isset($additionalparams['groupid'])) {
+            $params['groupid'] = $additionalparams['groupid'];
+            $params['userid'] = 0;
+            $identifier = sha1($content . 0 . $cmid);
+        } else {
+            $params['userid'] = $userid;
+            $identifier = sha1($content . $userid . $cmid);
         }
 
-        $params['identifier'] = sha1($content . $userid . $cmid ?? '');
+        $params['identifier'] = $identifier;
+
+        if (!empty($additionalparams)) {
+            $filteredparams = array_diff_key($additionalparams, ['groupid' => '']);
+            $params = array_merge($params, $filteredparams);
+        }
 
         if ($multiple) {
             $documents = $DB->get_records('plagiarism_compilatio_files', $params);

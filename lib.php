@@ -200,7 +200,7 @@ function compilatio_get_unsent_documents($cmid) {
         // Team submission.
 
         // Search unsent files.
-        $sql = 'SELECT distinct(ass.id) as itemid, con.id as contextid, ass.userid
+        $sql = 'SELECT distinct(ass.id) as itemid, con.id as contextid, ass.groupid
 		FROM {course_modules} cm
             JOIN {context} con ON cm.id = con.instanceid
             JOIN {assignsubmission_file} assot ON assot.assignment = cm.instance
@@ -215,7 +215,7 @@ function compilatio_get_unsent_documents($cmid) {
                 if ($file->get_filename() != '.') {
 
                     $countfiles = count(
-                        $compilatiofile->compilatio_get_document_with_failover($cmid, $file->get_content(), 0, null, null, true)
+                        $compilatiofile->compilatio_get_document_with_failover($cmid, $file->get_content(), 0, null, ['groupid' => $fileid->groupid], true)
                     );
 
                     if ($countfiles === 0) {
@@ -226,7 +226,7 @@ function compilatio_get_unsent_documents($cmid) {
         }
 
         // Search unsent online texts.
-        $sql = "SELECT DISTINCT assot.id, assot.onlinetext, assot.submission, ass.userid
+        $sql = "SELECT DISTINCT assot.id, assot.onlinetext, assot.submission, ass.groupid
             FROM {course_modules} cm
                 JOIN {context} con ON cm.id = con.instanceid
                 JOIN {assignsubmission_onlinetext} assot ON assot.assignment = cm.instance
@@ -242,7 +242,7 @@ function compilatio_get_unsent_documents($cmid) {
                 $onlineassignment->onlinetext,
                 0,
                 null,
-                null,
+                ['groupid' => $onlineassignment->groupid],
                 true
             ));
 
@@ -268,6 +268,7 @@ function compilatio_get_unsent_documents($cmid) {
 
         foreach ($filesids as $fileid) {
             $files = $fs->get_area_files($fileid->contextid, 'assignsubmission_file', 'submission_files', $fileid->itemid);
+                    Global $CFG; file_put_contents($CFG->dataroot . '/temp/compilatio/curl.log', var_export($files, true) . "\n", FILE_APPEND);
 
             foreach ($files as $file) {
                 if ($file->get_filename() != '.') {

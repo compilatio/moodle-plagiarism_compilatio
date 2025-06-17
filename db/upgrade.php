@@ -381,6 +381,36 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024030100, 'plagiarism', 'compilatio');
     }
 
+    if ($oldversion < 2024011700) {
+        // Ajouter la colonne groupid à la table plagiarism_compilatio_files
+        $table = new xmldb_table('plagiarism_compilatio_files');
+        $field = new xmldb_field('groupid', XMLDB_TYPE_INTEGER, '10', null, false, false, null, 'userid');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Ajouter la clé étrangère
+        $key = new xmldb_key('groupid', XMLDB_KEY_FOREIGN, ['groupid'], 'groups', ['id']);
+        $dbman->add_key($table, $key);
+
+        // Migrer les données existantes
+        $sql = "UPDATE {plagiarism_compilatio_files} pcf
+                SET groupid = (
+                    SELECT DISTINCT ass.groupid
+                    FROM {assign_submission} ass
+                    WHERE ass.id = SUBSTRING(pcf.filename, LOCATE('-', pcf.filename) + 1, 
+                                           LOCATE('.', pcf.filename) - LOCATE('-', pcf.filename) - 1)
+                    AND ass.groupid != 0
+                    AND pcf.filename LIKE 'assign-%'
+                )
+                WHERE pcf.userid = 0 AND pcf.filename LIKE 'assign-%'";
+        
+        $DB->execute($sql);
+
+        upgrade_plugin_savepoint(true, 2024011700, 'plagiarism', 'compilatio');
+    }
+
     foreach ($tablestodelete as $table) {
         $dbman->drop_table($table);
     }

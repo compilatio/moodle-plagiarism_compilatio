@@ -258,6 +258,7 @@ class event_handler {
         global $DB;
 
         $cmid = $event["contextinstanceid"];
+        $groupid = null;
 
         if (!compilatio_enabled($cmid)) {
             return;
@@ -268,6 +269,13 @@ class event_handler {
         if ($userid == null) {
             $userid = $event['userid'];
         }
+
+        if ($event['objecttable'] == 'assign_submission') {
+        $submission = $DB->get_record('assign_submission', ['id' => $event['objectid']]);
+        if ($submission && $submission->groupid != 0) {
+            $groupid = $submission->groupid;
+        }
+    }
 
         $assign = null;
         if ($event['objecttable'] === 'assign_submission') {
@@ -294,13 +302,16 @@ class event_handler {
                     $duplicates = $DB->get_records_sql(
                         "SELECT pcf.* FROM {plagiarism_compilatio_files} pcf
                         WHERE pcf.cm = ? AND pcf.userid = 0
-                        AND (pcf.filename LIKE ? OR pcf.filename = ?)",
+                        AND pcf.groupid = ?
+                        AND (pcf.filename = ? OR pcf.filename NOT LIKE ?)",
                         [
                             $cmid,
-                            'assign-' . $event["objectid"] . '%',
+                            $groupid,
+                            'assign-' . $event["objectid"] . '.htm',
                             'assign-' . $event["objectid"] . '.htm',
                         ]
                     );
+                    
                 } else {
                     // Normal submission.
                     $duplicates = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
@@ -346,7 +357,10 @@ class event_handler {
                 global $DB;
                 $assign = $DB->get_record('assign', ['id' => $cm->instance]);
                 if ($assign && $assign->teamsubmission == 1) {
+                    $submission = $DB->get_record('assign_submission', ['id' => $event['objectid']]);
+
                     $userid = 0;
+                    $groupid = $submission->groupid;
                 }
             }
         }
@@ -361,23 +375,23 @@ class event_handler {
         $filename = "{$cm->modname}-{$objectid}.htm";
 
         $content = $event["other"]["content"];
+        $groupid = null;
 
         if ($event['objecttable'] == 'forum_posts') {
-            $content = $DB->get_field('forum_posts', 'message', ['id' => $objectid]);
+            $identifier = sha1($DB->get_field('forum_posts', 'message', ['id' => $objectid]));
 
         } else if ($event['objecttable'] == 'workshop_submissions') {
-            $content = $DB->get_field('workshop_submissions', 'content', ['id' => $objectid]);
+            $identifier = sha1($DB->get_field('workshop_submissions', 'content', ['id' => $objectid]));
 
         } else if ($event['objecttable'] == 'assign_submission') {
-            $content = $DB->get_field('assignsubmission_onlinetext', 'onlinetext', ['submission' => $objectid]);
+            $identifier = sha1($DB->get_field('assignsubmission_onlinetext', 'onlinetext', ['submission' => $objectid]));
         }
-
         $compifile = $compilatiofile->compilatio_get_document_with_failover(
                         $cmid,
-                        $content,
+                        $identifier,
                         $userid,
                         null,
-                        ['filename' => $filename]
+                        ['filename' => $filename, 'groupid' => $groupid]
                     );
 
         if (!$compifile) {
@@ -409,14 +423,19 @@ class event_handler {
         }
 
         $userid = $event['relateduserid'];
+        $groupid = null;
 
+        
         if ($event['objecttable'] == 'assign_submission') {
             $cm = get_coursemodule_from_id('assign', $cmid);
             if ($cm) {
-                global $DB;
                 $assign = $DB->get_record('assign', ['id' => $cm->instance]);
                 if ($assign && $assign->teamsubmission == 1) {
-                    $userid = 0;
+                    $submission = $DB->get_record('assign_submission', ['id' => $event['objectid']]);
+                    if ($submission && $submission->groupid != 0) {
+                        $userid = 0;
+                        $groupid = $submission->groupid;
+                    }
                 }
             }
         }
@@ -432,8 +451,8 @@ class event_handler {
         if ($event['objecttable'] == 'assign_submission') {
             $mdlfiles = $fs->get_area_files($event["contextid"], $event["component"], 'submission_files', $event["objectid"]);
 
-            $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND filename NOT LIKE 'assign-%'";
-            $allcmpfiles = $DB->get_records_sql($sql, [$cmid, $userid]);
+            $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND groupid = ? AND filename NOT LIKE 'assign-%'";
+            $allcmpfiles = $DB->get_records_sql($sql, [$cmid, 0, $groupid]);
         }
 
         if ($event['objecttable'] == 'forum_posts') {
@@ -456,7 +475,9 @@ class event_handler {
             $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
                 $cmid,
                 $file->get_content(),
-                $userid
+                $userid,
+                null,
+                ['groupid' => $groupid]
             );
             if ($cmpfile) {
                 array_push($cmpfilestokeep, $cmpfile);
