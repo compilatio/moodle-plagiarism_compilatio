@@ -363,18 +363,18 @@ class event_handler {
         $content = $event["other"]["content"];
 
         if ($event['objecttable'] == 'forum_posts') {
-            $identifier = sha1($DB->get_field('forum_posts', 'message', ['id' => $objectid]));
+            $content = $DB->get_field('forum_posts', 'message', ['id' => $objectid]);
 
         } else if ($event['objecttable'] == 'workshop_submissions') {
-            $identifier = sha1($DB->get_field('workshop_submissions', 'content', ['id' => $objectid]));
+            $content = $DB->get_field('workshop_submissions', 'content', ['id' => $objectid]);
 
         } else if ($event['objecttable'] == 'assign_submission') {
-            $identifier = sha1($DB->get_field('assignsubmission_onlinetext', 'onlinetext', ['submission' => $objectid]));
+            $content = $DB->get_field('assignsubmission_onlinetext', 'onlinetext', ['submission' => $objectid]);
         }
 
         $compifile = $compilatiofile->compilatio_get_document_with_failover(
                         $cmid,
-                        $identifier,
+                        $content,
                         $userid,
                         null,
                         ['filename' => $filename]

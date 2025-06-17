@@ -7,6 +7,9 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+3.2.6
+- [Fix] Fix identifier generation
+
 3.2.5
 - [Fix] Student doesn't have the capability to view reports
 - [Fix] Error when analysistime is null while saving a course module

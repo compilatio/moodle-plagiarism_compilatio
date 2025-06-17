@@ -84,6 +84,7 @@ class file {
                 $content = $file->onlinetext;
                 $cmpfile->filename = 'assign-' . $file->submission . '.htm';
                 $cmpfile->identifier = sha1($file->onlinetext . $userid . $cmid);
+                $content = $file->onlinetext;
 
             } else { // File.
                 $content = $file->get_content();
@@ -93,6 +94,7 @@ class file {
                     $cmpfile->filename = $filename . "-" . $file->get_filename(); // Forum.
                 }
                 $cmpfile->identifier = sha1($file->get_content() . $userid . $cmid);
+                $content = $file->get_content();
 
                 if (!self::supported_file_type($cmpfile->filename)) {
                     $cmpfile->status = "error_unsupported";
@@ -108,7 +110,7 @@ class file {
 
         // Check if file has already been sent.
         $compilatiofile = new file();
-        if (!empty($compilatiofile->compilatio_get_document_with_failover($cmid, $cmpfile->identifier, $userid))) {
+        if (!empty($compilatiofile->compilatio_get_document_with_failover($cmid, $content, $userid))) {
             return false;
         }
 
@@ -256,7 +258,7 @@ class file {
                 $matchedfiles = [];
 
                 foreach ($allfiles as $file) {
-                    $tmpidentifier = sha1($file->contenthash . $cmpfile->userid);
+                    $tmpidentifier = sha1($file->contenthash . $cmpfile->userid . $cmpfile->cmid);
                     if ($tmpidentifier === $cmpfile->identifier || $file->contenthash === $cmpfile->identifier) {
                         $matchedfiles[] = $file;
                     }
