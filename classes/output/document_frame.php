@@ -115,24 +115,30 @@ class document_frame {
         if (isset($linkarray['file'])) {
             $itemid = $linkarray['file']->get_itemid();
             $filename = $linkarray['file']->get_filename();
-        }
-        // Pour un texte en ligne
-        else {
-            // L'itemid est généralement passé dans le linkarray pour les textes en ligne
-            if (isset($linkarray['itemid'])) {
-                $itemid = $linkarray['itemid'];
-            } else {
-                // Récupérer depuis la base de données avec userid et cmid
-                $cm = get_coursemodule_from_id('assign', $linkarray['cmid']);
-                if ($cm) {
-                    $submission = $DB->get_record('assign_submission', [
-                        'assignment' => $cm->instance,
-                        'userid' => $linkarray['userid']
-                    ]);
-                    if ($submission) {
-                        $itemid = $submission->id;
-                    }
-                }
+        } else {
+
+            $cm = get_coursemodule_from_id('assign', $linkarray['cmid']);
+
+            $assignmentid = $linkarray['assignment'];
+            $content = $linkarray['content'];
+            $itemid = null;
+
+            $sql = "SELECT s.id
+                    FROM {assign_submission} s
+                    JOIN {assignsubmission_onlinetext} sot ON sot.submission = s.id
+                    WHERE s.assignment = :assignmentid
+                    AND sot.onlinetext = :content
+                    LIMIT 1";
+
+            $params = [
+                'assignmentid' => $assignmentid,
+                'content' => $content
+            ];
+
+            $submission = $DB->get_record_sql($sql, $params);
+
+            if ($submission) {
+                $itemid = $submission->id;
             }
             $filename = 'assign-' . $itemid . '.htm';
         }

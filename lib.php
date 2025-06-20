@@ -227,13 +227,12 @@ function compilatio_get_unsent_documents($cmid) {
 
         // Search unsent online texts.
         $sql = "SELECT DISTINCT assot.id, assot.onlinetext, assot.submission, ass.groupid
-            FROM {course_modules} cm
-                JOIN {context} con ON cm.id = con.instanceid
-                JOIN {assignsubmission_onlinetext} assot ON assot.assignment = cm.instance
-                JOIN {assign_submission} ass ON assot.submission = ass.id
-                JOIN {user_enrolments} ue ON ass.userid = ue.userid
-                JOIN {enrol} enr ON ue.enrolid = enr.id
-            WHERE cm.id = ? AND con.contextlevel = 70 AND enr.courseid = cm.course AND assot.onlinetext != '' AND ass.groupid != 0";
+                FROM {course_modules} cm
+                    JOIN {context} con ON cm.id = con.instanceid
+                    JOIN {assign} a ON cm.instance = a.id
+                    JOIN {assign_submission} ass ON ass.assignment = a.id
+                    JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
+                WHERE cm.id = ? AND con.contextlevel = 70 AND ass.groupid != 0 AND assot.onlinetext IS NOT NULL AND assot.onlinetext != ''";
 
         $onlineassignments = $DB->get_records_sql($sql, [$cmid]);
         foreach ($onlineassignments as $onlineassignment) {

@@ -109,20 +109,57 @@ class file {
         }
 
         $groupid = null;
+        $cm = get_coursemodule_from_id('assign', $cmid);
+        $assignment = $DB->get_record('assign', ['id' => $cm->instance]);
 
         if ($file !== null) {
-            $cm = get_coursemodule_from_id(null, $cmid);
+            if (method_exists($file, 'get_id') && !empty($file->get_id())) {
 
-            if ($cm->modname === 'assign') {
-
-                $filerecord = $DB->get_record('files', ['id' => $file->id]);
+                // Fichier standard (assignsubmission_file)
+                $filerecord = $DB->get_record('files', ['id' => $file->get_id()]);
                 if ($filerecord) {
+
                     $submission = $DB->get_record('assign_submission', ['id' => $filerecord->itemid]);
                     if ($submission && $submission->groupid != 0) {
                         $groupid = $submission->groupid;
                         $userid = 0;
                     }
                 }
+
+            } else if (isset($file->onlinetext)) {
+                // Texte en ligne (cas dans $file->onlinetext)
+                $sql = "SELECT ass.*
+                        FROM {assign_submission} ass
+                        JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
+                        WHERE ass.assignment = :assignmentid
+                        AND ass.groupid != 0
+                        AND assot.onlinetext = :content";
+                $submission = $DB->get_record_sql($sql, [
+                    'assignmentid' => $assignment->id,
+                    'content' => $file->onlinetext
+                ]);
+
+                if ($submission) {
+                    $groupid = $submission->groupid;
+                    $userid = 0;
+                }
+            }
+        } else if (!empty($content)) {
+            // Texte en ligne passé directement
+
+            $sql = "SELECT ass.*
+                    FROM {assign_submission} ass
+                    JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
+                    WHERE ass.assignment = :assignmentid
+                    AND ass.groupid != 0
+                    AND assot.onlinetext = :content";
+            $submission = $DB->get_record_sql($sql, [
+                'assignmentid' => $assignment->id,
+                'content' => $content
+            ]);
+            if ($submission) {
+                $groupid = $submission->groupid;
+                $userid = 0;
             }
         }
 
