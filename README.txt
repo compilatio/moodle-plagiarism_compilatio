@@ -9,6 +9,8 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 CHANGES
 3.2.6
 - [Fix] Fix identifier generation
+- [Fix] Fix relaunch of documents in error by changing way to retreive documents
+- [Fix] Fix group assignment
 
 3.2.5
 - [Fix] Student doesn't have the capability to view reports
