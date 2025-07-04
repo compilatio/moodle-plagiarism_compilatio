@@ -83,8 +83,7 @@ class file {
             if (isset($file->onlinetext)) { // Online text.
                 $content = $file->onlinetext;
                 $cmpfile->filename = 'assign-' . $file->submission . '.htm';
-                $cmpfile->identifier = sha1($file->onlinetext . $userid . $cmid);
-                $content = $file->onlinetext;
+                $cmpfile->identifier = sha1($content . $userid . $cmid);
 
             } else { // File.
                 $content = $file->get_content();
@@ -93,8 +92,7 @@ class file {
                 } else {
                     $cmpfile->filename = $filename . "-" . $file->get_filename(); // Forum.
                 }
-                $cmpfile->identifier = sha1($file->get_content() . $userid . $cmid);
-                $content = $file->get_content();
+                $cmpfile->identifier = sha1($content . $userid . $cmid);
 
                 if (!self::supported_file_type($cmpfile->filename)) {
                     $cmpfile->status = "error_unsupported";
@@ -302,36 +300,69 @@ class file {
                 );
             }
         } else { // File.
-
-            $module = get_coursemodule_from_id(null, $cmpfile->cm);
-
             $modulecontext = \context_module::instance($cmpfile->cm);
             $contextid = $modulecontext->id;
+            $fs = get_file_storage();
 
-            $files = $DB->get_records_sql('SELECT * FROM {files} f WHERE f.contenthash = ? AND contextid = ?',
-                [$cmpfile->identifier, $contextid]);
+            // Search by identifier.
+            $allfiles = $DB->get_records_sql("SELECT * FROM {files} where contextid = ? AND component = 'assignsubmission_file' AND contenthash != 'da39a3ee5e6b4b0d3255bfef95601890afd80709'", ['contextid' => $contextid]);
+            $matchedfiles = [];
 
-            if (empty($files)) {
-                $allfiles = $DB->get_records('files', ['contextid' => $contextid]);
-                $matchedfiles = [];
-
-                foreach ($allfiles as $file) {
-                    $tmpidentifier = sha1($file->contenthash . $cmpfile->userid . $cmpfile->cmid);
-                    if ($tmpidentifier === $cmpfile->identifier || $file->contenthash === $cmpfile->identifier) {
-                        $matchedfiles[] = $file;
-                    }
+            foreach ($allfiles as $file) {
+                $storedfile = $fs->get_file_by_id($file->id);
+                
+                if (!$storedfile) {
+                    continue;
                 }
 
-                if (!empty($matchedfiles)) {
-                    $files = $matchedfiles;
+                $identifiers = [
+                    sha1($storedfile->get_content() . $cmpfile->userid . $cmpfile->cm),
+                    sha1($storedfile->get_content() . 0 . $cmpfile->cm),
+                    sha1($storedfile->get_content()),
+                    $file->contenthash
+                ];
+
+                if (in_array($cmpfile->identifier, $identifiers)) {
+                    $matchedfiles[] = $file;
                 }
             }
 
-            if (empty($files)) {
+            // Search by filename and userid.
+            if (empty($matchedfiles)) {
+                $sql = "SELECT f.* FROM {files} f
+                        JOIN {assign_submission} sub ON f.itemid = sub.id
+                        WHERE f.contextid = ? 
+                        AND f.component = 'assignsubmission_file' 
+                        AND f.filename = ?
+                        AND (sub.userid = ? OR sub.groupid IN (
+                            SELECT groupid FROM {groups_members} WHERE userid = ?
+                        ))
+                        AND f.contenthash != 'da39a3ee5e6b4b0d3255bfef95601890afd80709'";
+                
+                $matchedfiles = $DB->get_records_sql($sql, [
+                    $contextid, 
+                    $cmpfile->filename, 
+                    $cmpfile->userid, 
+                    $cmpfile->userid
+                ]);
+            }
+
+            // Search by filename.
+            if (empty($matchedfiles)) {
+                $sql = "SELECT * FROM {files} 
+                        WHERE contextid = ? 
+                        AND component = 'assignsubmission_file' 
+                        AND filename = ?
+                        AND contenthash != 'da39a3ee5e6b4b0d3255bfef95601890afd80709'";
+                
+                $matchedfiles = $DB->get_records_sql($sql, [$contextid, $cmpfile->filename]);
+            }
+
+            if (!empty($matchedfiles)) {
+                $files = $matchedfiles;
+            } else {
                 return false;
             }
-
-            $fs = get_file_storage();
 
             foreach ($files as $f) {
                 $file = $fs->get_file_by_id($f->id);
