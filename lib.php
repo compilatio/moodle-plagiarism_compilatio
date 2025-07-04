@@ -267,7 +267,6 @@ function compilatio_get_unsent_documents($cmid) {
 
         foreach ($filesids as $fileid) {
             $files = $fs->get_area_files($fileid->contextid, 'assignsubmission_file', 'submission_files', $fileid->itemid);
-                    Global $CFG; file_put_contents($CFG->dataroot . '/temp/compilatio/curl.log', var_export($files, true) . "\n", FILE_APPEND);
 
             foreach ($files as $file) {
                 if ($file->get_filename() != '.') {

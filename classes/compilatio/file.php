@@ -107,58 +107,11 @@ class file {
         }
 
         $groupid = null;
-        $cm = get_coursemodule_from_id('assign', $cmid);
-        $assignment = $DB->get_record('assign', ['id' => $cm->instance]);
+        $submission = self::get_submission($cmid, $userid, $file, $filename, $content);
 
-        if ($file !== null) {
-            if (method_exists($file, 'get_id') && !empty($file->get_id())) {
-
-                // Fichier standard (assignsubmission_file)
-                $filerecord = $DB->get_record('files', ['id' => $file->get_id()]);
-                if ($filerecord) {
-
-                    $submission = $DB->get_record('assign_submission', ['id' => $filerecord->itemid]);
-                    if ($submission && $submission->groupid != 0) {
-                        $groupid = $submission->groupid;
-                        $userid = 0;
-                    }
-                }
-
-            } else if (isset($file->onlinetext)) {
-                // Texte en ligne (cas dans $file->onlinetext)
-                $sql = "SELECT ass.*
-                        FROM {assign_submission} ass
-                        JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
-                        WHERE ass.assignment = :assignmentid
-                        AND ass.groupid != 0
-                        AND assot.onlinetext = :content";
-                $submission = $DB->get_record_sql($sql, [
-                    'assignmentid' => $assignment->id,
-                    'content' => $file->onlinetext
-                ]);
-
-                if ($submission) {
-                    $groupid = $submission->groupid;
-                    $userid = 0;
-                }
-            }
-        } else if (!empty($content)) {
-            // Texte en ligne passé directement
-
-            $sql = "SELECT ass.*
-                    FROM {assign_submission} ass
-                    JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
-                    WHERE ass.assignment = :assignmentid
-                    AND ass.groupid != 0
-                    AND assot.onlinetext = :content";
-            $submission = $DB->get_record_sql($sql, [
-                'assignmentid' => $assignment->id,
-                'content' => $content
-            ]);
-            if ($submission) {
-                $groupid = $submission->groupid;
-                $userid = 0;
-            }
+        if (isset($submission->groupid) && $submission->groupid !== '0') {
+            $groupid = $submission->groupid;
+            $cmpfile->userid = $userid = 0;
         }
 
         $cmpfile->groupid = $groupid;
@@ -529,5 +482,115 @@ class file {
 
             return $document;
         }
+    }
+
+    /**
+     * Get submission record based on various criteria
+     *
+     * @param int $cmid Course module ID
+     * @param int $userid User ID
+     * @param object $file File object
+     * @param string $filename Filename
+     * @param string $content Text content
+     * @return object|null Submission record or null if not found
+     */
+    private static function get_submission($cmid, $userid, $file, $filename, $content) {
+        global $DB;
+        
+        $cm = get_coursemodule_from_id('assign', $cmid);
+        if (!$cm) {
+            return null;
+        }
+        
+        $assignment = $DB->get_record('assign', ['id' => $cm->instance]);
+        if (!$assignment) {
+            return null;
+        }
+        
+        $submission = null;
+        
+        // Search by id.
+        if ($file !== null && method_exists($file, 'get_id') && !empty($file->get_id())) {
+            $filerecord = $DB->get_record('files', ['id' => $file->get_id()]);
+            if ($filerecord) {
+                $submission = $DB->get_record('assign_submission', ['id' => $filerecord->itemid]);
+            }
+        }
+        
+        // Search for onlinetext.
+        if (!$submission && $file !== null && isset($file->onlinetext)) {
+            // Search by SHA1.
+            $contentidentifier = sha1($file->onlinetext);
+            
+            $sql = "SELECT ass.*, assot.onlinetext
+                    FROM {assign_submission} ass
+                    JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
+                    WHERE ass.assignment = :assignmentid";
+            
+            $submissions = $DB->get_records_sql($sql, ['assignmentid' => $assignment->id]);
+            
+            foreach ($submissions as $sub) {
+                $subidentifier = sha1($sub->onlinetext);
+                if ($subidentifier === $contentidentifier) {
+                    $submission = $sub;
+                    break;
+                }
+            }
+        }
+        
+        // Search by content.
+        if (!$submission && !empty($content)) {
+            // Extract submission ID from filename
+            if (!empty($filename) && preg_match('/^assign-(\d+)\.htm$/', $filename, $matches)) {
+                $submissionid = $matches[1];
+                $submission = $DB->get_record('assign_submission', ['id' => $submissionid]);
+            }
+            
+            if (!$submission) {
+                // Individual submission
+                $submission = $DB->get_record_sql(
+                    "SELECT ass.* 
+                     FROM {assign_submission} ass
+                     JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
+                     WHERE ass.assignment = ? AND ass.userid = ?",
+                    [$assignment->id, $userid]
+                );
+                
+                // Group submission where user is member
+                if (!$submission) {
+                    $submission = $DB->get_record_sql(
+                        "SELECT ass.* 
+                         FROM {assign_submission} ass
+                         JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
+                         JOIN {groups_members} gm ON gm.groupid = ass.groupid
+                         WHERE ass.assignment = ? AND gm.userid = ? AND ass.groupid != 0",
+                        [$assignment->id, $userid]
+                    );
+                }
+                
+                // Search by content hash
+                if (!$submission) {
+                    $contentidentifier = sha1($content);
+                    
+                    $sql = "SELECT ass.id, ass.groupid, ass.userid, assot.onlinetext
+                            FROM {assign_submission} ass
+                            JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
+                            WHERE ass.assignment = ?";
+                    
+                    $submissions = $DB->get_records_sql($sql, [$assignment->id]);
+                    
+                    foreach ($submissions as $sub) {
+                        $subidentifier = sha1($sub->onlinetext);
+                        
+                        if ($subidentifier === $contentidentifier) {
+                            $submission = $sub;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return $submission;
     }
 }
