@@ -10,7 +10,9 @@ CHANGES
 3.2.6
 - [Fix] Fix identifier generation
 - [Fix] Fix relaunch of documents in error by changing way to retreive documents
-- [Fix] Fix group assignment
+- [Fix] Fix Compilatio in group assignment
+- [Fix] Student can now see document frame in group assignment
+- [Fix] Resend docs in extraction error with reset document in error in technical tools (admin tab)
 
 3.2.5
 - [Fix] Student doesn't have the capability to view reports
