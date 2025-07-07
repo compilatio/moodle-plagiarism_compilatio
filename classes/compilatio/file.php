@@ -119,7 +119,14 @@ class file {
         // Check if file has already been sent.
         $compilatiofile = new file();
 
-        if (!empty($compilatiofile->compilatio_get_document_with_failover($cmid, $content, $userid, null, ['groupid' => $groupid]))) {
+        if (!empty($compilatiofile->compilatio_get_document_with_failover(
+                $cmid,
+                $content,
+                $userid,
+                null,
+                ['groupid' => $groupid])
+                )
+            ) {
             return false;
         }
 
@@ -258,12 +265,15 @@ class file {
             $fs = get_file_storage();
 
             // Search by identifier.
-            $allfiles = $DB->get_records_sql("SELECT * FROM {files} where contextid = ? AND component = 'assignsubmission_file' AND contenthash != 'da39a3ee5e6b4b0d3255bfef95601890afd80709'", ['contextid' => $contextid]);
+            $allfiles = $DB->get_records_sql("SELECT * FROM {files}
+                where contextid = ?
+                    AND component = 'assignsubmission_file'
+                    AND contenthash != 'da39a3ee5e6b4b0d3255bfef95601890afd80709'",
+                ['contextid' => $contextid]);
             $matchedfiles = [];
 
             foreach ($allfiles as $file) {
                 $storedfile = $fs->get_file_by_id($file->id);
-                
                 if (!$storedfile) {
                     continue;
                 }
@@ -272,7 +282,7 @@ class file {
                     sha1($storedfile->get_content() . $cmpfile->userid . $cmpfile->cm),
                     sha1($storedfile->get_content() . 0 . $cmpfile->cm),
                     sha1($storedfile->get_content()),
-                    $file->contenthash
+                    $file->contenthash,
                 ];
 
                 if (in_array($cmpfile->identifier, $identifiers)) {
@@ -284,30 +294,30 @@ class file {
             if (empty($matchedfiles)) {
                 $sql = "SELECT f.* FROM {files} f
                         JOIN {assign_submission} sub ON f.itemid = sub.id
-                        WHERE f.contextid = ? 
-                        AND f.component = 'assignsubmission_file' 
+                        WHERE f.contextid = ?
+                        AND f.component = 'assignsubmission_file'
                         AND f.filename = ?
                         AND (sub.userid = ? OR sub.groupid IN (
                             SELECT groupid FROM {groups_members} WHERE userid = ?
                         ))
                         AND f.contenthash != 'da39a3ee5e6b4b0d3255bfef95601890afd80709'";
-                
+
                 $matchedfiles = $DB->get_records_sql($sql, [
-                    $contextid, 
-                    $cmpfile->filename, 
-                    $cmpfile->userid, 
-                    $cmpfile->userid
+                    $contextid,
+                    $cmpfile->filename,
+                    $cmpfile->userid,
+                    $cmpfile->userid,
                 ]);
             }
 
             // Search by filename.
             if (empty($matchedfiles)) {
-                $sql = "SELECT * FROM {files} 
-                        WHERE contextid = ? 
-                        AND component = 'assignsubmission_file' 
+                $sql = "SELECT * FROM {files}
+                        WHERE contextid = ?
+                        AND component = 'assignsubmission_file'
                         AND filename = ?
                         AND contenthash != 'da39a3ee5e6b4b0d3255bfef95601890afd80709'";
-                
+
                 $matchedfiles = $DB->get_records_sql($sql, [$contextid, $cmpfile->filename]);
             }
 
@@ -496,19 +506,19 @@ class file {
      */
     private static function get_submission($cmid, $userid, $file, $filename, $content) {
         global $DB;
-        
+
         $cm = get_coursemodule_from_id('assign', $cmid);
         if (!$cm) {
             return null;
         }
-        
+
         $assignment = $DB->get_record('assign', ['id' => $cm->instance]);
         if (!$assignment) {
             return null;
         }
-        
+
         $submission = null;
-        
+
         // Search by id.
         if ($file !== null && method_exists($file, 'get_id') && !empty($file->get_id())) {
             $filerecord = $DB->get_record('files', ['id' => $file->get_id()]);
@@ -516,19 +526,19 @@ class file {
                 $submission = $DB->get_record('assign_submission', ['id' => $filerecord->itemid]);
             }
         }
-        
+
         // Search for onlinetext.
         if (!$submission && $file !== null && isset($file->onlinetext)) {
             // Search by SHA1.
             $contentidentifier = sha1($file->onlinetext);
-            
+
             $sql = "SELECT ass.*, assot.onlinetext
                     FROM {assign_submission} ass
                     JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
                     WHERE ass.assignment = :assignmentid";
-            
+
             $submissions = $DB->get_records_sql($sql, ['assignmentid' => $assignment->id]);
-            
+
             foreach ($submissions as $sub) {
                 $subidentifier = sha1($sub->onlinetext);
                 if ($subidentifier === $contentidentifier) {
@@ -537,29 +547,29 @@ class file {
                 }
             }
         }
-        
+
         // Search by content.
         if (!$submission && !empty($content)) {
-            // Extract submission ID from filename
+            // Extract submission ID from filename.
             if (!empty($filename) && preg_match('/^assign-(\d+)\.htm$/', $filename, $matches)) {
                 $submissionid = $matches[1];
                 $submission = $DB->get_record('assign_submission', ['id' => $submissionid]);
             }
-            
+
             if (!$submission) {
-                // Individual submission
+                // Individual submission.
                 $submission = $DB->get_record_sql(
-                    "SELECT ass.* 
+                    "SELECT ass.*
                      FROM {assign_submission} ass
                      JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
                      WHERE ass.assignment = ? AND ass.userid = ?",
                     [$assignment->id, $userid]
                 );
-                
-                // Group submission where user is member
+
+                // Group submission where user is member.
                 if (!$submission) {
                     $submission = $DB->get_record_sql(
-                        "SELECT ass.* 
+                        "SELECT ass.*
                          FROM {assign_submission} ass
                          JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
                          JOIN {groups_members} gm ON gm.groupid = ass.groupid
@@ -567,21 +577,21 @@ class file {
                         [$assignment->id, $userid]
                     );
                 }
-                
-                // Search by content hash
+
+                // Search by content hash.
                 if (!$submission) {
                     $contentidentifier = sha1($content);
-                    
+
                     $sql = "SELECT ass.id, ass.groupid, ass.userid, assot.onlinetext
                             FROM {assign_submission} ass
                             JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
                             WHERE ass.assignment = ?";
-                    
+
                     $submissions = $DB->get_records_sql($sql, [$assignment->id]);
-                    
+
                     foreach ($submissions as $sub) {
                         $subidentifier = sha1($sub->onlinetext);
-                        
+
                         if ($subidentifier === $contentidentifier) {
                             $submission = $sub;
                             break;
@@ -590,7 +600,7 @@ class file {
                 }
             }
         }
-        
+
         return $submission;
     }
 }

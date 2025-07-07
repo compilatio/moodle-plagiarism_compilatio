@@ -106,7 +106,7 @@ class document_frame {
 
             $params = [
                 'assignmentid' => $assignmentid,
-                'content' => $content
+                'content' => $content,
             ];
 
             $submission = $DB->get_record_sql($sql, $params);

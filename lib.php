@@ -215,7 +215,14 @@ function compilatio_get_unsent_documents($cmid) {
                 if ($file->get_filename() != '.') {
 
                     $countfiles = count(
-                        $compilatiofile->compilatio_get_document_with_failover($cmid, $file->get_content(), 0, null, ['groupid' => $fileid->groupid], true)
+                        $compilatiofile->compilatio_get_document_with_failover(
+                            $cmid,
+                            $file->get_content(),
+                            0,
+                            null,
+                            ['groupid' => $fileid->groupid],
+                            true
+                        )
                     );
 
                     if ($countfiles === 0) {
@@ -232,7 +239,11 @@ function compilatio_get_unsent_documents($cmid) {
                     JOIN {assign} a ON cm.instance = a.id
                     JOIN {assign_submission} ass ON ass.assignment = a.id
                     JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
-                WHERE cm.id = ? AND con.contextlevel = 70 AND ass.groupid != 0 AND assot.onlinetext IS NOT NULL AND assot.onlinetext != ''";
+                WHERE cm.id = ?
+                    AND con.contextlevel = 70
+                    AND ass.groupid != 0
+                    AND assot.onlinetext IS NOT NULL
+                    AND assot.onlinetext != ''";
 
         $onlineassignments = $DB->get_records_sql($sql, [$cmid]);
         foreach ($onlineassignments as $onlineassignment) {

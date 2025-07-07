@@ -271,11 +271,11 @@ class event_handler {
         }
 
         if ($event['objecttable'] == 'assign_submission') {
-        $submission = $DB->get_record('assign_submission', ['id' => $event['objectid']]);
-        if ($submission && $submission->groupid != 0) {
-            $groupid = $submission->groupid;
+            $submission = $DB->get_record('assign_submission', ['id' => $event['objectid']]);
+            if ($submission && $submission->groupid != 0) {
+                $groupid = $submission->groupid;
+            }
         }
-    }
 
         $assign = null;
         if ($event['objecttable'] === 'assign_submission') {
@@ -311,7 +311,7 @@ class event_handler {
                             'assign-' . $event["objectid"] . '.htm',
                         ]
                     );
-                    
+
                 } else {
                     // Normal submission.
                     $duplicates = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
@@ -425,7 +425,6 @@ class event_handler {
         $userid = $event['relateduserid'];
         $groupid = null;
 
-        
         if ($event['objecttable'] == 'assign_submission') {
             $cm = get_coursemodule_from_id('assign', $cmid);
             if ($cm) {
@@ -451,7 +450,9 @@ class event_handler {
         if ($event['objecttable'] == 'assign_submission') {
             $mdlfiles = $fs->get_area_files($event["contextid"], $event["component"], 'submission_files', $event["objectid"]);
 
-            $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND userid = ? AND groupid = ? AND filename NOT LIKE 'assign-%'";
+            $sql = "SELECT * FROM {plagiarism_compilatio_files}
+                WHERE cm = ? AND userid = ? AND groupid = ? AND filename NOT LIKE 'assign-%'";
+
             $allcmpfiles = $DB->get_records_sql($sql, [$cmid, 0, $groupid]);
         }
 

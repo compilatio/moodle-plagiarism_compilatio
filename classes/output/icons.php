@@ -104,7 +104,7 @@ class icons {
     /**
      * Returns HTML for AI score icon
      *
-     * @param $color
+     * @param  string $color
      * @return string
      */
     public static function aiscore($color) {
@@ -130,7 +130,7 @@ class icons {
     /**
      * Returns HTML for UTL score icon
      *
-     * @param $color
+     * @param  string $color
      * @return string
      */
     public static function utlscore($color) {
@@ -156,7 +156,7 @@ class icons {
     /**
      * Returns HTML for similarity score icon
      *
-     * @param $color
+     * @param  string $color
      * @return string
      */
     public static function simscore($color) {
