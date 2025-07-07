@@ -84,32 +84,6 @@ class document_frame {
         $cantriggeranalysis = has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext);
         $isstudentanalyse = compilatio_student_analysis($plugincm->studentanalyses, $linkarray['cmid'], $userid);
 
-        if ($USER->id == $userid) {
-            if ($isstudentanalyse) {
-                $canviewreport = true;
-                $canviewscore = true;
-            }
-
-            $assignclosed = false;
-            if ($cm->completionexpected != 0 && time() > $cm->completionexpected) {
-                $assignclosed = true;
-            }
-
-            $allowed = get_config('plagiarism_compilatio', 'enable_show_reports');
-            $showreport = $plugincm->showstudentreport ?? null;
-            if ($allowed === '1' && ($showreport == 'immediately' || ($showreport == 'closed' && $assignclosed))) {
-                $canviewreport = true;
-            }
-
-            $showscore = $plugincm->showstudentscore ?? null;
-            if ($showscore == 'immediately' || ($showscore == 'closed' && $assignclosed)) {
-                $canviewscore = true;
-            }
-        }
-        if (!$canviewscore) {
-            return '';
-        }
-        $compilatiofile = new file();
         $groupid = null;
 
         if (isset($linkarray['file'])) {
@@ -149,6 +123,48 @@ class document_frame {
             $userid = 0;
             $groupid = $submission->groupid;
         }
+
+        $usergroupids = groups_get_user_groups($cm->course, $USER->id);
+
+        $userbelongstogroup = false;
+
+        foreach ($usergroupids as $grouptypeids) {
+        Global $CFG; file_put_contents($CFG->dataroot . '/temp/compilatio/curl.log', var_export($groupid, true) . "\n", FILE_APPEND);
+
+            if (in_array($groupid, $grouptypeids)) {
+                $userbelongstogroup = true;
+                break;
+            }
+        }
+
+        if ($USER->id == $userid || $userbelongstogroup) {
+
+            if ($isstudentanalyse) {
+                $canviewreport = true;
+                $canviewscore = true;
+            }
+
+            $assignclosed = false;
+            if ($cm->completionexpected != 0 && time() > $cm->completionexpected) {
+                $assignclosed = true;
+            }
+
+            $allowed = get_config('plagiarism_compilatio', 'enable_show_reports');
+            $showreport = $plugincm->showstudentreport ?? null;
+            if ($allowed === '1' && ($showreport == 'immediately' || ($showreport == 'closed' && $assignclosed))) {
+                $canviewreport = true;
+            }
+
+            $showscore = $plugincm->showstudentscore ?? null;
+            if ($showscore == 'immediately' || ($showscore == 'closed' && $assignclosed)) {
+                $canviewscore = true;
+            }
+        }
+        if (!$canviewscore) {
+            return '';
+        }
+        $compilatiofile = new file();
+
         // Get compilatio file record.
         $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
             $linkarray['cmid'], $content, $userid, null, ['groupid' => $groupid]
