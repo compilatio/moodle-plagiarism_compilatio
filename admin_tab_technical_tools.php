@@ -45,14 +45,12 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
 
     $compilatio = new api();
 
-    $select = "status = ? AND timesubmitted BETWEEN ? AND ?";
-
     if ($data->reset === 'documents') {
         // Send documents whose analysis failed and documents whose send failed.
         $files = $DB->get_records_select(
             'plagiarism_compilatio_files',
-            $select,
-            ['error_sending_failed', $data->startdate, $data->enddate]
+            "status = ? OR status = ? AND timesubmitted BETWEEN ? AND ?",
+            ['error_sending_failed', 'error_extraction_failed', $data->startdate, $data->enddate]
         );
 
         $string = 'document_sent';
@@ -60,7 +58,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         // Delete documents whose analysis failed.
         $files = $DB->get_records_select(
             'plagiarism_compilatio_files',
-            $select,
+            "status = ? AND timesubmitted BETWEEN ? AND ?",
             ['error_analysis_failed', $data->startdate, $data->enddate]
         );
 
