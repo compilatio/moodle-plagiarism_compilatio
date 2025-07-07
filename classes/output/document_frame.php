@@ -129,8 +129,6 @@ class document_frame {
         $userbelongstogroup = false;
 
         foreach ($usergroupids as $grouptypeids) {
-        Global $CFG; file_put_contents($CFG->dataroot . '/temp/compilatio/curl.log', var_export($groupid, true) . "\n", FILE_APPEND);
-
             if (in_array($groupid, $grouptypeids)) {
                 $userbelongstogroup = true;
                 break;
