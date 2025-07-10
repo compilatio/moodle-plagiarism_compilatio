@@ -368,8 +368,7 @@ class file {
      */
     public static function supported_extensions() {
         $filetypes = json_decode(get_config('plagiarism_compilatio', 'file_types'));
-        $extensions = array_keys((array) $filetypes);
-        return array_diff($extensions, ['zip']); ;
+        return array_keys((array) $filetypes);
     }
 
     /**
