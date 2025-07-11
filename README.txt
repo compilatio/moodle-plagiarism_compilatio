@@ -13,6 +13,7 @@ CHANGES
 - [Fix] Fix Compilatio in group assignment
 - [Fix] Student can now see document frame in group assignment
 - [Fix] Resend docs in extraction error with reset document in error in technical tools (admin tab)
+- Allows ZIP files to be sent to compilatio
 
 3.2.5
 - [Fix] Student doesn't have the capability to view reports
