@@ -200,7 +200,7 @@ function compilatio_get_unsent_documents($cmid) {
         // Team submission.
 
         // Search unsent files.
-        $sql = 'SELECT distinct(ass.id) as itemid, con.id as contextid, ass.userid
+        $sql = 'SELECT distinct(ass.id) as itemid, con.id as contextid, ass.groupid
 		FROM {course_modules} cm
             JOIN {context} con ON cm.id = con.instanceid
             JOIN {assignsubmission_file} assot ON assot.assignment = cm.instance
@@ -215,7 +215,14 @@ function compilatio_get_unsent_documents($cmid) {
                 if ($file->get_filename() != '.') {
 
                     $countfiles = count(
-                        $compilatiofile->compilatio_get_document_with_failover($cmid, $file->get_content(), 0, null, null, true)
+                        $compilatiofile->compilatio_get_document_with_failover(
+                            $cmid,
+                            $file->get_content(),
+                            0,
+                            null,
+                            ['groupid' => $fileid->groupid],
+                            true
+                        )
                     );
 
                     if ($countfiles === 0) {
@@ -226,14 +233,17 @@ function compilatio_get_unsent_documents($cmid) {
         }
 
         // Search unsent online texts.
-        $sql = "SELECT DISTINCT assot.id, assot.onlinetext, assot.submission, ass.userid
-            FROM {course_modules} cm
-                JOIN {context} con ON cm.id = con.instanceid
-                JOIN {assignsubmission_onlinetext} assot ON assot.assignment = cm.instance
-                JOIN {assign_submission} ass ON assot.submission = ass.id
-                JOIN {user_enrolments} ue ON ass.userid = ue.userid
-                JOIN {enrol} enr ON ue.enrolid = enr.id
-            WHERE cm.id = ? AND con.contextlevel = 70 AND enr.courseid = cm.course AND assot.onlinetext != '' AND ass.groupid != 0";
+        $sql = "SELECT DISTINCT assot.id, assot.onlinetext, assot.submission, ass.groupid
+                FROM {course_modules} cm
+                    JOIN {context} con ON cm.id = con.instanceid
+                    JOIN {assign} a ON cm.instance = a.id
+                    JOIN {assign_submission} ass ON ass.assignment = a.id
+                    JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
+                WHERE cm.id = ?
+                    AND con.contextlevel = 70
+                    AND ass.groupid != 0
+                    AND assot.onlinetext IS NOT NULL
+                    AND assot.onlinetext != ''";
 
         $onlineassignments = $DB->get_records_sql($sql, [$cmid]);
         foreach ($onlineassignments as $onlineassignment) {
@@ -242,7 +252,7 @@ function compilatio_get_unsent_documents($cmid) {
                 $onlineassignment->onlinetext,
                 0,
                 null,
-                null,
+                ['groupid' => $onlineassignment->groupid],
                 true
             ));
 

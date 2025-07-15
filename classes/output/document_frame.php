@@ -84,7 +84,59 @@ class document_frame {
         $cantriggeranalysis = has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext);
         $isstudentanalyse = compilatio_student_analysis($plugincm->studentanalyses, $linkarray['cmid'], $userid);
 
-        if ($USER->id == $userid) {
+        $groupid = null;
+
+        if (isset($linkarray['file'])) {
+            $itemid = $linkarray['file']->get_itemid();
+            $filename = $linkarray['file']->get_filename();
+        } else {
+
+            $cm = get_coursemodule_from_id('assign', $linkarray['cmid']);
+
+            $assignmentid = $linkarray['assignment'];
+            $content = $linkarray['content'];
+            $itemid = null;
+
+            $sql = "SELECT s.id
+                    FROM {assign_submission} s
+                    JOIN {assignsubmission_onlinetext} sot ON sot.submission = s.id
+                    WHERE s.assignment = :assignmentid
+                    AND sot.onlinetext = :content
+                    LIMIT 1";
+
+            $params = [
+                'assignmentid' => $assignmentid,
+                'content' => $content,
+            ];
+
+            $submission = $DB->get_record_sql($sql, $params);
+
+            if ($submission) {
+                $itemid = $submission->id;
+            }
+            $filename = 'assign-' . $itemid . '.htm';
+        }
+
+        $submission = $DB->get_record('assign_submission', ['id' => $itemid]);
+
+        if ($submission && $submission->groupid != 0) {
+            $userid = 0;
+            $groupid = $submission->groupid;
+        }
+
+        $usergroupids = groups_get_user_groups($cm->course, $USER->id);
+
+        $userbelongstogroup = false;
+
+        foreach ($usergroupids as $grouptypeids) {
+            if (in_array($groupid, $grouptypeids)) {
+                $userbelongstogroup = true;
+                break;
+            }
+        }
+
+        if ($USER->id == $userid || $userbelongstogroup) {
+
             if ($isstudentanalyse) {
                 $canviewreport = true;
                 $canviewscore = true;
@@ -110,13 +162,14 @@ class document_frame {
             return '';
         }
         $compilatiofile = new file();
+
         // Get compilatio file record.
         $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
-            $linkarray['cmid'], $content, $userid
+            $linkarray['cmid'], $content, $userid, null, ['groupid' => $groupid]
         );
         if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
             $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
-                $linkarray['cmid'], $linkarray['cmp_filename'], $userid);
+                $linkarray['cmid'], $linkarray['cmp_filename'], $userid, null, ['groupid' => $groupid]);
         }
 
         if (empty($cmpfile)) { // Try to get record without userid in forums.

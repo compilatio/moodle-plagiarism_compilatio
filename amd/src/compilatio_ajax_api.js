@@ -39,7 +39,11 @@ define(['jquery'], function($) {
 
         $('#cmp-dropdown-menu').removeClass('show');
 
-        $("#cmp-alerts").append("<div class='cmp-alert cmp-alert-info'>" + message + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
+        $("#cmp-alerts").append(`
+                <div class='cmp-alert cmp-alert-info'>`
+                + message +
+                `<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>`
+            );
 
         let params = {
             'cmid': cmid,
@@ -90,8 +94,10 @@ define(['jquery'], function($) {
             });
 
             /**
-            * Change selected student.
-            */
+             * Change selected student.
+             * @param {number} selectedIndex - Current selected index.
+             * @param {number} direction - Direction to change index
+             */
             function changeSelectedStudent(selectedIndex, direction) {
                 var newIndex = selectedIndex + direction;
                 const maxIndex = studentSelector.find('option').length - 1;
@@ -138,8 +144,8 @@ define(['jquery'], function($) {
             const checkboxes = $('td.c0 input, #selectall');
 
             /**
-            * Get selected lines.
-            */
+             * Get selected lines.
+             */
             function getSelectedLines() {
                 return checkboxes.filter(':checked').map(function() {
                     return $(this).val() !== 'on' ? $(this).val() : null;
@@ -147,8 +153,8 @@ define(['jquery'], function($) {
             }
 
             /**
-            * Update button visibility.
-            */
+             * Update button visibility.
+             */
             function updateButtonVisibility() {
                 const selectedUsers = getSelectedLines();
                 selectedUsers.length > 0 ? startSelectedStudentsBtn.show() : startSelectedStudentsBtn.hide();
