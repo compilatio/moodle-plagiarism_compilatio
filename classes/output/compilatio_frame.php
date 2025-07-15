@@ -279,7 +279,7 @@ class compilatio_frame {
             </span>";
         }
 
-        if (empty($plagiarismsettings['enable_search_tab'])) {
+        if (!empty($plagiarismsettings['enable_search_tab'])) {
             // Search icon.
             $output .= "<i id='show-search' title='" . get_string('compilatio_search_tab', 'plagiarism_compilatio') .
                 "' class='cmp-icon fa fa-search fa-2x' data-toggle='tooltip'></i>";
