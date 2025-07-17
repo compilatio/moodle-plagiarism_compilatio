@@ -345,7 +345,9 @@ class event_handler {
 
         $content = $event["other"]["content"];
 
-        if (trim($content) === "") return;
+        if (trim($content) === "") {
+            return;
+        }
 
         $compilatiofile = new file();
         $cmid = $event["contextinstanceid"];

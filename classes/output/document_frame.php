@@ -69,7 +69,9 @@ class document_frame {
             $userid = $DB->get_field('assign_submission', 'userid', ['id' => $linkarray['file']->get_itemid()]);
         }
 
-        if (empty($linkarray['content']) && empty($linkarray['file'])) return $output;
+        if (empty($linkarray['content']) && empty($linkarray['file'])) {
+            return $output;
+        }
 
         // Don't show Compilatio if not allowed.
         $modulecontext = \context_module::instance($linkarray['cmid']);

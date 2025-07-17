@@ -49,6 +49,9 @@ class file {
      */
     private static $authors;
 
+    /**
+     * @var string EMPTY_TEXT_HASH empty string hash.
+     */
     const EMPTY_TEXT_HASH = 'da39a3ee5e6b4b0d3255bfef95601890afd80709';
 
     /**
@@ -125,14 +128,14 @@ class file {
         // Check if file has already been sent.
         $compilatiofile = new file();
 
-         if (!empty($compilatiofile->compilatio_get_document_with_failover(
-            $cmid,
-            $file ?? $content,
-            $userid,
-            null,
-            ['groupid' => $groupid])
-            )
-         ) {
+        if (!empty($compilatiofile->compilatio_get_document_with_failover(
+           $cmid,
+           $file ?? $content,
+           $userid,
+           null,
+           ['groupid' => $groupid])
+           )
+        ) {
             return false;
         }
 
@@ -158,7 +161,7 @@ class file {
                 fwrite($handle, $content);
                 fclose($handle);
             }
-            
+
             $cmconfig = $DB->get_record("plagiarism_compilatio_cm_cfg", ["cmid" => $cmid]);
 
             $compilatio = new api($cmconfig->userid);
@@ -506,7 +509,7 @@ class file {
             $document = $DB->get_record('plagiarism_compilatio_files', $params);
 
             if (!$document) {
-                
+
                 $params['identifier'] = $content instanceof \stored_file ? $content->get_contenthash() : sha1($content);
                 $document = $DB->get_record('plagiarism_compilatio_files', $params);
             }
@@ -553,9 +556,7 @@ class file {
         if (!$submission && $onlinetext) {
             // Search by SHA1.
 
-            /**
-             * @var string $content
-             */
+            // Here $content is a string.
             $contentidentifier = sha1($content);
 
             $sql = "SELECT ass.*, assot.onlinetext

@@ -27,19 +27,27 @@ namespace plagiarism_compilatio\compilatio;
 
 use lib\​filestorage\stored_file;
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 /**
  * Handle identifier generation.
  */
 class identifier {
 
+    /**
+     * @var string $userid User id
+     */
     public string $userid;
 
+    /**
+     * @var string $cmid Course module id
+     */
     public string $cmid;
 
-    public function __construct($userid, $cmid)
-    {
+    /**
+     * Class constructor
+     * @param  string $userid User ID
+     * @param  string $cmid Course module ID
+     */
+    public function __construct($userid, $cmid) {
         if (!isset($userid) || !isset($cmid)) {
 
             throw new \moodle_exception('No userid or cmid.');
@@ -49,6 +57,12 @@ class identifier {
         $this->cmid = (string) $cmid;
     }
 
+    /**
+     * create_from_linkarrays
+     * @param  array $linkarray Array pass in document_frame containing userid, cmid and content
+     *
+     * @return string $identifier Generated identifier
+     */
     public function create_from_linkarray($linkarray): string {
         if (!is_array($linkarray)) {
             throw new \moodle_exception('Linkarray is not an array.');
@@ -65,10 +79,22 @@ class identifier {
         throw new \moodle_exception('Linkarray is not online text or stored file.');
     }
 
+    /**
+     * create_from_string
+     * @param  array $content Content to generate identifier with
+     *
+     * @return string $identifier Generated identifier
+     */
     public function create_from_string($content): string {
         return sha1($content . $this->userid . $this->cmid);
     }
 
+    /**
+     * create_from_file
+     * @param  std_class $file File to generate identifier with
+     *
+     * @return string $identifier Generated identifier
+     */
     public function create_from_file($file): string {
         if ($file instanceof \stored_file) {
             return $this->create_from_stored_file($file->get_content_file_handle());
@@ -78,9 +104,10 @@ class identifier {
     }
 
     /**
+     * create_from_stored_file
      * @param resource|false $filestream
+     *
      * @return string
-     * 
      */
     private function create_from_stored_file(mixed $filestream): string {
 
