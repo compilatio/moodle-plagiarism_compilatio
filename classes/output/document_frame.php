@@ -29,6 +29,7 @@ use plagiarism_compilatio\output\icons;
 use plagiarism_compilatio\compilatio\file;
 use plagiarism_compilatio\compilatio\api;
 use moodle_url;
+use plagiarism_compilatio\compilatio\identifier;
 
 /**
  * document_frame class
@@ -41,12 +42,10 @@ class document_frame {
      * @return string Return the HTML formatted string.
      */
     public static function get_document_frame($linkarray) {
-
         // Quiz management - Only essay question are supported for the moment.
         if (!empty($linkarray['component']) && $linkarray['component'] == 'qtype_essay') {
             $linkarray = self::manage_quiz($linkarray);
         }
-
         // Check if Compilatio is enabled in moodle->module->cm.
         if (!isset($linkarray['cmid']) || !compilatio_enabled($linkarray['cmid'])) {
             return '';
@@ -70,13 +69,7 @@ class document_frame {
             $userid = $DB->get_field('assign_submission', 'userid', ['id' => $linkarray['file']->get_itemid()]);
         }
 
-        if (!empty($linkarray['content'])) {
-            $content = $linkarray['content'];
-        } else if (!empty($linkarray['file'])) {
-            $content = $linkarray['file']->get_content();
-        } else {
-            return $output;
-        }
+        if (empty($linkarray['content']) && empty($linkarray['file'])) return $output;
 
         // Don't show Compilatio if not allowed.
         $modulecontext = \context_module::instance($linkarray['cmid']);
@@ -85,57 +78,58 @@ class document_frame {
         $isstudentanalyse = compilatio_student_analysis($plugincm->studentanalyses, $linkarray['cmid'], $userid);
 
         $groupid = null;
+        $isonlinetext = false;
 
         if (isset($linkarray['file'])) {
-            $itemid = $linkarray['file']->get_itemid();
-            $filename = $linkarray['file']->get_filename();
+            $content = $linkarray['file'];
+            $itemid = $content->get_itemid();
+            $filename = $content->get_filename();
         } else {
+            $isonlinetext = true;
+            $cm = get_coursemodule_from_id(null, $linkarray['cmid']);
 
-            $cm = get_coursemodule_from_id('assign', $linkarray['cmid']);
+            if (isset($linkarray['assignment'])) {
+                $assignmentid = $linkarray['assignment'];
+                $content = $linkarray['content'];
+                $itemid = null;
 
-            $assignmentid = $linkarray['assignment'];
-            $content = $linkarray['content'];
-            $itemid = null;
+                $sql = "SELECT s.id
+                        FROM {assign_submission} s
+                        JOIN {assignsubmission_onlinetext} sot ON sot.submission = s.id
+                        WHERE s.assignment = ?
+                        AND sot.onlinetext = ?
+                        LIMIT 1";
 
-            $sql = "SELECT s.id
-                    FROM {assign_submission} s
-                    JOIN {assignsubmission_onlinetext} sot ON sot.submission = s.id
-                    WHERE s.assignment = :assignmentid
-                    AND sot.onlinetext = :content
-                    LIMIT 1";
+                $params = [$assignmentid, $content];
 
-            $params = [
-                'assignmentid' => $assignmentid,
-                'content' => $content,
-            ];
+                $submission = $DB->get_record_sql($sql, $params);
 
-            $submission = $DB->get_record_sql($sql, $params);
+                if ($submission) {
+                    $itemid = $submission->id;
+                }
+                $filename = 'assign-' . $itemid . '.htm';
 
-            if ($submission) {
-                $itemid = $submission->id;
+                $submission = $DB->get_record('assign_submission', ['id' => $itemid]);
+
+                if ($submission && $submission->groupid != 0) {
+                    $userid = 0;
+                    $groupid = $submission->groupid;
+                }
+
+                $usergroupids = groups_get_user_groups($cm->course, $USER->id);
+
+                $userbelongstogroup = false;
+
+                foreach ($usergroupids as $grouptypeids) {
+                    if (in_array($groupid, $grouptypeids)) {
+                        $userbelongstogroup = true;
+                        break;
+                    }
+                }
             }
-            $filename = 'assign-' . $itemid . '.htm';
         }
 
-        $submission = $DB->get_record('assign_submission', ['id' => $itemid]);
-
-        if ($submission && $submission->groupid != 0) {
-            $userid = 0;
-            $groupid = $submission->groupid;
-        }
-
-        $usergroupids = groups_get_user_groups($cm->course, $USER->id);
-
-        $userbelongstogroup = false;
-
-        foreach ($usergroupids as $grouptypeids) {
-            if (in_array($groupid, $grouptypeids)) {
-                $userbelongstogroup = true;
-                break;
-            }
-        }
-
-        if ($USER->id == $userid || $userbelongstogroup) {
+        if ($USER->id == $userid || (isset($userbelongstogroup) && $userbelongstogroup)) {
 
             if ($isstudentanalyse) {
                 $canviewreport = true;
@@ -167,6 +161,7 @@ class document_frame {
         $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
             $linkarray['cmid'], $content, $userid, null, ['groupid' => $groupid]
         );
+
         if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
             $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
                 $linkarray['cmid'], $linkarray['cmp_filename'], $userid, null, ['groupid' => $groupid]);
@@ -174,7 +169,7 @@ class document_frame {
 
         if (empty($cmpfile)) { // Try to get record without userid in forums.
             $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
-                $linkarray['cmid'], $content);
+                $linkarray['cmid'], $content, $linkarray['userid']);
         }
 
         $url = null;
@@ -188,10 +183,12 @@ class document_frame {
                 }
 
                 // Handle online text submissions.
-                if (isset($linkarray['content'])) {
+                if ($isonlinetext) {
+                    $identifier = new identifier($linkarray['userid'], $linkarray['cmid']);
+
                     // Catch GET 'sendcontent'.
                     $trigger = optional_param('sendcontent', 0, PARAM_TEXT);
-                    $contentid = sha1($linkarray['content'] . $userid . $linkarray['cmid']);
+                    $contentid = $identifier->create_from_linkarray($linkarray);
 
                     if ($trigger === $contentid) {
                         $sql = 'SELECT assot.submission
@@ -208,7 +205,7 @@ class document_frame {
 
                     $urlparams = [
                         'id' => $linkarray['cmid'],
-                        'sendcontent' => sha1($linkarray['content'] . $userid . $linkarray['cmid']),
+                        'sendcontent' => $contentid,
                         'action' => 'grading',
                         'page' => optional_param('page', null, PARAM_INT),
                     ];

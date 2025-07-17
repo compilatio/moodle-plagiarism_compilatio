@@ -30,34 +30,71 @@ use lib\​filestorage\stored_file;
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 /**
- * identifier class
+ * Handle identifier generation.
  */
 class identifier {
 
-    public function create($linkarray): string {
-        return !empty($linkarray['content'])
-            ? $this->create_from_onlinetext($linkarray)
-            : $this->create_from_stored_file($linkarray);
+    public string $userid;
+
+    public string $cmid;
+
+    public function __construct($userid, $cmid)
+    {
+        if (!isset($userid) || !isset($cmid)) {
+
+            throw new \moodle_exception('No userid or cmid.');
+        }
+
+        $this->userid = (string) $userid;
+        $this->cmid = (string) $cmid;
     }
 
-    private function create_from_stored_file($linkarray): string {
-        /**
-         * @var stored_file $file The stored file object retrieved from the link array.
-         */
-        $file = $linkarray['file'];
-        $filestream = $file->get_content_file_handle();
+    public function create_from_linkarray($linkarray): string {
+        if (!is_array($linkarray)) {
+            throw new \moodle_exception('Linkarray is not an array.');
+        }
+
+        if (!empty($linkarray['content'])) {
+            return $this->create_from_string($linkarray['content']);
+        }
+
+        if (!empty($linkarray['file']) && $linkarray['file'] instanceof \stored_file) {
+            return $this->create_from_stored_file($linkarray['file']->get_content_file_handle());
+        }
+
+        throw new \moodle_exception('Linkarray is not online text or stored file.');
+    }
+
+    public function create_from_string($content): string {
+        return sha1($content . $this->userid . $this->cmid);
+    }
+
+    public function create_from_file($file): string {
+        if ($file instanceof \stored_file) {
+            return $this->create_from_stored_file($file->get_content_file_handle());
+        }
+
+        throw new \moodle_exception('File is not stored file.');
+    }
+
+    /**
+     * @param resource|false $filestream
+     * @return string
+     * 
+     */
+    private function create_from_stored_file(mixed $filestream): string {
+
+        if (false === $filestream) {
+            throw new \moodle_exception('Canno\'t get stored file content.');
+        }
+
         rewind($filestream);
 
         $hash = hash_init('sha1');
         hash_update_stream($hash, $filestream);
-        hash_update($hash, $linkarray['userid']);
-        hash_update($hash, $linkarray['cmid']);
+        hash_update($hash, $this->userid);
+        hash_update($hash, $this->cmid);
 
-        $identifier = hash_final($hash);
-        return $identifier;
-    }
-
-    private function create_from_onlinetext($linkarray): string {
-        return sha1($linkarray['content'] . $linkarray['userid'] . $linkarray['cmid']);
+        return hash_final($hash);
     }
 }
