@@ -157,8 +157,10 @@ class file {
             if ($file) {
                 $file->copy_content_to($filepath);
             } else {
+                $contentformat = $DB->get_field('assignsubmission_onlinetext', 'onlineformat', ['submission' => $submission->id]);
+
                 $handle = fopen($filepath, "wb");
-                fwrite($handle, $content);
+                fwrite($handle, content_to_text($content, $contentformat));
                 fclose($handle);
             }
 
