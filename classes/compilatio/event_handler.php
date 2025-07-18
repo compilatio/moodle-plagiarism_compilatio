@@ -342,6 +342,13 @@ class event_handler {
      */
     public static function submit_text($event) {
         global $DB;
+
+        $content = $event["other"]["content"];
+
+        if (trim($content) === "") {
+            return;
+        }
+
         $compilatiofile = new file();
         $cmid = $event["contextinstanceid"];
 
@@ -374,21 +381,19 @@ class event_handler {
         $objectid = $event["objectid"];
         $filename = "{$cm->modname}-{$objectid}.htm";
 
-        $content = $event["other"]["content"];
+        if ($event['objecttable'] == 'forum_posts') {
+            $filecontent = $DB->get_field('forum_posts', 'message', ['id' => $objectid]);
+        } else if ($event['objecttable'] == 'workshop_submissions') {
+            $filecontent = $DB->get_field('workshop_submissions', 'content', ['id' => $objectid]);
+        } else if ($event['objecttable'] == 'assign_submission') {
+            $filecontent = $event["other"]["content"];
+        }
+
         $groupid = null;
 
-        if ($event['objecttable'] == 'forum_posts') {
-            $identifier = sha1($DB->get_field('forum_posts', 'message', ['id' => $objectid]));
-
-        } else if ($event['objecttable'] == 'workshop_submissions') {
-            $identifier = sha1($DB->get_field('workshop_submissions', 'content', ['id' => $objectid]));
-
-        } else if ($event['objecttable'] == 'assign_submission') {
-            $identifier = sha1($DB->get_field('assignsubmission_onlinetext', 'onlinetext', ['submission' => $objectid]));
-        }
         $compifile = $compilatiofile->compilatio_get_document_with_failover(
                         $cmid,
-                        $identifier,
+                        $filecontent,
                         $userid,
                         null,
                         ['filename' => $filename, 'groupid' => $groupid]
@@ -397,14 +402,7 @@ class event_handler {
         if (!$compifile) {
             $duplicates = $DB->get_records('plagiarism_compilatio_files', ['filename' => $filename]);
             compilatio_delete_files($duplicates);
-
-            if (trim($content) != "") {
-                $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
-
-                if (str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) >= $nbmotsmin) {
-                    file::send_file($cmid, $userid, null, $filename, $content);
-                }
-            }
+            file::send_file($cmid, $userid, null, $filename, $content);
         }
     }
 
@@ -475,7 +473,7 @@ class event_handler {
         foreach ($mdlfiles as $file) {
             $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
                 $cmid,
-                $file->get_content(),
+                $file,
                 $userid,
                 null,
                 ['groupid' => $groupid]
@@ -572,7 +570,7 @@ class event_handler {
                     // Check for duplicate files.
                     $duplicate = $compilatiofile->compilatio_get_document_with_failover(
                         $cmid,
-                        $file->get_content(),
+                        $file,
                         $userid,
                         null,
                         [],

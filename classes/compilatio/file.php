@@ -30,6 +30,8 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 use plagiarism_compilatio\compilatio\analysis;
+use lib\​filestorage\stored_file;
+
 use plagiarism_compilatio\compilatio\api;
 
 /**
@@ -48,6 +50,11 @@ class file {
     private static $authors;
 
     /**
+     * @var string EMPTY_TEXT_HASH empty string hash.
+     */
+    const EMPTY_TEXT_HASH = 'da39a3ee5e6b4b0d3255bfef95601890afd80709';
+
+    /**
      * Send file to compilatio
      *
      * @param int    $cmid       Course module identifier
@@ -64,9 +71,17 @@ class file {
         $send = true;
 
         $cmpfile = new \stdClass();
+        $identifier = new identifier($userid, $cmid);
+
         $cmpfile->cm = $cmid;
         $cmpfile->userid = $userid;
         $cmpfile->timesubmitted = time();
+
+        if ($file) {
+            $cmpfile->identifier = $identifier->create_from_file($file);
+        } else {
+            $cmpfile->identifier = $identifier->create_from_string($content);
+        }
 
         $plugincm = compilatio_cm_use($cmid);
         $cmpfile->indexed = $plugincm->defaultindexing ?? true;
@@ -75,39 +90,33 @@ class file {
             $cmpfile->indexed = false;
         }
 
-        if (null === $file) {
-            $cmpfile->filename = $filename;
-            $cmpfile->identifier = $identifier ?? sha1($content . $userid . $cmid);
-
-        } else {
-            if (isset($file->onlinetext)) { // Online text.
-                $content = $file->onlinetext;
-                $cmpfile->filename = 'assign-' . $file->submission . '.htm';
-                $cmpfile->identifier = sha1($content . $userid . $cmid);
-
-            } else { // File.
-                $content = $file->get_content();
-                if (null === $filename) {
-                    $cmpfile->filename = $file->get_filename();
-                } else {
-                    $cmpfile->filename = $filename . "-" . $file->get_filename(); // Forum.
-                }
-                $cmpfile->identifier = sha1($content . $userid . $cmid);
-
-                if (!self::supported_file_type($cmpfile->filename)) {
-                    $cmpfile->status = "error_unsupported";
-                    $send = false;
-                }
-
-                if ((int) $file->get_filesize() > get_config('plagiarism_compilatio', 'max_size')) {
-                    $cmpfile->status = "error_too_large";
-                    $send = false;
-                }
+        if (!$file) { // Online text.
+            $submission = self::get_submission($cmid, $userid, $content, $filename);
+            if (null === $filename) {
+                $cmpfile->filename = 'assign-' . $submission->id . '.htm';
+            } else {
+                $cmpfile->filename = $filename;
             }
+        } else { // File.
+            if (null === $filename) {
+                $cmpfile->filename = $file->get_filename();
+            } else {
+                $cmpfile->filename = $filename . "-" . $file->get_filename(); // Forum.
+            }
+
+            if (!self::supported_file_type($cmpfile->filename)) {
+                $cmpfile->status = "error_unsupported";
+                $send = false;
+            }
+
+            if ((int) $file->get_filesize() > get_config('plagiarism_compilatio', 'max_size')) {
+                $cmpfile->status = "error_too_large";
+                $send = false;
+            }
+            $submission = self::get_submission($cmid, $userid, $file, $filename);
         }
 
         $groupid = null;
-        $submission = self::get_submission($cmid, $userid, $file, $filename, $content);
 
         if (isset($submission->groupid) && $submission->groupid !== '0') {
             $groupid = $submission->groupid;
@@ -120,14 +129,22 @@ class file {
         $compilatiofile = new file();
 
         if (!empty($compilatiofile->compilatio_get_document_with_failover(
-                $cmid,
-                $content,
-                $userid,
-                null,
-                ['groupid' => $groupid])
-                )
-            ) {
+           $cmid,
+           $file ?? $content,
+           $userid,
+           null,
+           ['groupid' => $groupid])
+           )
+        ) {
             return false;
+        }
+
+        $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
+
+        if ($content && str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) < $nbmotsmin) {
+            $cmpfile->status = 'error_too_short';
+            $cmpfile->id = $DB->insert_record('plagiarism_compilatio_files', $cmpfile);
+            return $cmpfile;
         }
 
         if ($send) {
@@ -136,9 +153,14 @@ class file {
             }
 
             $filepath = $CFG->dataroot . "/temp/compilatio/" . __FUNCTION__ . '_' . sha1(uniqid('', true)) . ".txt";
-            $handle = fopen($filepath, "wb");
-            fwrite($handle, $content);
-            fclose($handle);
+
+            if ($file) {
+                $file->copy_content_to($filepath);
+            } else {
+                $handle = fopen($filepath, "wb");
+                fwrite($handle, $content);
+                fclose($handle);
+            }
 
             $cmconfig = $DB->get_record("plagiarism_compilatio_cm_cfg", ["cmid" => $cmid]);
 
@@ -197,8 +219,11 @@ class file {
                         $file->submission :
                         $file->get_itemid()]
                     );
-
-            self::send_file($cmid, $userid, $file);
+            if ($file instanceof \stored_file) {
+                self::send_file($cmid, $userid, $file);
+            } else {
+                self::send_file($cmid, $userid, null, null, $file->onlinetext);
+            }
         }
     }
 
@@ -237,8 +262,6 @@ class file {
                     $questionid = substr(explode('.', $cmpfile->filename)[0], strpos($cmpfile->filename, "Q") + 1);
                     $attemptid = explode("-", $cmpfile->filename)[3];
 
-                    $identifier = sha1($cmpfile->filename . $cmpfile->userid . $cmpfile->cm);
-
                     $sql = "SELECT responsesummary
                         FROM {quiz_attempts} quiz
                         JOIN {question_attempts} qa ON quiz.uniqueid = qa.questionusageid
@@ -256,7 +279,6 @@ class file {
                     null,
                     $cmpfile->filename,
                     $content,
-                    $identifier ?? null
                 );
             }
         } else { // File.
@@ -268,7 +290,7 @@ class file {
             $allfiles = $DB->get_records_sql("SELECT * FROM {files}
                 where contextid = ?
                     AND component = 'assignsubmission_file'
-                    AND contenthash != 'da39a3ee5e6b4b0d3255bfef95601890afd80709'",
+                    AND contenthash != '" . self::EMPTY_TEXT_HASH . "'",
                 ['contextid' => $contextid]);
             $matchedfiles = [];
 
@@ -278,11 +300,11 @@ class file {
                     continue;
                 }
 
+                $identifier = new identifier($cmpfile->userid, $cmpfile->cm);
+
                 $identifiers = [
-                    sha1($storedfile->get_content() . $cmpfile->userid . $cmpfile->cm),
-                    sha1($storedfile->get_content() . 0 . $cmpfile->cm),
-                    sha1($storedfile->get_content()),
-                    $file->contenthash,
+                    $identifier->create_from_file($storedfile),
+                    $storedfile->get_contenthash(),
                 ];
 
                 if (in_array($cmpfile->identifier, $identifiers)) {
@@ -300,7 +322,7 @@ class file {
                         AND (sub.userid = ? OR sub.groupid IN (
                             SELECT groupid FROM {groups_members} WHERE userid = ?
                         ))
-                        AND f.contenthash != 'da39a3ee5e6b4b0d3255bfef95601890afd80709'";
+                        AND f.contenthash != '" . self::EMPTY_TEXT_HASH . "'";
 
                 $matchedfiles = $DB->get_records_sql($sql, [
                     $contextid,
@@ -316,7 +338,7 @@ class file {
                         WHERE contextid = ?
                         AND component = 'assignsubmission_file'
                         AND filename = ?
-                        AND contenthash != 'da39a3ee5e6b4b0d3255bfef95601890afd80709'";
+                        AND contenthash != '" . self::EMPTY_TEXT_HASH . "'";
 
                 $matchedfiles = $DB->get_records_sql($sql, [$contextid, $cmpfile->filename]);
             }
@@ -449,7 +471,6 @@ class file {
             $multiple = false
         ) {
         global $DB;
-
         $params = ['cm' => $cmid];
 
         if ($status !== null) {
@@ -459,13 +480,17 @@ class file {
         if (isset($additionalparams['groupid'])) {
             $params['groupid'] = $additionalparams['groupid'];
             $params['userid'] = 0;
-            $identifier = sha1($content . 0 . $cmid);
         } else {
             $params['userid'] = $userid;
-            $identifier = sha1($content . $userid . $cmid);
         }
 
-        $params['identifier'] = $identifier;
+        $identifier = new identifier($userid, $cmid);
+
+        if ($content instanceof \stored_file) {
+            $params['identifier'] = $identifier->create_from_file($content);
+        } else {
+            $params['identifier'] = $identifier->create_from_string($content);
+        }
 
         if (!empty($additionalparams)) {
             $filteredparams = array_diff_key($additionalparams, ['groupid' => '']);
@@ -474,9 +499,8 @@ class file {
 
         if ($multiple) {
             $documents = $DB->get_records('plagiarism_compilatio_files', $params);
-
             if (empty($documents)) {
-                $params['identifier'] = sha1($content);
+                $params['identifier'] = $content instanceof \stored_file ? $content->get_contenthash() : sha1($content);
                 $documents = $DB->get_records('plagiarism_compilatio_files', $params);
             }
 
@@ -485,7 +509,8 @@ class file {
             $document = $DB->get_record('plagiarism_compilatio_files', $params);
 
             if (!$document) {
-                $params['identifier'] = sha1($content);
+
+                $params['identifier'] = $content instanceof \stored_file ? $content->get_contenthash() : sha1($content);
                 $document = $DB->get_record('plagiarism_compilatio_files', $params);
             }
 
@@ -498,12 +523,11 @@ class file {
      *
      * @param int $cmid Course module ID
      * @param int $userid User ID
-     * @param object $file File object
+     * @param object $content Storedfile or onlinetext object
      * @param string $filename Filename
-     * @param string $content Text content
      * @return object|null Submission record or null if not found
      */
-    private static function get_submission($cmid, $userid, $file, $filename, $content) {
+    private static function get_submission($cmid, $userid, $content, $filename) {
         global $DB;
 
         $cm = get_coursemodule_from_id('assign', $cmid);
@@ -517,26 +541,30 @@ class file {
         }
 
         $submission = null;
+        $onlinetext = true;
 
         // Search by id.
-        if ($file !== null && method_exists($file, 'get_id') && !empty($file->get_id())) {
-            $filerecord = $DB->get_record('files', ['id' => $file->get_id()]);
+        if ($content instanceof \stored_file && !empty($content->get_id())) {
+            $onlinetext = false;
+            $filerecord = $DB->get_record('files', ['id' => $content->get_id()]);
             if ($filerecord) {
                 $submission = $DB->get_record('assign_submission', ['id' => $filerecord->itemid]);
             }
         }
 
         // Search for onlinetext.
-        if (!$submission && $file !== null && isset($file->onlinetext)) {
+        if (!$submission && $onlinetext) {
             // Search by SHA1.
-            $contentidentifier = sha1($file->onlinetext);
+
+            // Here $content is a string.
+            $contentidentifier = sha1($content);
 
             $sql = "SELECT ass.*, assot.onlinetext
                     FROM {assign_submission} ass
                     JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
-                    WHERE ass.assignment = :assignmentid";
+                    WHERE ass.assignment = ?";
 
-            $submissions = $DB->get_records_sql($sql, ['assignmentid' => $assignment->id]);
+            $submissions = $DB->get_records_sql($sql, [$assignment->id]);
 
             foreach ($submissions as $sub) {
                 $subidentifier = sha1($sub->onlinetext);
@@ -548,7 +576,7 @@ class file {
         }
 
         // Search by content.
-        if (!$submission && !empty($content)) {
+        if (!$submission) {
             // Extract submission ID from filename.
             if (!empty($filename) && preg_match('/^assign-(\d+)\.htm$/', $filename, $matches)) {
                 $submissionid = $matches[1];
@@ -579,7 +607,7 @@ class file {
 
                 // Search by content hash.
                 if (!$submission) {
-                    $contentidentifier = sha1($content);
+                    $contentidentifier = $content ? sha1($content) : $content->get_contenthash();
 
                     $sql = "SELECT ass.id, ass.groupid, ass.userid, assot.onlinetext
                             FROM {assign_submission} ass
