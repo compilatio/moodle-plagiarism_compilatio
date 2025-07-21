@@ -28,14 +28,14 @@ namespace plagiarism_compilatio\compilatio;
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/submission.php');
 
-use plagiarism_compilatio\compilatio\analysis;
+use plagiarism_compilatio\compilatio\submission;
 use lib\​filestorage\stored_file;
-
 use plagiarism_compilatio\compilatio\api;
 
 /**
- * file class
+ * Compilatio file class
  */
 class file {
 
@@ -90,8 +90,10 @@ class file {
             $cmpfile->indexed = false;
         }
 
+         $submissionretreiver = new submission($DB);
+
         if (!$file) { // Online text.
-            $submission = self::get_submission($cmid, $userid, $content, $filename);
+            $submission = $submissionretreiver->get($cmid, $content, $userid, $filename);
             if (null === $filename) {
                 $cmpfile->filename = 'assign-' . $submission->id . '.htm';
             } else {
@@ -113,7 +115,7 @@ class file {
                 $cmpfile->status = "error_too_large";
                 $send = false;
             }
-            $submission = self::get_submission($cmid, $userid, $file, $filename);
+                $submission = $submissionretreiver->get($cmid, $file, $userid, $filename);
         }
 
         $groupid = null;
@@ -157,10 +159,38 @@ class file {
             if ($file) {
                 $file->copy_content_to($filepath);
             } else {
-                $contentformat = $DB->get_field('assignsubmission_onlinetext', 'onlineformat', ['submission' => $submission->id]);
+                $cm = get_coursemodule_from_id(null, $cmid);
+                switch ($cm->modname) {
+                    case 'assign':
+                        $contentformat = $DB->get_field(
+                            'assignsubmission_onlinetext',
+                            'onlineformat',
+                            ['submission' => $submission->id]
+                        );
+                        break;
+                    case 'forum':
+                        $contentformat = $DB->get_field(
+                            'forum_posts',
+                            'messageformat',
+                            ['id' => $submission->id]
+                        );
+                        break;
+                    case 'workshop':
+                        $contentformat = $DB->get_field(
+                            'workshop_submissions',
+                            'contentformat',
+                            ['id' => $submission->id]
+                        );
+                        break;
+                    default:
+                        $contentformat = null;
+                        break;
+                }
+
+                $content = $contentformat !== null ? content_to_text($content, $contentformat) : $content;
 
                 $handle = fopen($filepath, "wb");
-                fwrite($handle, content_to_text($content, $contentformat));
+                fwrite($handle, $content);
                 fclose($handle);
             }
 
@@ -502,7 +532,7 @@ class file {
         if ($multiple) {
             $documents = $DB->get_records('plagiarism_compilatio_files', $params);
             if (empty($documents)) {
-                $params['identifier'] = $content instanceof \stored_file ? $content->get_contenthash() : sha1($content);
+                $params['identifier'] = $content instanceof \stored_file ? $content->get_contenthash() : sha1($content ?? '');
                 $documents = $DB->get_records('plagiarism_compilatio_files', $params);
             }
 
@@ -512,124 +542,11 @@ class file {
 
             if (!$document) {
 
-                $params['identifier'] = $content instanceof \stored_file ? $content->get_contenthash() : sha1($content);
+                $params['identifier'] = $content instanceof \stored_file ? $content->get_contenthash() : sha1($content ?? '');
                 $document = $DB->get_record('plagiarism_compilatio_files', $params);
             }
 
             return $document;
         }
-    }
-
-    /**
-     * Get submission record based on various criteria
-     *
-     * @param int $cmid Course module ID
-     * @param int $userid User ID
-     * @param object $content Storedfile or onlinetext object
-     * @param string $filename Filename
-     * @return object|null Submission record or null if not found
-     */
-    private static function get_submission($cmid, $userid, $content, $filename) {
-        global $DB;
-
-        $cm = get_coursemodule_from_id('assign', $cmid);
-        if (!$cm) {
-            return null;
-        }
-
-        $assignment = $DB->get_record('assign', ['id' => $cm->instance]);
-        if (!$assignment) {
-            return null;
-        }
-
-        $submission = null;
-        $onlinetext = true;
-
-        // Search by id.
-        if ($content instanceof \stored_file && !empty($content->get_id())) {
-            $onlinetext = false;
-            $filerecord = $DB->get_record('files', ['id' => $content->get_id()]);
-            if ($filerecord) {
-                $submission = $DB->get_record('assign_submission', ['id' => $filerecord->itemid]);
-            }
-        }
-
-        // Search for onlinetext.
-        if (!$submission && $onlinetext) {
-            // Search by SHA1.
-
-            // Here $content is a string.
-            $contentidentifier = sha1($content);
-
-            $sql = "SELECT ass.*, assot.onlinetext
-                    FROM {assign_submission} ass
-                    JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
-                    WHERE ass.assignment = ?";
-
-            $submissions = $DB->get_records_sql($sql, [$assignment->id]);
-
-            foreach ($submissions as $sub) {
-                $subidentifier = sha1($sub->onlinetext);
-                if ($subidentifier === $contentidentifier) {
-                    $submission = $sub;
-                    break;
-                }
-            }
-        }
-
-        // Search by content.
-        if (!$submission) {
-            // Extract submission ID from filename.
-            if (!empty($filename) && preg_match('/^assign-(\d+)\.htm$/', $filename, $matches)) {
-                $submissionid = $matches[1];
-                $submission = $DB->get_record('assign_submission', ['id' => $submissionid]);
-            }
-
-            if (!$submission) {
-                // Individual submission.
-                $submission = $DB->get_record_sql(
-                    "SELECT ass.*
-                     FROM {assign_submission} ass
-                     JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
-                     WHERE ass.assignment = ? AND ass.userid = ?",
-                    [$assignment->id, $userid]
-                );
-
-                // Group submission where user is member.
-                if (!$submission) {
-                    $submission = $DB->get_record_sql(
-                        "SELECT ass.*
-                         FROM {assign_submission} ass
-                         JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
-                         JOIN {groups_members} gm ON gm.groupid = ass.groupid
-                         WHERE ass.assignment = ? AND gm.userid = ? AND ass.groupid != 0",
-                        [$assignment->id, $userid]
-                    );
-                }
-
-                // Search by content hash.
-                if (!$submission) {
-                    $contentidentifier = $content ? sha1($content) : $content->get_contenthash();
-
-                    $sql = "SELECT ass.id, ass.groupid, ass.userid, assot.onlinetext
-                            FROM {assign_submission} ass
-                            JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
-                            WHERE ass.assignment = ?";
-
-                    $submissions = $DB->get_records_sql($sql, [$assignment->id]);
-
-                    foreach ($submissions as $sub) {
-                        $subidentifier = sha1($sub->onlinetext);
-
-                        if ($subidentifier === $contentidentifier) {
-                            $submission = $sub;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        return $submission;
     }
 }
