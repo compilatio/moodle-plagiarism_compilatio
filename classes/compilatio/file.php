@@ -162,13 +162,25 @@ class file {
                 $cm = get_coursemodule_from_id(null, $cmid);
                 switch ($cm->modname) {
                     case 'assign':
-                        $contentformat = $DB->get_field('assignsubmission_onlinetext', 'onlineformat', ['submission' => $submission->id]);
+                        $contentformat = $DB->get_field(
+                            'assignsubmission_onlinetext',
+                            'onlineformat',
+                            ['submission' => $submission->id]
+                        );
                         break;
                     case 'forum':
-                        $contentformat = $DB->get_field('forum_posts', 'format', ['id' => $submission->id]);
+                        $contentformat = $DB->get_field(
+                            'forum_posts',
+                            'messageformat',
+                            ['id' => $submission->id]
+                        );
                         break;
                     case 'workshop':
-                        $contentformat = $DB->get_field('workshop_submissions', 'contentformat', ['id' => $submission->id]);
+                        $contentformat = $DB->get_field(
+                            'workshop_submissions',
+                            'contentformat',
+                            ['id' => $submission->id]
+                        );
                         break;
                     default:
                         $contentformat = null;

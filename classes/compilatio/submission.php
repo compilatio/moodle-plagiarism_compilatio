@@ -32,18 +32,28 @@ use lib\​filestorage\stored_file;
  */
 class submission {
 
-    public mixed $DB;
+    /**
+     * @var \moodle_database $moodledatabase represente Moodle global $DB
+     */
+    public \moodle_database $moodledatabase;
 
-    public function __construct($DB) {
-        $this->DB = $DB;
+    /**
+     * Class constructor
+     * @param  \moodle_database $moodledatabase represente Moodle global $DB.
+     */
+    public function __construct($moodledatabase) {
+        $this->moodledatabase = $moodledatabase;
     }
 
-     /**
+    /**
      * Get submission records
      *
      * @param int $cmid Course module ID
      * @param object $content Storedfile or onlinetext object
-     * @return object|null Submission record or null if not found
+     * @param string $userid Userid of the author of the document
+     * @param string $filename Filename of the document
+     *
+     * @return object Submission record or throw exception
      */
     public function get($cmid, $content, $userid, $filename) {
 
@@ -52,7 +62,7 @@ class submission {
             throw new moodle_exception("Course module not found");
         }
 
-        $moduleinstance = $this->DB->get_record($cm->modname, ['id' => $cm->instance]);
+        $moduleinstance = $this->moodledatabase->get_record($cm->modname, ['id' => $cm->instance]);
         if (!$moduleinstance) {
             throw new moodle_exception("moduleinstance not found");
         }
@@ -69,6 +79,16 @@ class submission {
         }
     }
 
+    /**
+     * Get submission records from an assignment
+     *
+     * @param object|string $content Storedfile object or onlinetext
+     * @param object $moduleinstance Module instance
+     * @param string $userid Userid of the author of the document
+     * @param string $filename Filename of the document
+     *
+     * @return object|null Submission record or null if not found
+     */
     private function get_from_assignment($content, $moduleinstance, $userid, $filename) {
         $submission = null;
         $onlinetext = true;
@@ -93,7 +113,7 @@ class submission {
 
             if (!$submission) {
                 // Individual submission.
-                $submission = $this->DB->get_record_sql(
+                $submission = $this->moodledatabase->get_record_sql(
                     "SELECT ass.*
                         FROM {assign_submission} ass
                         JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
@@ -103,7 +123,7 @@ class submission {
 
                 // Group submission where user is member.
                 if (!$submission) {
-                    $submission = $this->DB->get_record_sql(
+                    $submission = $this->moodledatabase->get_record_sql(
                         "SELECT ass.*
                             FROM {assign_submission} ass
                             JOIN {assignsubmission_onlinetext} assot ON assot.submission = ass.id
@@ -121,6 +141,16 @@ class submission {
         return $submission;
     }
 
+    /**
+     * Get submission records from a workshop
+     *
+     * @param object|string $content Storedfile object or onlinetext
+     * @param object $moduleinstance Module instance
+     * @param string $userid Userid of the author of the document
+     * @param string $filename Filename of the document
+     *
+     * @return object|null Submission record or null if not found
+     */
     private function get_from_workshop($content, $moduleinstance, $userid, $filename) {
         $submission = null;
         $onlinetext = true;
@@ -128,12 +158,17 @@ class submission {
         // Search by id for files.
         if (is_object($content) && $content instanceof \stored_file && !empty($content->get_id())) {
             $onlinetext = false;
- $onlinetext = false;
-            $submission = $this->get_by_id($content, 'workshop_submissions');        }
+            $submission = $this->get_by_id($content, 'workshop_submissions');
+        }
 
         // Search for onlinetext.
         if (!$submission && $onlinetext && $content && is_string($content)) {
-            $submission = $this->get_by_content($content, $moduleinstance,  "SELECT * FROM {workshop_submissions} WHERE workshopid = ?", 'content');
+            $submission = $this->get_by_content(
+                $content,
+                $moduleinstance,
+                "SELECT * FROM {workshop_submissions} WHERE workshopid = ?",
+                'content'
+            );
         }
 
         // Search by content using fallback methods.
@@ -142,9 +177,9 @@ class submission {
 
             if (!$submission) {
                 // Individual submission.
-                $submission = $this->DB->get_record('workshop_submissions', [
+                $submission = $this->moodledatabase->get_record('workshop_submissions', [
                     'workshopid' => $moduleinstance->id,
-                    'authorid' => $userid
+                    'authorid' => $userid,
                 ]);
             }
 
@@ -156,6 +191,16 @@ class submission {
         return $submission;
     }
 
+    /**
+     * Get submission records from a forum
+     *
+     * @param object|string $content Storedfile object or onlinetext
+     * @param object $moduleinstance Module instance
+     * @param string $userid Userid of the author of the document
+     * @param string $filename Filename of the document
+     *
+     * @return object|null Submission record or null if not found
+     */
     private function get_from_forum($content, $moduleinstance, $userid, $filename) {
         $submission = null;
         $onlinetext = true;
@@ -185,7 +230,7 @@ class submission {
                         JOIN {forum_discussions} fd ON fp.discussion = fd.id
                         WHERE fd.forum = ? AND fp.userid = ?
                         ORDER BY fp.created DESC";
-                $posts = $this->DB->get_records_sql($sql, [$moduleinstance->id, $userid], 0, 1);
+                $posts = $this->moodledatabase->get_records_sql($sql, [$moduleinstance->id, $userid], 0, 1);
                 if (!empty($posts)) {
                     $submission = reset($posts);
                 }
@@ -198,19 +243,37 @@ class submission {
         return $submission;
     }
 
+    /**
+     * Get submission records by its identifier
+     *
+     * @param object $content Storedfile object
+     * @param string $table table where to find the submission
+     *
+     * @return object|null Submission record or null if not found
+     */
     private function get_by_id($content, $table) {
-        $filerecord = $this->DB->get_record('files', ['id' => $content->get_id()]);
+        $filerecord = $this->moodledatabase->get_record('files', ['id' => $content->get_id()]);
         if ($filerecord) {
-            $submission = $this->DB->get_record($table, ['id' => $filerecord->itemid]);
+            $submission = $this->moodledatabase->get_record($table, ['id' => $filerecord->itemid]);
             return $submission === false ? null : $submission;
         }
         return null;
     }
 
+    /**
+     * Get submission records by its content
+     *
+     * @param string $content Document content
+     * @param object $moduleinstance Module instance
+     * @param string $sql SQL query
+     * @param string $text Key of the text property in the submission
+     *
+     * @return object|null Submission record or null if not found
+     */
     private function get_by_content($content, $moduleinstance, $sql, $text) {
         $contentidentifier = sha1($content);
 
-        $submissions = $this->DB->get_records_sql($sql, [$moduleinstance->id]);
+        $submissions = $this->moodledatabase->get_records_sql($sql, [$moduleinstance->id]);
         foreach ($submissions as $sub) {
             $subidentifier = sha1($sub->$text);
             if ($subidentifier === $contentidentifier) {
@@ -220,10 +283,18 @@ class submission {
         return null;
     }
 
+    /**
+     * Get submission records by its filename
+     *
+     * @param string $filename Filename of the Document
+     * @param string $table table where to find the submission
+     *
+     * @return object|null Submission record or null if not found
+     */
     private function get_by_filename($filename, $table) {
         // Extract submission ID from filename based on the table type.
         $pattern = '';
-        
+
         switch ($table) {
             case 'assign_submission':
                 $pattern = '/^assign-(\d+)\.htm$/';
@@ -240,7 +311,7 @@ class submission {
 
         if (!empty($filename) && preg_match($pattern, $filename, $matches)) {
             $submissionid = $matches[1];
-            $submission = $this->DB->get_record($table, ['id' => $submissionid]);
+            $submission = $this->moodledatabase->get_record($table, ['id' => $submissionid]);
             return $submission === false ? null : $submission;
         }
         return null;

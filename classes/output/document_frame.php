@@ -46,22 +46,27 @@ class document_frame {
         if (!empty($linkarray['component']) && $linkarray['component'] == 'qtype_essay') {
             $linkarray = self::manage_quiz($linkarray);
         }
+
+        global $DB, $CFG, $PAGE, $USER;
+        $output = '';
+
         // Check if Compilatio is enabled in moodle->module->cm.
         if (!isset($linkarray['cmid']) || !compilatio_enabled($linkarray['cmid'])) {
-            return '';
+            return $output;
         }
 
         // Get Compilatio's module configuration.
         $plugincm = compilatio_cm_use($linkarray['cmid']);
-
-        global $DB, $CFG, $PAGE, $USER;
-        $output = '';
 
         // DOM Compilatio index for ajax callback.
         static $domid = 0;
         $domid++;
 
         $cm = get_coursemodule_from_id(null, $linkarray['cmid']);
+
+        if (!$cm) {
+            return $output;
+        }
 
         // Get submitter userid.
         $userid = $linkarray['userid']; // In Workshops and forums.
@@ -115,16 +120,15 @@ class document_frame {
                 if ($submission && $submission->groupid != 0) {
                     $userid = 0;
                     $groupid = $submission->groupid;
-                }
 
-                $usergroupids = groups_get_user_groups($cm->course, $USER->id);
+                    $usergroupids = groups_get_user_groups($cm->course, $USER->id);
+                    $userbelongstogroup = false;
 
-                $userbelongstogroup = false;
-
-                foreach ($usergroupids as $grouptypeids) {
-                    if (in_array($groupid, $grouptypeids)) {
-                        $userbelongstogroup = true;
-                        break;
+                    foreach ($usergroupids as $grouptypeids) {
+                        if (in_array($groupid, $grouptypeids)) {
+                            $userbelongstogroup = true;
+                            break;
+                        }
                     }
                 }
             }
