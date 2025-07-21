@@ -88,11 +88,10 @@ class document_frame {
             $filename = $content->get_filename();
         } else {
             $isonlinetext = true;
-            $cm = get_coursemodule_from_id(null, $linkarray['cmid']);
+            $content = $linkarray['content'];
 
             if (isset($linkarray['assignment'])) {
                 $assignmentid = $linkarray['assignment'];
-                $content = $linkarray['content'];
                 $itemid = null;
 
                 $sql = "SELECT s.id
