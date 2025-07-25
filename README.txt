@@ -1,4 +1,4 @@
-Compilatio.net Plagiarism plugin for Moodle 4.0, 4.1, 4.2, 4.3, 4.4, 4.5
+Compilatio.net Plagiarism plugin for Moodle 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 5.0
 
 Author: Compilatio <support@compilatio.net>
 Copyright 2023 Compilatio.net https://www.compilatio.net
@@ -7,6 +7,8 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+3.2.8
+
 3.2.7
 - [Fix] Fix error 500 (memory limit at identifier generation)
 - [Fix] Fix passing null parameter to groups_get_user_groups
