@@ -105,6 +105,10 @@ class api {
             $readonly = $response->data->user->current_api_key->read_only ?? false;
             set_config('read_only_apikey', (int) $readonly, 'plagiarism_compilatio');
 
+            if (!isset($response->data->user->managed_bundle->name)) {
+                return 'Forbidden';
+            }
+
             $recipe = $response->data->user->managed_bundle->name === 'magister-premium' ? 'anasim-premium' : 'anasim';
         }
 
