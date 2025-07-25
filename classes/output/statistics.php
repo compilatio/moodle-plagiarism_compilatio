@@ -373,7 +373,7 @@ class statistics {
             foreach ($files as $file) {
                 $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
                     $cmid,
-                    $file->get_content(),
+                    $file,
                     $studentid
                 );
 

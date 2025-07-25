@@ -213,11 +213,10 @@ function compilatio_get_unsent_documents($cmid) {
             $files = $fs->get_area_files($fileid->contextid, 'assignsubmission_file', 'submission_files', $fileid->itemid);
             foreach ($files as $file) {
                 if ($file->get_filename() != '.') {
-
                     $countfiles = count(
                         $compilatiofile->compilatio_get_document_with_failover(
                             $cmid,
-                            $file->get_content(),
+                            $file,
                             0,
                             null,
                             ['groupid' => $fileid->groupid],
@@ -246,6 +245,7 @@ function compilatio_get_unsent_documents($cmid) {
                     AND assot.onlinetext != ''";
 
         $onlineassignments = $DB->get_records_sql($sql, [$cmid]);
+
         foreach ($onlineassignments as $onlineassignment) {
             $countfiles = count($compilatiofile->compilatio_get_document_with_failover(
                 $cmid,
@@ -257,7 +257,6 @@ function compilatio_get_unsent_documents($cmid) {
             ));
 
             if ($countfiles === 0) {
-
                 array_push($notuploadedfiles, $onlineassignment);
             }
         }
@@ -287,7 +286,7 @@ function compilatio_get_unsent_documents($cmid) {
                     $countfiles = count(
                         $compilatiofile->compilatio_get_document_with_failover(
                             $cmid,
-                            $file->get_content(),
+                            $file,
                             $userid,
                             null,
                             null,

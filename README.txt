@@ -7,6 +7,11 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+3.2.7
+- [Fix] Fix error 500 (memory limit at identifier generation)
+- [Fix] Fix passing null parameter to groups_get_user_groups
+- Format onlinetext before sending it to Compilatio for better analysis
+
 3.2.6
 - [Fix] Fix identifier generation
 - [Fix] Fix relaunch of documents in error by changing way to retreive documents
