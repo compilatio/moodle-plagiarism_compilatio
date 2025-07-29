@@ -8,6 +8,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 3.2.8
+- [Fix] Document frame doesn't display in quiz
 
 3.2.7
 - [Fix] Fix error 500 (memory limit at identifier generation)
