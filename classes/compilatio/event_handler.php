@@ -568,7 +568,7 @@ class event_handler {
                 foreach ($files as $file) {
 
                     // Check for duplicate files.
-                    $duplicate = $compilatiofile->compilatio_get_document_with_failover(
+                    $duplicates = $compilatiofile->compilatio_get_document_with_failover(
                         $cmid,
                         $file,
                         $userid,

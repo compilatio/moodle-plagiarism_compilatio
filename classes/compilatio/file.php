@@ -28,10 +28,9 @@ namespace plagiarism_compilatio\compilatio;
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/submission.php');
 
 use plagiarism_compilatio\compilatio\submission;
-use lib\​filestorage\stored_file;
+use stored_file;
 use plagiarism_compilatio\compilatio\api;
 
 /**
@@ -89,43 +88,44 @@ class file {
         if (compilatio_student_analysis($plugincm->studentanalyses, $cmid, $userid)) {
             $cmpfile->indexed = false;
         }
+        $cm = get_coursemodule_from_id(null, $cmid);
+        $groupid = null;
 
-         $submissionretreiver = new submission($DB);
+        if ($cm->modname != 'quiz') {
+            $submissionretreiver = new submission($DB);
 
-        if (!$file) { // Online text.
-            $submission = $submissionretreiver->get($cmid, $content, $userid, $filename);
-            if (null === $filename) {
-                $cmpfile->filename = 'assign-' . $submission->id . '.htm';
+            if (!$file) { // Online text.
+                $submission = $submissionretreiver->get($cmid, $content, $userid, $filename);
+                if (null === $filename) {
+                    $cmpfile->filename = 'assign-' . $submission->id . '.htm';
+                } else {
+                    $cmpfile->filename = $filename;
+                }
+            } else { // File.
+                if (null === $filename) {
+                    $cmpfile->filename = $file->get_filename();
+                } else {
+                    $cmpfile->filename = $filename . "-" . $file->get_filename(); // Forum.
+                }
+
+                $send = self::checkfilevalid($cmpfile, $file) ? true : false;
+
+                $submission = $submissionretreiver->get($cmid, $file, $userid, $filename);
+            }
+
+            if (isset($submission->groupid) && $submission->groupid !== '0') {
+                $groupid = $submission->groupid;
+                $cmpfile->userid = $userid = 0;
+            }
+
+            $cmpfile->groupid = $groupid;
+        } else {
+            if (null === $filename && $file instanceof stored_file) {
+                $cmpfile->filename = $file->get_filename();
             } else {
                 $cmpfile->filename = $filename;
             }
-        } else { // File.
-            if (null === $filename) {
-                $cmpfile->filename = $file->get_filename();
-            } else {
-                $cmpfile->filename = $filename . "-" . $file->get_filename(); // Forum.
-            }
-
-            if (!self::supported_file_type($cmpfile->filename)) {
-                $cmpfile->status = "error_unsupported";
-                $send = false;
-            }
-
-            if ((int) $file->get_filesize() > get_config('plagiarism_compilatio', 'max_size')) {
-                $cmpfile->status = "error_too_large";
-                $send = false;
-            }
-                $submission = $submissionretreiver->get($cmid, $file, $userid, $filename);
         }
-
-        $groupid = null;
-
-        if (isset($submission->groupid) && $submission->groupid !== '0') {
-            $groupid = $submission->groupid;
-            $cmpfile->userid = $userid = 0;
-        }
-
-        $cmpfile->groupid = $groupid;
 
         // Check if file has already been sent.
         $compilatiofile = new file();
@@ -159,7 +159,6 @@ class file {
             if ($file) {
                 $file->copy_content_to($filepath);
             } else {
-                $cm = get_coursemodule_from_id(null, $cmid);
                 switch ($cm->modname) {
                     case 'assign':
                         $contentformat = $DB->get_field(
@@ -251,7 +250,7 @@ class file {
                         $file->submission :
                         $file->get_itemid()]
                     );
-            if ($file instanceof \stored_file) {
+            if ($file instanceof stored_file) {
                 self::send_file($cmid, $userid, $file);
             } else {
                 self::send_file($cmid, $userid, null, null, $file->onlinetext);
@@ -518,7 +517,7 @@ class file {
 
         $identifier = new identifier($userid, $cmid);
 
-        if ($content instanceof \stored_file) {
+        if ($content instanceof stored_file) {
             $params['identifier'] = $identifier->create_from_file($content);
         } else {
             $params['identifier'] = $identifier->create_from_string($content);
@@ -532,7 +531,7 @@ class file {
         if ($multiple) {
             $documents = $DB->get_records('plagiarism_compilatio_files', $params);
             if (empty($documents)) {
-                $params['identifier'] = $content instanceof \stored_file ? $content->get_contenthash() : sha1($content ?? '');
+                $params['identifier'] = $content instanceof stored_file ? $content->get_contenthash() : sha1($content ?? '');
                 $documents = $DB->get_records('plagiarism_compilatio_files', $params);
             }
 
@@ -542,11 +541,32 @@ class file {
 
             if (!$document) {
 
-                $params['identifier'] = $content instanceof \stored_file ? $content->get_contenthash() : sha1($content ?? '');
+                $params['identifier'] = $content instanceof stored_file ? $content->get_contenthash() : sha1($content ?? '');
                 $document = $DB->get_record('plagiarism_compilatio_files', $params);
             }
 
             return $document;
         }
+    }
+
+    /**
+     * Check if the file is valid before sending to Compilatio
+     *
+     * @param $cmpfile Compilatio File
+     * @param stored_file $file File
+     * @return bool True if valid, false if not
+     */
+    private static function checkfilevalid($cmpfile, $file): bool {
+        if (!self::supported_file_type($cmpfile->filename)) {
+            $cmpfile->status = "error_unsupported";
+            return false;
+        }
+
+        if ((int) $file->get_filesize() > get_config('plagiarism_compilatio', 'max_size')) {
+            $cmpfile->status = "error_too_large";
+            return false;
+        }
+
+        return true;
     }
 }

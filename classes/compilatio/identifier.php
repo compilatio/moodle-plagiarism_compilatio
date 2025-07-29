@@ -25,7 +25,8 @@
 
 namespace plagiarism_compilatio\compilatio;
 
-use lib\​filestorage\stored_file;
+use stored_file;
+use moodle_exception;
 
 /**
  * Handle identifier generation.
@@ -50,7 +51,7 @@ class identifier {
     public function __construct($userid, $cmid) {
         if (!isset($userid) || !isset($cmid)) {
 
-            throw new \moodle_exception('No userid or cmid.');
+            throw new moodle_exception('No userid or cmid.');
         }
 
         $this->userid = (string) $userid;
@@ -65,18 +66,18 @@ class identifier {
      */
     public function create_from_linkarray($linkarray): string {
         if (!is_array($linkarray)) {
-            throw new \moodle_exception('Linkarray is not an array.');
+            throw new moodle_exception('Linkarray is not an array.');
         }
 
         if (!empty($linkarray['content'])) {
             return $this->create_from_string($linkarray['content']);
         }
 
-        if (!empty($linkarray['file']) && $linkarray['file'] instanceof \stored_file) {
+        if (!empty($linkarray['file']) && $linkarray['file'] instanceof stored_file) {
             return $this->create_from_stored_file($linkarray['file']->get_content_file_handle());
         }
 
-        throw new \moodle_exception('Linkarray is not online text or stored file.');
+        throw new moodle_exception('Linkarray is not online text or stored file.');
     }
 
     /**
@@ -96,11 +97,11 @@ class identifier {
      * @return string $identifier Generated identifier
      */
     public function create_from_file($file): string {
-        if ($file instanceof \stored_file) {
+        if ($file instanceof stored_file) {
             return $this->create_from_stored_file($file->get_content_file_handle());
         }
 
-        throw new \moodle_exception('File is not stored file.');
+        throw new moodle_exception('File is not stored file.');
     }
 
     /**
@@ -109,10 +110,10 @@ class identifier {
      *
      * @return string
      */
-    private function create_from_stored_file(mixed $filestream): string {
+    private function create_from_stored_file($filestream): string {
 
         if (false === $filestream) {
-            throw new \moodle_exception('Canno\'t get stored file content.');
+            throw new moodle_exception('Canno\'t get stored file content.');
         }
 
         rewind($filestream);
