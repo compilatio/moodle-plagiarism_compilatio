@@ -496,7 +496,7 @@ class file {
     public function compilatio_get_document_with_failover(
             $cmid,
             $content,
-            $userid = null,
+            $userid = 0,
             $status = null,
             $additionalparams = [],
             $multiple = false
@@ -508,11 +508,11 @@ class file {
             $params['status'] = $status;
         }
 
+        $params['userid'] = $userid;
+
         if (isset($additionalparams['groupid'])) {
             $params['groupid'] = $additionalparams['groupid'];
             $params['userid'] = 0;
-        } else {
-            $params['userid'] = $userid;
         }
 
         $identifier = new identifier($userid, $cmid);

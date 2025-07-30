@@ -13,6 +13,7 @@ CHANGES
 3.2.7
 - [Fix] Fix error 500 (memory limit at identifier generation)
 - [Fix] Fix passing null parameter to groups_get_user_groups
+- [Fix] Set userid to 0 instead of null in compilatio_get_document_with_failover
 - Format onlinetext before sending it to Compilatio for better analysis
 
 3.2.6
