@@ -37,3 +37,5 @@ if ($CFG->version >= 2024042200) {
         'priority' => 0,
     ];
 }
+
+return $callbacks;
