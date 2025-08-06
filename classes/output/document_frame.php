@@ -564,7 +564,7 @@ class document_frame {
      * @param  string $a         optional string to include in translation
      * @return string Formated string
      */
-    private static function formatstring(string $stringid, string $component = 'plagiarism_compilatio', string $a = null) {
+    private static function formatstring(string $stringid, string $component = 'plagiarism_compilatio', ?string $a = null) {
         $str = get_string($stringid, $component, $a);
         if (preg_match("/&#[0-9]+;|&[a-z]+;/", $str)) {
             return $str;
