@@ -71,8 +71,7 @@ class file {
 
         $submissionretreiver = new submission($DB);
         $submission = $submissionretreiver->get($cm, $content, $userid, $filename);
-        $cmpfile = new cmpfile;
-        $cmpfile = $cmpfile->create($cmid, $userid, $content, $submission, $filename);
+        $cmpfile = new cmpfile($cmid, $userid, $content, $submission, $filename);
         $file = $content instanceof stored_file ? $content : null;
 
         $send = self::checkisfilevalid($cmpfile, $file);
