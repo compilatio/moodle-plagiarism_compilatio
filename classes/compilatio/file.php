@@ -32,6 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 use plagiarism_compilatio\compilatio\submission;
 use stored_file;
 use plagiarism_compilatio\compilatio\api;
+use stdClass;
 
 /**
  * Compilatio file class
@@ -67,76 +68,25 @@ class file {
 
         global $DB, $CFG;
 
-        $send = true;
-
-        $cmpfile = new \stdClass();
-        $identifier = new identifier($userid, $cmid);
-
-        $cmpfile->cm = $cmid;
-        $cmpfile->userid = $userid;
-        $cmpfile->timesubmitted = time();
-
-        if ($file) {
-            $cmpfile->identifier = $identifier->create_from_file($file);
-        } else {
-            $cmpfile->identifier = $identifier->create_from_string($content);
-        }
-
-        $plugincm = compilatio_cm_use($cmid);
-        $cmpfile->indexed = $plugincm->defaultindexing ?? true;
-
-        if (compilatio_student_analysis($plugincm->studentanalyses, $cmid, $userid)) {
-            $cmpfile->indexed = false;
-        }
         $cm = get_coursemodule_from_id(null, $cmid);
-        $groupid = null;
 
-        if ($cm->modname != 'quiz') {
-            $submissionretreiver = new submission($DB);
+        $submissionretreiver = new submission($DB);
+        $submission = $submissionretreiver->get($cm, $content ?? $file, $userid, $filename);
 
-            if (!$file) { // Online text.
-                $submission = $submissionretreiver->get($cmid, $content, $userid, $filename);
-                if (null === $filename) {
-                    $cmpfile->filename = 'assign-' . $submission->id . '.htm';
-                } else {
-                    $cmpfile->filename = $filename;
-                }
-            } else { // File.
-                if (null === $filename) {
-                    $cmpfile->filename = $file->get_filename();
-                } else {
-                    $cmpfile->filename = $filename . "-" . $file->get_filename(); // Forum.
-                }
+        $cmpfile = self::createcmpfile($cmid, $userid, $content ?? $file, $submission, $filename);
 
-                $send = self::checkfilevalid($cmpfile, $file) ? true : false;
-
-                $submission = $submissionretreiver->get($cmid, $file, $userid, $filename);
-            }
-
-            if (isset($submission->groupid) && $submission->groupid !== '0') {
-                $groupid = $submission->groupid;
-                $cmpfile->userid = $userid = 0;
-            }
-
-            $cmpfile->groupid = $groupid;
-        } else {
-            if (null === $filename && $file instanceof stored_file) {
-                $cmpfile->filename = $file->get_filename();
-            } else {
-                $cmpfile->filename = $filename;
-            }
-        }
-
-        // Check if file has already been sent.
+        $send = self::checkfilevalid($cmpfile, $file) ? true : false;
+        
         $compilatiofile = new file();
 
+        // Check if file has already been sent.
         if (!empty($compilatiofile->compilatio_get_document_with_failover(
-           $cmid,
-           $file ?? $content,
-           $userid,
-           null,
-           ['groupid' => $groupid])
-           )
+            $cmid,
+            $file ?? $content,
+            $userid,
+            null,
+            ['groupid' => $cmpfile->groupid])
+            )
         ) {
             return false;
         }
@@ -424,63 +374,7 @@ class file {
         return array_keys((array) $filetypes);
     }
 
-    /**
-     * Setter for authors and depositor
-     *
-     * @param  int $userid  User ID
-     * @param  int $cmid    Course module ID
-     * @return void
-     */
-    private static function set_depositor_and_authors($userid, $cmid) {
-        global $DB;
-
-        $depositor = $DB->get_record("user", ["id" => $userid], 'firstname, lastname, email');
-
-        if (empty($depositor)) {
-            $depositor = (object) [
-                'firstname' => 'not_found',
-                'lastname' => 'not_found',
-                'email' => null,
-            ];
-        }
-
-        $authors = [$depositor];
-
-        $module = get_coursemodule_from_id(null, $cmid);
-
-        if ($module->modname == 'assign') {
-            $isgroupsubmission = $DB->get_field_sql(
-                'SELECT teamsubmission FROM {course_modules} course_modules
-                    JOIN {assign} assign ON course_modules.instance = assign.id
-                    WHERE course_modules.id = ?',
-                ['id' => $cmid]
-            );
-
-            if ($isgroupsubmission === '1') {
-                $groupid = $DB->get_fieldset_sql(
-                    'SELECT groupid FROM {groups_members} gm
-                        JOIN {groups} g ON g.id = gm.groupid
-                        WHERE courseid = ? AND userid = ?',
-                    [$module->course, $userid]
-                );
-
-                if (count($groupid) == 1) {
-                    $authors = $DB->get_records_sql(
-                        'SELECT firstname, lastname, email FROM {groups} g
-                            JOIN {groups_members} gm ON g.id = gm.groupid
-                            JOIN {user} u ON u.id = gm.userid
-                            WHERE courseid = ? AND g.id = ?',
-                        [$module->course, $groupid[0]]
-                    );
-                }
-            }
-        }
-
-        self::$authors = $authors;
-        self::$depositor = $depositor;
-    }
-
-    /**
+        /**
      * Get document record(s) with identifier failover.
      * First tries with new identifier format (sha1(content+userid))
      * If not found, falls back to old format (sha1(content))
@@ -554,6 +448,80 @@ class file {
     }
 
     /**
+     * Setter for authors and depositor
+     *
+     * @param  int $userid  User ID
+     * @param  int $cmid    Course module ID
+     * @return void
+     */
+    private static function set_depositor_and_authors($userid, $cmid) {
+        global $DB;
+
+        $depositor = $DB->get_record("user", ["id" => $userid], 'firstname, lastname, email');
+
+        if (empty($depositor)) {
+            $depositor = (object) [
+                'firstname' => 'not_found',
+                'lastname' => 'not_found',
+                'email' => null,
+            ];
+        }
+
+        $authors = [$depositor];
+
+        $module = get_coursemodule_from_id(null, $cmid);
+
+        if ($module->modname == 'assign') {
+            $isgroupsubmission = $DB->get_field_sql(
+                'SELECT teamsubmission FROM {course_modules} course_modules
+                    JOIN {assign} assign ON course_modules.instance = assign.id
+                    WHERE course_modules.id = ?',
+                ['id' => $cmid]
+            );
+
+            if ($isgroupsubmission === '1') {
+                $groupid = $DB->get_fieldset_sql(
+                    'SELECT groupid FROM {groups_members} gm
+                        JOIN {groups} g ON g.id = gm.groupid
+                        WHERE courseid = ? AND userid = ?',
+                    [$module->course, $userid]
+                );
+
+                if (count($groupid) == 1) {
+                    $authors = $DB->get_records_sql(
+                        'SELECT firstname, lastname, email FROM {groups} g
+                            JOIN {groups_members} gm ON g.id = gm.groupid
+                            JOIN {user} u ON u.id = gm.userid
+                            WHERE courseid = ? AND g.id = ?',
+                        [$module->course, $groupid[0]]
+                    );
+                }
+            }
+        }
+
+        self::$authors = $authors;
+        self::$depositor = $depositor;
+    }
+
+    /**
+     * Create the filename for the cmpfile if not passed at the sending of the file
+     *
+     * @param string $modname Module name
+     * @param ?stored_file $file Moodle stored file || null if content passed is not a stored file
+     * @param int $userid User ID
+     * @param $submission Submission || null if the content passed come from a quiz
+     * @return string Return the filename of the cmpfile
+     */
+    private static function createcmpfilename(string $modname, mixed $submission, ?stored_file $file = null) {
+        if ($modname != 'quiz') {
+            $filename = $file ? $file->get_filename() : 'assign-' . $submission->id . '.htm';
+        } else {
+            $filename = $file->get_filename();
+        }
+        return $filename;
+    }
+
+    /**
      * Check if the file is valid before sending to Compilatio
      *
      * @param $cmpfile Compilatio File
@@ -566,11 +534,56 @@ class file {
             return false;
         }
 
-        if ((int) $file->get_filesize() > get_config('plagiarism_compilatio', 'max_size')) {
+        if ($file instanceof stored_file && (int) $file->get_filesize() > get_config('plagiarism_compilatio', 'max_size')) {
             $cmpfile->status = "error_too_large";
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Create the file submited to Compilatio
+     *
+     * @param string $cmid Compilatio File
+     * @param string $userid The id of the user
+     * @param mixed $content Content to send to Compilatio
+     * @param mixed $submission Submission
+     * @param ?string $filename Name to set to the file
+     * @return Return the cmpfile
+     */
+    private static function createcmpfile(string $cmid, string $userid, mixed $content, mixed $submission, ?string $filename = null) {
+        $cmpfile = new \stdClass();
+        $identifier = new identifier($userid, $cmid);
+
+        $cmpfile->cm = $cmid;
+        $cmpfile->userid = $userid;
+        $cmpfile->timesubmitted = time();
+
+        if ($content instanceof stored_file) {
+            $cmpfile->identifier = $identifier->create_from_file($content);
+        } else {
+            $cmpfile->identifier = $identifier->create_from_string($content);
+        }
+
+        $plugincm = compilatio_cm_use($cmid);
+        $cmpfile->indexed = $plugincm->defaultindexing ?? true;
+
+        if (compilatio_student_analysis($plugincm->studentanalyses, $cmid, $userid)) {
+            $cmpfile->indexed = false;
+        }
+        $cm = get_coursemodule_from_id(null, $cmid);
+        $cmpfile->filename = $filename ?? self::createcmpfilename($cm->modname, $submission, $content instanceof stored_file ? $content : null);
+
+        $groupid = null;
+
+        if (!empty($submission->groupid)) {
+            $groupid = $submission->groupid;
+            $cmpfile->userid = $userid = 0;
+        }
+
+        $cmpfile->groupid = $groupid;
+
+        return $cmpfile;
     }
 }

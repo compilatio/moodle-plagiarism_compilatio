@@ -50,16 +50,15 @@ class submission {
     /**
      * Get submission records
      *
-     * @param int $cmid Course module ID
+     * @param $cm Course module
      * @param object $content Storedfile or onlinetext object
      * @param string $userid Userid of the author of the document
      * @param string $filename Filename of the document
      *
-     * @return object Submission record or throw exception
+     * @return object Submission record, null if a quiz (quiz don't had submissions) or throw exception
      */
-    public function get($cmid, $content, $userid, $filename) {
+    public function get($cm, $content, $userid, $filename) {
 
-        $cm = get_coursemodule_from_id(null, $cmid);
         if (!$cm) {
             throw new moodle_exception("Course module not found");
         }
@@ -68,7 +67,6 @@ class submission {
         if (!$moduleinstance) {
             throw new moodle_exception("moduleinstance not found");
         }
-
         switch ($cm->modname) {
             case 'assign':
                 return $this->get_from_assignment($content, $moduleinstance, $userid, $filename);
@@ -76,6 +74,8 @@ class submission {
                 return $this->get_from_workshop($content, $moduleinstance, $userid, $filename);
             case 'forum':
                 return $this->get_from_forum($content, $moduleinstance, $userid, $filename);
+            case 'quiz':
+                return null;
             default:
                 throw new moodle_exception("Course module not valid");
         }
