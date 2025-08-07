@@ -204,7 +204,7 @@ class document_frame {
                         $onlineassignment = $DB->get_record_sql($sql, [$linkarray['assignment'], $linkarray['userid']]);
                         $filename = 'assign-' . $onlineassignment->submission . '.htm';
 
-                        file::send_file($linkarray['cmid'], $userid,  null, $filename, $linkarray['content']);
+                        file::send_file($linkarray['cmid'], $userid, $linkarray['content'], $filename);
                         return self::get_document_frame($linkarray);
                     }
 

@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 use plagiarism_compilatio\compilatio\submission;
 use stored_file;
 use plagiarism_compilatio\compilatio\api;
-use stdClass;
+use plagiarism_compilatio\compilatio\cmpfile;
 
 /**
  * Compilatio file class
@@ -59,30 +59,30 @@ class file {
      *
      * @param int    $cmid       Course module identifier
      * @param int    $userid     User identifier
-     * @param object $file       File to send to Compilatio
+     * @param mixed $content    File to send to Compilatio
      * @param string $filename   Filename for text content
-     * @param string $content    Text content
-     * @param string $identifier File identifier
+     * @return Return cmpfile id send, false if not
      */
-    public static function send_file($cmid, $userid, $file = null, $filename = null, $content = null, $identifier = null) {
+    public static function send_file($cmid, $userid, $content, $filename = null) {
 
         global $DB, $CFG;
 
         $cm = get_coursemodule_from_id(null, $cmid);
 
         $submissionretreiver = new submission($DB);
-        $submission = $submissionretreiver->get($cm, $content ?? $file, $userid, $filename);
+        $submission = $submissionretreiver->get($cm, $content, $userid, $filename);
+        $cmpfile = new cmpfile;
+        $cmpfile = $cmpfile->create($cmid, $userid, $content, $submission, $filename);
+        $file = $content instanceof stored_file ? $content : null;
 
-        $cmpfile = self::createcmpfile($cmid, $userid, $content ?? $file, $submission, $filename);
-
-        $send = self::checkfilevalid($cmpfile, $file) ? true : false;
+        $send = self::checkisfilevalid($cmpfile, $file);
         
         $compilatiofile = new file();
 
         // Check if file has already been sent.
         if (!empty($compilatiofile->compilatio_get_document_with_failover(
             $cmid,
-            $file ?? $content,
+            $content,
             $userid,
             null,
             ['groupid' => $cmpfile->groupid])
@@ -93,7 +93,7 @@ class file {
 
         $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
 
-        if ($content && str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) < $nbmotsmin) {
+        if (!($content instanceof stored_file) && str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) < $nbmotsmin) {
             $cmpfile->status = 'error_too_short';
             $cmpfile->id = $DB->insert_record('plagiarism_compilatio_files', $cmpfile);
             return $cmpfile;
@@ -203,7 +203,7 @@ class file {
             if ($file instanceof stored_file) {
                 self::send_file($cmid, $userid, $file);
             } else {
-                self::send_file($cmid, $userid, null, null, $file->onlinetext);
+                self::send_file($cmid, $userid, $file->onlinetext);
             }
         }
     }
@@ -257,9 +257,8 @@ class file {
                 $newcmpfile = self::send_file(
                     $cmpfile->cm,
                     $cmpfile->userid,
-                    null,
-                    $cmpfile->filename,
                     $content,
+                    $cmpfile->filename,
                 );
             }
         } else { // File.
@@ -374,7 +373,7 @@ class file {
         return array_keys((array) $filetypes);
     }
 
-        /**
+    /**
      * Get document record(s) with identifier failover.
      * First tries with new identifier format (sha1(content+userid))
      * If not found, falls back to old format (sha1(content))
@@ -504,31 +503,13 @@ class file {
     }
 
     /**
-     * Create the filename for the cmpfile if not passed at the sending of the file
-     *
-     * @param string $modname Module name
-     * @param ?stored_file $file Moodle stored file || null if content passed is not a stored file
-     * @param int $userid User ID
-     * @param $submission Submission || null if the content passed come from a quiz
-     * @return string Return the filename of the cmpfile
-     */
-    private static function createcmpfilename(string $modname, mixed $submission, ?stored_file $file = null) {
-        if ($modname != 'quiz') {
-            $filename = $file ? $file->get_filename() : 'assign-' . $submission->id . '.htm';
-        } else {
-            $filename = $file->get_filename();
-        }
-        return $filename;
-    }
-
-    /**
      * Check if the file is valid before sending to Compilatio
      *
      * @param $cmpfile Compilatio File
      * @param stored_file $file File
      * @return bool True if valid, false if not
      */
-    private static function checkfilevalid($cmpfile, $file): bool {
+    private static function checkisfilevalid($cmpfile, $file): bool {
         if (!self::supported_file_type($cmpfile->filename)) {
             $cmpfile->status = "error_unsupported";
             return false;
@@ -540,50 +521,5 @@ class file {
         }
 
         return true;
-    }
-
-    /**
-     * Create the file submited to Compilatio
-     *
-     * @param string $cmid Compilatio File
-     * @param string $userid The id of the user
-     * @param mixed $content Content to send to Compilatio
-     * @param mixed $submission Submission
-     * @param ?string $filename Name to set to the file
-     * @return Return the cmpfile
-     */
-    private static function createcmpfile(string $cmid, string $userid, mixed $content, mixed $submission, ?string $filename = null) {
-        $cmpfile = new \stdClass();
-        $identifier = new identifier($userid, $cmid);
-
-        $cmpfile->cm = $cmid;
-        $cmpfile->userid = $userid;
-        $cmpfile->timesubmitted = time();
-
-        if ($content instanceof stored_file) {
-            $cmpfile->identifier = $identifier->create_from_file($content);
-        } else {
-            $cmpfile->identifier = $identifier->create_from_string($content);
-        }
-
-        $plugincm = compilatio_cm_use($cmid);
-        $cmpfile->indexed = $plugincm->defaultindexing ?? true;
-
-        if (compilatio_student_analysis($plugincm->studentanalyses, $cmid, $userid)) {
-            $cmpfile->indexed = false;
-        }
-        $cm = get_coursemodule_from_id(null, $cmid);
-        $cmpfile->filename = $filename ?? self::createcmpfilename($cm->modname, $submission, $content instanceof stored_file ? $content : null);
-
-        $groupid = null;
-
-        if (!empty($submission->groupid)) {
-            $groupid = $submission->groupid;
-            $cmpfile->userid = $userid = 0;
-        }
-
-        $cmpfile->groupid = $groupid;
-
-        return $cmpfile;
     }
 }
