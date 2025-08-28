@@ -356,11 +356,11 @@ class statistics {
                 : 0;
             if ($wordcount >= $nbmotsmin) {
                 $courseid = $DB->get_field('course_modules', 'course', ['id' => $cmid]);
-                $filename = "quiz-" . $courseid . "-" . $cmid . "-" . $attemptid . "-Q" . $answer->get_question_id() . ".htm";
+                $content = $answer->get_response_summary();
 
                 $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
                     $cmid,
-                    $filename,
+                    $content,
                     $studentid
                 );
                 if (!empty($cmpfile)) {

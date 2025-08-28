@@ -138,7 +138,6 @@ class cmpfile {
         $this->setdatafromconfig($cmid, $userid);
         $this->filename = $filename ?? $this->createfilename($cm->modname, $submission, $content instanceof stored_file ? $content : null);
         $this->setauthors($submission, $userid);
-global $CFG;file_put_contents($CFG->dataroot . '/temp/compilatio/curl.log', var_export($this, true) . "\n", FILE_APPEND);
 
         return $this;
     }
