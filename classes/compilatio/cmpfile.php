@@ -32,6 +32,9 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 use stored_file;
 use plagiarism_compilatio\compilatio\identifier;
 
+/**
+ * Cmpfile class
+ */
 class cmpfile {
     /**
      * @var string $id
@@ -126,17 +129,21 @@ class cmpfile {
      * @param mixed $content Content to send to Compilatio
      * @param mixed $submission Submission
      * @param ?string $filename Name to set to the file
-     * 
+     *
      * @return cmpfile Return the cmpfile
      */
     public function __construct(string $cmid, string $userid, mixed $content, mixed $submission, ?string $filename = null) {
         $cm = get_coursemodule_from_id(null, $cmid);
-        
+
         $this->cm = $cmid;
         $this->timesubmitted = time();
         $this->setidentifier($cmid, $userid, $content);
         $this->setdatafromconfig($cmid, $userid);
-        $this->filename = $filename ?? $this->createfilename($cm->modname, $submission, $content instanceof stored_file ? $content : null);
+        $this->filename = $filename ?? $this->createfilename(
+            $cm->modname,
+            $submission,
+            $content instanceof stored_file ? $content : null
+        );
         $this->setauthors($submission, $userid);
 
         return $this;
@@ -169,7 +176,7 @@ class cmpfile {
      * @param mixed $content Content to create the identifier from
      * @return void
      */
-    private function setidentifier( $cmid, $userid, $content): void {
+    private function setidentifier($cmid, $userid, $content): void {
         $identifier = new identifier($userid, $cmid);
 
         if ($content instanceof stored_file) {
