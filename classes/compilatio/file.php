@@ -32,6 +32,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 use plagiarism_compilatio\compilatio\submission;
 use stored_file;
 use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\compilatio\cmpfile;
 
 /**
  * Compilatio file class
@@ -58,92 +59,42 @@ class file {
      *
      * @param int    $cmid       Course module identifier
      * @param int    $userid     User identifier
-     * @param object $file       File to send to Compilatio
+     * @param mixed $content    File to send to Compilatio
      * @param string $filename   Filename for text content
-     * @param string $content    Text content
-     * @param string $identifier File identifier
+     * @return Return cmpfile id send, false if not
      */
-    public static function send_file($cmid, $userid, $file = null, $filename = null, $content = null, $identifier = null) {
+    public static function send_file($cmid, $userid, $content, $filename = null) {
 
         global $DB, $CFG;
 
-        $send = true;
-
-        $cmpfile = new \stdClass();
-        $identifier = new identifier($userid, $cmid);
-
-        $cmpfile->cm = $cmid;
-        $cmpfile->userid = $userid;
-        $cmpfile->timesubmitted = time();
-
-        if ($file) {
-            $cmpfile->identifier = $identifier->create_from_file($file);
-        } else {
-            $cmpfile->identifier = $identifier->create_from_string($content);
-        }
-
-        $plugincm = compilatio_cm_use($cmid);
-        $cmpfile->indexed = $plugincm->defaultindexing ?? true;
-
-        if (compilatio_student_analysis($plugincm->studentanalyses, $cmid, $userid)) {
-            $cmpfile->indexed = false;
-        }
         $cm = get_coursemodule_from_id(null, $cmid);
-        $groupid = null;
 
-        if ($cm->modname != 'quiz') {
-            $submissionretreiver = new submission($DB);
+        $submissionretreiver = new submission($DB);
+        $submission = $submissionretreiver->get($cm, $content, $userid, $filename);
+        $cmpfile = new cmpfile($cmid, $userid, $content, $submission, $filename);
+        $file = $content instanceof stored_file ? $content : null;
 
-            if (!$file) { // Online text.
-                $submission = $submissionretreiver->get($cmid, $content, $userid, $filename);
-                if (null === $filename) {
-                    $cmpfile->filename = 'assign-' . $submission->id . '.htm';
-                } else {
-                    $cmpfile->filename = $filename;
-                }
-            } else { // File.
-                if (null === $filename) {
-                    $cmpfile->filename = $file->get_filename();
-                } else {
-                    $cmpfile->filename = $filename . "-" . $file->get_filename(); // Forum.
-                }
+        $send = self::checkisfilevalid($cmpfile, $file);
 
-                $send = self::checkfilevalid($cmpfile, $file) ? true : false;
-
-                $submission = $submissionretreiver->get($cmid, $file, $userid, $filename);
-            }
-
-            if (isset($submission->groupid) && $submission->groupid !== '0') {
-                $groupid = $submission->groupid;
-                $cmpfile->userid = $userid = 0;
-            }
-
-            $cmpfile->groupid = $groupid;
-        } else {
-            if (null === $filename && $file instanceof stored_file) {
-                $cmpfile->filename = $file->get_filename();
-            } else {
-                $cmpfile->filename = $filename;
-            }
-        }
-
-        // Check if file has already been sent.
         $compilatiofile = new file();
 
+        // Check if file has already been sent.
         if (!empty($compilatiofile->compilatio_get_document_with_failover(
-           $cmid,
-           $file ?? $content,
-           $userid,
-           null,
-           ['groupid' => $groupid])
-           )
+            $cmid,
+            $content,
+            $userid,
+            null,
+            ['groupid' => $cmpfile->groupid])
+            )
         ) {
             return false;
         }
 
         $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
 
-        if ($content && str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) < $nbmotsmin) {
+        if (!($content instanceof stored_file)
+            && str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) < $nbmotsmin
+        ) {
             $cmpfile->status = 'error_too_short';
             $cmpfile->id = $DB->insert_record('plagiarism_compilatio_files', $cmpfile);
             return $cmpfile;
@@ -253,7 +204,7 @@ class file {
             if ($file instanceof stored_file) {
                 self::send_file($cmid, $userid, $file);
             } else {
-                self::send_file($cmid, $userid, null, null, $file->onlinetext);
+                self::send_file($cmid, $userid, $file->onlinetext);
             }
         }
     }
@@ -307,9 +258,8 @@ class file {
                 $newcmpfile = self::send_file(
                     $cmpfile->cm,
                     $cmpfile->userid,
-                    null,
-                    $cmpfile->filename,
                     $content,
+                    $cmpfile->filename,
                 );
             }
         } else { // File.
@@ -425,62 +375,6 @@ class file {
     }
 
     /**
-     * Setter for authors and depositor
-     *
-     * @param  int $userid  User ID
-     * @param  int $cmid    Course module ID
-     * @return void
-     */
-    private static function set_depositor_and_authors($userid, $cmid) {
-        global $DB;
-
-        $depositor = $DB->get_record("user", ["id" => $userid], 'firstname, lastname, email');
-
-        if (empty($depositor)) {
-            $depositor = (object) [
-                'firstname' => 'not_found',
-                'lastname' => 'not_found',
-                'email' => null,
-            ];
-        }
-
-        $authors = [$depositor];
-
-        $module = get_coursemodule_from_id(null, $cmid);
-
-        if ($module->modname == 'assign') {
-            $isgroupsubmission = $DB->get_field_sql(
-                'SELECT teamsubmission FROM {course_modules} course_modules
-                    JOIN {assign} assign ON course_modules.instance = assign.id
-                    WHERE course_modules.id = ?',
-                ['id' => $cmid]
-            );
-
-            if ($isgroupsubmission === '1') {
-                $groupid = $DB->get_fieldset_sql(
-                    'SELECT groupid FROM {groups_members} gm
-                        JOIN {groups} g ON g.id = gm.groupid
-                        WHERE courseid = ? AND userid = ?',
-                    [$module->course, $userid]
-                );
-
-                if (count($groupid) == 1) {
-                    $authors = $DB->get_records_sql(
-                        'SELECT firstname, lastname, email FROM {groups} g
-                            JOIN {groups_members} gm ON g.id = gm.groupid
-                            JOIN {user} u ON u.id = gm.userid
-                            WHERE courseid = ? AND g.id = ?',
-                        [$module->course, $groupid[0]]
-                    );
-                }
-            }
-        }
-
-        self::$authors = $authors;
-        self::$depositor = $depositor;
-    }
-
-    /**
      * Get document record(s) with identifier failover.
      * First tries with new identifier format (sha1(content+userid))
      * If not found, falls back to old format (sha1(content))
@@ -554,19 +448,75 @@ class file {
     }
 
     /**
+     * Setter for authors and depositor
+     *
+     * @param  int $userid  User ID
+     * @param  int $cmid    Course module ID
+     * @return void
+     */
+    private static function set_depositor_and_authors($userid, $cmid) {
+        global $DB;
+
+        $depositor = $DB->get_record("user", ["id" => $userid], 'firstname, lastname, email');
+
+        if (empty($depositor)) {
+            $depositor = (object) [
+                'firstname' => 'not_found',
+                'lastname' => 'not_found',
+                'email' => null,
+            ];
+        }
+
+        $authors = [$depositor];
+
+        $module = get_coursemodule_from_id(null, $cmid);
+
+        if ($module->modname == 'assign') {
+            $isgroupsubmission = $DB->get_field_sql(
+                'SELECT teamsubmission FROM {course_modules} course_modules
+                    JOIN {assign} assign ON course_modules.instance = assign.id
+                    WHERE course_modules.id = ?',
+                ['id' => $cmid]
+            );
+
+            if ($isgroupsubmission === '1') {
+                $groupid = $DB->get_fieldset_sql(
+                    'SELECT groupid FROM {groups_members} gm
+                        JOIN {groups} g ON g.id = gm.groupid
+                        WHERE courseid = ? AND userid = ?',
+                    [$module->course, $userid]
+                );
+
+                if (count($groupid) == 1) {
+                    $authors = $DB->get_records_sql(
+                        'SELECT firstname, lastname, email FROM {groups} g
+                            JOIN {groups_members} gm ON g.id = gm.groupid
+                            JOIN {user} u ON u.id = gm.userid
+                            WHERE courseid = ? AND g.id = ?',
+                        [$module->course, $groupid[0]]
+                    );
+                }
+            }
+        }
+
+        self::$authors = $authors;
+        self::$depositor = $depositor;
+    }
+
+    /**
      * Check if the file is valid before sending to Compilatio
      *
      * @param $cmpfile Compilatio File
      * @param stored_file $file File
      * @return bool True if valid, false if not
      */
-    private static function checkfilevalid($cmpfile, $file): bool {
+    private static function checkisfilevalid($cmpfile, $file): bool {
         if (!self::supported_file_type($cmpfile->filename)) {
             $cmpfile->status = "error_unsupported";
             return false;
         }
 
-        if ((int) $file->get_filesize() > get_config('plagiarism_compilatio', 'max_size')) {
+        if ($file instanceof stored_file && (int) $file->get_filesize() > get_config('plagiarism_compilatio', 'max_size')) {
             $cmpfile->status = "error_too_large";
             return false;
         }
