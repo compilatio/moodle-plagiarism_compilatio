@@ -90,10 +90,10 @@ class file {
             return false;
         }
 
-        $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
+        $minwordcount = get_config('plagiarism_compilatio', 'min_word');
 
         if (!($content instanceof stored_file)
-            && str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) < $nbmotsmin
+            && str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) < $minwordcount
         ) {
             $cmpfile->status = 'error_too_short';
             $cmpfile->id = $DB->insert_record('plagiarism_compilatio_files', $cmpfile);
