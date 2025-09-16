@@ -42,13 +42,17 @@ class document_frame {
      * @return string Return the HTML formatted string.
      */
     public static function get_document_frame($linkarray) {
+        global $DB, $CFG, $PAGE, $USER;
+        $output = '';
+
+        if (!empty($linkarray['component']) && $linkarray['component'] == 'assignfeedback_editpdf') {
+            return $output;
+        }
+
         // Quiz management - Only essay question are supported for the moment.
         if (!empty($linkarray['component']) && $linkarray['component'] == 'qtype_essay') {
             $linkarray = self::manage_quiz($linkarray);
         }
-
-        global $DB, $CFG, $PAGE, $USER;
-        $output = '';
 
         // Check if Compilatio is enabled in moodle->module->cm.
         if (!isset($linkarray['cmid']) || !compilatio_enabled($linkarray['cmid'])) {
@@ -174,7 +178,7 @@ class document_frame {
 
         if (empty($cmpfile)) { // Try to get record without userid in forums.
             $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
-                $linkarray['cmid'], $content, $linkarray['userid']);
+                $linkarray['cmid'], $content, $userid);
         }
 
         $url = null;

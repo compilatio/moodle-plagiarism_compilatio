@@ -49,9 +49,9 @@ class identifier {
      * @param  string $cmid Course module ID
      */
     public function __construct($userid, $cmid) {
-        if (!isset($userid) || !isset($cmid)) {
 
-            throw new moodle_exception('No userid or cmid.');
+        if (!isset($userid) || !isset($cmid)) {
+            throw new \moodle_exception('No userid or cmid.');
         }
 
         $this->userid = (string) $userid;
