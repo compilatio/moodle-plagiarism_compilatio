@@ -28,11 +28,11 @@ namespace plagiarism_compilatio\compilatio;
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
-require_once($CFG->dirroot . '/plagiarism/compilatio/classes/compilatio/submission.php');
 
 use plagiarism_compilatio\compilatio\submission;
-use lib\​filestorage\stored_file;
+use stored_file;
 use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\compilatio\cmpfile;
 
 /**
  * Compilatio file class
@@ -59,91 +59,42 @@ class file {
      *
      * @param int    $cmid       Course module identifier
      * @param int    $userid     User identifier
-     * @param object $file       File to send to Compilatio
+     * @param mixed $content    File to send to Compilatio
      * @param string $filename   Filename for text content
-     * @param string $content    Text content
-     * @param string $identifier File identifier
+     * @return Return cmpfile id send, false if not
      */
-    public static function send_file($cmid, $userid, $file = null, $filename = null, $content = null, $identifier = null) {
+    public static function send_file($cmid, $userid, $content, $filename = null) {
 
         global $DB, $CFG;
 
-        $send = true;
+        $cm = get_coursemodule_from_id(null, $cmid);
 
-        $cmpfile = new \stdClass();
-        $identifier = new identifier($userid, $cmid);
+        $submissionretreiver = new submission($DB);
+        $submission = $submissionretreiver->get($cm, $content, $userid, $filename);
+        $cmpfile = new cmpfile($cmid, $userid, $content, $submission, $filename);
+        $file = $content instanceof stored_file ? $content : null;
 
-        $cmpfile->cm = $cmid;
-        $cmpfile->userid = $userid;
-        $cmpfile->timesubmitted = time();
+        $send = self::checkisfilevalid($cmpfile, $file);
 
-        if ($file) {
-            $cmpfile->identifier = $identifier->create_from_file($file);
-        } else {
-            $cmpfile->identifier = $identifier->create_from_string($content);
-        }
-
-        $plugincm = compilatio_cm_use($cmid);
-        $cmpfile->indexed = $plugincm->defaultindexing ?? true;
-
-        if (compilatio_student_analysis($plugincm->studentanalyses, $cmid, $userid)) {
-            $cmpfile->indexed = false;
-        }
-
-         $submissionretreiver = new submission($DB);
-
-        if (!$file) { // Online text.
-            $submission = $submissionretreiver->get($cmid, $content, $userid, $filename);
-            if (null === $filename) {
-                $cmpfile->filename = 'assign-' . $submission->id . '.htm';
-            } else {
-                $cmpfile->filename = $filename;
-            }
-        } else { // File.
-            if (null === $filename) {
-                $cmpfile->filename = $file->get_filename();
-            } else {
-                $cmpfile->filename = $filename . "-" . $file->get_filename(); // Forum.
-            }
-
-            if (!self::supported_file_type($cmpfile->filename)) {
-                $cmpfile->status = "error_unsupported";
-                $send = false;
-            }
-
-            if ((int) $file->get_filesize() > get_config('plagiarism_compilatio', 'max_size')) {
-                $cmpfile->status = "error_too_large";
-                $send = false;
-            }
-                $submission = $submissionretreiver->get($cmid, $file, $userid, $filename);
-        }
-
-        $groupid = null;
-
-        if (isset($submission->groupid) && $submission->groupid !== '0') {
-            $groupid = $submission->groupid;
-            $cmpfile->userid = $userid = 0;
-        }
-
-        $cmpfile->groupid = $groupid;
-
-        // Check if file has already been sent.
         $compilatiofile = new file();
 
+        // Check if file has already been sent.
         if (!empty($compilatiofile->compilatio_get_document_with_failover(
-           $cmid,
-           $file ?? $content,
-           $userid,
-           null,
-           ['groupid' => $groupid])
-           )
+            $cmid,
+            $content,
+            $userid,
+            null,
+            ['groupid' => $cmpfile->groupid])
+            )
         ) {
             return false;
         }
 
-        $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
+        $minwordcount = get_config('plagiarism_compilatio', 'min_word');
 
-        if ($content && str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) < $nbmotsmin) {
+        if (!($content instanceof stored_file)
+            && str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) < $minwordcount
+        ) {
             $cmpfile->status = 'error_too_short';
             $cmpfile->id = $DB->insert_record('plagiarism_compilatio_files', $cmpfile);
             return $cmpfile;
@@ -159,7 +110,6 @@ class file {
             if ($file) {
                 $file->copy_content_to($filepath);
             } else {
-                $cm = get_coursemodule_from_id(null, $cmid);
                 switch ($cm->modname) {
                     case 'assign':
                         $contentformat = $DB->get_field(
@@ -251,10 +201,10 @@ class file {
                         $file->submission :
                         $file->get_itemid()]
                     );
-            if ($file instanceof \stored_file) {
+            if ($file instanceof stored_file) {
                 self::send_file($cmid, $userid, $file);
             } else {
-                self::send_file($cmid, $userid, null, null, $file->onlinetext);
+                self::send_file($cmid, $userid, $file->onlinetext);
             }
         }
     }
@@ -308,9 +258,8 @@ class file {
                 $newcmpfile = self::send_file(
                     $cmpfile->cm,
                     $cmpfile->userid,
-                    null,
-                    $cmpfile->filename,
                     $content,
+                    $cmpfile->filename,
                 );
             }
         } else { // File.
@@ -426,6 +375,79 @@ class file {
     }
 
     /**
+     * Get document record(s) with identifier failover.
+     * First tries with new identifier format (sha1(content+userid))
+     * If not found, falls back to old format (sha1(content))
+     *
+     * @param int $cmid Course module ID
+     * @param string $content Content to hash for identifier
+     * @param int $userid User ID
+     * @param string $status Document status (optional)
+     * @param array $additionalparams Additional parameters for the query (optional)
+     * @param bool $multiple Whether to return multiple records (true) or a single record (false)
+     * @return mixed Single document object, array of document objects, or false/empty array if not found
+     */
+    public function compilatio_get_document_with_failover(
+            $cmid,
+            $content,
+            $userid,
+            $status = null,
+            $additionalparams = [],
+            $multiple = false
+        ) {
+        global $DB;
+        $params = ['cm' => $cmid];
+
+        if ($status !== null) {
+            $params['status'] = $status;
+        }
+
+        if (empty($userid)) {
+            $userid = 0;
+        }
+
+        $params['userid'] = $userid;
+
+        if (isset($additionalparams['groupid'])) {
+            $params['groupid'] = $additionalparams['groupid'];
+            $params['userid'] = 0;
+        }
+
+        $identifier = new identifier($userid, $cmid);
+
+        if ($content instanceof stored_file) {
+            $params['identifier'] = $identifier->create_from_file($content);
+        } else {
+            $params['identifier'] = $identifier->create_from_string($content);
+        }
+
+        if (!empty($additionalparams)) {
+            $filteredparams = array_diff_key($additionalparams, ['groupid' => '']);
+            $params = array_merge($params, $filteredparams);
+        }
+
+        if ($multiple) {
+            $documents = $DB->get_records('plagiarism_compilatio_files', $params);
+            if (empty($documents)) {
+                $params['identifier'] = $content instanceof stored_file ? $content->get_contenthash() : sha1($content ?? '');
+                $documents = $DB->get_records('plagiarism_compilatio_files', $params);
+            }
+
+            return $documents;
+        } else {
+            $document = $DB->get_record('plagiarism_compilatio_files', $params);
+
+            if (!$document) {
+
+                $params['identifier'] = $content instanceof stored_file ? $content->get_contenthash() : sha1($content ?? '');
+                $document = $DB->get_record('plagiarism_compilatio_files', $params);
+            }
+
+            return $document;
+        }
+    }
+
+    /**
      * Setter for authors and depositor
      *
      * @param  int $userid  User ID
@@ -482,71 +504,23 @@ class file {
     }
 
     /**
-     * Get document record(s) with identifier failover.
-     * First tries with new identifier format (sha1(content+userid))
-     * If not found, falls back to old format (sha1(content))
+     * Check if the file is valid before sending to Compilatio
      *
-     * @param int $cmid Course module ID
-     * @param string $content Content to hash for identifier
-     * @param int $userid User ID
-     * @param string $status Document status (optional)
-     * @param array $additionalparams Additional parameters for the query (optional)
-     * @param bool $multiple Whether to return multiple records (true) or a single record (false)
-     * @return mixed Single document object, array of document objects, or false/empty array if not found
+     * @param $cmpfile Compilatio File
+     * @param stored_file $file File
+     * @return bool True if valid, false if not
      */
-    public function compilatio_get_document_with_failover(
-            $cmid,
-            $content,
-            $userid = null,
-            $status = null,
-            $additionalparams = [],
-            $multiple = false
-        ) {
-        global $DB;
-        $params = ['cm' => $cmid];
-
-        if ($status !== null) {
-            $params['status'] = $status;
+    private static function checkisfilevalid($cmpfile, $file): bool {
+        if (!self::supported_file_type($cmpfile->filename)) {
+            $cmpfile->status = "error_unsupported";
+            return false;
         }
 
-        if (isset($additionalparams['groupid'])) {
-            $params['groupid'] = $additionalparams['groupid'];
-            $params['userid'] = 0;
-        } else {
-            $params['userid'] = $userid;
+        if ($file instanceof stored_file && (int) $file->get_filesize() > get_config('plagiarism_compilatio', 'max_size')) {
+            $cmpfile->status = "error_too_large";
+            return false;
         }
 
-        $identifier = new identifier($userid, $cmid);
-
-        if ($content instanceof \stored_file) {
-            $params['identifier'] = $identifier->create_from_file($content);
-        } else {
-            $params['identifier'] = $identifier->create_from_string($content);
-        }
-
-        if (!empty($additionalparams)) {
-            $filteredparams = array_diff_key($additionalparams, ['groupid' => '']);
-            $params = array_merge($params, $filteredparams);
-        }
-
-        if ($multiple) {
-            $documents = $DB->get_records('plagiarism_compilatio_files', $params);
-            if (empty($documents)) {
-                $params['identifier'] = $content instanceof \stored_file ? $content->get_contenthash() : sha1($content ?? '');
-                $documents = $DB->get_records('plagiarism_compilatio_files', $params);
-            }
-
-            return $documents;
-        } else {
-            $document = $DB->get_record('plagiarism_compilatio_files', $params);
-
-            if (!$document) {
-
-                $params['identifier'] = $content instanceof \stored_file ? $content->get_contenthash() : sha1($content ?? '');
-                $document = $DB->get_record('plagiarism_compilatio_files', $params);
-            }
-
-            return $document;
-        }
+        return true;
     }
 }

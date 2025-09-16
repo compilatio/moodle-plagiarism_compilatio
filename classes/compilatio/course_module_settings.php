@@ -251,7 +251,7 @@ class course_module_settings {
         $mform->addGroup($group, 'info_cm', '', ' ', false);
         $mform->hideIf('info_cm', 'activated', 'eq', '0');
 
-        $termsofservice = 'https://app.compilatio.net/api/private/terms-of-service/magister/' . $lang;
+        $termsofservice = 'https://content.compilatio.net/documents/EN-Compilatio-TOU.pdf';
         $group = [];
         $group[] = $mform->createElement(
             'html',

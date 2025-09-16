@@ -402,7 +402,7 @@ class event_handler {
         if (!$compifile) {
             $duplicates = $DB->get_records('plagiarism_compilatio_files', ['filename' => $filename]);
             compilatio_delete_files($duplicates);
-            file::send_file($cmid, $userid, null, $filename, $content);
+            file::send_file($cmid, $userid, $content, $filename);
         }
     }
 
@@ -559,7 +559,7 @@ class event_handler {
                     );
                     compilatio_delete_files($duplicate);
 
-                    file::send_file($cmid, $userid, null, $filename, $content);
+                    file::send_file($cmid, $userid, $content, $filename);
                 }
 
                 // Files attachments.
@@ -568,7 +568,7 @@ class event_handler {
                 foreach ($files as $file) {
 
                     // Check for duplicate files.
-                    $duplicate = $compilatiofile->compilatio_get_document_with_failover(
+                    $duplicates = $compilatiofile->compilatio_get_document_with_failover(
                         $cmid,
                         $file,
                         $userid,

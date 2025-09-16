@@ -25,7 +25,9 @@
 
 namespace plagiarism_compilatio\compilatio;
 
-use lib\​filestorage\stored_file;
+use stored_file;
+use moodle_database;
+use moodle_exception;
 
 /**
  * Submission class.
@@ -33,13 +35,13 @@ use lib\​filestorage\stored_file;
 class submission {
 
     /**
-     * @var \moodle_database $moodledatabase represente Moodle global $DB
+     * @var moodle_database $moodledatabase represente Moodle global $DB
      */
-    public \moodle_database $moodledatabase;
+    public moodle_database $moodledatabase;
 
     /**
      * Class constructor
-     * @param  \moodle_database $moodledatabase represente Moodle global $DB.
+     * @param  moodle_database $moodledatabase represente Moodle global $DB.
      */
     public function __construct($moodledatabase) {
         $this->moodledatabase = $moodledatabase;
@@ -48,16 +50,15 @@ class submission {
     /**
      * Get submission records
      *
-     * @param int $cmid Course module ID
+     * @param $cm Course module
      * @param object $content Storedfile or onlinetext object
      * @param string $userid Userid of the author of the document
      * @param string $filename Filename of the document
      *
-     * @return object Submission record or throw exception
+     * @return object Submission record, null if a quiz (quiz don't had submissions) or throw exception
      */
-    public function get($cmid, $content, $userid, $filename) {
+    public function get($cm, $content, $userid, $filename) {
 
-        $cm = get_coursemodule_from_id(null, $cmid);
         if (!$cm) {
             throw new moodle_exception("Course module not found");
         }
@@ -66,7 +67,6 @@ class submission {
         if (!$moduleinstance) {
             throw new moodle_exception("moduleinstance not found");
         }
-
         switch ($cm->modname) {
             case 'assign':
                 return $this->get_from_assignment($content, $moduleinstance, $userid, $filename);
@@ -74,6 +74,8 @@ class submission {
                 return $this->get_from_workshop($content, $moduleinstance, $userid, $filename);
             case 'forum':
                 return $this->get_from_forum($content, $moduleinstance, $userid, $filename);
+            case 'quiz':
+                return null;
             default:
                 throw new moodle_exception("Course module not valid");
         }
@@ -93,7 +95,7 @@ class submission {
         $submission = null;
         $onlinetext = true;
 
-        if (is_object($content) && $content instanceof \stored_file && !empty($content->get_id())) {
+        if (is_object($content) && $content instanceof stored_file && !empty($content->get_id())) {
             $onlinetext = false;
             $submission = $this->get_by_id($content, 'assign_submission');
         }
@@ -135,7 +137,7 @@ class submission {
             }
 
             if (!$submission) {
-                throw new \moodle_exception('Submission not found');
+                throw new moodle_exception('Submission not found');
             }
         }
         return $submission;
@@ -156,7 +158,7 @@ class submission {
         $onlinetext = true;
 
         // Search by id for files.
-        if (is_object($content) && $content instanceof \stored_file && !empty($content->get_id())) {
+        if (is_object($content) && $content instanceof stored_file && !empty($content->get_id())) {
             $onlinetext = false;
             $submission = $this->get_by_id($content, 'workshop_submissions');
         }
@@ -184,7 +186,7 @@ class submission {
             }
 
             if (!$submission) {
-                throw new \moodle_exception('Submission not found');
+                throw new moodle_exception('Submission not found');
             }
         }
 
@@ -206,7 +208,7 @@ class submission {
         $onlinetext = true;
 
         // Search by id for files.
-        if (is_object($content) && $content instanceof \stored_file && !empty($content->get_id())) {
+        if (is_object($content) && $content instanceof stored_file && !empty($content->get_id())) {
             $onlinetext = false;
             $submission = $this->get_by_id($content, 'forum_posts');
         }
@@ -237,7 +239,7 @@ class submission {
             }
 
             if (!$submission) {
-                throw new \moodle_exception('Submission not found');
+                throw new moodle_exception('Submission not found');
             }
         }
         return $submission;

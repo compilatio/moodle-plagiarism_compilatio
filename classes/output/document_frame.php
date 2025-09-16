@@ -42,13 +42,23 @@ class document_frame {
      * @return string Return the HTML formatted string.
      */
     public static function get_document_frame($linkarray) {
+        global $DB, $CFG, $PAGE, $USER;
+        $output = '';
+
+        // Filter in which activity Compilatio is enabled (Assignment, Workshop, Quizz, Forum).
+        if (!empty($linkarray['file']) &&
+            !in_array(
+                $linkarray['file']->get_component(),
+                ['assignsubmission_file', 'mod_workshop', 'qtype_essay', 'question', 'mod_forum']
+            )
+        ) {
+            return $output;
+        }
+
         // Quiz management - Only essay question are supported for the moment.
         if (!empty($linkarray['component']) && $linkarray['component'] == 'qtype_essay') {
             $linkarray = self::manage_quiz($linkarray);
         }
-
-        global $DB, $CFG, $PAGE, $USER;
-        $output = '';
 
         // Check if Compilatio is enabled in moodle->module->cm.
         if (!isset($linkarray['cmid']) || !compilatio_enabled($linkarray['cmid'])) {
@@ -174,7 +184,7 @@ class document_frame {
 
         if (empty($cmpfile)) { // Try to get record without userid in forums.
             $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
-                $linkarray['cmid'], $content, $linkarray['userid']);
+                $linkarray['cmid'], $content, $userid);
         }
 
         $url = null;
@@ -204,7 +214,7 @@ class document_frame {
                         $onlineassignment = $DB->get_record_sql($sql, [$linkarray['assignment'], $linkarray['userid']]);
                         $filename = 'assign-' . $onlineassignment->submission . '.htm';
 
-                        file::send_file($linkarray['cmid'], $userid,  null, $filename, $linkarray['content']);
+                        file::send_file($linkarray['cmid'], $userid, $linkarray['content'], $filename);
                         return self::get_document_frame($linkarray);
                     }
 
@@ -564,7 +574,7 @@ class document_frame {
      * @param  string $a         optional string to include in translation
      * @return string Formated string
      */
-    private static function formatstring(string $stringid, string $component = 'plagiarism_compilatio', string $a = null) {
+    private static function formatstring(string $stringid, string $component = 'plagiarism_compilatio', ?string $a = null) {
         $str = get_string($stringid, $component, $a);
         if (preg_match("/&#[0-9]+;|&[a-z]+;/", $str)) {
             return $str;

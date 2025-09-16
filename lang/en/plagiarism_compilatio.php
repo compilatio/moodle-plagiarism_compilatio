@@ -413,9 +413,10 @@ $string['short_error_too_short'] = 'documents too short.';
 $string['short_error_unsupported'] = 'documents unsupported.';
 $string['show_area'] = 'Show Compilatio informations';
 $string['showstudentreport'] = 'Show analysis report to student';
-$string['showstudentreport_help'] = 'The analysis report gives a breakdown on what parts of the submission were plagiarised and the location of the detected sources.';
+$string['showstudentreport_help'] = 'The analysis report indicates the suspicious parts of the document and the location of the sources detected for similarities.';
 $string['showstudentscore'] = 'Show suspicious texts score to student';
-$string['showstudentscore_help'] = 'The suspicious texts score is the percentage of the submission that may potentially not be authentic.';
+$string['showstudentscore_help'] = 'The suspicious text score is the percentage of the submission that may potentially not be authentic.
+<br>It can include: similarities, potentially AI-generated content or altered texts (texts transformed to bypass detection software).';
 $string['showwhenclosed'] = 'When Activity closed';
 $string['similarities'] = 'Suspicious texts';
 $string['similarities_disclaimer'] = 'You can analyse suspicious texts in this activity\'s documents with <a href=\'http://www.compilatio.net/en/\' target=\'_blank\'>Compilatio</a>.<br/>
@@ -453,7 +454,7 @@ $string['student_help'] = 'You can analyse your draft with Compilatio Magister, 
 $string['student_start_analyze'] = 'The analysis can be started by the student';
 $string['studentanalyses'] = 'Allow students to analyse their documents';
 $string['studentanalyses_help'] = 'This allows students to analyse their draft files with Compilatio Magister, before final submission to the teacher.';
-$string['studentdisclosuredefault'] = 'All files uploaded here will be submitted to the suspicious texts detection service Compilatio';
+$string['studentdisclosuredefault'] = 'All files uploaded here will be submitted to the Compilatio suspicious text detection service.';
 $string['studentemailcontent'] = 'The file you submitted to {$a->modulename} in {$a->coursename} has now been processed by the Plagiarism tool Compilatio. {$a->modulelink}';
 $string['studentemailsubject'] = 'File processed by Compilatio';
 $string['students_disclosure'] = 'Student Disclosure';
