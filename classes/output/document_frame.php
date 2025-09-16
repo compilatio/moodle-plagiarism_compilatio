@@ -45,8 +45,13 @@ class document_frame {
         global $DB, $CFG, $PAGE, $USER;
         $output = '';
 
-        // Filter in which activity Compilatio is enabled (Assignment, Workshop, Quizz, Forum, )
-        if (!empty($linkarray['file']) && !in_array($linkarray['file']->get_component(), ['assignsubmission_file', 'mod_workshop', 'qtype_essay', 'question', 'mod_forum'])) {
+        // Filter in which activity Compilatio is enabled (Assignment, Workshop, Quizz, Forum).
+        if (!empty($linkarray['file']) &&
+            !in_array(
+                $linkarray['file']->get_component(),
+                ['assignsubmission_file', 'mod_workshop', 'qtype_essay', 'question', 'mod_forum']
+            )
+        ) {
             return $output;
         }
 
