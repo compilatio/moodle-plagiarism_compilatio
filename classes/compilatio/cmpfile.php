@@ -132,7 +132,7 @@ class cmpfile {
      *
      * @return cmpfile Return the cmpfile
      */
-    public function __construct(string $cmid, string $userid, mixed $content, mixed $submission, ?string $filename = null) {
+    public function __construct(string $cmid, string $userid, $content, $submission, ?string $filename = null) {
         $cm = get_coursemodule_from_id(null, $cmid);
 
         $this->cm = $cmid;
@@ -158,7 +158,7 @@ class cmpfile {
      * @param $submission Submission || null if the content passed come from a quiz
      * @return string Return the filename of the cmpfile
      */
-    private function createfilename(string $modname, mixed $submission, ?stored_file $file = null): string {
+    private function createfilename(string $modname, $submission, ?stored_file $file = null): string {
         if ($modname != 'quiz') {
             $filename = $file ? $file->get_filename() : 'assign-' . $submission->id . '.htm';
         } else {
