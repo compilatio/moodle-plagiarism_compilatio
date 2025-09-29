@@ -535,7 +535,9 @@ class event_handler {
         foreach ($attempt->get_slots() as $slot) {
             $answer = $attempt->get_question_attempt($slot);
             if ($answer->get_question()->get_type_name() == 'essay') {
-                $content = $answer->get_response_summary();
+                $content = $CFG->version >= 2023100900 ?
+                    $answer->get_question()->summarise_response($answer->get_last_qt_data()) :
+                    $answer->get_response_summary();
 
                 if (empty($content)) {
                     return;
