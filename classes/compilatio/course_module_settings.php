@@ -98,7 +98,7 @@ class course_module_settings {
 
                     if (isset($analysistime)) {
                         $date = new \DateTime();
-                        $date->setTimestamp($data->analysistime);
+                        $date->setTimestamp((int) $data->analysistime);
                         $analysistime = $date->format('Y-m-d H:i:s');
                     }
 
