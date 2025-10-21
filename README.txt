@@ -7,6 +7,9 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+3.2.9
+- Set max-width to image in marketing notifications
+
 3.2.8
 - [Fix] Document frame doesn't display in quiz
 - [Fix] Stop sending annotation files
