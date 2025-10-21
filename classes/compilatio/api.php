@@ -68,7 +68,7 @@ class api {
             $apikey = get_config('plagiarism_compilatio', 'apikey');
         }
 
-        $this->urlrest = 'https://app.compilatio.net';
+        $this->urlrest = 'https://moodle.zygarde.compilatio.net';
         $this->userid = $userid;
 
         if (isset($apikey) && $apikey !== '') {

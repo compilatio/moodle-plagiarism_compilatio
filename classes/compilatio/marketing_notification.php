@@ -74,7 +74,7 @@ class marketing_notification {
      * @param string $body The raw HTML content of the notification
      * @return string The formatted HTML content ready for display
      */
-    public function compilatio_format_notification_body(string $body): string {
+    public function format_notification_body(string $body): string {
         $body = str_replace('<a', '<a target="_blank" rel="noopener noreferrer"', $body);
         $body = str_replace('button', 'btn btn-primary', $body);
 
@@ -89,10 +89,8 @@ class marketing_notification {
 
                 if (!$hasstyle && !$haswidth && !$hasheight) {
                     $imgattributes .= ' style="max-width: 100%; max-height: 200px; height: auto; display: block; margin: 0 auto;"';
-                } else if ($hasstyle) {
-                    if (stripos($imgattributes, 'max-width') === false) {
-                        $imgattributes = preg_replace('/style="([^"]*)"/', 'style="$1 max-width: 100%; max-height: 200px; display: block; margin: 0 auto;"', $imgattributes);
-                    }
+                } else if ($hasstyle && stripos($imgattributes, 'max-width') === false) {
+                    $imgattributes = preg_replace('/style="([^"]*)"/', 'style="$1 max-width: 100%; max-height: 200px; display: block; margin: 0 auto;"', $imgattributes);
                 }
 
                 return '<img' . $imgattributes . '>';

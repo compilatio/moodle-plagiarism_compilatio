@@ -52,7 +52,7 @@ foreach ($notifications as $index => $notification) {
 
     $notificationsids[] = $notification->id;
 
-    $body = $compilatio_marketing_notification->compilatio_format_notification_body($current_language_notification->body);
+    $body = $compilatio_marketing_notification->format_notification_body($current_language_notification->body);
 
     $status = in_array($notification->id, $ignored) ? 'ignored' : 'unread';
     in_array($notification->id, $read) ? $status = 'read' : null;
