@@ -8,6 +8,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 3.2.9
+- [Fix] Typing analysistime in course_module_settings
 - Set max-width to image in marketing notifications
 
 3.2.8
