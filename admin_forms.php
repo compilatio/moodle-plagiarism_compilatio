@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +32,7 @@ use plagiarism_compilatio\compilatio\course_module_settings;
 
 /**
  * Setup form class
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class compilatio_setup_form extends moodleform {
@@ -133,7 +133,7 @@ class compilatio_setup_form extends moodleform {
 
 /**
  * Class
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class compilatio_defaults_form extends moodleform {
@@ -151,7 +151,7 @@ class compilatio_defaults_form extends moodleform {
 
 /**
  * Class
- * @copyright  2024 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class compilatio_restart_form extends moodleform {

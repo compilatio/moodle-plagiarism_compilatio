@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -36,7 +36,7 @@ global $CFG;
  * Test class for marketing notification functionality.
  *
  * @package    plagiarism_compilatio
- * @copyright  2023 Compilatio.net
+ * @copyright  2025 Compilatio.net
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass \plagiarism_compilatio\compilatio\marketing_notification
  */
