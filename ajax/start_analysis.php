@@ -38,7 +38,7 @@ $docid = required_param('docId', PARAM_RAW);
 $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 
 $context = context_module::instance($plagiarismfile->cm);
-require_capability('moodle/course:manageactivities', $context);
+require_capability('plagiarism/compilatio:triggeranalysis', $context);
 
 $status = analysis::start_analysis($plagiarismfile);
 

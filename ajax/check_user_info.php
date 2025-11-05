@@ -33,7 +33,7 @@ require_login();
 $cmid = required_param('cmid', PARAM_TEXT);
 
 $context = context_module::instance($cmid);
-require_capability('moodle/course:manageactivities', $context);
+require_capability('plagiarism/compilatio:enable', $context);
 
 global $DB, $USER;
 

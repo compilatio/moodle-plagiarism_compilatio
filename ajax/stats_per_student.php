@@ -35,7 +35,7 @@ require_login();
 $cmid = required_param('cmid', PARAM_TEXT);
 
 $context = context_module::instance($cmid);
-require_capability('moodle/course:manageactivities', $context);
+require_capability('plagiarism/compilatio:viewreport', $context);
 
 $selectedstudent = required_param('selectedstudent', PARAM_TEXT);
 global $DB;
