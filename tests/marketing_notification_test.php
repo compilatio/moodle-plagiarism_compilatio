@@ -42,13 +42,29 @@ global $CFG;
  */
 class marketing_notification_test extends \advanced_testcase {
 
-    public $BASE_INPUT_HTML = '<p>Test notification</p>' .
+    /**
+     * Base HTML input for testing notification body formatting.
+     *
+     * Contains basic HTML elements that will be processed by the format_notification_body method:
+     * - A paragraph with text
+     * - A link without target attributes
+     * - A button without CSS classes
+     */
+    public const BASE_INPUT_HTML = '<p>Test notification</p>' .
                     '<a href="https://example.com">Click here</a>' .
                     '<button>Action Button</button>';
 
-    public $BASE_OUTPUT_HTML ='<p>Test notification</p>' .
+    /**
+     * Expected HTML output after formatting by format_notification_body method.
+     *
+     * Contains the processed HTML with:
+     * - Links with target="_blank" and rel="noopener noreferrer" attributes
+     * - Buttons with Bootstrap CSS classes applied
+     */
+    public const BASE_OUTPUT_HTML = '<p>Test notification</p>' .
                     '<a target="_blank" rel="noopener noreferrer" href="https://example.com">Click here</a>' .
                     '<btn btn-primary>Action Button</btn btn-primary>';
+
     /**
      * Set up test environment.
      */
@@ -69,12 +85,20 @@ class marketing_notification_test extends \advanced_testcase {
      */
     public function test_format_notification_body_no_style() {
         $notification = new marketing_notification('en', 'test-user-id');
-        $result = $notification->format_notification_body($this->BASE_INPUT_HTML . '<img src="test.jpg" alt="Test image">');
+        $result = $notification->format_notification_body(self::BASE_INPUT_HTML . '<img src="test.jpg" alt="Test image">');
 
-        $expected_result = $this->BASE_OUTPUT_HTML .
-            '<img src="test.jpg" alt="Test image" style="max-width: 100%; max-height: 200px; height: auto; display: block; margin: 0 auto;">';
+        $expectedresult = self::BASE_OUTPUT_HTML .
+            '<img
+                src="test.jpg"
+                alt="Test image"
+                style="max-width: 100%;
+                max-height: 200px;
+                height: auto;
+                display: block;
+                margin: 0 auto;
+            ">';
 
-        $this->assertEquals($expected_result, $result);
+        $this->assertEquals($expectedresult, $result);
     }
 
     /**
@@ -89,32 +113,47 @@ class marketing_notification_test extends \advanced_testcase {
      */
     public function test_format_notification_body_with_style() {
         $notification = new marketing_notification('en', 'test-user-id');
-        $result = $notification->format_notification_body($this->BASE_INPUT_HTML . '<img src="test.jpg" style="lalala" alt="Test image">');
+        $result = $notification->format_notification_body(
+            self::BASE_INPUT_HTML .
+            '<img src="test.jpg" style="lalala" alt="Test image">'
+        );
 
-        $expected_result = $this->BASE_OUTPUT_HTML .
-            '<img src="test.jpg" style="lalala max-width: 100%; max-height: 200px; display: block; margin: 0 auto;" alt="Test image">';
+        $expectedresult = self::BASE_OUTPUT_HTML .
+            '<img
+                src="test.jpg"
+                style="
+                    lalala max-width: 100%;
+                    max-height: 200px;
+                    display: block;
+                    margin: 0 auto;
+                "
+                alt="Test image"
+            >';
 
-        $this->assertEquals($expected_result, $result);
+        $this->assertEquals($expectedresult, $result);
     }
 
-    /*
+    /**
      * Test notification body formatting functionality with style with max-width.
      *
      * This test verifies that the format_notification_body method correctly:
      * - Adds target="_blank" and rel="noopener noreferrer" to links
      * - Converts button class to Bootstrap styled buttons
-     * - Adds responsive styling to images
+     * - Does not override existing max-width in style attribute
      *
      * @covers ::format_notification_body
      */
     public function test_format_notification_body_with_style_and_maxwidth() {
         $notification = new marketing_notification('en', 'test-user-id');
-        $result = $notification->format_notification_body($this->BASE_INPUT_HTML . '<img src="test.jpg" style="lalala max-width=lilili" alt="Test image">');
+        $result = $notification->format_notification_body(
+            self::BASE_INPUT_HTML .
+            '<img src="test.jpg" style="lalala max-width=lilili" alt="Test image">'
+        );
 
-        $expected_result = $this->BASE_OUTPUT_HTML .
+        $expectedresult = self::BASE_OUTPUT_HTML .
             '<img src="test.jpg" style="lalala max-width=lilili" alt="Test image">';
 
-        $this->assertEquals($expected_result, $result);
+        $this->assertEquals($expectedresult, $result);
     }
 
     /**
@@ -129,22 +168,45 @@ class marketing_notification_test extends \advanced_testcase {
         $notification = new marketing_notification('en', 'test-user-id');
 
         $test = [
-            (object) ['title' => "A crazy notification", "body" => "Beautiful", "language" => "en"],
-            (object) ['title' => "Une notif incroyable", "body" => "pioupiou", "language" => "fr"]
-        ];        
+            (object) [
+                'title' => "A crazy notification",
+                "body" => "Beautiful",
+                "language" => "en",
+            ],
+            (object) ['title' => "Une notif incroyable",
+                "body" => "pioupiou",
+                "language" => "fr",
+            ],
+        ];
         $result = $notification->get_notification_current_language($test);
-        $expected_result = (object) ['title' => "A crazy notification", "body" => "Beautiful", "language" => "en"];
+        $expectedresult = (object) ['title' => "A crazy notification", "body" => "Beautiful", "language" => "en"];
 
-        $this->assertEquals($expected_result, $result);
+        $this->assertEquals($expectedresult, $result);
     }
 
+    /**
+     * Test retreive notification when language is not available.
+     *
+     * This test verifies that the get_notification_current_language method correctly:
+     * - Returns null when no notification matches the user's language
+     *
+     * @covers ::get_notification_current_language
+     */
     public function test_get_notification_current_language_no_language() {
         $notification = new marketing_notification('pt', 'test-user-id');
 
         $test = [
-            (object) ['title' => "A crazy notification", "body" => "Beautiful", "language" => "en"],
-            (object) ['title' => "Une notif incroyable", "body" => "pioupiou", "language" => "fr"]
-        ];        
+            (object) [
+                'title' => "A crazy notification",
+                "body" => "Beautiful",
+                "language" => "en",
+            ],
+            (object) [
+                'title' => "Une notif incroyable",
+                "body" => "pioupiou",
+                "language" => "fr",
+            ],
+        ];
         $result = $notification->get_notification_current_language($test);
 
         $this->assertNull($result);

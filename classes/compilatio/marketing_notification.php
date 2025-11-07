@@ -30,7 +30,7 @@ use DateTime;
 
 /**
  * Marketing notification handler class.
- * 
+ *
  * Handles the retrieval, formatting, and rendering of Compilatio marketing notifications
  * with support for multi-language content, image optimization, and responsive design.
  */
@@ -47,8 +47,7 @@ class marketing_notification {
      * @param string $language The language code (2 characters, e.g., 'en', 'fr')
      * @param string $userid The user ID for API authentication
      */
-    function __construct(string $language, string $userid)
-    {
+    public function __construct(string $language, string $userid) {
         $this->language = $language;
         $this->compilatioapi = new api($userid);
     }
@@ -64,7 +63,7 @@ class marketing_notification {
 
     /**
      * Format notification body: add target to links, style buttons, limit image size.
-     * 
+     *
      * This method performs several transformations:
      * - Adds target="_blank" and rel="noopener noreferrer" to all links for security
      * - Converts button elements to Bootstrap styled buttons (btn btn-primary)
@@ -90,7 +89,11 @@ class marketing_notification {
                 if (!$hasstyle && !$haswidth && !$hasheight) {
                     $imgattributes .= ' style="max-width: 100%; max-height: 200px; height: auto; display: block; margin: 0 auto;"';
                 } else if ($hasstyle && stripos($imgattributes, 'max-width') === false) {
-                    $imgattributes = preg_replace('/style="([^"]*)"/', 'style="$1 max-width: 100%; max-height: 200px; display: block; margin: 0 auto;"', $imgattributes);
+                    $imgattributes = preg_replace(
+                        '/style="([^"]*)"/',
+                        'style="$1 max-width: 100%; max-height: 200px; display: block; margin: 0 auto;"',
+                        $imgattributes
+                    );
                 }
 
                 return '<img' . $imgattributes . '>';
@@ -104,23 +107,23 @@ class marketing_notification {
     /**
      * Get notification content for the current language.
      *
-     * @param array $translated_notifications Array of translated notification objects
+     * @param array $translatednotifications Array of translated notification objects
      * @return object|null The notification content for current language or null if not found
      */
-    public function get_notification_current_language(array $translated_notifications): ?object {
-        return array_values(array_filter($translated_notifications, fn($n) => $n->language === $this->language))[0] ?? null;
+    public function get_notification_current_language(array $translatednotifications): ?object {
+        return array_values(array_filter($translatednotifications, fn($n) => $n->language === $this->language))[0] ?? null;
     }
 
     /**
      * Generate HTML for notification content body with scroll and navigation.
      *
-     * @param string $notification_id The unique identifier of the notification
+     * @param string $notificationid The unique identifier of the notification
      * @param string $body The formatted HTML content of the notification
      * @return string The complete HTML structure for notification content
      */
-    public function get_notification_content_body(string $notification_id, string $body): string {
+    public function get_notification_content_body(string $notificationid, string $body): string {
         return "
-        <div id='cmp-notifications-content-" . $notification_id
+        <div id='cmp-notifications-content-" . $notificationid
             . "' class='cmp-notifications-content' style='display: none; max-height: 70vh; overflow-y: auto;'>
             <div class='cmp-show-notifications mb-2 cmp-cursor-pointer'>"
                 . icons::arrow_left() . \get_string('see_all_notifications', 'plagiarism_compilatio') . "
@@ -132,51 +135,85 @@ class marketing_notification {
     /**
      * Generate HTML for notification title with status styling and optional separator.
      *
-     * @param string $notification_id The unique identifier of the notification
+     * @param string $notificationid The unique identifier of the notification
      * @param string $status The notification status ('read', 'unread', 'ignored')
      * @param string $title The notification title text
      * @param DateTime $date The activation date of the notification
      * @return string The complete HTML structure for notification title with optional HR separator
      */
-    public function get_notification_title_body(string $notification_id, string $status, string $title, DateTime $date, bool $is_last=false) {
-        $html = "<div id='cmp-notifications-" . $notification_id . "' 
-                    class='cmp-notifications-title cmp-cursor-pointer p-2 mb-1 cmp-notification-hover rounded' 
-                    style='max-height: 120px; overflow-y: auto; transition: all 0.3s ease; border-color: #dee2e6;'
-                    onmouseover='this.style.backgroundColor=\"#f8f9fa\"; this.style.borderColor=\"#007bff\"; this.style.transform=\"translateY(-1px)\"; this.style.boxShadow=\"0 4px 8px rgba(0,123,255,0.15)\";'
-                    onmouseout='this.style.backgroundColor=\"\"; this.style.borderColor=\"#dee2e6\"; this.style.transform=\"\"; this.style.boxShadow=\"\";'>
+    public function get_notification_title_body(
+        string $notificationid,
+        string $status,
+        string $title,
+        DateTime $date,
+        bool $islast=false
+    ) {
+        $html = "<div id='cmp-notifications-" . $notificationid . "'
+                    class='cmp-notifications-title cmp-cursor-pointer p-2 mb-1 cmp-notification-hover rounded'
+                    style='
+                        max-height: 120px;
+                        overflow-y: auto;
+                        transition: all 0.3s ease;
+                        border-color: #dee2e6;
+                    '
+                    onmouseover='
+                        this.style.backgroundColor=\"#f8f9fa\";
+                        this.style.borderColor=\"#007bff\";
+                        this.style.transform=\"translateY(-1px)\";
+                        this.style.boxShadow=\"0 4px 8px rgba(0,123,255,0.15)\";
+                    '
+                    onmouseout='
+                        this.style.backgroundColor=\"\";
+                        this.style.borderColor=\"#dee2e6\";
+                        this.style.transform=\"\";
+                        this.style.boxShadow=\"\";
+                    '>
             <div class='fw-bold " . ($status !== 'read' ? 'text-primary' : '') . "'>"
             . $title .
             "</div>"
-            . "<small class='text-muted'>" . \userdate($date->getTimestamp(), \get_string('strftimedatetime', 'core_langconfig')) . "</small>" .
+            . "<small class='text-muted'>" .
+                \userdate($date->getTimestamp(),
+                \get_string('strftimedatetime', 'core_langconfig')) .
+            "</small>" .
         "</div>";
 
-        $html .= !$is_last ? "<hr>" : "";
-        
+        $html .= !$islast ? "<hr>" : "";
+
         return $html;
     }
 
     /**
      * Generate HTML for floating notification alert.
      *
-     * @param string $notification_id The unique identifier of the notification
+     * @param string $notificationid The unique identifier of the notification
      * @param string $title The notification title text
      * @return string The complete HTML structure for floating notification with bell icon and actions
      */
-    public function get_notification_floatingnotification_body(string $notification_id, string $title): string {
+    public function get_notification_floatingnotification_body(string $notificationid, string $title): string {
         return "
             <div class='d-flex cmp-alert cmp-alert-notifications'>
                 <i class='cmp-alert-icon text-primary fa-lg fa fa-bell'></i>
                 <span class='mr-2'>" . $title . "</span>
                 <span
-                    id='cmp-notifications-" . $notification_id . "'
+                    id='cmp-notifications-" . $notificationid . "'
                     class='cmp-notifications-title ml-auto text-primary cmp-cursor-pointer'
                     style='transition: all 0.3s ease;'
-                    onmouseover='this.style.backgroundColor=\"#007bff\"; this.style.color=\"white\"; this.style.padding=\"4px 8px\"; this.style.borderRadius=\"4px\";'
-                    onmouseout='this.style.backgroundColor=\"\"; this.style.color=\"#007bff\"; this.style.padding=\"\"; this.style.borderRadius=\"\";'
+                    onmouseover='
+                        this.style.backgroundColor=\"#007bff\";
+                        this.style.color=\"white\";
+                        this.style.padding=\"4px 8px\";
+                        this.style.borderRadius=\"4px\";
+                    '
+                    onmouseout='
+                        this.style.backgroundColor=\"\";
+                        this.style.color=\"#007bff\";
+                        this.style.padding=\"\";
+                        this.style.borderRadius=\"\";
+                    '
                 >"
                     . \get_string('open', 'plagiarism_compilatio') .
                 "</span>
-                <i id='cmp-ignore-notifications' 
+                <i id='cmp-ignore-notifications'
                    class='my-auto ml-3 fa fa-times cmp-cursor-pointer'
                    style='transition: all 0.3s ease;'
                    onmouseover='this.style.color=\"#dc3545\"; this.style.transform=\"scale(1.1)\";'
@@ -194,12 +231,23 @@ class marketing_notification {
      * @param array $notificationsids Array of all notification IDs
      * @return array Complete result array ready for JSON encoding with floating, content, count and ids keys
      */
-    public function get_result(string $floatingnotification, string $titles, string $contents, int $countbadge, array $notificationsids): array {
+    public function get_result(
+        string $floatingnotification,
+        string $titles,
+        string $contents,
+        int $countbadge,
+        array $notificationsids
+    ): array {
         return [
             'floating' => $floatingnotification,
-            'content' => "<div id='cmp-notifications-titles' style='max-height: 60vh; overflow-y: auto;'><h4>" . \get_string("notifications", "plagiarism_compilatio") . "</h4>"
+            'content' =>
+                "<div
+                    id='cmp-notifications-titles'
+                    style='max-height: 60vh; overflow-y: auto;'>
+                        <h4>" . \get_string("notifications", "plagiarism_compilatio") . "</h4>"
                         . $titles .
-                    "</div>" . $contents,
+                "</div>"
+                . $contents,
             'count' => $countbadge,
             'ids' => $notificationsids,
         ];

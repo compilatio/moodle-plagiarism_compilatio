@@ -22,6 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
+
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
@@ -37,43 +38,54 @@ $userid = required_param('userid', PARAM_TEXT);
 $read = optional_param_array('read', [], PARAM_TEXT);
 $ignored = optional_param_array('ignored', [], PARAM_TEXT);
 
-$compilatio_marketing_notification = new marketing_notification(substr(current_language(), 0, 2), $userid);
-$notifications = $compilatio_marketing_notification->get();
+$compilatiomarketingnotification = new marketing_notification(substr(current_language(), 0, 2), $userid);
+$notifications = $compilatiomarketingnotification->get();
 $titles = $contents = $floatingnotification = '';
 $countbadge = 0;
 $notificationsids = [];
 
 foreach ($notifications as $index => $notification) {
-    $current_language_notification = $compilatio_marketing_notification->get_notification_current_language($notification->content_by_language);
-    
-    if ($current_language_notification === null) {
+    $currentlanguagenotification = $compilatiomarketingnotification
+        ->get_notification_current_language($notification->content_by_language);
+
+    if ( $currentlanguagenotification === null) {
         continue;
     }
 
     $notificationsids[] = $notification->id;
 
-    $body = $compilatio_marketing_notification->format_notification_body($current_language_notification->body);
+    $body = $compilatiomarketingnotification->format_notification_body( $currentlanguagenotification->body);
 
     $status = in_array($notification->id, $ignored) ? 'ignored' : 'unread';
     in_array($notification->id, $read) ? $status = 'read' : null;
 
     $status !== 'read' ? $countbadge++ : null;
 
-    $titles .= $compilatio_marketing_notification->get_notification_title_body(
-        $notification->id, 
-        $status, 
-        $current_language_notification->title, 
+    $titles .= $compilatiomarketingnotification->get_notification_title_body(
+        $notification->id,
+        $status,
+         $currentlanguagenotification->title,
         new DateTime($notification->activation_period->start),
         $index === (count($notifications) - 1)
     );
 
-    $contents .= $compilatio_marketing_notification->get_notification_content_body($notification->id, $body);
+    $contents .= $compilatiomarketingnotification->get_notification_content_body($notification->id, $body);
 
     if ($floatingnotification == '' && $status == 'unread') {
-        $floatingnotification = $compilatio_marketing_notification->get_notification_floatingnotification_body($notification->id, $current_language_notification->title);
+        $floatingnotification = $compilatiomarketingnotification
+            ->get_notification_floatingnotification_body($notification->id,  $currentlanguagenotification->title);
     }
 }
 
 $titles = empty($titles) ? '<span>' . get_string('no_notification', 'plagiarism_compilatio') . '</span>' : $titles;
 
-echo json_encode($compilatio_marketing_notification->get_result($floatingnotification, $titles, $contents, $countbadge, $notificationsids));
+echo json_encode(
+    $compilatiomarketingnotification
+        ->get_result(
+            $floatingnotification,
+            $titles,
+            $contents,
+            $countbadge,
+            $notificationsids
+        )
+    );
