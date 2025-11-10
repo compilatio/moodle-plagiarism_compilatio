@@ -132,7 +132,9 @@ class statistics {
             if ($html) {
                 $result['errors'] = '';
                 foreach ($countstatus as $stat) {
-                    $result['errors'] .= "- {$stat->count} " . get_string("short_{$stat->status}", 'plagiarism_compilatio') . '</br>';
+                    $result['errors'] .= "- {$stat->count} " .
+                    get_string("short_{$stat->status}", 'plagiarism_compilatio') .
+                    '</br>';
                 }
             } else {
                 foreach ($countstatus as $stat) {

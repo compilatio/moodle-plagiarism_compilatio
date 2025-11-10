@@ -419,7 +419,11 @@ class compilatio_frame {
             <form class='form-inline' action=" . $PAGE->url . " method='post'>
                 <input class='form-control m-2' type='text' id='docId' name='docId' value='" . $docid
                     . "' placeholder='" . get_string('compilatio_iddocument', 'plagiarism_compilatio') . "'>
-                <input class='btn btn-primary' type='submit' value='" . get_string('compilatio_search', 'plagiarism_compilatio') . "'>
+                <input
+                    class='btn btn-primary'
+                    type='submit'
+                    value='" . get_string('compilatio_search', 'plagiarism_compilatio') . "'
+                >
             </form>";
 
         if (!empty($docid)) {
