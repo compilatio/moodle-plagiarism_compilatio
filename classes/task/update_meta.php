@@ -25,6 +25,7 @@
 
 namespace plagiarism_compilatio\task;
 
+use communication_matrix\local\spec\v1p1;
 use plagiarism_compilatio\compilatio\api;
 
 /**
