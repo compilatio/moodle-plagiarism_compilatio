@@ -29,7 +29,6 @@ namespace plagiarism_compilatio\output;
  * icons class
  */
 class icons {
-
     /**
      * Returns HTML for arrow left icon
      *

@@ -62,7 +62,8 @@ class course_module_settings {
 
             if ($data->activated === '1') {
                 // Validation on thresholds.
-                if (!isset($data->warningthreshold, $data->criticalthreshold) ||
+                if (
+                    !isset($data->warningthreshold, $data->criticalthreshold) ||
                     $data->warningthreshold > $data->criticalthreshold ||
                     $data->warningthreshold > 100 || $data->warningthreshold < 0 ||
                     $data->criticalthreshold > 100 || $data->criticalthreshold < 0

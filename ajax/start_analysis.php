@@ -67,5 +67,3 @@ if ($status == 'queue') {
 }
 
 echo json_encode($res);
-
-

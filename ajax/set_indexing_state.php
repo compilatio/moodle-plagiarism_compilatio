@@ -44,7 +44,7 @@ $plagiarismsettings = (array) get_config('plagiarism_compilatio');
 $indexingstatepost = optional_param('indexingState', '', PARAM_TEXT);
 
 if (isset($docid) && isset($indexingstatepost)) {
-    $indexingstate = (int) ((boolean) $indexingstatepost);
+    $indexingstate = (int) ((bool) $indexingstatepost);
 
     $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $file->cm]);
     $compilatio = new api($userid);

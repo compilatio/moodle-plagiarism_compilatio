@@ -27,7 +27,6 @@
  * Restore class
  */
 class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
-
     /**
      * Returns the paths to be handled by the plugin at question level
      * @return  void
@@ -74,7 +73,6 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
         $paths[] = new restore_path_element($elename, $elepath);
 
         return $paths; // And we return the interesting paths.
-
     }
 
     /**

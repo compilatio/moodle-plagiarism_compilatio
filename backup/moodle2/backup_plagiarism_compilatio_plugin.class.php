@@ -27,7 +27,6 @@
  * Backup class
  */
 class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
-
     /**
      * Define the plugin's structure
      * @return object Structure object

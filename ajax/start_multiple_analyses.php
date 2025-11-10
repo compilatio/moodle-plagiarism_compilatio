@@ -108,7 +108,7 @@ if ($plugincm->analysistype == 'manual') {
             FROM {plagiarism_compilatio_files} cmpfile
             INNER JOIN {user} ON {user}.id = cmpfile.userid
             INNER JOIN {quiz_attempts} ON {quiz_attempts}.userid = {user}.id
-            WHERE {quiz_attempts}.id IN ('".$selectedstudents."') AND cmpfile.status='sent' AND cmpfile.cm = ?";
+            WHERE {quiz_attempts}.id IN ('" . $selectedstudents . "') AND cmpfile.status='sent' AND cmpfile.cm = ?";
         $cmpfiles = $DB->get_records_sql($sql, [$cmid]);
     } else {
         $sql = "cm = ? AND status = 'sent'";

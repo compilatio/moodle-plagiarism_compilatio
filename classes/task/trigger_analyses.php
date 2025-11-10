@@ -31,7 +31,6 @@ use plagiarism_compilatio\compilatio\analysis;
  * Trigger_analyses task class
  */
 class trigger_analyses extends \core\task\scheduled_task {
-
     /**
      * Get the task name
      * @return string Name

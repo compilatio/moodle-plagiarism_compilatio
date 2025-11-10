@@ -39,7 +39,7 @@ $stradmintest          = get_string('tabs_title_technical_tools', 'plagiarism_co
 
 // Display Compilatio logo.
 echo "<img id='cmp-logo' class='mb-3' src='" . new moodle_url("/plagiarism/compilatio/pix/compilatio.png") . "'>";
-echo '<div class="float-right">[ version: '. $plugin->version . ', release: ' . $plugin->release . ', instance id: '
+echo '<div class="float-right">[ version: ' . $plugin->version . ', release: ' . $plugin->release . ', instance id: '
     . substr(get_config('plagiarism_compilatio', 'instance_key'), 0, 6) . ' ]</div>';
 echo '<div style="clear:both"></div>';
 

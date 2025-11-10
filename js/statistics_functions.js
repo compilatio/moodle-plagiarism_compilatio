@@ -1,21 +1,23 @@
 /**
  * CompilatioPercentage
+ * Used as data-formatter for percentage columns in statistics table
  *
  * @param {int} v
  * @return {string} pourcentage.
  */
-function compilatioPercentage(v) {
+function compilatioPercentage(v) { // eslint-disable-line no-unused-vars
     return v + '%';
 }
 
 /**
  * CompilatioUrlSorter
+ * Used as data-sorter for text columns in statistics table
  *
  * @param {string} a
  * @param {string} b
  * @return {Number}
  */
-function compilatioUrlSorter(a, b) {
+function compilatioUrlSorter(a, b) { // eslint-disable-line no-unused-vars
 
     // Strip tags to compare their content.
     a = a.replace(/(<([^>]+)>)/ig, '');

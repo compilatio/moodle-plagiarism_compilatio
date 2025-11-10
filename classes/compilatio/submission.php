@@ -33,7 +33,6 @@ use moodle_exception;
  * Submission class.
  */
 class submission {
-
     /**
      * @var moodle_database $moodledatabase represente Moodle global $DB
      */

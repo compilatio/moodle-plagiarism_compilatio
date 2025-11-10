@@ -32,7 +32,6 @@ use moodle_exception;
  * Handle identifier generation.
  */
 class identifier {
-
     /**
      * @var string $userid User id
      */

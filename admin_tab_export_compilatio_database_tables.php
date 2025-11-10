@@ -24,7 +24,7 @@
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
-require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->libdir . '/adminlib.php');
 
 use plagiarism_compilatio\compilatio\csv_generator;
 

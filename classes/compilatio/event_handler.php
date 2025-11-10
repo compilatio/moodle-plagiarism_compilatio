@@ -125,7 +125,6 @@ class event_handler {
 
         foreach ($modules as $modulename => $option) {
             if (isset($options[$option]) && $options[$option] == 1) {
-
                 $sql = 'SELECT pcf.id, pcf.externalid, pcf.cm
                     FROM {plagiarism_compilatio_files} pcf
                     JOIN {course_modules} course_modules ON pcf.cm = course_modules.id
@@ -199,11 +198,10 @@ class event_handler {
         if ($event['crud'] == 'c') { // Recycle bin created.
             if ($event['objecttable'] == 'tool_recyclebin_course') { // Course module.
                 $SESSION->compilatio_bin_created = $event['objectid'];
-
             } else if ($event['objecttable'] == 'tool_recyclebin_category') { // Course.
                 $sql = 'SELECT module.id FROM {plagiarism_compilatio_cm_cfg} module
                         JOIN {course_modules} cm ON module.cmid = cm.id
-                        WHERE cm.course ='. $SESSION->compilatio_course_deleted_id;
+                        WHERE cm.course =' . $SESSION->compilatio_course_deleted_id;
                 $modules = $DB->get_records_sql($sql);
 
                 foreach ($modules as $module) {
@@ -212,7 +210,6 @@ class event_handler {
 
                 unset($SESSION->compilatio_course_deleted_id);
             }
-
         } else if ($event['crud'] == 'u') { // Recycle bin restored.
             $cmcfgs = $DB->get_records('plagiarism_compilatio_cm_cfg', ['recyclebinid' => $event['objectid']]);
 
@@ -242,7 +239,6 @@ class event_handler {
                 $DB->delete_records('plagiarism_compilatio_files', ['cm' => $cmcfg->cmid]);
                 $DB->delete_records('plagiarism_compilatio_cm_cfg', ['id' => $cmcfg->id]);
             }
-
         } else if ($event['crud'] == 'd') { // Recycle bin deleted.
             $cmcfgs = $DB->get_records('plagiarism_compilatio_cm_cfg', ['recyclebinid' => $event['objectid']]);
             compilatio_delete_course_modules($cmcfgs);
@@ -311,7 +307,6 @@ class event_handler {
                             'assign-' . $event["objectid"] . '.htm',
                         ]
                     );
-
                 } else {
                     // Normal submission.
                     $duplicates = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
@@ -324,7 +319,6 @@ class event_handler {
         // Re-submit file when student submit a draft submission.
         $plugincm = compilatio_cm_use($cmid);
         if ($event['target'] == 'assessable' && $plugincm->studentanalyses === '1') {
-
             $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
             $compilatio = new api($plugincm->userid);
 
@@ -392,12 +386,12 @@ class event_handler {
         $groupid = null;
 
         $compifile = $compilatiofile->compilatio_get_document_with_failover(
-                        $cmid,
-                        $filecontent,
-                        $userid,
-                        null,
-                        ['filename' => $filename, 'groupid' => $groupid]
-                    );
+            $cmid,
+            $filecontent,
+            $userid,
+            null,
+            ['filename' => $filename, 'groupid' => $groupid]
+        );
 
         if (!$compifile) {
             $duplicates = $DB->get_records('plagiarism_compilatio_files', ['filename' => $filename]);
@@ -494,7 +488,6 @@ class event_handler {
         compilatio_delete_files($duplicates);
 
         foreach ($event["other"]["pathnamehashes"] as $hash) {
-
             $fs = get_file_storage();
             $file = $fs->get_file_by_hash($hash);
 
@@ -568,7 +561,6 @@ class event_handler {
                 $context = \context_module::instance($cmid);
                 $files = $answer->get_last_qt_files('attachments', $context->id);
                 foreach ($files as $file) {
-
                     // Check for duplicate files.
                     $duplicates = $compilatiofile->compilatio_get_document_with_failover(
                         $cmid,
@@ -595,19 +587,24 @@ class event_handler {
     public static function grade_item_created($event): void {
         global $DB;
 
-        if ($event['eventname'] === '\\core\\event\\grade_item_created'
-            && $event['objecttable'] === 'grade_items') {
-
+        if (
+            $event['eventname'] === '\\core\\event\\grade_item_created'
+            && $event['objecttable'] === 'grade_items'
+            ) {
             $gradeitem = $DB->get_record('grade_items', ['id' => $event['objectid']]);
 
-            if (false === $module = $DB->get_record('modules', ['name' => $gradeitem->itemmodule])) {
+            $module = $DB->get_record('modules', ['name' => $gradeitem->itemmodule]);
+
+            if (false === $module) {
                 return;
             }
 
-            if (false === $coursemodule = $DB->get_record(
+            $coursemodule = $DB->get_record(
                 'course_modules',
                 ['module' => $module->id, 'instance' => $gradeitem->iteminstance]
-            )) {
+            );
+
+            if (false === $coursemodule) {
                 return;
             }
 

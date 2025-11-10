@@ -38,14 +38,12 @@ global $CFG;
  * Class plagiarism_compilatio_privacy_provider_testcase
  * @covers \plagiarism_compilatio\privacy\provider
  */
-class provider_test extends \core_privacy\tests\provider_testcase {
-
+final class  provider_test extends \core_privacy\tests\provider_testcase {
     /**
      * Test function get_metadata
      * @covers \plagiarism_compilatio\privacy\provider::get_metadata
      */
-    public function test_get_metadata() {
-
+    public function test_get_metadata():void {
         $this->resetAfterTest();
 
         $collection = new collection('plagiarism_compilatio');
@@ -93,7 +91,7 @@ class provider_test extends \core_privacy\tests\provider_testcase {
      * Test function get_contexts_for_userid
      * @covers \plagiarism_compilatio\privacy\provider::get_contexts_for_userid
      */
-    public function test_get_contexts_for_userid() {
+    public function test_get_contexts_for_userid():void {
 
         $this->resetAfterTest();
 
@@ -116,7 +114,7 @@ class provider_test extends \core_privacy\tests\provider_testcase {
      * Test function export_plagiarism_user_data
      * @covers \plagiarism_compilatio\privacy\provider::export_plagiarism_user_data
      */
-    public function test_export_plagiarism_user_data() {
+    public function test_export_plagiarism_user_data():void {
 
         $this->resetAfterTest();
 
@@ -144,7 +142,7 @@ class provider_test extends \core_privacy\tests\provider_testcase {
      * Test fonction _delete_plagiarism_for_user (cas où les fichiers appartiennent à l'établissement)
      * @covers \plagiarism_compilatio\privacy\provider::delete_plagiarism_for_user
      */
-    public function test_delete_plagiarism_for_user_owner_school() {
+    public function test_delete_plagiarism_for_user_owner_school():void {
 
         $this->resetAfterTest();
         global $DB;

@@ -31,7 +31,6 @@ use plagiarism_compilatio\compilatio\analysis;
  * Get_scores task class
  */
 class get_scores extends \core\task\scheduled_task {
-
     /**
      * Get the task name
      * @return string Name

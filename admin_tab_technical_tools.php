@@ -29,6 +29,7 @@ require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/admin_forms.php');
 
+use plagiarism_compilatio\compilatio\form\compilatio_restart_form;
 use plagiarism_compilatio\compilatio\file;
 use plagiarism_compilatio\compilatio\api;
 use plagiarism_compilatio\compilatio\analysis;

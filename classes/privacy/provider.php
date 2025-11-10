@@ -46,7 +46,6 @@ if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
      * This interface extends the core plagiarism user provider interface.
      */
     interface user_provider extends \core_plagiarism\privacy\plagiarism_user_provider {
-
     }
 } else {
     /**
@@ -65,8 +64,8 @@ if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
  * This is a plagiarism plugin. It interacts with the plagiarism subsystem rather than with core.
  */
 class provider implements metadata_provider, plagiarism_provider, user_provider {
-
-    use local_polyfill, privacy_polyfill;
+    use local_polyfill;
+    use privacy_polyfill;
 
     /**
      *
@@ -74,7 +73,6 @@ class provider implements metadata_provider, plagiarism_provider, user_provider 
      * @return  collection  The updated collection of user data.
      */
     public static function get_metadata(collection $collection): collection {
-
         $collection->add_subsystem_link(
             'core_files',
             [],

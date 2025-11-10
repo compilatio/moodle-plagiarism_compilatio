@@ -93,7 +93,6 @@ class statistics {
             if ($html) {
                 $result['course'] = "<a href='$courseurl'>$row->course</a>";
                 $result['activity'] = "<a href='$activityurl'>$row->module_name</a>";
-
             } else {
                 $result['courseid'] = $row->id;
                 $result['course'] = $row->course;
@@ -113,7 +112,6 @@ class statistics {
                 $userurl = new moodle_url('/user/view.php', ['id' => $teacher->userid]);
                 if ($html) {
                     $result['teacher'] .= "- <a href='$userurl'>$teacher->lastname $teacher->firstname</a></br>";
-
                 } else {
                     array_push($teacherid, $teacher->userid);
                     array_push($teachername, $teacher->lastname . ' ' . $teacher->firstname);
@@ -134,7 +132,7 @@ class statistics {
             if ($html) {
                 $result['errors'] = '';
                 foreach ($countstatus as $stat) {
-                    $result['errors'] .= "- {$stat->count} " . get_string("short_{$stat->status}", 'plagiarism_compilatio').'</br>';
+                    $result['errors'] .= "- {$stat->count} " . get_string("short_{$stat->status}", 'plagiarism_compilatio') . '</br>';
                 }
             } else {
                 foreach ($countstatus as $stat) {
@@ -345,7 +343,6 @@ class statistics {
         $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
         $compilatiofile = new \plagiarism_compilatio\compilatio\file();
         foreach ($attempt->get_slots() as $slot) {
-
             $answer = $attempt->get_question_attempt($slot);
             $content = $answer->get_response_summary();
 
@@ -474,11 +471,11 @@ class statistics {
     /**
      * Get statistic's rows for the student selected on the dropdown selector
      *
-     * @param  string $cmpfile cmpfile
+     * @param  stdClass $cmpfile cmpfile
      * @param  int    $index index
      * @param  int    $count number files in response
      * @param  int    $slot question number
-     * @param  string $config config
+     * @param  stdClass $config config
      * @param  int    $suspectwordsquestion suspect words in response of this question
      * @param  int    $wordcount wordcount
      * @return string       HTML containing the statistics for this student
@@ -531,7 +528,7 @@ class statistics {
 
             $output .=
                 "<a href='{$href}' target='_blank' class='text-decoration-none'>
-                    <span class='text-primary text-nowrap font-weight-bold cmp-links-color'>"
+                    <span class='text-primary text-nowrap font-weight-bold'>"
                         . get_string('access_report', 'plagiarism_compilatio') . "</span>
                 </a>";
         } else if (strpos($cmpfile->status, "error") === 0) {
@@ -571,7 +568,7 @@ class statistics {
         $url = $PAGE->url;
         $url->param('cmp_csv_export_per_student', true);
         $exportbutton = "<a title='" . get_string("export_csv_per_student", "plagiarism_compilatio")
-            . "' class='cmp-icon pr-3' style='position: absolute; right: 0; top: 0;' href='". $url ."'>
+            . "' class='cmp-icon pr-3' style='position: absolute; right: 0; top: 0;' href='" . $url . "'>
                 <i class='fa fa-download'></i>
             </a>";
 
@@ -588,7 +585,7 @@ class statistics {
             $output .= "<i id='previous-student' title='" . get_string('previous_student', 'plagiarism_compilatio')
                 . "' class='cmp-icon-lg fa fa-chevron-left'></i>
                 <select class='custom-select' id='student-select'>
-                <option>". get_string('select_a_student', 'plagiarism_compilatio') . "</option>";
+                <option>" . get_string('select_a_student', 'plagiarism_compilatio') . "</option>";
             foreach ($studentattemptsubmitted as $user) {
                 $userlist[] = $user->id;
                 $output .= '<option value="' . $user->id . '">' . $user->lastname . ' ' . $user->firstname . '</option>';

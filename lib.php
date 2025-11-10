@@ -260,7 +260,6 @@ function compilatio_get_unsent_documents($cmid) {
                 array_push($notuploadedfiles, $onlineassignment);
             }
         }
-
     } else {
         // Normal submission.
 

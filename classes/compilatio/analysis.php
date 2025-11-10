@@ -50,15 +50,11 @@ class analysis {
         if ($analyse === true) {
             $cmpfile->status = 'queue';
             $cmpfile->timesubmitted = time();
-
         } else if (strpos($analyse, 'Document doesn\'t exceed minimum word limit') !== false) {
             $cmpfile->status = 'error_too_short';
-
         } else if (strpos($analyse, 'Document exceed maximum word limit') !== false) {
             $cmpfile->status = 'error_too_long';
-
         } else if (strpos($analyse, 'is not extracted, wait few seconds and retry.') !== false) {
-
             if (is_object($document = $compilatio->get_document($cmpfile->externalid))
                 && in_array('extraction_error', $document->tags)) {
                 $cmpfile->status = 'error_extraction_failed';
@@ -67,7 +63,6 @@ class analysis {
             }
         } else if (strpos($analyse, 'is already analysed') !== false) {
             $cmpfile->status = 'queue';
-
         } else {
             return $analyse;
         }
@@ -136,7 +131,6 @@ class analysis {
                 }
 
                 $cmpfile->ignoredscores = implode(',', $ignoredscores);
-
             } else if ($state == 'crashed' || $state == 'aborted' || $state == 'canceled') {
                 $cmpfile->status = 'error_analysis_failed';
             }

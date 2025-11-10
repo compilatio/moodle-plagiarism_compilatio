@@ -35,7 +35,6 @@ use plagiarism_compilatio\compilatio\identifier;
  * document_frame class
  */
 class document_frame {
-
     /**
      * Display plagiarism document area
      * @param string  $linkarray
@@ -145,7 +144,6 @@ class document_frame {
         }
 
         if ($USER->id == $userid || (isset($userbelongstogroup) && $userbelongstogroup)) {
-
             if ($isstudentanalyse) {
                 $canviewreport = true;
                 $canviewscore = true;
@@ -174,17 +172,25 @@ class document_frame {
 
         // Get compilatio file record.
         $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
-            $linkarray['cmid'], $content, $userid, null, ['groupid' => $groupid]
+            $linkarray['cmid'],
+            $content,
+            $userid,
+            null,
+            ['groupid' => $groupid]
         );
 
         if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
             $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
-                $linkarray['cmid'], $linkarray['cmp_filename'], $userid, null, ['groupid' => $groupid]);
+                $linkarray['cmid'],
+                $linkarray['cmp_filename'],
+                $userid,
+                null,
+                ['groupid' => $groupid]
+            );
         }
 
         if (empty($cmpfile)) { // Try to get record without userid in forums.
-            $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
-                $linkarray['cmid'], $content, $userid);
+            $cmpfile = $compilatiofile->compilatio_get_document_with_failover($linkarray['cmid'], $content, $userid);
         }
 
         $url = null;
@@ -306,7 +312,6 @@ class document_frame {
         $bgcolor = 'primary';
         if ($status == 'scored') {
             if ($canviewreport) {
-
                 $params = [
                     'docid' => $cmpfile->externalid,
                     'cmid' => $cmpfile->cm,
@@ -325,7 +330,7 @@ class document_frame {
                     $documentframe =
                         "<div
                             class='cmp-btn cmp-btn-doc cmp-btn-primary disabled'
-                            title='" .self::formatstring('disabled_in_maintenance') .
+                            title='" . self::formatstring('disabled_in_maintenance') .
                         "'>"
                             . icons::report() . self::formatstring('report', 'core') .
                         "</div>";
@@ -338,7 +343,6 @@ class document_frame {
             }
 
             $score = self::get_score($cmpfile, $config, $isteacher);
-
         } else if ($status == 'sent') {
             if (($config->analysistype ?? null) == 'planned') {
                 $documentframe =
@@ -370,7 +374,6 @@ class document_frame {
             } else {
                 return '';
             }
-
         } else if ($status == "queue" || $status == "analysing") {
             $documentframe =
                 "<div title='" . self::formatstring('title_' . $status) . "' class='cmp-color-secondary cmp-action-btn'>
@@ -397,7 +400,6 @@ class document_frame {
                     <i class='mx-2 fa fa-exclamation-triangle'></i>" . self::formatstring('btn_' . $status) . "</div>";
             $bgcolor = 'error';
         } else if (isset($url) && ($cantriggeranalysis || ($isstudentanalyse && !$isteacher))) {
-
             // Display fake unset button if under maintenance.
             if ($compilatio->is_in_maintenance()) {
                 $documentframe =

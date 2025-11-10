@@ -31,7 +31,6 @@ use plagiarism_compilatio\compilatio\api;
  * Update_meta task class
  */
 class update_meta extends \core\task\scheduled_task {
-
     /**
      * Get the task name
      * @return string Name

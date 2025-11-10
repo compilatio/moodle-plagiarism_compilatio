@@ -131,8 +131,10 @@ if (!empty($plagiarismsettings['enabled'])) {
 
         if (isset($subscription->quotas)) {
             foreach ($subscription->quotas as $quota) {
-                if (($quota->blocking === false && $quota->resource === 'analysis_count') ||
-                    ($quota->blocking === true && $quota->resource === 'analysis_page_count')) {
+                if (
+                    ($quota->blocking === false && $quota->resource === 'analysis_count') ||
+                    ($quota->blocking === true && $quota->resource === 'analysis_page_count')
+                ) {
 
                     $subscriptioninfos .= '<li>'
                             . get_string('subscription_' . $quota->resource, 'plagiarism_compilatio', $quota) .

@@ -1040,10 +1040,13 @@ class api {
             return true;
         }
 
-        if (!$isinmaintenance &&
-                (get_config('plagiarism_compilatio', 'compilatio_maintenance') === '1' ||
+        if (
+            !$isinmaintenance &&
+            (
+                get_config('plagiarism_compilatio', 'compilatio_maintenance') === '1' ||
                 !get_config('plagiarism_compilatio', 'compilatio_maintenance')
-        )) {
+            )
+        ) {
             set_config('compilatio_maintenance', '0', 'plagiarism_compilatio');
         }
 
