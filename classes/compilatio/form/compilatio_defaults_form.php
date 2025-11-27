@@ -26,6 +26,8 @@
 namespace plagiarism_compilatio\compilatio\form;
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 
+use plagiarism_compilatio\compilatio\course_module_settings;
+
 require_once($CFG->dirroot . '/lib/formslib.php');
 
 /**
