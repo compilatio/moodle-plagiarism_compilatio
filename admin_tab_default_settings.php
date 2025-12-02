@@ -22,7 +22,7 @@
  * @copyright 2025 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-use plagiarism_compilatio\compilatio\compilatio_defaults_form;
+use plagiarism_compilatio\compilatio\form\compilatio_defaults_form;
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
 require_once($CFG->libdir . '/adminlib.php');
