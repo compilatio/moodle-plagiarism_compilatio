@@ -11,6 +11,7 @@ CHANGES
 - [Fix] Typing analysistime in course_module_settings
 - [Fix] Update capability in ajax to match roles needed for actions
 - Set max-width to image in marketing notifications
+- Add field in administration page settings to select field used as university component in Compilatio admin page.
 
 3.2.8
 - [Fix] Document frame doesn't display in quiz

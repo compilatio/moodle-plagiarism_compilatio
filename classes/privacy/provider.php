@@ -53,6 +53,7 @@ if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
      *
      * This interface is used if the core plagiarism user provider interface does not exist.
      */
+    /* phpcs:ignore */
     interface user_provider {
 
     }

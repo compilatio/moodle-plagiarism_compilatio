@@ -293,18 +293,20 @@ class api {
     /**
      * Update Elastisafe user
      *
-     * @param   string  $userid         User's identifier
-     * @param   string  $firstname      User's firstname
-     * @param   string  $lastname       User's lastname
-     * @param   string  $email          User's email
-     * @return  string                  Return true if succeed, false otherwise
+     * @param   string  $userid                        User's identifier
+     * @param   string  $firstname                     User's firstname
+     * @param   string  $lastname                      User's lastname
+     * @param   string  $email                         User's email
+     * @param   string  $universitycomponent          User's university component
+     * @return  string                                 Return true if succeed, false otherwise
      */
-    public function update_user($userid, $firstname, $lastname, $email) {
+    public function update_user($userid, $firstname, $lastname, $email, $universitycomponent) {
         $endpoint = '/api/private/user/' . $userid;
         $params = [
             'firstname' => $firstname,
             'lastname' => $lastname,
             'email' => $email,
+            'university_component' => $universitycomponent,
         ];
 
         $response = json_decode($this->build_curl($endpoint, 'patch', json_encode($params)));
