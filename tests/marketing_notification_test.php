@@ -88,15 +88,7 @@ class marketing_notification_test extends \advanced_testcase {
         $result = $notification->format_notification_body(self::BASE_INPUT_HTML . '<img src="test.jpg" alt="Test image">');
 
         $expectedresult = self::BASE_OUTPUT_HTML .
-            '<img
-                src="test.jpg"
-                alt="Test image"
-                style="max-width: 100%;
-                max-height: 200px;
-                height: auto;
-                display: block;
-                margin: 0 auto;
-            ">';
+            '<img src="test.jpg" alt="Test image" style="max-width: 100%; max-height: 200px; height: auto; display: block; margin: 0 auto;">';
 
         $this->assertEquals($expectedresult, $result);
     }
@@ -119,16 +111,7 @@ class marketing_notification_test extends \advanced_testcase {
         );
 
         $expectedresult = self::BASE_OUTPUT_HTML .
-            '<img
-                src="test.jpg"
-                style="
-                    lalala max-width: 100%;
-                    max-height: 200px;
-                    display: block;
-                    margin: 0 auto;
-                "
-                alt="Test image"
-            >';
+            '<img src="test.jpg" style="lalala max-width: 100%; max-height: 200px; display: block; margin: 0 auto;" alt="Test image">';
 
         $this->assertEquals($expectedresult, $result);
     }
