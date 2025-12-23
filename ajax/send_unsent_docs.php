@@ -33,7 +33,7 @@ require_login();
 
 $cmid = required_param('cmid', PARAM_TEXT);
 $context = context_module::instance($cmid);
-require_capability('plagiarism/compilatio:triggeranalysis', $context);
+require_capability('plagiarism/compilatio:triggeranalysis', context::instance_by_id($context->id));
 
 global $SESSION;
 

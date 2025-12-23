@@ -33,7 +33,7 @@ require_login();
 $cmid = required_param('cmid', PARAM_TEXT);
 
 $context = context_module::instance($cmid);
-require_capability('plagiarism/compilatio:enable', $context);
+require_capability('plagiarism/compilatio:enable', context::instance_by_id($context->id));
 
 global $DB, $USER;
 
@@ -42,25 +42,30 @@ $compilatioid = $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['u
 $compilatio = new api();
 $cmpuser = $compilatio->get_user($compilatioid);
 
-$compilatiouniversitycomponent = new university_component($DB);
-
-$useruniversitycomponent = $compilatiouniversitycomponent->retreive_university_component_for_user((string) $USER->id);
-$currentuniversitycomponent = $cmpuser->bundle_data[0]->university_component;
 if (
-    !empty($cmpuser)
-    && $cmpuser->origin == 'LMS-Moodle'
-    && (
-        $cmpuser->firstname !== $USER->firstname
-        || $cmpuser->lastname !== $USER->lastname
-        || strtolower($cmpuser->email) !== strtolower($USER->email)
-        || $currentuniversitycomponent !== $useruniversitycomponent
-    )
+    empty($cmpuser)
+    || $cmpuser->origin !== 'LMS-Moodle'
+) {
+    return;
+}
+
+if (
+    $cmpuser->firstname !== $USER->firstname
+    || $cmpuser->lastname !== $USER->lastname
+    || strtolower($cmpuser->email) !== strtolower($USER->email)
 ) {
     $compilatio->update_user(
         $compilatioid,
         $USER->firstname,
         $USER->lastname,
         $USER->email,
-        $useruniversitycomponent
     );
+}
+
+$compilatiouniversitycomponent = new university_component($DB);
+$useruniversitycomponent = $compilatiouniversitycomponent->retreive_university_component_for_user((string) $USER->id);
+$currentuniversitycomponent = $cmpuser->bundle_data[0]->university_component;
+
+if ($currentuniversitycomponent !== $useruniversitycomponent) {
+    $compilatio->update_user_university_component($compilatioid, $useruniversitycomponent);
 }

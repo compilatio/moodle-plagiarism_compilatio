@@ -68,7 +68,7 @@ class api {
             $apikey = get_config('plagiarism_compilatio', 'apikey');
         }
 
-        $this->urlrest = 'https://app.compilatio.net';
+        $this->urlrest = 'https://moodle.zygarde.compilatio.net';
         $this->userid = $userid;
 
         if (isset($apikey) && $apikey !== '') {
@@ -297,19 +297,38 @@ class api {
      * @param   string  $firstname                     User's firstname
      * @param   string  $lastname                      User's lastname
      * @param   string  $email                         User's email
-     * @param   string  $universitycomponent          User's university component
      * @return  string                                 Return true if succeed, false otherwise
      */
-    public function update_user($userid, $firstname, $lastname, $email, $universitycomponent) {
+    public function update_user($userid, $firstname, $lastname, $email) {
         $endpoint = '/api/private/user/' . $userid;
         $params = [
             'firstname' => $firstname,
             'lastname' => $lastname,
             'email' => $email,
-            'university_component' => $universitycomponent,
         ];
 
         $response = json_decode($this->build_curl($endpoint, 'patch', json_encode($params)));
+
+        if ($this->get_error_response($response, 200) === false) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Update Elastisafe user university component
+     *
+     * @param   string  $userid                        User's identifier
+     * @param   string  $universitycomponent          User's university component
+     * @return  string                                 Return true if succeed, false otherwise
+     */
+    public function update_user_university_component($userid, $universitycomponent) {
+        $endpoint = '/api/private/users/' . $userid . '/university-components';
+        $params = [
+            'university_component' => $universitycomponent,
+        ];
+
+        $response = json_decode($this->build_curl($endpoint, 'post', json_encode($params)));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;

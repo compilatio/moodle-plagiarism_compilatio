@@ -35,7 +35,7 @@ require_login();
 $cmid = required_param('cmid', PARAM_TEXT);
 
 $context = context_module::instance($cmid);
-require_capability('plagiarism/compilatio:viewreport', $context);
+require_capability('plagiarism/compilatio:viewreport', context::instance_by_id($context->id));
 
 $selectedstudent = required_param('selectedstudent', PARAM_TEXT);
 global $DB;
