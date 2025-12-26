@@ -58,6 +58,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         'enable_analyses_auto',
         'disable_ssl_verification',
         'keep_docs_indexed',
+        'university_component_type',
     ];
 
     foreach ($elements as $elem) {
@@ -91,6 +92,7 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         $defaultconfig->warningthreshold = 10;
         $defaultconfig->criticalthreshold = 25;
         $defaultconfig->defaultindexing = 1;
+        $defaultconfig->universitycomponenttype = get_string('university_composable_none', 'plagiarism_compilatio');
         $DB->insert_record('plagiarism_compilatio_cm_cfg', $defaultconfig);
     }
 
@@ -137,7 +139,7 @@ if (!empty($plagiarismsettings['enabled'])) {
                 ) {
 
                     $subscriptioninfos .= '<li>'
-                            . get_string('subscription_' . $quota->resource, 'plagiarism_compilatio', $quota) .
+                        . get_string('subscription_' . $quota->resource, 'plagiarism_compilatio', $quota) .
                         '</li>';
                 }
             }
@@ -145,7 +147,7 @@ if (!empty($plagiarismsettings['enabled'])) {
 
         echo $OUTPUT->notification(
             '<p>' . get_string('enabledandworking', 'plagiarism_compilatio') . '</p>'
-            . get_string('subscription', 'plagiarism_compilatio') . "<ul class='m-0'>" . $subscriptioninfos . '</ul>',
+                . get_string('subscription', 'plagiarism_compilatio') . "<ul class='m-0'>" . $subscriptioninfos . '</ul>',
             'notifysuccess'
         );
     } else {

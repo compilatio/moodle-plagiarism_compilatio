@@ -39,7 +39,7 @@ $docid = required_param('docId', PARAM_TEXT);
 $file = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 
 $context = context_module::instance($file->cm);
-require_capability('plagiarism/compilatio:viewreport', $context);
+require_capability('plagiarism/compilatio:viewreport', context::instance_by_id($context->id));
 
 if (!empty($file)) {
     $file = analysis::check_analysis($file);

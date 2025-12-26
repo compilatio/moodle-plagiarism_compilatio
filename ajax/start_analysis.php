@@ -38,7 +38,7 @@ $docid = required_param('docId', PARAM_RAW);
 $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 
 $context = context_module::instance($plagiarismfile->cm);
-require_capability('plagiarism/compilatio:triggeranalysis', $context);
+require_capability('plagiarism/compilatio:triggeranalysis', context::instance_by_id($context->id));
 
 $status = analysis::start_analysis($plagiarismfile);
 

@@ -37,7 +37,7 @@ $docid = optional_param('docId', '', PARAM_TEXT);
 $file = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 
 $context = context_module::instance($file->cm);
-require_capability('plagiarism/compilatio:triggeranalysis', $context);
+require_capability('plagiarism/compilatio:triggeranalysis', context::instance_by_id($context->id));
 
 // Get global Compilatio settings.
 $plagiarismsettings = (array) get_config('plagiarism_compilatio');
