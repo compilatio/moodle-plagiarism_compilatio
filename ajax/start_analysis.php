@@ -18,7 +18,7 @@
  * Start a document analysis via Compilatio API
  *
  * @package   plagiarism_compilatio
- * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright 2025 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param string $_POST['docId']
@@ -38,7 +38,7 @@ $docid = required_param('docId', PARAM_RAW);
 $plagiarismfile = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 
 $context = context_module::instance($plagiarismfile->cm);
-require_capability('moodle/course:manageactivities', $context);
+require_capability('plagiarism/compilatio:triggeranalysis', context::instance_by_id($context->id));
 
 $status = analysis::start_analysis($plagiarismfile);
 
@@ -67,5 +67,3 @@ if ($status == 'queue') {
 }
 
 echo json_encode($res);
-
-

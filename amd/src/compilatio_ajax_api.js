@@ -79,8 +79,9 @@ define(['jquery'], function($) {
                     success: function(response) {
                         statisticsContainer.html(response);
                     },
-                    error: function(error) {
-                        console.error('Error:', error);
+                    error: function() {
+                        // Handle error silently or show user-friendly message
+                        statisticsContainer.html('<div class="alert alert-warning">Unable to load statistics.</div>');
                     }
                 });
             });
@@ -157,7 +158,11 @@ define(['jquery'], function($) {
              */
             function updateButtonVisibility() {
                 const selectedUsers = getSelectedLines();
-                selectedUsers.length > 0 ? startSelectedStudentsBtn.show() : startSelectedStudentsBtn.hide();
+                if (selectedUsers.length > 0) {
+                    startSelectedStudentsBtn.show();
+                } else {
+                    startSelectedStudentsBtn.hide();
+                }
             }
 
             checkboxes.on('change', updateButtonVisibility);
@@ -276,8 +281,9 @@ define(['jquery'], function($) {
                             window.location.reload();
                         }
                     },
-                    error: function(error) {
-                        console.error('Error:', error);
+                    error: function() {
+                        // Handle error silently or reload on error
+                        window.location.reload();
                     }
                 });
             });
@@ -513,7 +519,14 @@ define(['jquery'], function($) {
 
             // Convert markdown to HTML.
             $('.cmp-md').each(function() {
-                $(this).html(markdown($.trim($(this).text())));
+                var text = $.trim($(this).text());
+                // Simple markdown-like converter
+                var html = text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+                    .replace(/\n/g, '<br>');
+                $(this).html(html);
             });
 
             $('#cmp-tabs').show();

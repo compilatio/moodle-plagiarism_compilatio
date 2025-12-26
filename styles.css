@@ -37,8 +37,9 @@
 }
 
 /* Icon sizing */
-.cmp-icon-lg {
-    font-size: 1.1em !important;
+.cmp-icon.cmp-icon-lg,
+i.cmp-icon-lg {
+    font-size: 1.1em;
 }
 
 /*
@@ -54,9 +55,10 @@ Compilatio frame area
     margin: auto 0.5rem;
     cursor: pointer;
 }
-.cmp-icon {
+#cmp-tabs .cmp-icon,
+i.cmp-icon {
     color: #6d6d6d;
-    font-size: 1.75em !important;
+    font-size: 1.75em;
 }
 .cmp-icon.active,
 .cmp-icon:hover,
@@ -210,13 +212,15 @@ Compilatio frame area
 }
 
 /* Indexing state button */
-.cmp-library-in {
+.cmp-area .cmp-library-in,
+.cmp-library.cmp-library-in {
     background-color: white;
-    color: rgb(110, 231, 183) !important;
+    color: rgb(110, 231, 183);
 }
-.cmp-library-out {
+.cmp-area .cmp-library-out,
+.cmp-library.cmp-library-out {
     background-color: white;
-    color: rgb(248, 113, 113) !important;
+    color: rgb(248, 113, 113);
 }
 .cmp-library {
     cursor: pointer;
@@ -304,7 +308,7 @@ a.cmp-btn-primary:hover {
 }
 
 #cmp-notifications .color-service {
-    color: #006fbf !important;
+    color: #006fbf;
 }
 
 #cmp-notifications .margin-small {
@@ -348,11 +352,6 @@ a.cmp-btn-primary:hover {
     color: #374151;
 }
 
-/* Compilatio links color CSV download */
-.cmp-links-color {
-    color: #5a51e7 !important;
-}
-
 /* Compilatio whitespace no wrap */
 .cmp-whitespace-nowrap {
     white-space: nowrap;
@@ -369,7 +368,8 @@ a.cmp-btn-primary:hover {
     overflow-y: auto;
 }
 
-.cmp-table.table-hover tbody tr:hover td, .cmp-table.table-hover tbody tr:hover th {
+.cmp-table.table-hover tbody tr:hover td,
+.cmp-table.table-hover tbody tr:hover th {
     background-color: rgb(243, 242, 242);
 }
 

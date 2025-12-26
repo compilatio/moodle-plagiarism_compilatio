@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +31,6 @@ use plagiarism_compilatio\output\statistics;
  * Class to generate csv file
  */
 class csv_generator {
-
     /**
      * Get header
      *
@@ -101,7 +100,6 @@ class csv_generator {
         $csv = $head;
 
         foreach ($files as $file) {
-
             $line = [];
             $line["lastname"]      = $file->lastname;
             $line["firstname"]     = $file->firstname;
@@ -124,7 +122,7 @@ class csv_generator {
             if ($csv === $head) {
                 // Translate headers, using the key of the array as the key for translation :.
                 $headers = array_keys($line);
-                $headerstranslated = array_map(function($item) {
+                $headerstranslated = array_map(function ($item) {
                     return get_string($item, "plagiarism_compilatio");
                 }, $headers);
                 $csv .= '"' . implode('","', $headerstranslated) . "\"\n";

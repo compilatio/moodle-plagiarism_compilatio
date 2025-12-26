@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,6 @@ use plagiarism_compilatio\compilatio\cmpfile;
  * Compilatio file class
  */
 class file {
-
     /**
      * @var mixed $depositor
      */
@@ -79,12 +78,13 @@ class file {
         $compilatiofile = new file();
 
         // Check if file has already been sent.
-        if (!empty($compilatiofile->compilatio_get_document_with_failover(
-            $cmid,
-            $content,
-            $userid,
-            null,
-            ['groupid' => $cmpfile->groupid])
+        if (
+            !empty($compilatiofile->compilatio_get_document_with_failover(
+                $cmid,
+                $content,
+                $userid,
+                null,
+                ['groupid' => $cmpfile->groupid])
             )
         ) {
             return false;
@@ -92,8 +92,9 @@ class file {
 
         $minwordcount = get_config('plagiarism_compilatio', 'min_word');
 
-        if (!($content instanceof stored_file)
-            && str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) < $minwordcount
+        if (
+            !($content instanceof stored_file) &&
+            str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) < $minwordcount
         ) {
             $cmpfile->status = 'error_too_short';
             $cmpfile->id = $DB->insert_record('plagiarism_compilatio_files', $cmpfile);
@@ -196,11 +197,11 @@ class file {
         global $DB;
 
         foreach ($files as $file) {
-            $userid = $DB->get_field('assign_submission', 'userid', [
-                    'id' => isset($file->onlinetext) ?
-                        $file->submission :
-                        $file->get_itemid()]
-                    );
+            $userid = $DB->get_field(
+                'assign_submission',
+                'userid',
+                ['id' => isset($file->onlinetext) ? $file->submission : $file->get_itemid()]
+            );
             if ($file instanceof stored_file) {
                 self::send_file($cmid, $userid, $file);
             } else {
@@ -268,11 +269,13 @@ class file {
             $fs = get_file_storage();
 
             // Search by identifier.
-            $allfiles = $DB->get_records_sql("SELECT * FROM {files}
-                where contextid = ?
+            $allfiles = $DB->get_records_sql(
+                "SELECT * FROM {files}
+                WHERE contextid = ?
                     AND component = 'assignsubmission_file'
                     AND contenthash != '" . self::EMPTY_TEXT_HASH . "'",
-                ['contextid' => $contextid]);
+                ['contextid' => $contextid]
+            );
             $matchedfiles = [];
 
             foreach ($allfiles as $file) {
@@ -388,13 +391,13 @@ class file {
      * @return mixed Single document object, array of document objects, or false/empty array if not found
      */
     public function compilatio_get_document_with_failover(
-            $cmid,
-            $content,
-            $userid,
-            $status = null,
-            $additionalparams = [],
-            $multiple = false
-        ) {
+        $cmid,
+        $content,
+        $userid,
+        $status = null,
+        $additionalparams = [],
+        $multiple = false
+    ) {
         global $DB;
         $params = ['cm' => $cmid];
 
@@ -438,7 +441,6 @@ class file {
             $document = $DB->get_record('plagiarism_compilatio_files', $params);
 
             if (!$document) {
-
                 $params['identifier'] = $content instanceof stored_file ? $content->get_contenthash() : sha1($content ?? '');
                 $document = $DB->get_record('plagiarism_compilatio_files', $params);
             }

@@ -18,7 +18,7 @@
  * Get Compilatio user and update his info if necessary
  *
  * @package   plagiarism_compilatio
- * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright 2025 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param string $_POST['userid']
@@ -27,29 +27,45 @@
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 
 use plagiarism_compilatio\compilatio\api;
-
+use plagiarism_compilatio\compilatio\university_component;
 require_login();
 
 $cmid = required_param('cmid', PARAM_TEXT);
 
 $context = context_module::instance($cmid);
-require_capability('moodle/course:manageactivities', $context);
+require_capability('plagiarism/compilatio:enable', context::instance_by_id($context->id));
 
 global $DB, $USER;
 
-$userid = $DB->get_field('plagiarism_compilatio_user', 'id', ['userid' => $USER->id]);
+$compilatioid = $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => $USER->id]);
 
 $compilatio = new api();
-$cmpuser = $compilatio->get_user($userid);
+$cmpuser = $compilatio->get_user($compilatioid);
 
 if (
-    !empty($cmpuser)
-    && $cmpuser->origin == 'LMS-Moodle'
-    && (
-        $cmpuser->firstname !== $USER->firstname
-        || $cmpuser->lastname !== $USER->lastname
-        || strtolower($cmpuser->email) !== strtolower($USER->email)
-    )
+    empty($cmpuser)
+    || $cmpuser->origin !== 'LMS-Moodle'
 ) {
-    $compilatio->update_user($userid, $USER->firstname, $USER->lastname, $USER->email);
+    return;
+}
+
+if (
+    $cmpuser->firstname !== $USER->firstname
+    || $cmpuser->lastname !== $USER->lastname
+    || strtolower($cmpuser->email) !== strtolower($USER->email)
+) {
+    $compilatio->update_user(
+        $compilatioid,
+        $USER->firstname,
+        $USER->lastname,
+        $USER->email,
+    );
+}
+
+$compilatiouniversitycomponent = new university_component($DB);
+$useruniversitycomponent = $compilatiouniversitycomponent->retreive_university_component_for_user((string) $USER->id);
+$currentuniversitycomponent = $cmpuser->bundle_data[0]->university_component;
+
+if ($currentuniversitycomponent !== $useruniversitycomponent) {
+    $compilatio->update_user_university_component($compilatioid, $useruniversitycomponent);
 }

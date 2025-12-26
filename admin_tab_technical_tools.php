@@ -19,7 +19,7 @@
  *
  * @package   plagiarism_compilatio
  * @author    Compilatio <support@compilatio.net>
- * @copyright 2024 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright 2025 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,6 +29,7 @@ require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/admin_forms.php');
 
+use plagiarism_compilatio\compilatio\form\compilatio_restart_form;
 use plagiarism_compilatio\compilatio\file;
 use plagiarism_compilatio\compilatio\api;
 use plagiarism_compilatio\compilatio\analysis;

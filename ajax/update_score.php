@@ -18,7 +18,7 @@
  * Update similarity score state for a document
  *
  * @package   plagiarism_compilatio
- * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright 2025 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param   string $_POST['docId']
@@ -39,7 +39,7 @@ $docid = required_param('docId', PARAM_TEXT);
 $file = $DB->get_record('plagiarism_compilatio_files', ['id' => $docid]);
 
 $context = context_module::instance($file->cm);
-require_capability('moodle/course:manageactivities', $context);
+require_capability('plagiarism/compilatio:viewreport', context::instance_by_id($context->id));
 
 if (!empty($file)) {
     $file = analysis::check_analysis($file);

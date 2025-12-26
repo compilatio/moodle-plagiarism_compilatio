@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,7 +27,6 @@
  * Backup class
  */
 class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
-
     /**
      * Define the plugin's structure
      * @return object Structure object

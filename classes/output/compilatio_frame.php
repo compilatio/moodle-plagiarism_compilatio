@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -42,7 +42,6 @@ use moodle_url;
  * compilatio_frame class
  */
 class compilatio_frame {
-
     /**
      * Hook callback to insert a chunk of html at the start of the html document.
      * This allow us to display the Compilatio frame with statistics, alerts,
@@ -133,7 +132,6 @@ class compilatio_frame {
                 && $DB->count_records('plagiarism_compilatio_files', ['status' => 'sent', 'cm' => $cmid]) !== 0
         ) {
             $startallanalyses = true;
-
         } else if ($cmconfig->analysistype == 'planned') { // Display the date of analysis if its type is set on 'Planned'.
             $analysistime = $DB->get_field('plagiarism_compilatio_cm_cfg', 'analysistime', ['cmid' => $cmid]);
             $date = userdate($analysistime);
@@ -298,8 +296,10 @@ class compilatio_frame {
         </span>";
 
         // Display buttons.
-        if (has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)
-            && ($startallanalyses || $sendalldocs || $resetdocsinerror)) {
+        if (
+            has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)
+            && ($startallanalyses || $sendalldocs || $resetdocsinerror)
+        ) {
 
             $output .= "<div class='btn-group ml-auto pl-5' role='group'>";
 
@@ -320,8 +320,11 @@ class compilatio_frame {
                         <i class='cmp-icon-lg fa fa-paper-plane'></i>
                     </button>";
 
-                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'sendUnsentDocs',
-                    [$CFG->httpswwwroot, $cmid, get_string('send_documents_in_progress', 'plagiarism_compilatio')]);
+                $PAGE->requires->js_call_amd(
+                    'plagiarism_compilatio/compilatio_ajax_api',
+                    'sendUnsentDocs',
+                    [$CFG->httpswwwroot, $cmid, get_string('send_documents_in_progress', 'plagiarism_compilatio')]
+                );
             }
 
             if ($resetdocsinerror) {
@@ -336,8 +339,11 @@ class compilatio_frame {
                     >
                         <i class='cmp-icon-lg fa fa-rotate-right'></i>
                     </button>";
-                $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'resetDocsInError',
-                    [$CFG->httpswwwroot, $cmid, get_string('reset_docs_in_error_in_progress', 'plagiarism_compilatio')]);
+                $PAGE->requires->js_call_amd(
+                    'plagiarism_compilatio/compilatio_ajax_api',
+                    'resetDocsInError',
+                    [$CFG->httpswwwroot, $cmid, get_string('reset_docs_in_error_in_progress', 'plagiarism_compilatio')]
+                );
             }
 
             $output .= "</div>";
@@ -353,8 +359,8 @@ class compilatio_frame {
         $output .= "<p>" . get_string('element_included_in_subscription', 'plagiarism_compilatio');
 
         $output .= get_config('plagiarism_compilatio', 'recipe') === 'anasim-premium'
-            ? "<li>" . get_string('ai_included_in_subscription', 'plagiarism_compilatio'). "</li></ul></p>"
-            : "</ul>" . get_string('ai_not_included_in_subscription', 'plagiarism_compilatio'). "</p>";
+            ? "<li>" . get_string('ai_included_in_subscription', 'plagiarism_compilatio') . "</li></ul></p>"
+            : "</ul>" . get_string('ai_not_included_in_subscription', 'plagiarism_compilatio') . "</p>";
 
         if ($module == 'quiz') {
             $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
@@ -413,7 +419,11 @@ class compilatio_frame {
             <form class='form-inline' action=" . $PAGE->url . " method='post'>
                 <input class='form-control m-2' type='text' id='docId' name='docId' value='" . $docid
                     . "' placeholder='" . get_string('compilatio_iddocument', 'plagiarism_compilatio') . "'>
-                <input class='btn btn-primary' type='submit' value='" .get_string('compilatio_search', 'plagiarism_compilatio'). "'>
+                <input
+                    class='btn btn-primary'
+                    type='submit'
+                    value='" . get_string('compilatio_search', 'plagiarism_compilatio') . "'
+                >
             </form>";
 
         if (!empty($docid)) {
@@ -486,8 +496,11 @@ class compilatio_frame {
         $output .= "<script src=" . $CFG->wwwroot . "/plagiarism/compilatio/js/drawdown.min.js></script>";
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'compilatioTabs', [$docid]);
 
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'getNotifications',
-            [$CFG->httpswwwroot, $cmconfig->userid]);
+        $PAGE->requires->js_call_amd(
+            'plagiarism_compilatio/compilatio_ajax_api',
+            'getNotifications',
+            [$CFG->httpswwwroot, $cmconfig->userid]
+        );
 
         return $output;
     }
@@ -516,8 +529,11 @@ class compilatio_frame {
                 <i class='cmp-icon-lg fa fa-play-circle'></i>
             </button>";
 
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAllAnalysis',
-            [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
+        $PAGE->requires->js_call_amd(
+            'plagiarism_compilatio/compilatio_ajax_api',
+            'startAllAnalysis',
+            [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]
+        );
 
         if ($module !== 'quiz' && $module !== 'assign') {
             return $output;
@@ -551,8 +567,11 @@ class compilatio_frame {
                     </div>";
             }
 
-            $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedQuestions',
-                [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio'), $quizid]);
+            $PAGE->requires->js_call_amd(
+                'plagiarism_compilatio/compilatio_ajax_api',
+                'startAnalysesOnSelectedQuestions',
+                [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio'), $quizid]
+            );
 
             $questionselector .= "</div>";
             $questionselector .= "
@@ -569,7 +588,7 @@ class compilatio_frame {
             <div
                 class='dropdown btn btn-outline-primary cmp-action-btn'
                 role='button'
-                data-toggle= ". ($compilatio->is_in_maintenance() ? 'tooltip' : 'dropdown') . "
+                data-toggle= " . ($compilatio->is_in_maintenance() ? 'tooltip' : 'dropdown') . "
                 title='" . ($compilatio->is_in_maintenance() ?
                     get_string('disabled_in_maintenance', 'plagiarism_compilatio') :
                     get_string('other_analysis_options', 'plagiarism_compilatio')) . "'
@@ -593,8 +612,11 @@ class compilatio_frame {
                 </div>
             </div>";
 
-        $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'startAnalysesOnSelectedStudents',
-            [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]);
+        $PAGE->requires->js_call_amd(
+            'plagiarism_compilatio/compilatio_ajax_api',
+            'startAnalysesOnSelectedStudents',
+            [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]
+        );
 
         return $output;
     }
@@ -659,4 +681,3 @@ class compilatio_frame {
         return $output;
     }
 }
-

@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -46,7 +46,6 @@ if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
      * This interface extends the core plagiarism user provider interface.
      */
     interface user_provider extends \core_plagiarism\privacy\plagiarism_user_provider {
-
     }
 } else {
     /**
@@ -54,6 +53,7 @@ if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
      *
      * This interface is used if the core plagiarism user provider interface does not exist.
      */
+    /* phpcs:ignore */
     interface user_provider {
 
     }
@@ -65,8 +65,8 @@ if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
  * This is a plagiarism plugin. It interacts with the plagiarism subsystem rather than with core.
  */
 class provider implements metadata_provider, plagiarism_provider, user_provider {
-
-    use local_polyfill, privacy_polyfill;
+    use local_polyfill;
+    use privacy_polyfill;
 
     /**
      *
@@ -74,7 +74,6 @@ class provider implements metadata_provider, plagiarism_provider, user_provider 
      * @return  collection  The updated collection of user data.
      */
     public static function get_metadata(collection $collection): collection {
-
         $collection->add_subsystem_link(
             'core_files',
             [],

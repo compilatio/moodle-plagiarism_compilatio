@@ -18,15 +18,15 @@
  * Get Compilatio marketing notifications
  *
  * @package   plagiarism_compilatio
- * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright 2025 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
-use plagiarism_compilatio\compilatio\api;
-use plagiarism_compilatio\output\icons;
+use plagiarism_compilatio\compilatio\marketing_notification;
 
 require_login();
 if (isguestuser()) {
@@ -38,75 +38,54 @@ $userid = required_param('userid', PARAM_TEXT);
 $read = optional_param_array('read', [], PARAM_TEXT);
 $ignored = optional_param_array('ignored', [], PARAM_TEXT);
 
-$compilatio = new api($userid);
-$language = substr(current_language(), 0, 2);
-
-$notifications = $compilatio->get_marketing_notifications($language);
-
+$compilatiomarketingnotification = new marketing_notification(substr(current_language(), 0, 2), $userid);
+$notifications = $compilatiomarketingnotification->get();
 $titles = $contents = $floatingnotification = '';
 $countbadge = 0;
 $notificationsids = [];
 
 foreach ($notifications as $index => $notification) {
-    $date = new DateTime($notification->activation_period->start);
+    $currentlanguagenotification = $compilatiomarketingnotification
+        ->get_notification_current_language($notification->content_by_language);
 
-    foreach ($notification->content_by_language as $content) {
-        if ($content->language == $language) {
-            $notificationsids[] = $notification->id;
+    if ( $currentlanguagenotification === null) {
+        continue;
+    }
 
-            $body = str_replace('<a', '<a target="_blank" rel="noopener noreferrer"', $content->body);
-            $body = str_replace('button', 'btn btn-primary', $body);
+    $notificationsids[] = $notification->id;
 
-            $status = in_array($notification->id, $ignored) ? 'ignored' : 'unread';
-            in_array($notification->id, $read) ? $status = 'read' : null;
+    $body = $compilatiomarketingnotification->format_notification_body( $currentlanguagenotification->body);
 
-            $status !== 'read' ? $countbadge++ : null;
+    $status = in_array($notification->id, $ignored) ? 'ignored' : 'unread';
+    in_array($notification->id, $read) ? $status = 'read' : null;
 
-            $titles .= "<div id='cmp-notifications-" . $notification->id . "' class='cmp-notifications-title cmp-cursor-pointer'>
-                    <div class='text-bold " . ($status !== 'read' ? 'text-primary' : '') . "'>"
-                    . $content->title .
-                    "</div>"
-                    . userdate($date->getTimestamp(), get_string('strftimedatetime', 'core_langconfig')) .
-                "</div>";
+    $status !== 'read' ? $countbadge++ : null;
 
-            $titles .= $index !== (count($notifications) - 1) ? "<hr class='my-2'>" : '';
+    $titles .= $compilatiomarketingnotification->get_notification_title_body(
+        $notification->id,
+        $status,
+         $currentlanguagenotification->title,
+        new DateTime($notification->activation_period->start),
+        $index === (count($notifications) - 1)
+    );
 
-            $contents .= "
-                <div id='cmp-notifications-content-" . $notification->id
-                    . "' class='cmp-notifications-content' style='display: none;'>
-                    <div class='cmp-show-notifications mb-2 cmp-cursor-pointer'>"
-                        . icons::arrow_left() . get_string('see_all_notifications', 'plagiarism_compilatio') . "
-                    </div>
-                    <div class='d-flex flex-column'>" . $body . "</div>
-                </div>";
+    $contents .= $compilatiomarketingnotification->get_notification_content_body($notification->id, $body);
 
-            if ($floatingnotification == '' && $status == 'unread') {
-                $floatingnotification = "
-                    <div class='d-flex cmp-alert cmp-alert-notifications'>
-                        <i class='cmp-alert-icon text-primary fa-lg fa fa-bell'></i>
-                        <span class='mr-2'>" . $content->title . "</span>
-                        <span
-                            id='cmp-notifications-" . $notification->id . "'
-                            class='cmp-notifications-title ml-auto text-primary cmp-cursor-pointer'
-                        >"
-                            . get_string('open', 'plagiarism_compilatio') .
-                        "</span>
-                        <i id='cmp-ignore-notifications' class='my-auto ml-3 fa fa-times cmp-cursor-pointer'></i>
-                    </div>";
-            }
-        }
+    if ($floatingnotification == '' && $status == 'unread') {
+        $floatingnotification = $compilatiomarketingnotification
+            ->get_notification_floatingnotification_body($notification->id,  $currentlanguagenotification->title);
     }
 }
 
 $titles = empty($titles) ? '<span>' . get_string('no_notification', 'plagiarism_compilatio') . '</span>' : $titles;
 
-$result = [
-    'floating' => $floatingnotification,
-    'content' => "<div id='cmp-notifications-titles'><h4>" . get_string("notifications", "plagiarism_compilatio") . "</h4>"
-                . $titles .
-            "</div>" . $contents,
-    'count' => $countbadge,
-    'ids' => $notificationsids,
-];
-
-echo json_encode($result);
+echo json_encode(
+    $compilatiomarketingnotification
+        ->get_result(
+            $floatingnotification,
+            $titles,
+            $contents,
+            $countbadge,
+            $notificationsids
+        )
+    );

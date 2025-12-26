@@ -19,7 +19,7 @@
  *
  * @package   plagiarism_compilatio
  * @author    Compilatio <support@compilatio.net>
- * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright 2025 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -260,7 +260,6 @@ function compilatio_get_unsent_documents($cmid) {
                 array_push($notuploadedfiles, $onlineassignment);
             }
         }
-
     } else {
         // Normal submission.
 

@@ -19,19 +19,19 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace plagiarism_compilatio\task;
 
+use communication_matrix\local\spec\v1p1;
 use plagiarism_compilatio\compilatio\api;
 
 /**
  * Update_meta task class
  */
 class update_meta extends \core\task\scheduled_task {
-
     /**
      * Get the task name
      * @return string Name

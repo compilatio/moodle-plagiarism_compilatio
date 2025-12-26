@@ -19,12 +19,12 @@
  *
  * @package   plagiarism_compilatio
  * @author    Compilatio <support@compilatio.net>
- * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright 2025 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(__FILE__)) . '/../config.php');
-require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->libdir . '/adminlib.php');
 
 use plagiarism_compilatio\compilatio\csv_generator;
 

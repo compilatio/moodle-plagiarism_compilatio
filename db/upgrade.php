@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2024 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -71,7 +71,6 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     echo $OUTPUT->box_start('generalbox boxaligncenter');
 
     foreach ($compilatiodbchecks as $tablename => $results) {
-
         echo("<h4>" . $tablename . "</h4><p>");
 
         foreach ($results as $message) {
@@ -126,8 +125,12 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                         $dbman->change_field_default($table, $field);
                         echo("change default value for '" . $matches[1] . "'");
                     }
-                    if (in_array($matches[2],
-                        ['should allow NULL', 'has unknown type', 'has incorrect type', 'has unsupported type'])) {
+                    if (
+                        in_array(
+                            $matches[2],
+                            ['should allow NULL', 'has unknown type', 'has incorrect type', 'has unsupported type']
+                        )
+                    ) {
                         $dbman->change_field_type($table, $field);
                         echo("change type for '" . $matches[1] . "'");
                     }
@@ -210,7 +213,6 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     }
 
     if ($oldversion < 2021011100) {
-
         $url = get_config('plagiarism_compilatio', 'api');
         $key = get_config('plagiarism_compilatio', 'password');
 

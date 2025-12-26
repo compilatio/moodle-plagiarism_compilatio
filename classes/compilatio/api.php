@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -293,11 +293,11 @@ class api {
     /**
      * Update Elastisafe user
      *
-     * @param   string  $userid         User's identifier
-     * @param   string  $firstname      User's firstname
-     * @param   string  $lastname       User's lastname
-     * @param   string  $email          User's email
-     * @return  string                  Return true if succeed, false otherwise
+     * @param   string  $userid                        User's identifier
+     * @param   string  $firstname                     User's firstname
+     * @param   string  $lastname                      User's lastname
+     * @param   string  $email                         User's email
+     * @return  string                                 Return true if succeed, false otherwise
      */
     public function update_user($userid, $firstname, $lastname, $email) {
         $endpoint = '/api/private/user/' . $userid;
@@ -308,6 +308,27 @@ class api {
         ];
 
         $response = json_decode($this->build_curl($endpoint, 'patch', json_encode($params)));
+
+        if ($this->get_error_response($response, 200) === false) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Update Elastisafe user university component
+     *
+     * @param   string  $userid                        User's identifier
+     * @param   string  $universitycomponent          User's university component
+     * @return  string                                 Return true if succeed, false otherwise
+     */
+    public function update_user_university_component($userid, $universitycomponent) {
+        $endpoint = '/api/private/users/' . $userid . '/university-components';
+        $params = [
+            'university_component' => $universitycomponent,
+        ];
+
+        $response = json_decode($this->build_curl($endpoint, 'post', json_encode($params)));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;
@@ -1040,10 +1061,13 @@ class api {
             return true;
         }
 
-        if (!$isinmaintenance &&
-                (get_config('plagiarism_compilatio', 'compilatio_maintenance') === '1' ||
+        if (
+            !$isinmaintenance &&
+            (
+                get_config('plagiarism_compilatio', 'compilatio_maintenance') === '1' ||
                 !get_config('plagiarism_compilatio', 'compilatio_maintenance')
-        )) {
+            )
+        ) {
             set_config('compilatio_maintenance', '0', 'plagiarism_compilatio');
         }
 

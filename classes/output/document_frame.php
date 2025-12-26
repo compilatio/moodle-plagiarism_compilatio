@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +35,6 @@ use plagiarism_compilatio\compilatio\identifier;
  * document_frame class
  */
 class document_frame {
-
     /**
      * Display plagiarism document area
      * @param string  $linkarray
@@ -145,7 +144,6 @@ class document_frame {
         }
 
         if ($USER->id == $userid || (isset($userbelongstogroup) && $userbelongstogroup)) {
-
             if ($isstudentanalyse) {
                 $canviewreport = true;
                 $canviewscore = true;
@@ -174,17 +172,25 @@ class document_frame {
 
         // Get compilatio file record.
         $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
-            $linkarray['cmid'], $content, $userid, null, ['groupid' => $groupid]
+            $linkarray['cmid'],
+            $content,
+            $userid,
+            null,
+            ['groupid' => $groupid]
         );
 
         if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
             $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
-                $linkarray['cmid'], $linkarray['cmp_filename'], $userid, null, ['groupid' => $groupid]);
+                $linkarray['cmid'],
+                $linkarray['cmp_filename'],
+                $userid,
+                null,
+                ['groupid' => $groupid]
+            );
         }
 
         if (empty($cmpfile)) { // Try to get record without userid in forums.
-            $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
-                $linkarray['cmid'], $content, $userid);
+            $cmpfile = $compilatiofile->compilatio_get_document_with_failover($linkarray['cmid'], $content, $userid);
         }
 
         $url = null;
@@ -306,7 +312,6 @@ class document_frame {
         $bgcolor = 'primary';
         if ($status == 'scored') {
             if ($canviewreport) {
-
                 $params = [
                     'docid' => $cmpfile->externalid,
                     'cmid' => $cmpfile->cm,
@@ -325,20 +330,19 @@ class document_frame {
                     $documentframe =
                         "<div
                             class='cmp-btn cmp-btn-doc cmp-btn-primary disabled'
-                            title='" .self::formatstring('disabled_in_maintenance') .
+                            title='" . self::formatstring('disabled_in_maintenance') .
                         "'>"
                             . icons::report() . self::formatstring('report', 'core') .
                         "</div>";
                 } else {
                     $documentframe =
-                        "<a href='{$href}' target='_blank' class='cmp-btn cmp-btn-doc cmp-btn-primary'>"
+                        "<a href='{$href}' target='_blank' data-testid='compilatio-report-button' class='cmp-btn cmp-btn-doc cmp-btn-primary'>"
                             . icons::report() . self::formatstring('report', 'core') .
                         "</a>";
                 }
             }
 
             $score = self::get_score($cmpfile, $config, $isteacher);
-
         } else if ($status == 'sent') {
             if (($config->analysistype ?? null) == 'planned') {
                 $documentframe =
@@ -361,6 +365,7 @@ class document_frame {
                             self::formatstring('disabled_in_maintenance') :
                             self::formatstring('title_sent')) . "'
                         class='cmp-btn cmp-btn-doc cmp-btn-primary cmp-start-btn'
+                        data-testid='compilatio-analysis-button'
                     >
                         <i class='cmp-icon-lg mr-1 fa fa-play-circle'></i>"
                         . self::formatstring('btn_sent') .
@@ -370,10 +375,9 @@ class document_frame {
             } else {
                 return '';
             }
-
         } else if ($status == "queue" || $status == "analysing") {
             $documentframe =
-                "<div title='" . self::formatstring('title_' . $status) . "' class='cmp-color-secondary cmp-action-btn'>
+                "<div data-testid='compilatio-analysis-status' title='" . self::formatstring('title_' . $status) . "' class='cmp-color-secondary cmp-action-btn'>
                     <i class='cmp-icon-lg mx-2 fa fa-spinner fa-spin'></i>"
                     . self::formatstring('btn_' . $status) .
                 "</div>";
@@ -397,7 +401,6 @@ class document_frame {
                     <i class='mx-2 fa fa-exclamation-triangle'></i>" . self::formatstring('btn_' . $status) . "</div>";
             $bgcolor = 'error';
         } else if (isset($url) && ($cantriggeranalysis || ($isstudentanalyse && !$isteacher))) {
-
             // Display fake unset button if under maintenance.
             if ($compilatio->is_in_maintenance()) {
                 $documentframe =
@@ -450,7 +453,7 @@ class document_frame {
         $documentid = $cmpfile->externalid ?? '';
         $output = $info . '
             <div class="cmp-area cmp-border-' . $bgcolor . '" data-documentid="' . $documentid . '">
-                <img class="cmp-small-logo" src="' . new moodle_url("/plagiarism/compilatio/pix/c.svg") . '">
+                <img class="cmp-small-logo" data-testid="compilatio-logo" src="' . new moodle_url("/plagiarism/compilatio/pix/c.svg") . '">
                 ' . self::get_indexing_state($indexed) . $score . $documentframe . '
             </div>';
         return $output;
@@ -482,7 +485,7 @@ class document_frame {
 
             $html = "<div class='cmp-library' title='" . $title . "'>
                 " . icons::library() . "
-                <i class='" . $class . " fa'></i>
+                <i data-testid='compilatio-library' class='" . $class . " fa'></i>
             </div>";
         }
 
@@ -517,7 +520,7 @@ class document_frame {
                 : ' ' . self::formatstring('title_score_teacher'))
             : '';
 
-        $html = "<span title='{$title}' class='cmp-similarity cmp-color-{$color} d-flex align-items-center justify-content-center'>
+        $html = "<span title='{$title}' data-testid='compilatio-score-label' class='cmp-similarity cmp-color-{$color} d-flex align-items-center justify-content-center'>
                     <i style='display: none;' class='fa fa-refresh'></i><span>{$cmpfile->globalscore}<small>%</small></span>
                 </span>";
 

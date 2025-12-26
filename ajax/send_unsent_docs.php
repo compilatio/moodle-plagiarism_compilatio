@@ -18,7 +18,7 @@
  * Start analysis for all document in course module
  *
  * @package   plagiarism_compilatio
- * @copyright 2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright 2025 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param string $_POST['cmid']
@@ -33,7 +33,7 @@ require_login();
 
 $cmid = required_param('cmid', PARAM_TEXT);
 $context = context_module::instance($cmid);
-require_capability('moodle/course:manageactivities', $context);
+require_capability('plagiarism/compilatio:triggeranalysis', context::instance_by_id($context->id));
 
 global $SESSION;
 

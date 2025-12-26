@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -62,7 +62,8 @@ class course_module_settings {
 
             if ($data->activated === '1') {
                 // Validation on thresholds.
-                if (!isset($data->warningthreshold, $data->criticalthreshold) ||
+                if (
+                    !isset($data->warningthreshold, $data->criticalthreshold) ||
                     $data->warningthreshold > $data->criticalthreshold ||
                     $data->warningthreshold > 100 || $data->warningthreshold < 0 ||
                     $data->criticalthreshold > 100 || $data->criticalthreshold < 0
@@ -98,7 +99,7 @@ class course_module_settings {
 
                     if (isset($analysistime)) {
                         $date = new \DateTime();
-                        $date->setTimestamp($data->analysistime);
+                        $date->setTimestamp((int) $data->analysistime);
                         $analysistime = $date->format('Y-m-d H:i:s');
                     }
 

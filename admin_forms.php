@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2023 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,15 +28,14 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 require_once($CFG->dirroot . '/lib/formslib.php');
 
 use plagiarism_compilatio\compilatio\api;
-use plagiarism_compilatio\compilatio\course_module_settings;
+use plagiarism_compilatio\compilatio\university_component;
 
 /**
  * Setup form class
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class compilatio_setup_form extends moodleform {
-
     /**
      * Define the form
      * @return void
@@ -44,12 +43,12 @@ class compilatio_setup_form extends moodleform {
     protected function definition() {
         global $CFG, $DB;
 
-        $mform = & $this->_form;
+        $mform = $this->_form;
         $mform->addElement('html', get_string('compilatioexplain', 'plagiarism_compilatio'));
         $mform->addElement('checkbox', 'enabled', get_string('activate_compilatio', 'plagiarism_compilatio'));
 
         $mform->addElement('html', '<p><small class="font-italic">' .
-                           get_string("disclaimer_data", "plagiarism_compilatio") . '</small></p>');
+            get_string("disclaimer_data", "plagiarism_compilatio") . '</small></p>');
 
         $mform->addElement('text', 'apikey', get_string('apikey', 'plagiarism_compilatio'));
         $mform->setType('apikey', PARAM_RAW);
@@ -60,9 +59,12 @@ class compilatio_setup_form extends moodleform {
         $mform->setDefault('disable_ssl_verification', 0);
         $mform->addHelpButton('disable_ssl_verification', 'disable_ssl_verification', 'plagiarism_compilatio');
 
-        $mform->addElement('textarea', 'student_disclosure',
-                           get_string('students_disclosure', 'plagiarism_compilatio'),
-                           'wrap="virtual" rows="6" cols="50"');
+        $mform->addElement(
+            'textarea',
+            'student_disclosure',
+            get_string('students_disclosure', 'plagiarism_compilatio'),
+            'wrap="virtual" rows="6" cols="50"'
+        );
         $mform->addHelpButton('student_disclosure', 'students_disclosure', 'plagiarism_compilatio');
         $mform->setDefault('student_disclosure', get_string('studentdisclosuredefault', 'plagiarism_compilatio'));
 
@@ -82,8 +84,11 @@ class compilatio_setup_form extends moodleform {
 
         $mform->addElement('html', get_string('teacher_features_title', 'plagiarism_compilatio'));
 
-        $mform->addElement('checkbox', 'enable_show_reports',
-                           get_string("enable_show_reports", "plagiarism_compilatio"));
+        $mform->addElement(
+            'checkbox',
+            'enable_show_reports',
+            get_string("enable_show_reports", "plagiarism_compilatio")
+        );
         $mform->setDefault('enable_show_reports', 0);
 
         $apikey = get_config('plagiarism_compilatio', 'apikey');
@@ -91,8 +96,11 @@ class compilatio_setup_form extends moodleform {
             $compilatio = new api($apikey);
 
             if ($compilatio->check_allow_student_analyses()) {
-                $mform->addElement('checkbox', 'enable_student_analyses',
-                    get_string("enable_student_analyses", "plagiarism_compilatio"));
+                $mform->addElement(
+                    'checkbox',
+                    'enable_student_analyses',
+                    get_string("enable_student_analyses", "plagiarism_compilatio")
+                );
                 $mform->setDefault('enable_student_analyses', 0);
                 $mform->addHelpButton('enable_student_analyses', 'enable_student_analyses', 'plagiarism_compilatio');
             }
@@ -111,68 +119,84 @@ class compilatio_setup_form extends moodleform {
         $mform->setDefault('keep_docs_indexed', 1);
         $mform->addHelpButton('keep_docs_indexed', 'keep_docs_indexed', 'plagiarism_compilatio');
 
+        $compilatiouniversitycomponent = new university_component($DB);
+
+        $universitycomponentoptions = $compilatiouniversitycomponent->user_field_provider();
+        $universitycomponentgroup = [];
+        $universitycomponentgroup[] = $mform->createElement(
+            'select',
+            'university_component_type',
+            '',
+            $universitycomponentoptions
+        );
+        $universitycomponentgroup[] = $mform->createElement(
+            'html',
+            '<div>
+                <small class="font-italic">' .
+                    get_string('admin_university_composable_label', 'plagiarism_compilatio') .
+                '</small>
+            </div>'
+        );
+
+        $mform->addGroup(
+            $universitycomponentgroup,
+            'university_component_group',
+            get_string('user_management', 'plagiarism_compilatio'),
+            '',
+            false
+        );
+
+        $mform->setDefault(
+            'university_component_type',
+            $compilatiouniversitycomponent->universitycomponentfield ??
+                get_string('university_composable_none', 'plagiarism_compilatio')
+        );
+        $mform->setType('university_component_type', PARAM_ALPHANUMEXT);
+
         $radioarray = [];
-        $radioarray[] = $mform->createElement('radio',
-            'owner_file', '', get_string('owner_file_school', 'plagiarism_compilatio'), 1);
-        $radioarray[] = $mform->createElement('html',
+        $radioarray[] = $mform->createElement(
+            'radio',
+            'owner_file',
+            '',
+            get_string(
+                'owner_file_school',
+                'plagiarism_compilatio'
+            ),
+            1
+        );
+        $radioarray[] = $mform->createElement(
+            'html',
             '<small class="font-italic mb-3">'
-            . get_string("owner_file_school_details", "plagiarism_compilatio") . '</small>');
-        $radioarray[] = $mform->createElement('radio',
-            'owner_file', '', get_string('owner_file_student', 'plagiarism_compilatio'), 0);
-        $radioarray[] = $mform->createElement('html',
+                . get_string(
+                    "owner_file_school_details",
+                    "plagiarism_compilatio"
+                )
+                . '</small>'
+        );
+        $radioarray[] = $mform->createElement(
+            'radio',
+            'owner_file',
+            '',
+            get_string(
+                'owner_file_student',
+                'plagiarism_compilatio'
+            ),
+            0
+        );
+        $radioarray[] = $mform->createElement(
+            'html',
             '<small class="font-italic mb-3">'
-            . get_string("owner_file_student_details", "plagiarism_compilatio") . '</small>');
+                . get_string(
+                    "owner_file_student_details",
+                    "plagiarism_compilatio"
+                )
+                . '</small>'
+        );
 
         $mform->addGroup($radioarray, 'owner_file', get_string('owner_file', 'plagiarism_compilatio'), [''], false);
         $mform->setDefault('owner_file', 1);
 
         $this->add_action_buttons(true);
-    }
-
-}
-
-/**
- * Class
- * @copyright  2017 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class compilatio_defaults_form extends moodleform {
-
-    /**
-     * Define the form
-     * @return void
-     */
-    protected function definition() {
-        $mform = & $this->_form;
-        course_module_settings::get_form_elements($mform, true);
-        $this->add_action_buttons(true);
-    }
-}
-
-/**
- * Class
- * @copyright  2024 Compilatio.net {@link https://www.compilatio.net}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class compilatio_restart_form extends moodleform {
-
-    /**
-     * Define the form
-     * @return void
-     */
-    protected function definition() {
-        $mform = & $this->_form;
-
-        $mform->addElement('select', 'reset', get_string('selectanaction', 'core'), [
-            'documents' => get_string('resend_document_in_error', 'plagiarism_compilatio'),
-            'analyses' => get_string('restart_failed_analyses', 'plagiarism_compilatio'),
-        ]);
-        $mform->setDefault('reset', 'documents');
-
-        $mform->addElement('date_time_selector', 'startdate', get_string('selectperiod', 'core'));
-        $mform->addElement('date_time_selector', 'enddate', '');
-
-        $this->add_action_buttons(false, get_string('go', 'core'));
     }
 }
 

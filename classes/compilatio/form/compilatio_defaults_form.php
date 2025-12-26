@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * access.php - Contains array who contains access authorization.
+ * compilatio_defaults_form.php - Contains the default settings form for Compilatio plagiarism plugin.
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
@@ -23,32 +23,27 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+namespace plagiarism_compilatio\compilatio\form;
+defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.'); // It must be included from a Moodle page.
 
-$capabilities = [
-    'plagiarism/compilatio:enable' => [
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_COURSE,
-        'legacy' => [
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW,
-        ],
-    ],
-    'plagiarism/compilatio:triggeranalysis' => [
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_COURSE,
-        'legacy' => [
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW,
-        ],
-    ],
-    'plagiarism/compilatio:viewreport' => [
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_COURSE,
-        'legacy' => [
-            'editingteacher' => CAP_ALLOW,
-            'teacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW,
-        ],
-    ],
-];
+use plagiarism_compilatio\compilatio\course_module_settings;
+
+require_once($CFG->dirroot . '/lib/formslib.php');
+
+/**
+ * Class
+ * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class compilatio_defaults_form extends \moodleform {
+
+    /**
+     * Define the form
+     * @return void
+     */
+    protected function definition() {
+        $mform = & $this->_form;
+        course_module_settings::get_form_elements($mform, true);
+        $this->add_action_buttons(true);
+    }
+}
