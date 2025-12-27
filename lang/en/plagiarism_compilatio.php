@@ -117,6 +117,26 @@ $string['btn_queue'] = 'In the queue';
 $string['btn_sent'] = 'Analyse';
 $string['btn_unsent'] = 'Send';
 $string['certificate'] = 'Analysis certificate';
+$string['cli_addmodulesettings_help'] = "Command to process Compilatio activity modules.
+
+Options:
+-a, --all Process all activity modules (mutually exclusive with --enabled)
+-e, --enabled Process only enabled activity modules (mutually exclusive with --all)
+-c, --courseids=<ids> List of courseids to process, separated by commas (optional)
+-m, --modulestypename=<names> List of module types to process, separated by commas (quiz,assign,forum,workshop, default = quiz,assign)
+-t, --analysistype=<type> Type of analysis to set for processed modules (manual,planned) (optional, default = manual)
+--analysisdate=<date> Analysis date to set for processed modules (format: YYYY-MM-DD HH:MM:SS) (optional, required if analysistype=planned)
+-s, --showstudentscore=<option> Option to display score to student (never, immediately, closed) (optional, default = never)
+-r, --showstudentreport=<option> Option to display report to student (never, immediately, closed) (optional, default = never)
+-i, --nodefaultindexing Indicate to not index documents (optional, default = indexing enabled)
+-g, --greenthreshold=<value> Green threshold value (optional, default = 10)
+-o, --orangethreshold=<value> Orange threshold value (optional, default = 25)
+-h, --help Show this help
+
+Examples:
+php plagiarism/compilatio/cli/addmodulesettings.php --all --modulestypename=quiz,assign
+php plagiarism/compilatio/cli/addmodulesettings.php --enabled --courseids=2,5 --modulestypename=forum
+";
 $string['compi_student_analyses'] = 'Allow students to analyse their documents';
 $string['compi_student_analyses_help'] = 'This allows students to analyse their draft files with Compilatio Magister, before final submission to the teacher.';
 $string['compilatio'] = 'Compilatio plagiarism plugin';
@@ -227,6 +247,13 @@ $string['enable_student_analyses_help'] = 'This option will allow teachers to ac
 $string['enabledandworking'] = 'The Compilatio plugin is enabled and working.';
 $string['error'] = 'Error';
 $string['errors'] = 'Errors';
+$string['exception:datenogood'] = 'The --analysisdate value is not a valid date/time.';
+$string['exception:displayscoretostudentwrong'] = 'The --displayscoretostudent value must be one of: never, immediatly, closed.';
+$string['exception:invalid_moduletype'] = 'Invalid module type name provided in --modulestypename option or the module is not activated in settings.';
+$string['exception:noanalysisdate'] = 'The --analysisdate parameter is required when --analysistype=planned.';
+$string['exception:not_enabled_module'] = 'No module settings found for plagiarism_compilatio plugin.';
+$string['exception:options_all_enabled'] = 'The options --all and --enabled are mutually exclusive.';
+$string['exception:wrongdateformat'] = 'The --analysisdate value must be in format YYYY-MM-DD HH:MM:SS.';
 $string['excluded_from_score'] = 'Excluded from the score:';
 $string['export_csv'] = 'Export data about this activity into a CSV file';
 $string['export_csv_per_student'] = 'Export this student\'s results to a CSV file';
@@ -360,6 +387,10 @@ $string['privacy:metadata:plagiarism_compilatio_files:userid'] = 'The Moodle ID 
 $string['privacy:metadata:plagiarism_compilatio_user'] = 'Information about the teacher who created a course module with Compilatio';
 $string['privacy:metadata:plagiarism_compilatio_user:compilatioid'] = 'The Compilatio ID of the teacher';
 $string['privacy:metadata:plagiarism_compilatio_user:userid'] = 'The Moodle ID of the teacher';
+$string['process_ended'] = "Process ended.
+";
+$string['process_info'] = '  Module: {$a->name} (instance: {$a->instance}, cmid: {$a->coursemodule}, visible: {$a->visible})
+';
 $string['processing_doc'] = 'Compilatio is analyzing this file.';
 $string['programmed_analysis_future'] = 'Documents will be analysed by Compilatio on {$a}.';
 $string['programmed_analysis_past'] = 'Documents have been submitted for analysis to Compilatio on {$a}.';
@@ -470,8 +501,8 @@ $string['suspect_words/total_words'] = 'words suspect / total words';
 $string['suspect_words_quiz_on_total'] = 'words suspect / <br>total words';
 $string['tabs_title_help'] = 'Help';
 $string['tabs_title_notifications'] = 'Notifications';
-$string['tabs_title_technical_tools'] = 'Technical tools';
 $string['tabs_title_stats'] = 'Statistics';
+$string['tabs_title_technical_tools'] = 'Technical tools';
 $string['teacher'] = 'Teacher';
 $string['teacher_features_title'] = 'Features enabled for teachers';
 $string['terms_of_service_info'] = '<a href=\'{$a}\'>Terms of Service</a> of Compilatio';
