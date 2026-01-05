@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2026 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/lib/formslib.php');
 
 /**
  * Class
- * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2026 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class compilatio_defaults_form extends \moodleform {

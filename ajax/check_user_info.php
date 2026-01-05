@@ -18,7 +18,7 @@
  * Get Compilatio user and update his info if necessary
  *
  * @package   plagiarism_compilatio
- * @copyright 2025 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright 2026 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param string $_POST['userid']
