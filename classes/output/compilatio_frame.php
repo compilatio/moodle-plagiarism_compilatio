@@ -362,6 +362,14 @@ class compilatio_frame {
             ? "<li>" . get_string('ai_included_in_subscription', 'plagiarism_compilatio') . "</li></ul></p>"
             : "</ul>" . get_string('ai_not_included_in_subscription', 'plagiarism_compilatio') . "</p>";
 
+        $output .= "<a
+                href='https://support.compilatio.net/hc/fr/sections/360001345397'
+                target='_blank'
+            >".
+                get_string('teacher_toolbox', 'plagiarism_compilatio')
+                ."<i class='ml-2 fa fa-external-link'></i>
+            </a>";
+
         if ($module == 'quiz') {
             $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
             $output .= "<p><b>" . get_string('quiz_help', 'plagiarism_compilatio', $nbmotsmin) . "</b></p>";

@@ -474,6 +474,7 @@ $string['tabs_title_technical_tools'] = 'Technical tools';
 $string['tabs_title_stats'] = 'Statistics';
 $string['teacher'] = 'Teacher';
 $string['teacher_features_title'] = 'Features enabled for teachers';
+$string['teacher_toolbox'] = 'Access teacher\'s Toolbox';
 $string['terms_of_service_info'] = '<a href=\'{$a}\'>Terms of Service</a> of Compilatio';
 $string['text'] = 'Text';
 $string['thresholds_description'] = 'Indicate the threshold that you want to use, in order to facilitate the finding of analysis report (% of suspicious texts) :';
