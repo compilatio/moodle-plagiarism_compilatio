@@ -7,6 +7,9 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+3.2.10
+- Add link to Toolbox for teachers in the help tabs in compilatio frame
+
 3.2.9
 - [Fix] Typing analysistime in course_module_settings
 - [Fix] Update capability in ajax to match roles needed for actions
