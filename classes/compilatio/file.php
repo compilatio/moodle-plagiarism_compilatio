@@ -272,7 +272,7 @@ class file {
             $allfiles = $DB->get_records_sql(
                 "SELECT * FROM {files}
                 WHERE contextid = ?
-                    AND component = 'assignsubmission_file'
+                    AND component IN ('assignsubmission_file', 'question')
                     AND contenthash != '" . self::EMPTY_TEXT_HASH . "'",
                 ['contextid' => $contextid]
             );
@@ -301,7 +301,7 @@ class file {
                 $sql = "SELECT f.* FROM {files} f
                         JOIN {assign_submission} sub ON f.itemid = sub.id
                         WHERE f.contextid = ?
-                        AND f.component = 'assignsubmission_file'
+                        AND f.component IN ('assignsubmission_file', 'question')
                         AND f.filename = ?
                         AND (sub.userid = ? OR sub.groupid IN (
                             SELECT groupid FROM {groups_members} WHERE userid = ?
@@ -320,7 +320,7 @@ class file {
             if (empty($matchedfiles)) {
                 $sql = "SELECT * FROM {files}
                         WHERE contextid = ?
-                        AND component = 'assignsubmission_file'
+                        AND component IN ('assignsubmission_file', 'question')
                         AND filename = ?
                         AND contenthash != '" . self::EMPTY_TEXT_HASH . "'";
 

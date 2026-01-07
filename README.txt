@@ -1,4 +1,4 @@
-Compilatio.net Plagiarism plugin for Moodle 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 5.0
+Compilatio.net Plagiarism plugin for Moodle 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 5.0, 5.1
 
 Author: Compilatio <support@compilatio.net>
 Copyright 2026 Compilatio.net https://www.compilatio.net
@@ -9,6 +9,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 CHANGES
 3.2.10
 - Add link to Toolbox for teachers in the help tabs in compilatio frame
+- [Fix] Resend attached files in quiz
 
 3.2.9
 - [Fix] Typing analysistime in course_module_settings
