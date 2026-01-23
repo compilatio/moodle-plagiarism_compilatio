@@ -31,6 +31,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/admin_forms.php');
 
 use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\compilatio\managed_bundle;
 
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
@@ -119,6 +120,10 @@ if (!empty($plagiarismsettings['enabled'])) {
     }
 
     if ($validapikey === true) {
+        $compilatiouser = $compilatio->get_apikey_user();
+        $managedbundle = new managed_bundle($compilatiouser);
+        $managedbundle->set_all_course_module_to_folder_detections_options($DB);
+
         if (!$compilatio->check_allow_student_analyses()) {
             set_config('enable_student_analyses', 0, 'plagiarism_compilatio');
         }

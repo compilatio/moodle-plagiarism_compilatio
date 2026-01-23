@@ -25,6 +25,7 @@
 
 use plagiarism_compilatio\task\update_meta;
 use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\compilatio\managed_bundle;
 
 /**
  * Method to upgrade the database between differents versions
@@ -261,8 +262,8 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
             $compilatio = new api(null, $apikey);
 
-            $compilatioid = $compilatio->get_apikey_user_id();
-            $DB->insert_record('plagiarism_compilatio_user', (object) ['userid' => 0, 'compilatioid' => $compilatioid]);
+            $compilatioid = $compilatio->get_apikey_user();
+            $DB->insert_record('plagiarism_compilatio_user', (object) ['userid' => 0, 'compilatioid' => $compilatioid->id ?? null]);
 
             set_config('apikey', $apikey, 'plagiarism_compilatio');
         }
@@ -371,7 +372,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
             if (!empty($apikey)) {
                 $compilatio = new api(null, $apikey);
 
-                $compilatioid = $compilatio->get_apikey_user_id(false);
+                $compilatioid = $compilatio->get_apikey_user(false)?->id;
 
                 if (preg_match('/^[a-f0-9]{40}$/', $compilatioid)) {
                     $DB->delete_records('plagiarism_compilatio_user', ['userid' => 0]);
@@ -408,6 +409,20 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         $DB->execute($sql);
 
         upgrade_plugin_savepoint(true, 2024011700, 'plagiarism', 'compilatio');
+    }
+
+    if ($oldversion < 2026012113) {
+        $apikey = get_config('plagiarism_compilatio', 'apikey');
+
+        if(!empty($apikey)) {
+            $compilatioapi = new api(apikey: $apikey);        
+            $user = $compilatioapi->get_apikey_user(false);
+
+            if ($user) {
+                $managedbundle = new managed_bundle($user);
+                $managedbundle->set_all_course_module_to_folder_detections_options($DB);
+            }
+        }
     }
 
     foreach ($tablestodelete as $table) {
