@@ -33,6 +33,9 @@ use stdClass;
  */
 class managed_bundle {
 
+    /**
+     * Contain differents detections types.
+     */
     public const DETECTIONSTYPE = [
         "similarity",
         "unrecognized_text_language",
@@ -47,7 +50,7 @@ class managed_bundle {
 
     /**
      * Class constructor
-     * 
+     *
      * @param stdClass $compilatiouser User from compilatio to retreive managed bundle informations.
      */
     public function __construct($compilatiouser) {
@@ -61,22 +64,26 @@ class managed_bundle {
 
     /**
      * Apply courses module folder detections options.
-     * 
+     *
      * @param moodle_database $DB Moodle database.
      * @return void
      */
     public function set_all_course_module_to_folder_detections_options(moodle_database $DB): void {
-        if (!$this->check_if_detections_configuration_as_been_changed($DB)) return;
+        if (!$this->check_if_detections_configuration_as_been_changed($DB)) {
+            return;
+        }
 
-        foreach($this->get_bundle_detections() as $detection) {
-            if (!in_array($detection->process, self::DETECTIONSTYPE) 
-            ) {
-                continue; 
+        foreach ($this->get_bundle_detections() as $detection) {
+            if (!in_array($detection->process, self::DETECTIONSTYPE)) {
+                continue;
             }
 
             foreach ($DB->get_records('plagiarism_compilatio_cm_cfg') as $configuration) {
                 $configuration->{$detection->process . 'enabled'} = 0;
-                if ($detection->enabled) $configuration->{$detection->process . 'enabled'} = 1;
+
+                if ($detection->enabled) {
+                    $configuration->{$detection->process . 'enabled'} = 1;
+                }
 
                 $DB->update_record('plagiarism_compilatio_cm_cfg', $configuration);
             }
@@ -85,7 +92,7 @@ class managed_bundle {
 
     /**
      * Retreive bundle detections.
-     * 
+     *
      * @return array Return allowed detections for the bundle.
      */
     public function get_bundle_detections(): array {
@@ -94,7 +101,7 @@ class managed_bundle {
 
     /**
      * Retreive bundle authorized features.
-     * 
+     *
      * @return array Return authorized features for the bundle.
      */
     public function get_authorized_features(): array {
@@ -103,7 +110,7 @@ class managed_bundle {
 
     /**
      * Check if the current recipe is anasim.
-     * 
+     *
      * @return bool True if recipe is anasim, false otherwise.
      */
     public function is_anasim_recipe(): bool {
@@ -112,7 +119,7 @@ class managed_bundle {
 
     /**
      * Check if the bundle has the specified feature.
-     * 
+     *
      * @param string $feature Name of the feature to check.
      * @return bool Return true if the bundle has this feature, false otherwise.
      */
@@ -122,7 +129,7 @@ class managed_bundle {
 
     /**
      * Return the index of authorized features in access.
-     * 
+     *
      * @return int Index of authorized features in access.
      */
     private function get_authorized_features_array_index(): int {
@@ -131,7 +138,7 @@ class managed_bundle {
 
     /**
      * Return the index of bundle detections in access.
-     * 
+     *
      * @return int Index of bundle detections in access.
      */
     private function get_bundle_detections_array_index(): int {
@@ -140,7 +147,7 @@ class managed_bundle {
 
     /**
      * Check if course module detections options need to be updated.
-     * 
+     *
      * @param moodle_database $DB Moodle database.
      * @return bool Return true if courses modules need to be updated, false otherwise.
      */

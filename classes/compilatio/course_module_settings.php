@@ -37,6 +37,9 @@ use moodle_url;
  */
 class course_module_settings {
 
+    /**
+     * Contain all config key about configurable detections.
+     */
     public const CONFIGDETECTIONSTYPEKEY = [
         "similarityenabled",
         "unrecognized_text_languageenabled",
@@ -154,8 +157,12 @@ class course_module_settings {
         }
 
         foreach ($plagiarismelements as $element) {
-            // The setDefault is already made in get_configurable_detections_form to follow group administrator choices for configurable detections.
-            if (in_array($element, self::CONFIGDETECTIONSTYPEKEY) && !isset($config->$element)) continue;
+            // The setDefault is already made in get_configurable_detections_form.
+            // To follow group administrator choices for configurable detections.
+            if (in_array($element, self::CONFIGDETECTIONSTYPEKEY) && !isset($config->$element)) {
+                continue;
+            }
+
             $mform->setDefault($element, $config->$element ?? $defaultconfig->$element);
         }
     }
@@ -383,37 +390,75 @@ class course_module_settings {
      * @return void
      */
     private static function get_configurable_detections_form($mform, $ynoptions): void {
-        
         $compilatioapi = new api();
 
         $user = $compilatioapi->get_apikey_user(false);
-        if (!$user) return;
+        if (!$user) {
+            return;
+        }
 
         $managedbundle = new managed_bundle($user);
-        if(!$managedbundle->is_bundle_authorized_to("folder-recipe-parameters")) return;
+        if (!$managedbundle->is_bundle_authorized_to("folder-recipe-parameters")) {
+            return;
+        }
 
-        $mform->addElement('html', '<p><strong>' . get_string('configurable_detections_options', 'plagiarism_compilatio') . '</strong></p>');
+        $mform->addElement(
+            'html',
+            '<p><strong>' . get_string('configurable_detections_options', 'plagiarism_compilatio') . '</strong></p>'
+        );
 
-        foreach($managedbundle->get_bundle_detections() as $detection) {
+        foreach ($managedbundle->get_bundle_detections() as $detection) {
             if (!in_array($detection->process, managed_bundle::DETECTIONSTYPE)) {
                 continue;
             }
 
             if ($detection->enabled && !$detection->configurable) {
-                $mform->addElement('select', $detection->process . 'enabled', get_string('detection_' . $detection->process . '_activated', 'plagiarism_compilatio'), [1 => get_string('always_enabled', 'plagiarism_compilatio')]);
+                $mform->addElement(
+                    'select',
+                    $detection->process . 'enabled',
+                    get_string('detection_' . $detection->process . '_activated', 'plagiarism_compilatio'),
+                    [1 => get_string('always_enabled', 'plagiarism_compilatio')]
+                );
                 $mform->setDefault($detection->process . 'enabled', 1);
             } else if ($detection->enabled) {
-                $mform->addElement('select', $detection->process . 'enabled', get_string('detection_' . $detection->process .'_activated', 'plagiarism_compilatio'), $ynoptions);
+                $mform->addElement(
+                    'select',
+                    $detection->process . 'enabled',
+                    get_string('detection_' . $detection->process .'_activated', 'plagiarism_compilatio'),
+                    $ynoptions
+                );
                 $mform->setDefault($detection->process . 'enabled', 1);
             } else if ($detection->configurable) {
-                $mform->addElement('select', $detection->process . 'enabled', get_string('detection_' . $detection->process .'_configurable', 'plagiarism_compilatio'), $ynoptions);
+                $mform->addElement(
+                    'select',
+                    $detection->process . 'enabled',
+                    get_string('detection_' . $detection->process .'_configurable', 'plagiarism_compilatio'),
+                    $ynoptions
+                );
                 $mform->setDefault($detection->process . 'enabled', 0);
             } else {
-                $mform->addElement('select',  $detection->process . 'enabled', get_string('detection_' . $detection->process .'_desactivated', 'plagiarism_compilatio'), [0 => get_string('no')]);
+                $mform->addElement(
+                    'select',
+                    $detection->process . 'enabled',
+                    get_string('detection_' . $detection->process .'_desactivated', 'plagiarism_compilatio'),
+                    [0 => get_string('no')]
+                );
+                $mform->setDefault($detection->process . 'enabled', 0);
             }
         }
     }
 
+    /**
+     * Set course module configuration
+     *
+     * @param moodle_database $DB Moodle database
+     * @param array $USER Moodle connected user
+     * @param stdClass $data Data from form
+     * @param stdClass $cmconfig Actual course module configuration
+     * @param stdClass $newconfig New course module configuration
+     * @param stdClass $plugin Moodle plagiarism plugin class
+     * @return void
+     */
     private static function set_config($DB, $USER, $data, $cmconfig, $newconfig, $plugin) {
         // Validation on thresholds.
         if (
@@ -459,23 +504,27 @@ class course_module_settings {
 
             $compilatiouser = $compilatio->get_apikey_user(false);
             $detectiosnenabled = [];
-        
+
             if ($compilatiouser) {
                 $managedbundle = new managed_bundle($compilatiouser);
 
-                foreach($managedbundle->get_bundle_detections() as $detection) {
+                foreach ($managedbundle->get_bundle_detections() as $detection) {
                     if (!in_array($detection->process, managed_bundle::DETECTIONSTYPE) ||
                         ($managedbundle->is_anasim_recipe() && in_array($detection->process, ['ai_detection', 'rewording']))
                     ) {
                         continue;
                     }
 
-                    if($managedbundle->is_anasim_recipe()){
+                    if ($managedbundle->is_anasim_recipe()) {
                         $data->{$detection->process . 'enabled'} = '1';
                         continue;
                     }
 
-                    $detectiosnenabled[] = ['process' => $detection->process , 'enabled' => $data->{$detection->process . 'enabled'}, 'configurable' => 1];
+                    $detectiosnenabled[] = [
+                        'process' => $detection->process ,
+                        'enabled' => $data->{$detection->process . 'enabled'},
+                        'configurable' => 1,
+                    ];
                 }
             }
 

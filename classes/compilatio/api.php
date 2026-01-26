@@ -68,7 +68,7 @@ class api {
             $apikey = get_config('plagiarism_compilatio', 'apikey');
         }
 
-        $this->urlrest = 'https://app.compilatio.net';
+        $this->urlrest = 'https://moodle.zygarde.compilatio.net';
         $this->userid = $userid;
 
         if (isset($apikey) && $apikey !== '') {
@@ -480,7 +480,7 @@ class api {
             'origin' => 'LMS-Moodle',
         ];
 
-        foreach($detectionsenabled as $detection) {
+        foreach ($detectionsenabled as $detection) {
             $params['recipe_detections'][] = $detection;
         }
 
@@ -533,8 +533,8 @@ class api {
             'auto_analysis' => false,
             'scheduled_analysis_enabled' => false,
         ];
-        
-        foreach($detectionsenabled as $detection) {
+
+        foreach ($detectionsenabled as $detection) {
             $params['recipe_detections'][] = $detection;
         }
 

@@ -35,7 +35,7 @@ use plagiarism_compilatio\compilatio\university_component;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass \plagiarism_compilatio\compilatio\university_component
  */
-class university_component_test extends \advanced_testcase {
+final class university_component_test extends \advanced_testcase {
 
     /**
      * Reset DB after each test.
@@ -50,7 +50,7 @@ class university_component_test extends \advanced_testcase {
      *
      * @covers ::retreive_university_component_for_user
      */
-    public function test_retrieve_returns_user_field_value() {
+    public function test_retrieve_returns_user_field_value(): void {
         global $DB;
 
         set_config('university_component_type', 'department', 'plagiarism_compilatio');
@@ -68,7 +68,7 @@ class university_component_test extends \advanced_testcase {
      *
      * @covers ::retreive_university_component_for_user
      */
-    public function test_retrieve_returns_null_when_none_selected() {
+    public function test_retrieve_returns_null_when_none_selected(): void {
         global $DB;
 
         $nonevalue = get_string('university_composable_none', 'plagiarism_compilatio');
@@ -87,7 +87,7 @@ class university_component_test extends \advanced_testcase {
      *
      * @covers ::retreive_university_component_for_user
      */
-    public function test_retrieve_returns_user_field_value_no_configuration() {
+    public function test_retrieve_returns_user_field_value_no_configuration(): void {
         global $DB;
 
         $user = $this->getDataGenerator()->create_user(['department' => 'Science']);
@@ -103,7 +103,7 @@ class university_component_test extends \advanced_testcase {
      *
      * @covers ::retreive_university_component_for_user
      */
-    public function test_retrieve_returns_user_field_value_user_unknown() {
+    public function test_retrieve_returns_user_field_value_user_unknown(): void {
         global $DB;
 
         $component = new university_component($DB);
@@ -117,7 +117,7 @@ class university_component_test extends \advanced_testcase {
      *
      * @covers ::user_field_provider
      */
-    public function test_user_field_provider_filters_and_includes_none() {
+    public function test_user_field_provider_filters_and_includes_none(): void {
         global $DB;
 
         $component = new university_component($DB);

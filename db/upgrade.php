@@ -414,8 +414,8 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
     if ($oldversion < 2026012113) {
         $apikey = get_config('plagiarism_compilatio', 'apikey');
 
-        if(!empty($apikey)) {
-            $compilatioapi = new api(apikey: $apikey);        
+        if (!empty($apikey)) {
+            $compilatioapi = new api(apikey: $apikey);
             $user = $compilatioapi->get_apikey_user(false);
 
             if ($user) {
