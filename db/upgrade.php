@@ -411,7 +411,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024011700, 'plagiarism', 'compilatio');
     }
 
-    if ($oldversion < 2026012113) {
+    if ($oldversion < 2026012300) {
         $apikey = get_config('plagiarism_compilatio', 'apikey');
 
         if (!empty($apikey)) {

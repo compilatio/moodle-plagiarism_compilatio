@@ -96,7 +96,13 @@ class managed_bundle {
      * @return array Return allowed detections for the bundle.
      */
     public function get_bundle_detections(): array {
-        return $this->managedbundle->accesses[$this->get_bundle_detections_array_index()]->detections;
+        $detectionsaccess = $this->get_access('detections');
+        
+        if (!$detectionsaccess) {
+            return [];
+        }
+
+        return $detectionsaccess->detections;
     }
 
     /**
@@ -105,7 +111,13 @@ class managed_bundle {
      * @return array Return authorized features for the bundle.
      */
     public function get_authorized_features(): array {
-        return $this->managedbundle->accesses[$this->get_authorized_features_array_index()]->authorized_features;
+        $authorizedfeaturesaccess = $this->get_access('authorized_features');
+        
+        if (!$authorizedfeaturesaccess) {
+            return [];
+        }
+
+        return $authorizedfeaturesaccess->authorized_features;
     }
 
     /**
@@ -125,24 +137,6 @@ class managed_bundle {
      */
     public function is_bundle_authorized_to(string $feature): bool {
         return in_array($feature, $this->get_authorized_features());
-    }
-
-    /**
-     * Return the index of authorized features in access.
-     *
-     * @return int Index of authorized features in access.
-     */
-    private function get_authorized_features_array_index(): int {
-        return $this->is_anasim_recipe() ? 5 : 4;
-    }
-
-    /**
-     * Return the index of bundle detections in access.
-     *
-     * @return int Index of bundle detections in access.
-     */
-    private function get_bundle_detections_array_index(): int {
-        return $this->is_anasim_recipe() ? 3 : 2;
     }
 
     /**
@@ -169,6 +163,22 @@ class managed_bundle {
         foreach ((array)$record as $field => $value) {
             if (array_key_exists($field, $bundle) && (int)$value !== $bundle[$field]) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Retreive the searched access in the managed bundle.
+     *
+     * @param string $searchedaccess Searched access
+     * @return stdClass|false Return the access if exist, false otherwise.
+     */
+    private function get_access(string $searchedaccess): stdClass|false {
+
+        foreach ($this->managedbundle->accesses as $access) {
+            if (isset($access->$searchedaccess)) {
+                return $access;
             }
         }
         return false;

@@ -452,7 +452,7 @@ class course_module_settings {
      * Set course module configuration
      *
      * @param moodle_database $DB Moodle database
-     * @param array $USER Moodle connected user
+     * @param stdClass $USER Moodle connected user
      * @param stdClass $data Data from form
      * @param stdClass $cmconfig Actual course module configuration
      * @param stdClass $newconfig New course module configuration
