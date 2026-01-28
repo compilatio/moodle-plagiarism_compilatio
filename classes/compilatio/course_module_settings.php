@@ -515,7 +515,7 @@ class course_module_settings {
                         continue;
                     }
 
-                    if ($managedbundle->is_anasim_recipe()) {
+                    if ($managedbundle->is_anasim_recipe() || 'similarity' === $detection->process) {
                         $data->{$detection->process . 'enabled'} = '1';
                         continue;
                     }
