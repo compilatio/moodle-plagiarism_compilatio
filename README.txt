@@ -9,6 +9,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 CHANGES
 3.2.10
 - Add link to Toolbox for teachers in the help tabs in compilatio frame
+- Add configurable folder to activity settings to allow or not certain detections for Magister+
 - [Fix] Resend attached files in quiz
 
 3.2.9

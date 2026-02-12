@@ -83,6 +83,10 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             'warningthreshold',
             'criticalthreshold',
             'defaultindexing',
+            'similarityenabled',
+            'ai_detectionenabled',
+            'unrecognized_text_languageenabled',
+            'rewordingenabled',
         ];
     }
 

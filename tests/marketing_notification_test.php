@@ -39,7 +39,7 @@ global $CFG;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @coversDefaultClass \plagiarism_compilatio\compilatio\marketing_notification
  */
-class marketing_notification_test extends \advanced_testcase {
+final class marketing_notification_test extends \advanced_testcase {
 
     /**
      * Base HTML input for testing notification body formatting.
@@ -82,7 +82,7 @@ class marketing_notification_test extends \advanced_testcase {
      *
      * @covers ::format_notification_body
      */
-    public function test_format_notification_body_no_style() {
+    public function test_format_notification_body_no_style(): void {
         $notification = new marketing_notification('en', 'test-user-id');
         $result = $notification->format_notification_body(self::BASE_INPUT_HTML . '<img src="test.jpg" alt="Test image">');
 
@@ -102,7 +102,7 @@ class marketing_notification_test extends \advanced_testcase {
      *
      * @covers ::format_notification_body
      */
-    public function test_format_notification_body_with_style() {
+    public function test_format_notification_body_with_style(): void {
         $notification = new marketing_notification('en', 'test-user-id');
         $result = $notification->format_notification_body(
             self::BASE_INPUT_HTML .
@@ -125,7 +125,7 @@ class marketing_notification_test extends \advanced_testcase {
      *
      * @covers ::format_notification_body
      */
-    public function test_format_notification_body_with_style_and_maxwidth() {
+    public function test_format_notification_body_with_style_and_maxwidth(): void {
         $notification = new marketing_notification('en', 'test-user-id');
         $result = $notification->format_notification_body(
             self::BASE_INPUT_HTML .
@@ -146,7 +146,7 @@ class marketing_notification_test extends \advanced_testcase {
      *
      * @covers ::get_notification_current_language
      */
-    public function test_get_notification_current_language() {
+    public function test_get_notification_current_language(): void {
         $notification = new marketing_notification('en', 'test-user-id');
 
         $test = [
@@ -174,7 +174,7 @@ class marketing_notification_test extends \advanced_testcase {
      *
      * @covers ::get_notification_current_language
      */
-    public function test_get_notification_current_language_no_language() {
+    public function test_get_notification_current_language_no_language(): void {
         $notification = new marketing_notification('pt', 'test-user-id');
 
         $test = [
