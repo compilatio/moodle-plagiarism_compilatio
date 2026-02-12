@@ -49,9 +49,9 @@ class university_component {
     /**
      * Name of the user field storing the university component.
      *
-     * @var string|null
+     * @var string
      */
-    public string|null $universitycomponentfield;
+    public string $universitycomponentfield;
 
     /**
      * Create the component helper.
