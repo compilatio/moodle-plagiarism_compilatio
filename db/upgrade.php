@@ -262,8 +262,11 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
             $compilatio = new api(null, $apikey);
 
-            $compilatioid = $compilatio->get_apikey_user();
-            $DB->insert_record('plagiarism_compilatio_user', (object) ['userid' => 0, 'compilatioid' => $compilatioid->id ?? null]);
+            $compilatiouser = $compilatio->get_apikey_user();
+            $DB->insert_record(
+                'plagiarism_compilatio_user',
+                (object) ['userid' => 0, 'compilatioid' => $compilatiouser->id ?? null]
+            );
 
             set_config('apikey', $apikey, 'plagiarism_compilatio');
         }
