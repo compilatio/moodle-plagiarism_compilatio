@@ -97,7 +97,7 @@ class managed_bundle {
      */
     public function get_bundle_detections(): array {
         $detectionsaccess = $this->get_access('detections');
-        
+
         if (!$detectionsaccess) {
             return [];
         }
@@ -112,7 +112,7 @@ class managed_bundle {
      */
     public function get_authorized_features(): array {
         $authorizedfeaturesaccess = $this->get_access('authorized_features');
-        
+
         if (!$authorizedfeaturesaccess) {
             return [];
         }
