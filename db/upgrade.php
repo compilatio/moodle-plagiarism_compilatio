@@ -375,7 +375,8 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
             if (!empty($apikey)) {
                 $compilatio = new api(null, $apikey);
 
-                $compilatioid = $compilatio->get_apikey_user(false)?->id;
+                $apikeyuser = $compilatio->get_apikey_user(false);
+                $compilatioid = $apikeyuser ? $apikeyuser->id : null;
 
                 if (preg_match('/^[a-f0-9]{40}$/', $compilatioid)) {
                     $DB->delete_records('plagiarism_compilatio_user', ['userid' => 0]);
@@ -418,7 +419,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         $apikey = get_config('plagiarism_compilatio', 'apikey');
 
         if (!empty($apikey)) {
-            $compilatioapi = new api(apikey: $apikey);
+            $compilatioapi = new api(null, $apikey);
             $user = $compilatioapi->get_apikey_user(false);
 
             if ($user) {

@@ -149,7 +149,7 @@ class managed_bundle {
         $record = $DB->get_record(
             'plagiarism_compilatio_cm_cfg',
             ['cmid' => 0],
-            'similarityenabled,ai_detectionenabled,unrecognized_text_languageenabled,rewordingenabled'
+            'similarityenabled,ai_detectionenabled,utlenabled,rewordingenabled'
         );
         if (!$record) {
             return false;
@@ -174,7 +174,7 @@ class managed_bundle {
      * @param string $searchedaccess Searched access
      * @return stdClass|false Return the access if exist, false otherwise.
      */
-    private function get_access(string $searchedaccess): stdClass|false {
+    private function get_access(string $searchedaccess) {
 
         foreach ($this->managedbundle->accesses as $access) {
             if (isset($access->$searchedaccess)) {

@@ -42,7 +42,7 @@ class course_module_settings {
      */
     public const CONFIGDETECTIONSTYPEKEY = [
         "similarityenabled",
-        "unrecognized_text_languageenabled",
+        "utlenabled",
         "ai_detectionenabled",
         "rewordingenabled",
     ];
