@@ -85,7 +85,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             'defaultindexing',
             'similarityenabled',
             'ai_detectionenabled',
-            'unrecognized_text_languageenabled',
+            'utlenabled',
             'rewordingenabled',
         ];
     }

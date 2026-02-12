@@ -853,7 +853,7 @@ class api {
         $endpoint = '/api/public/translation/last-version/' . $lang . '/key/' . $key;
 
         $response = json_decode($this->build_curl($endpoint));
-
+        var_dump($key);
         if ($this->get_error_response($response, 200) === false) {
             $translation = $response->data;
             foreach (explode('.', $key) as $object) {
