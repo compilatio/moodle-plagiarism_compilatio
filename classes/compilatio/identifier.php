@@ -50,7 +50,7 @@ class identifier {
     public function __construct($userid, $cmid) {
 
         if (!isset($userid) || !isset($cmid)) {
-            throw new \moodle_exception('No userid or cmid.');
+            throw new moodle_exception('No userid or cmid.');
         }
 
         $this->userid = (string) $userid;
@@ -101,6 +101,31 @@ class identifier {
         }
 
         throw new moodle_exception('File is not stored file.');
+    }
+
+    public function create_for_quiz($content, $attemptid, $slot): string {
+        if ($content instanceof stored_file) {
+            $filestream = $content->get_content_file_handle();
+
+            if (false === $filestream) {
+                throw new moodle_exception('Canno\'t get stored file content.');
+            }
+
+            rewind($filestream);
+
+            $hash = hash_init('sha1');
+            hash_update_stream($hash, $filestream);
+            hash_update($hash, $this->userid);
+            hash_update($hash, $this->cmid);
+            hash_update($hash, $attemptid);
+            hash_update($hash, $slot);
+
+            return hash_final($hash);        
+        } else if (is_string($content)) {
+            return sha1($content . $this->userid . $this->cmid . $attemptid . $slot);  
+        }
+        
+        throw new moodle_exception('Content is neither a store_field or string');
     }
 
     /**

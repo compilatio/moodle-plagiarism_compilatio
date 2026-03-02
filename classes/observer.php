@@ -95,9 +95,9 @@ class plagiarism_compilatio_observer {
      * @return void
      */
     public static function quiz_submitted(\mod_quiz\event\attempt_submitted $event) {
-            global $CFG;
+            global $DB, $CFG;
         try {
-            event_handler::submit_quiz($event->get_data());
+            event_handler::submit_quiz($DB, $CFG, $event->get_data());
         } catch (Exception $e) {
             return $e->getMessage();
         }
