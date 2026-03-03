@@ -435,6 +435,16 @@ class file {
         return $this->retreive_doc_following_params($DB, $multiple, $content, $params);
     }
 
+    /**
+     * Get quiz document record(s) using quiz-specific identifier.
+     *
+     * @param int   $cmid       Course module ID
+     * @param mixed $content    Quiz answer content
+     * @param array $quizparams Quiz parameters with attempt and slot keys
+     * @param int   $userid     User ID
+     * @param bool  $multiple   Whether to return multiple records
+     * @return mixed            Single document object, array of document objects, or false/empty array if not found
+     */
     public function compilatio_get_document_in_quiz(
         $cmid,
         $content,
@@ -449,9 +459,18 @@ class file {
         $identifier = new identifier($userid, $cmid);
         $params['identifier'] = $identifier->create_for_quiz($content, $quizparams['attemptid'], $quizparams['slot']);
 
-       return $this->retreive_doc_following_params($DB, $multiple, $content, $params);
+        return $this->retreive_doc_following_params($DB, $multiple, $content, $params);
     }
 
+    /**
+     * Retrieve Compilatio document(s) from parameters with identifier failover.
+     *
+     * @param \\moodle_database $DB       Moodle database object
+     * @param bool              $multiple  Whether to return multiple records
+     * @param mixed             $content   Content used to build fallback identifier
+     * @param array             $params    Query parameters
+     * @return mixed                      Single document object, array of document objects, or false/empty array if not found
+     */
     private function retreive_doc_following_params($DB, $multiple, $content, $params) {
         $fetchdocuments = function($queryparams) use ($DB, $multiple) {
             return $multiple

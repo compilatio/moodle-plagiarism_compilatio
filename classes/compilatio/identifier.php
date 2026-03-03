@@ -103,6 +103,14 @@ class identifier {
         throw new moodle_exception('File is not stored file.');
     }
 
+    /**
+     * Create quiz-specific identifier.
+     *
+     * @param mixed  $content   Quiz content (stored_file or string)
+     * @param string $attemptid Quiz attempt ID
+     * @param string $slot      Quiz question slot
+     * @return string           Generated identifier
+     */
     public function create_for_quiz($content, $attemptid, $slot): string {
         if ($content instanceof stored_file) {
             $filestream = $content->get_content_file_handle();
@@ -120,11 +128,11 @@ class identifier {
             hash_update($hash, $attemptid);
             hash_update($hash, $slot);
 
-            return hash_final($hash);        
+            return hash_final($hash);
         } else if (is_string($content)) {
-            return sha1($content . $this->userid . $this->cmid . $attemptid . $slot);  
+            return sha1($content . $this->userid . $this->cmid . $attemptid . $slot);
         }
-        
+
         throw new moodle_exception('Content is neither a store_field or string');
     }
 

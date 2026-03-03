@@ -132,7 +132,15 @@ class cmpfile {
      *
      * @return cmpfile Return the cmpfile
      */
-    public function __construct(string $cmid, string $userid, $content, $submission, ?string $filename = null, $attemptid = null, $slot = null) {
+    public function __construct(
+        string $cmid,
+        string $userid,
+        $content,
+        $submission,
+        ?string $filename = null,
+        $attemptid = null,
+        $slot = null
+    ) {
         $cm = get_coursemodule_from_id(null, $cmid);
 
         $this->cm = $cmid;
@@ -186,7 +194,7 @@ class cmpfile {
 
         if ($content instanceof stored_file) {
             $this->identifier = $identifier->create_from_file($content);
-        } else {   
+        } else {
             $this->identifier = $identifier->create_from_string($content);
         }
     }
