@@ -37,10 +37,11 @@ use plagiarism_compilatio\compilatio\identifier;
 class document_frame {
     /**
      * Display plagiarism document area
-     * @param array  $linkarray
+     * @param string  $linkarray
      * @return string Return the HTML formatted string.
      */
-    public static function get_document_frame($DB, $CFG, $PAGE, $USER, $linkarray) {
+    public static function get_document_frame($linkarray) {
+        global $DB, $CFG, $PAGE, $USER;
         $output = '';
 
         // Filter in which activity Compilatio is enabled (Assignment, Workshop, Quizz, Forum).
@@ -55,7 +56,7 @@ class document_frame {
 
         // Quiz management - Only essay question are supported for the moment.
         if (!empty($linkarray['component']) && $linkarray['component'] == 'qtype_essay') {
-            $linkarray = self::manage_quiz($DB, $linkarray);
+            $linkarray = self::manage_quiz($linkarray);
         }
 
         // Check if Compilatio is enabled in moodle->module->cm.
@@ -78,7 +79,7 @@ class document_frame {
 
         // Get submitter userid.
         $userid = $linkarray['userid']; // In Workshops and forums.
-        if ('assign' === $cm->modname  && isset($linkarray['file'])) { // In assigns.
+        if ($cm->modname == 'assign' && isset($linkarray['file'])) { // In assigns.
             $userid = $DB->get_field('assign_submission', 'userid', ['id' => $linkarray['file']->get_itemid()]);
         }
 
@@ -114,7 +115,9 @@ class document_frame {
                         AND sot.onlinetext = ?
                         LIMIT 1";
 
-                $submission = $DB->get_record_sql($sql, [$assignmentid, $content]);
+                $params = [$assignmentid, $content];
+
+                $submission = $DB->get_record_sql($sql, $params);
 
                 if ($submission) {
                     $itemid = $submission->id;
@@ -153,20 +156,62 @@ class document_frame {
 
             $allowed = get_config('plagiarism_compilatio', 'enable_show_reports');
             $showreport = $plugincm->showstudentreport ?? null;
-            if ('1' === $allowed && ('immediately' === $showreport || ('closed' === $showreport && $assignclosed))) {
+            if ($allowed === '1' && ($showreport == 'immediately' || ($showreport == 'closed' && $assignclosed))) {
                 $canviewreport = true;
             }
 
             $showscore = $plugincm->showstudentscore ?? null;
-            if ('immediately' === $showscore || ('closed' === $showscore && $assignclosed)) {
+            if ($showscore == 'immediately' || ($showscore == 'closed' && $assignclosed)) {
                 $canviewscore = true;
             }
         }
         if (!$canviewscore) {
             return '';
         }
+        $compilatiofile = new file();
 
-        $cmpfile = self::retreive_cmpfile_for_document_frame($linkarray, $content, $userid, $groupid);
+        // Get compilatio file record.
+        if (isset($linkarray['area']) && isset($linkarray['itemid'])) {
+            $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
+                $linkarray['cmid'],
+                $content,
+                ['attemptid' => $linkarray['area'], 'slot' => $linkarray['itemid']],
+                $userid
+            );
+            if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
+                $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
+                    $linkarray['cmid'],
+                    $linkarray['cmp_filename'],
+                    ['attemptid' => $linkarray['area'], 'slot' => $linkarray['itemid']],
+                    $userid
+                );
+            }
+        } else {
+            $cmpfile = $compilatiofile->compilatio_get_document(
+                $linkarray['cmid'],
+                $content,
+                $userid,
+                null,
+                ['groupid' => $groupid]
+            );
+
+            if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
+                $cmpfile = $compilatiofile->compilatio_get_document(
+                    $linkarray['cmid'],
+                    $linkarray['cmp_filename'],
+                    $userid,
+                    null,
+                    ['groupid' => $groupid],
+                    false,
+                    ['attemptid' => $linkarray['area'] ?? null, 'slot' => $linkarray['itemid'] ?? null]
+                );
+            }
+
+            if (empty($cmpfile)) { // Try to get record without userid in forums.
+                $cmpfile = $compilatiofile->compilatio_get_document($linkarray['cmid'], $content, $userid);
+            }
+        }
+
         $url = null;
 
         // No compilatio file in DB yet.
@@ -179,7 +224,7 @@ class document_frame {
 
                 // Handle online text submissions.
                 if ($isonlinetext) {
-                    $identifier = new identifier($userid, $linkarray['cmid']);
+                    $identifier = new identifier($linkarray['userid'], $linkarray['cmid']);
 
                     // Catch GET 'sendcontent'.
                     $trigger = optional_param('sendcontent', 0, PARAM_TEXT);
@@ -191,11 +236,11 @@ class document_frame {
                         JOIN {assign_submission} ass ON assot.submission = ass.id
                         WHERE ass.assignment = ? AND ass.userid = ?';
 
-                        $onlineassignment = $DB->get_record_sql($sql, [$linkarray['assignment'], $userid]);
+                        $onlineassignment = $DB->get_record_sql($sql, [$linkarray['assignment'], $linkarray['userid']]);
                         $filename = 'assign-' . $onlineassignment->submission . '.htm';
 
                         file::send_file($linkarray['cmid'], $userid, $linkarray['content'], $filename);
-                        return self::get_document_frame($DB, $CFG, $PAGE, $USER, $linkarray);
+                        return self::get_document_frame($linkarray);
                     }
 
                     $urlparams = [
@@ -213,7 +258,7 @@ class document_frame {
                     $fileid = $linkarray['file']->get_id();
                     if ($trigger === $fileid) {
                         file::send_unsent_files([$linkarray['file']], $linkarray['cmid']);
-                        return self::get_document_frame($DB, $CFG, $PAGE, $USER, $linkarray);
+                        return self::get_document_frame($linkarray);
                     }
 
                     $urlparams = [
@@ -261,8 +306,6 @@ class document_frame {
      * @return string  Return document frame HTML string.
      */
     public static function display_document_frame(
-        $DB,
-        $CFG,
         $cantriggeranalysis,
         $isstudentanalyse,
         $cmpfileid,
@@ -270,6 +313,8 @@ class document_frame {
         $isteacher,
         $url
     ) {
+        global $DB, $CFG;
+
         $compilatio = new api();
 
         if (!empty($cmpfileid)) {
@@ -561,55 +606,6 @@ class document_frame {
         return $html;
     }
 
-    private static function retreive_cmpfile_for_document_frame($linkarray, $content, $userid, $groupid) {
-        $compilatiofile = new file();
-
-        if (isset($linkarray['area']) && isset($linkarray['itemid'])) {
-
-            $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
-                $linkarray['cmid'],
-                $content,
-                ['attemptid' => $linkarray['area'], 'slot' => $linkarray['itemid']],
-                $userid
-            );
-            if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
-                $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
-                    $linkarray['cmid'],
-                    $linkarray['cmp_filename'],
-                    ['attemptid' => $linkarray['area'], 'slot' => $linkarray['itemid']],
-                    $userid
-                );
-            }
-
-        } else {
-            $cmpfile = $compilatiofile->compilatio_get_document(
-                $linkarray['cmid'],
-                $content,
-                $userid,
-                null,
-                ['groupid' => $groupid]
-            );
-
-            if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
-                $cmpfile = $compilatiofile->compilatio_get_document(
-                    $linkarray['cmid'],
-                    $linkarray['cmp_filename'],
-                    $userid,
-                    null,
-                    ['groupid' => $groupid],
-                    false,
-                    ['attemptid' => $linkarray['area'] ?? null, 'slot' => $linkarray['itemid'] ?? null]
-                );
-            }
-
-            if (empty($cmpfile)) {
-                $cmpfile = $compilatiofile->compilatio_get_document($linkarray['cmid'], $content, $userid);
-            }
-        }
-
-        return $cmpfile;
-    }
-
     /**
      * Format translation string if needed
      *
@@ -632,7 +628,8 @@ class document_frame {
      * @param array $linkarray
      * @return array Return linkarray
      */
-    private static function manage_quiz($DB, $linkarray) {
+    private static function manage_quiz($linkarray) {
+        global $DB;
 
         if (empty($linkarray['cmid']) || empty($linkarray['content'])) {
             $quba = \question_engine::load_questions_usage_by_activity($linkarray['area']);

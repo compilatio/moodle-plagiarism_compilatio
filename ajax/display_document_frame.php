@@ -41,8 +41,6 @@ $isteacher = required_param('isteacher', PARAM_BOOL);
 $url = required_param('url', PARAM_RAW);
 
 echo document_frame::display_document_frame(
-    $DB,
-    $CFG,
     $cantriggeranalysis,
     $isstudentanalyse,
     $cmpfileid,

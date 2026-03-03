@@ -97,8 +97,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
      * @return string  HTML or blank.
      */
     public function get_links($linkarray) {
-        global $DB, $CFG, $PAGE, $USER;
-        return document_frame::get_document_frame($DB, $CFG, $PAGE, $USER, $linkarray);
+        return document_frame::get_document_frame($linkarray);
     }
 
     /**
