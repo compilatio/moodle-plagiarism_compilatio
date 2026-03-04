@@ -458,7 +458,14 @@ class file {
 
         $identifier = new identifier($userid, $cmid);
         $params['identifier'] = $identifier->create_for_quiz($content, $quizparams['attemptid'], $quizparams['slot']);
+        $quizdocument = $this->retreive_doc_following_params($DB, $multiple, $content, $params);
 
+        if ($quizdocument) {
+            return $quizdocument;
+        }
+
+        // Retreive for old identifier if quiz-specific identifier did not find any document.
+        $params['identifier'] = $identifier->create_from_string($content);
         return $this->retreive_doc_following_params($DB, $multiple, $content, $params);
     }
 
