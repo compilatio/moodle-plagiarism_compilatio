@@ -465,7 +465,10 @@ class file {
         }
 
         // Retreive for old identifier if quiz-specific identifier did not find any document.
-        $params['identifier'] = $identifier->create_from_string($content);
+        $params['identifier'] = $content instanceof stored_file ?
+            $identifier->create_from_file($content) :
+            $identifier->create_from_string($content);
+
         return $this->retreive_doc_following_params($DB, $multiple, $content, $params);
     }
 
