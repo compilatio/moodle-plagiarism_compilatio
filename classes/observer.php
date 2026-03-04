@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2026 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -95,9 +95,9 @@ class plagiarism_compilatio_observer {
      * @return void
      */
     public static function quiz_submitted(\mod_quiz\event\attempt_submitted $event) {
-            global $CFG;
+            global $DB, $CFG;
         try {
-            event_handler::submit_quiz($event->get_data());
+            event_handler::submit_quiz($DB, $CFG, $event->get_data());
         } catch (Exception $e) {
             return $e->getMessage();
         }

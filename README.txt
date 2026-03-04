@@ -1,12 +1,20 @@
-Compilatio.net Plagiarism plugin for Moodle 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 5.0
+Compilatio.net Plagiarism plugin for Moodle 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 5.0, 5.1
 
 Author: Compilatio <support@compilatio.net>
-Copyright 2025 Compilatio.net https://www.compilatio.net
+Copyright 2026 Compilatio.net https://www.compilatio.net
 License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+3.2.10
+- [Fix] Resend attached files in quiz
+- [Fix] User can't do multiples attempts in quiz with same file
+- [Fix] Can't send files in forum
+- [Fix] Errors on translations retrieving
+- Add link to Toolbox for teachers in the help tabs in compilatio frame
+- Add configurable folder to activity settings to allow or not certain detections for Magister+
+
 3.2.9
 - [Fix] Typing analysistime in course_module_settings
 - [Fix] Update capability in ajax to match roles needed for actions

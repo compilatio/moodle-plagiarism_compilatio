@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2026 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -385,7 +385,7 @@ class event_handler {
 
         $groupid = null;
 
-        $compifile = $compilatiofile->compilatio_get_document_with_failover(
+        $compifile = $compilatiofile->compilatio_get_document(
             $cmid,
             $filecontent,
             $userid,
@@ -465,7 +465,7 @@ class event_handler {
         }
 
         foreach ($mdlfiles as $file) {
-            $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+            $cmpfile = $compilatiofile->compilatio_get_document(
                 $cmid,
                 $file,
                 $userid,
@@ -508,12 +508,9 @@ class event_handler {
      * @param  mixed $event Moodle event
      * @return void
      */
-    public static function submit_quiz($event) {
-        global $CFG, $DB;
+    public static function submit_quiz($DB, $CFG, $event) {
         $compilatiofile = new file();
         require_once($CFG->dirroot . '/mod/quiz/locallib.php');
-
-        $fs = get_file_storage();
 
         $attemptid = $event['objectid'];
 
@@ -527,15 +524,15 @@ class event_handler {
 
         foreach ($attempt->get_slots() as $slot) {
             $answer = $attempt->get_question_attempt($slot);
-            if ($answer->get_question()->get_type_name() == 'essay') {
-                $content = $CFG->version >= 2023100900 ?
-                    $answer->get_question()->summarise_response($answer->get_last_qt_data()) :
-                    $answer->get_response_summary();
+            if ('essay' !== $answer->get_question()->get_type_name()) {
+                continue;
+            }
 
-                if (empty($content)) {
-                    return;
-                }
+            $content = $CFG->version >= 2023100900 ?
+                $answer->get_question()->summarise_response($answer->get_last_qt_data()) :
+                $answer->get_response_summary();
 
+            if (!empty($content)) {
                 // Online text content.
                 $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');
                 if (str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8')) >= $nbmotsmin) {
@@ -544,36 +541,34 @@ class event_handler {
                     $filename = "quiz-{$courseid}-{$cmid}-{$attemptid}-{$question}.htm";
 
                     // Check for duplicates files.
-                    $duplicate = $compilatiofile->compilatio_get_document_with_failover(
+                    $duplicates = $compilatiofile->compilatio_get_document_in_quiz(
                         $cmid,
                         $filename,
+                        ['attemptid' => $attemptid, 'slot' => $slot],
                         $userid,
-                        null,
-                        [],
-                        true
-                    );
-                    compilatio_delete_files($duplicate);
-
-                    file::send_file($cmid, $userid, $content, $filename);
-                }
-
-                // Files attachments.
-                $context = \context_module::instance($cmid);
-                $files = $answer->get_last_qt_files('attachments', $context->id);
-                foreach ($files as $file) {
-                    // Check for duplicate files.
-                    $duplicates = $compilatiofile->compilatio_get_document_with_failover(
-                        $cmid,
-                        $file,
-                        $userid,
-                        null,
-                        [],
-                        true
+                        true,
                     );
                     compilatio_delete_files($duplicates);
 
-                    file::send_file($cmid, $userid, $file);
+                    file::send_file($cmid, $userid, $content, $filename, $attemptid, $slot);
                 }
+            }
+
+            // Files attachments.
+            $context = \context_module::instance($cmid);
+            $files = $answer->get_last_qt_files('attachments', $context->id);
+            foreach ($files as $file) {
+                // Check for duplicate files.
+                $duplicates = $compilatiofile->compilatio_get_document_in_quiz(
+                    $cmid,
+                    $file,
+                    ['attemptid' => $attemptid, 'slot' => $slot],
+                    $userid,
+                    true,
+                );
+                compilatio_delete_files($duplicates);
+
+                file::send_file($cmid, $userid, $file, null, $attemptid, $slot);
             }
         }
     }

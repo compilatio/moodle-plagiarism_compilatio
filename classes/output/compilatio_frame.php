@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2026 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -361,6 +361,14 @@ class compilatio_frame {
         $output .= get_config('plagiarism_compilatio', 'recipe') === 'anasim-premium'
             ? "<li>" . get_string('ai_included_in_subscription', 'plagiarism_compilatio') . "</li></ul></p>"
             : "</ul>" . get_string('ai_not_included_in_subscription', 'plagiarism_compilatio') . "</p>";
+
+        $output .= "<a
+                href='https://support.compilatio.net/hc/fr/sections/360001345397'
+                target='_blank'
+            >".
+                get_string('teacher_toolbox', 'plagiarism_compilatio')
+                ."<i class='ml-2 fa fa-external-link'></i>
+            </a>";
 
         if ($module == 'quiz') {
             $nbmotsmin = get_config('plagiarism_compilatio', 'min_word');

@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2026 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -36,6 +36,17 @@ use moodle_url;
  * course_module_settings class
  */
 class course_module_settings {
+
+    /**
+     * Contain all config key about configurable detections.
+     */
+    public const CONFIGDETECTIONSTYPEKEY = [
+        "similarityenabled",
+        "utlenabled",
+        "ai_detectionenabled",
+        "rewordingenabled",
+    ];
+
     /**
      * Save Compilatio settings from a course module settings page
      *
@@ -49,102 +60,36 @@ class course_module_settings {
             return $data;
         }
 
-        if (isset($data->activated)) {
-            // First get existing values.
-            $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $data->coursemodule]);
-
-            $newconfig = false;
-            if (empty($cmconfig)) {
-                $newconfig = true;
-                $cmconfig = new \stdClass();
-                $cmconfig->cmid = $data->coursemodule;
-            }
-
-            if ($data->activated === '1') {
-                // Validation on thresholds.
-                if (
-                    !isset($data->warningthreshold, $data->criticalthreshold) ||
-                    $data->warningthreshold > $data->criticalthreshold ||
-                    $data->warningthreshold > 100 || $data->warningthreshold < 0 ||
-                    $data->criticalthreshold > 100 || $data->criticalthreshold < 0
-                ) {
-                    $data->warningthreshold = 10;
-                    $data->criticalthreshold = 25;
-                }
-
-                if (get_config('plagiarism_compilatio', 'enable_show_reports') !== '1') {
-                    $data->showstudentreport = 'never';
-                }
-
-                if ($newconfig || (!isset($cmconfig->userid) && $cmconfig->activated === '0')) {
-                    $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => $USER->id]);
-
-                    if (empty($user)) {
-                        $compilatio = new api();
-                        $user = $compilatio->get_or_create_user();
-
-                        if (!empty($user)) {
-                            $compilatio->set_user_id($user->compilatioid);
-                        }
-                    }
-
-                    $cmconfig->userid = $user->compilatioid;
-                }
-
-                if (isset($cmconfig->userid)) {
-                    $compilatio ??= new api($cmconfig->userid);
-
-                    // Get Datetime for Compilatio folder if it exist.
-                    $analysistime = $data->analysistime ?? null;
-
-                    if (isset($analysistime)) {
-                        $date = new \DateTime();
-                        $date->setTimestamp((int) $data->analysistime);
-                        $analysistime = $date->format('Y-m-d H:i:s');
-                    }
-
-                    if ($newconfig || (!isset($cmconfig->folderid) && $cmconfig->activated === '0')) {
-                        $folderid = $compilatio->set_folder(
-                            $data->name,
-                            $data->defaultindexing,
-                            $data->analysistype,
-                            $analysistime,
-                            $data->warningthreshold,
-                            $data->criticalthreshold
-                        );
-                        if (compilatio_valid_md5($folderid)) {
-                            $cmconfig->folderid = $folderid;
-                        }
-                    } else {
-                        $compilatio->update_folder(
-                            $cmconfig->folderid,
-                            $data->name,
-                            $data->defaultindexing,
-                            $data->analysistype,
-                            $analysistime,
-                            $data->warningthreshold,
-                            $data->criticalthreshold
-                        );
-                    }
-                }
-
-                foreach ($plugin->config_options() as $element) {
-                    $cmconfig->$element = $data->$element ?? null;
-                }
-            } else {
-                $cmconfig->activated = 0;
-            }
-
-            if (get_config('plagiarism_compilatio', 'read_only_apikey') === '1') {
-                return $data;
-            }
-
-            if ($newconfig) {
-                $DB->insert_record('plagiarism_compilatio_cm_cfg', $cmconfig);
-            } else {
-                $DB->update_record('plagiarism_compilatio_cm_cfg', $cmconfig);
-            }
+        if (!isset($data->activated)) {
+            return $data;
         }
+
+        // First get existing values.
+        $cmconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $data->coursemodule]);
+
+        $newconfig = false;
+        if (empty($cmconfig)) {
+            $newconfig = true;
+            $cmconfig = new \stdClass();
+            $cmconfig->cmid = $data->coursemodule;
+        }
+
+        if ($data->activated === '1') {
+            self::set_config($DB, $USER, $data, $cmconfig, $newconfig, $plugin);
+        } else {
+            $cmconfig->activated = 0;
+        }
+
+        if (get_config('plagiarism_compilatio', 'read_only_apikey') === '1') {
+            return $data;
+        }
+
+        if ($newconfig) {
+            $DB->insert_record('plagiarism_compilatio_cm_cfg', $cmconfig);
+            return $data;
+        }
+
+        $DB->update_record('plagiarism_compilatio_cm_cfg', $cmconfig);
         return $data;
     }
 
@@ -212,6 +157,12 @@ class course_module_settings {
         }
 
         foreach ($plagiarismelements as $element) {
+            // The setDefault is already made in get_configurable_detections_form.
+            // To follow group administrator choices for configurable detections.
+            if (in_array($element, self::CONFIGDETECTIONSTYPEKEY) && !isset($config->$element)) {
+                continue;
+            }
+
             $mform->setDefault($element, $config->$element ?? $defaultconfig->$element);
         }
     }
@@ -219,13 +170,13 @@ class course_module_settings {
     /**
      * Adds the list of plagiarism settings to a form.
      *
-     * @param object  $mform    Moodle form object
+     * @param MoodleQuickForm  $mform    Moodle form object
      * @param boolean $defaults if this is being loaded from defaults form or from inside a mod.
      * @param string  $modulename
      * @param string  $teacheremail
      */
     public static function get_form_elements($mform, $defaults = false, $modulename = null, $teacheremail = null) {
-        global $PAGE, $CFG, $DB, $USER;
+        global $PAGE, $USER;
 
         $lang = substr(current_language(), 0, 2);
 
@@ -243,6 +194,11 @@ class course_module_settings {
 
         $mform->addElement('select', 'activated', get_string('activated', 'plagiarism_compilatio'), $ynoptions);
         $mform->setDefault('activated', 1);
+
+        // Configurable detections choice.
+        self::get_configurable_detections_form($mform, $ynoptions);
+
+        $mform->addElement('html', '<p><strong>' . get_string('analysis_options', 'plagiarism_compilatio') . '</strong></p>');
 
         $group = [];
         $infostring = isset($teacheremail)
@@ -424,5 +380,183 @@ class course_module_settings {
 
         $mform->setDefault('warningthreshold', '10');
         $mform->setDefault('criticalthreshold', '25');
+    }
+
+    /**
+     * Create form elements for configurable detections.
+     *
+     * @param MoodleQuickForm $mform Moodle form object
+     * @param array $ynoptions
+     * @return void
+     */
+    private static function get_configurable_detections_form($mform, $ynoptions): void {
+        $compilatioapi = new api();
+
+        $user = $compilatioapi->get_apikey_user(false);
+        if (!$user) {
+            return;
+        }
+
+        $managedbundle = new managed_bundle($user);
+        if (!$managedbundle->is_bundle_authorized_to("folder-recipe-parameters")) {
+            return;
+        }
+
+        $mform->addElement(
+            'html',
+            '<p><strong>' . get_string('configurable_detections_options', 'plagiarism_compilatio') . '</strong></p>'
+        );
+
+        foreach ($managedbundle->get_bundle_detections() as $detection) {
+            if (!in_array($detection->process, managed_bundle::DETECTIONSTYPE)) {
+                continue;
+            }
+
+            if ($detection->enabled && !$detection->configurable) {
+                $mform->addElement(
+                    'select',
+                    $detection->process . 'enabled',
+                    get_string('detection_' . $detection->process . '_activated', 'plagiarism_compilatio'),
+                    [1 => get_string('always_enabled', 'plagiarism_compilatio')]
+                );
+                $mform->setDefault($detection->process . 'enabled', 1);
+            } else if ($detection->enabled) {
+                $mform->addElement(
+                    'select',
+                    $detection->process . 'enabled',
+                    get_string('detection_' . $detection->process .'_activated', 'plagiarism_compilatio'),
+                    $ynoptions
+                );
+                $mform->setDefault($detection->process . 'enabled', 1);
+            } else if ($detection->configurable) {
+                $mform->addElement(
+                    'select',
+                    $detection->process . 'enabled',
+                    get_string('detection_' . $detection->process .'_configurable', 'plagiarism_compilatio'),
+                    $ynoptions
+                );
+                $mform->setDefault($detection->process . 'enabled', 0);
+            } else {
+                $mform->addElement(
+                    'select',
+                    $detection->process . 'enabled',
+                    get_string('detection_' . $detection->process .'_desactivated', 'plagiarism_compilatio'),
+                    [0 => get_string('no')]
+                );
+                $mform->setDefault($detection->process . 'enabled', 0);
+            }
+        }
+    }
+
+    /**
+     * Set course module configuration
+     *
+     * @param moodle_database $DB Moodle database
+     * @param stdClass $USER Moodle connected user
+     * @param stdClass $data Data from form
+     * @param stdClass $cmconfig Actual course module configuration
+     * @param stdClass $newconfig New course module configuration
+     * @param stdClass $plugin Moodle plagiarism plugin class
+     * @return void
+     */
+    private static function set_config($DB, $USER, $data, $cmconfig, $newconfig, $plugin) {
+        // Validation on thresholds.
+        if (
+            !isset($data->warningthreshold, $data->criticalthreshold) ||
+            $data->warningthreshold > $data->criticalthreshold ||
+            $data->warningthreshold > 100 || $data->warningthreshold < 0 ||
+            $data->criticalthreshold > 100 || $data->criticalthreshold < 0
+        ) {
+            $data->warningthreshold = 10;
+            $data->criticalthreshold = 25;
+        }
+
+        if (get_config('plagiarism_compilatio', 'enable_show_reports') !== '1') {
+            $data->showstudentreport = 'never';
+        }
+
+        if ($newconfig || (!isset($cmconfig->userid) && $cmconfig->activated === '0')) {
+            $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => $USER->id]);
+
+            if (empty($user)) {
+                $compilatio = new api();
+                $user = $compilatio->get_or_create_user();
+
+                if (!empty($user)) {
+                    $compilatio->set_user_id($user->compilatioid);
+                }
+            }
+
+            $cmconfig->userid = $user->compilatioid;
+        }
+
+        if (isset($cmconfig->userid)) {
+            $compilatio ??= new api($cmconfig->userid);
+
+            // Get Datetime for Compilatio folder if it exist.
+            $analysistime = $data->analysistime ?? null;
+
+            if (isset($analysistime)) {
+                $date = new \DateTime();
+                $date->setTimestamp((int) $data->analysistime);
+                $analysistime = $date->format('Y-m-d H:i:s');
+            }
+
+            $compilatiouser = $compilatio->get_apikey_user(false);
+            $detectiosnenabled = [];
+
+            if ($compilatiouser) {
+                $managedbundle = new managed_bundle($compilatiouser);
+
+                foreach ($managedbundle->get_bundle_detections() as $detection) {
+                    if (!in_array($detection->process, managed_bundle::DETECTIONSTYPE) ||
+                        ($managedbundle->is_anasim_recipe() && in_array($detection->process, ['ai_detection', 'rewording']))
+                    ) {
+                        continue;
+                    }
+
+                    if ($managedbundle->is_anasim_recipe() || 'similarity' === $detection->process) {
+                        $data->{$detection->process . 'enabled'} = '1';
+                        continue;
+                    }
+
+                    $detectiosnenabled[] = [
+                        'process' => $detection->process ,
+                        'enabled' => $data->{$detection->process . 'enabled'},
+                        'configurable' => 1,
+                    ];
+                }
+            }
+
+            if ($newconfig || (!isset($cmconfig->folderid) && $cmconfig->activated === '0')) {
+                $folderid = $compilatio->set_folder(
+                    $data->name,
+                    $data->defaultindexing,
+                    $data->analysistype,
+                    $analysistime,
+                    $detectiosnenabled,
+                    $data->warningthreshold,
+                    $data->criticalthreshold
+                );
+                if (compilatio_valid_md5($folderid)) {
+                    $cmconfig->folderid = $folderid;
+                }
+            } else {
+                $compilatio->update_folder(
+                    $cmconfig->folderid,
+                    $data->name,
+                    $data->defaultindexing,
+                    $data->analysistype,
+                    $analysistime,
+                    $detectiosnenabled,
+                    $data->warningthreshold,
+                    $data->criticalthreshold
+                );
+            }
+        }
+
+        foreach ($plugin->config_options() as $element) {
+            $cmconfig->$element = $data->$element ?? null;
+        }
     }
 }

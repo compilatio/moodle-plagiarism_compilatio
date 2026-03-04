@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2026 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -49,9 +49,9 @@ class university_component {
     /**
      * Name of the user field storing the university component.
      *
-     * @var string|null
+     * @var string
      */
-    public string|null $universitycomponentfield;
+    public string $universitycomponentfield;
 
     /**
      * Create the component helper.

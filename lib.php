@@ -19,7 +19,7 @@
  *
  * @package   plagiarism_compilatio
  * @author    Compilatio <support@compilatio.net>
- * @copyright 2025 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright 2026 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -83,6 +83,10 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             'warningthreshold',
             'criticalthreshold',
             'defaultindexing',
+            'similarityenabled',
+            'ai_detectionenabled',
+            'utlenabled',
+            'rewordingenabled',
         ];
     }
 
@@ -214,7 +218,7 @@ function compilatio_get_unsent_documents($cmid) {
             foreach ($files as $file) {
                 if ($file->get_filename() != '.') {
                     $countfiles = count(
-                        $compilatiofile->compilatio_get_document_with_failover(
+                        $compilatiofile->compilatio_get_document(
                             $cmid,
                             $file,
                             0,
@@ -247,7 +251,7 @@ function compilatio_get_unsent_documents($cmid) {
         $onlineassignments = $DB->get_records_sql($sql, [$cmid]);
 
         foreach ($onlineassignments as $onlineassignment) {
-            $countfiles = count($compilatiofile->compilatio_get_document_with_failover(
+            $countfiles = count($compilatiofile->compilatio_get_document(
                 $cmid,
                 $onlineassignment->onlinetext,
                 0,
@@ -283,7 +287,7 @@ function compilatio_get_unsent_documents($cmid) {
                         'id' => isset($file->onlinetext) ? $file->submission : $file->get_itemid()]);
 
                     $countfiles = count(
-                        $compilatiofile->compilatio_get_document_with_failover(
+                        $compilatiofile->compilatio_get_document(
                             $cmid,
                             $file,
                             $userid,
@@ -313,7 +317,7 @@ function compilatio_get_unsent_documents($cmid) {
         $onlineassignments = $DB->get_records_sql($sql, [$cmid]);
 
         foreach ($onlineassignments as $onlineassignment) {
-            $countfiles = count($compilatiofile->compilatio_get_document_with_failover(
+            $countfiles = count($compilatiofile->compilatio_get_document(
                 $cmid,
                 $onlineassignment->onlinetext,
                 $onlineassignment->userid,

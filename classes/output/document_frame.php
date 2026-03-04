@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2026 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -171,26 +171,45 @@ class document_frame {
         $compilatiofile = new file();
 
         // Get compilatio file record.
-        $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
-            $linkarray['cmid'],
-            $content,
-            $userid,
-            null,
-            ['groupid' => $groupid]
-        );
-
-        if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
-            $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+        if (isset($linkarray['area']) && isset($linkarray['itemid'])) {
+            $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
                 $linkarray['cmid'],
-                $linkarray['cmp_filename'],
+                $content,
+                ['attemptid' => $linkarray['area'], 'slot' => $linkarray['itemid']],
+                $userid
+            );
+            if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
+                $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
+                    $linkarray['cmid'],
+                    $linkarray['cmp_filename'],
+                    ['attemptid' => $linkarray['area'], 'slot' => $linkarray['itemid']],
+                    $userid
+                );
+            }
+        } else {
+            $cmpfile = $compilatiofile->compilatio_get_document(
+                $linkarray['cmid'],
+                $content,
                 $userid,
                 null,
                 ['groupid' => $groupid]
             );
-        }
 
-        if (empty($cmpfile)) { // Try to get record without userid in forums.
-            $cmpfile = $compilatiofile->compilatio_get_document_with_failover($linkarray['cmid'], $content, $userid);
+            if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
+                $cmpfile = $compilatiofile->compilatio_get_document(
+                    $linkarray['cmid'],
+                    $linkarray['cmp_filename'],
+                    $userid,
+                    null,
+                    ['groupid' => $groupid],
+                    false,
+                    ['attemptid' => $linkarray['area'] ?? null, 'slot' => $linkarray['itemid'] ?? null]
+                );
+            }
+
+            if (empty($cmpfile)) { // Try to get record without userid in forums.
+                $cmpfile = $compilatiofile->compilatio_get_document($linkarray['cmid'], $content, $userid);
+            }
         }
 
         $url = null;

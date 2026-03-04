@@ -18,7 +18,7 @@
  * Start analysis for all document in course module
  *
  * @package   plagiarism_compilatio
- * @copyright 2025 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright 2026 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @param string $_POST['cmid']
@@ -76,7 +76,7 @@ if ($plugincm->analysistype == 'manual') {
                         . $answer->get_question_id()
                         . ".htm";
 
-                    $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+                    $cmpfile = $compilatiofile->compilatio_get_document(
                         $cmid,
                         $filename . $answer->userid,
                         $answer->userid,
@@ -89,7 +89,7 @@ if ($plugincm->analysistype == 'manual') {
 
                     $files = $answer->get_last_qt_files('attachments', $context->id);
                     foreach ($files as $file) {
-                        $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+                        $cmpfile = $compilatiofile->compilatio_get_document(
                             $cmid,
                             $file,
                             $file->userid,

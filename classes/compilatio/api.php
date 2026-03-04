@@ -19,7 +19,7 @@
  *
  * @package    plagiarism_compilatio
  * @author     Compilatio <support@compilatio.net>
- * @copyright  2025 Compilatio.net {@link https://www.compilatio.net}
+ * @copyright  2026 Compilatio.net {@link https://www.compilatio.net}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -129,15 +129,15 @@ class api {
      * Get Compilatio user ID of legacy account attached to Moodle instance
      *
      * @param  boolean $updateapikey
-     * @return string|false Returns user ID on success, or false otherwise
+     * @return stdClass|false Returns user on success, false otherwise
      */
-    public function get_apikey_user_id($updateapikey = true) {
+    public function get_apikey_user($updateapikey = true) {
         $endpoint = '/api/private/authentication/check-api-key';
 
         $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
-            $oldmoodleownerid = $response->data->user->current_api_key->old_moodle_owner_id ?? null;
+            $oldmoodleownerid = $response->data->user ?? null;
 
             if (!empty($oldmoodleownerid) || !$updateapikey) {
                 return $oldmoodleownerid;
@@ -145,7 +145,7 @@ class api {
 
             $this->update_apikey();
 
-            return $response->data->user->id;
+            return $response->data->user;
         }
         return false;
     }
@@ -463,6 +463,7 @@ class api {
         $defaultindexing,
         $analysistype,
         $analysistime,
+        $detectionsenabled,
         $warningthreshold = 10,
         $criticalthreshold = 25
     ) {
@@ -478,6 +479,10 @@ class api {
             'scheduled_analysis_enabled' => false,
             'origin' => 'LMS-Moodle',
         ];
+
+        foreach ($detectionsenabled as $detection) {
+            $params['recipe_detections'][] = $detection;
+        }
 
         if ($analysistype == 'auto') {
             $params['auto_analysis'] = true;
@@ -512,6 +517,7 @@ class api {
         $defaultindexing,
         $analysistype,
         $analysistime,
+        $detectionsenabled,
         $warningthreshold = 10,
         $criticalthreshold = 25
     ) {
@@ -527,6 +533,10 @@ class api {
             'auto_analysis' => false,
             'scheduled_analysis_enabled' => false,
         ];
+
+        foreach ($detectionsenabled as $detection) {
+            $params['recipe_detections'][] = $detection;
+        }
 
         if ($analysistype == 'auto') {
             $params['auto_analysis'] = true;
@@ -841,15 +851,9 @@ class api {
      */
     public function get_translation($lang, $key) {
         $endpoint = '/api/public/translation/last-version/' . $lang . '/key/' . $key;
-
         $response = json_decode($this->build_curl($endpoint));
-
         if ($this->get_error_response($response, 200) === false) {
-            $translation = $response->data;
-            foreach (explode('.', $key) as $object) {
-                $translation = $translation->{$object};
-            }
-            return $translation;
+            return $response->data->{$key};
         }
         return false;
     }
