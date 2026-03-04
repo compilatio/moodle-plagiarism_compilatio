@@ -132,12 +132,20 @@ class cmpfile {
      *
      * @return cmpfile Return the cmpfile
      */
-    public function __construct(string $cmid, string $userid, $content, $submission, ?string $filename = null) {
+    public function __construct(
+        string $cmid,
+        string $userid,
+        $content,
+        $submission,
+        ?string $filename = null,
+        $attemptid = null,
+        $slot = null
+    ) {
         $cm = get_coursemodule_from_id(null, $cmid);
 
         $this->cm = $cmid;
         $this->timesubmitted = time();
-        $this->setidentifier($cmid, $userid, $content);
+        $this->setidentifier($cmid, $userid, $content, $attemptid, $slot);
         $this->setdatafromconfig($cmid, $userid);
         $this->filename = $filename ?? $this->createfilename(
             $cm->modname,
@@ -176,8 +184,13 @@ class cmpfile {
      * @param mixed $content Content to create the identifier from
      * @return void
      */
-    private function setidentifier($cmid, $userid, $content): void {
+    private function setidentifier($cmid, $userid, $content, $attemptid = null, $slot = null): void {
         $identifier = new identifier($userid, $cmid);
+
+        if (isset($attemptid) && isset($slot)) {
+            $this->identifier = $identifier->create_for_quiz($content, $attemptid, $slot);
+            return;
+        }
 
         if ($content instanceof stored_file) {
             $this->identifier = $identifier->create_from_file($content);

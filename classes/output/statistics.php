@@ -357,7 +357,7 @@ class statistics {
                 $courseid = $DB->get_field('course_modules', 'course', ['id' => $cmid]);
                 $content = $answer->get_response_summary();
 
-                $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+                $cmpfile = $compilatiofile->compilatio_get_document(
                     $cmid,
                     $content,
                     $studentid
@@ -370,7 +370,7 @@ class statistics {
 
             $files = $answer->get_last_qt_files('attachments', $context->id);
             foreach ($files as $file) {
-                $cmpfile = $compilatiofile->compilatio_get_document_with_failover(
+                $cmpfile = $compilatiofile->compilatio_get_document(
                     $cmid,
                     $file,
                     $studentid

@@ -62,7 +62,7 @@ class file {
      * @param string $filename   Filename for text content
      * @return Return cmpfile id send, false if not
      */
-    public static function send_file($cmid, $userid, $content, $filename = null) {
+    public static function send_file($cmid, $userid, $content, $filename = null, $attemptid = null, $slot = null) {
 
         global $DB, $CFG;
 
@@ -70,21 +70,24 @@ class file {
 
         $submissionretreiver = new submission($DB);
         $submission = $submissionretreiver->get($cm, $content, $userid, $filename);
-        $cmpfile = new cmpfile($cmid, $userid, $content, $submission, $filename);
+        $cmpfile = new cmpfile($cmid, $userid, $content, $submission, $filename, $attemptid, $slot);
         $file = $content instanceof stored_file ? $content : null;
 
-        $send = self::checkisfilevalid($cmpfile, $file);
+        $send = self::is_file_valid($cmpfile, $file);
 
         $compilatiofile = new file();
 
         // Check if file has already been sent.
         if (
-            !empty($compilatiofile->compilatio_get_document_with_failover(
+            !empty($compilatiofile->compilatio_get_document(
                 $cmid,
                 $content,
                 $userid,
                 null,
-                ['groupid' => $cmpfile->groupid])
+                ['groupid' => $cmpfile->groupid],
+                false,
+                ['attemptid' => $attemptid, 'slot' => $slot]
+            )
             )
         ) {
             return false;
@@ -390,7 +393,7 @@ class file {
      * @param bool $multiple Whether to return multiple records (true) or a single record (false)
      * @return mixed Single document object, array of document objects, or false/empty array if not found
      */
-    public function compilatio_get_document_with_failover(
+    public function compilatio_get_document(
         $cmid,
         $content,
         $userid,
@@ -429,24 +432,68 @@ class file {
             $params = array_merge($params, $filteredparams);
         }
 
-        if ($multiple) {
-            $documents = $DB->get_records('plagiarism_compilatio_files', $params);
-            if (empty($documents)) {
-                $params['identifier'] = $content instanceof stored_file ? $content->get_contenthash() : sha1($content ?? '');
-                $documents = $DB->get_records('plagiarism_compilatio_files', $params);
-            }
+        return $this->retreive_doc_following_params($DB, $multiple, $content, $params);
+    }
 
-            return $documents;
-        } else {
-            $document = $DB->get_record('plagiarism_compilatio_files', $params);
+    /**
+     * Get quiz document record(s) using quiz-specific identifier.
+     *
+     * @param int   $cmid       Course module ID
+     * @param mixed $content    Quiz answer content
+     * @param array $quizparams Quiz parameters with attempt and slot keys
+     * @param int   $userid     User ID
+     * @param bool  $multiple   Whether to return multiple records
+     * @return mixed            Single document object, array of document objects, or false/empty array if not found
+     */
+    public function compilatio_get_document_in_quiz(
+        $cmid,
+        $content,
+        $quizparams,
+        $userid = 0,
+        $multiple = false
+    ) {
+        global $DB;
+        $params = ['cm' => $cmid];
+        $params['userid'] = $userid;
 
-            if (!$document) {
-                $params['identifier'] = $content instanceof stored_file ? $content->get_contenthash() : sha1($content ?? '');
-                $document = $DB->get_record('plagiarism_compilatio_files', $params);
-            }
+        $identifier = new identifier($userid, $cmid);
+        $params['identifier'] = $identifier->create_for_quiz($content, $quizparams['attemptid'], $quizparams['slot']);
+        $quizdocument = $this->retreive_doc_following_params($DB, $multiple, $content, $params);
 
-            return $document;
+        if ($quizdocument) {
+            return $quizdocument;
         }
+
+        // Retreive for old identifier if quiz-specific identifier did not find any document.
+        $params['identifier'] = $identifier->create_from_string($content);
+        return $this->retreive_doc_following_params($DB, $multiple, $content, $params);
+    }
+
+    /**
+     * Retrieve Compilatio document(s) from parameters with identifier failover.
+     *
+     * @param \\moodle_database $DB       Moodle database object
+     * @param bool              $multiple  Whether to return multiple records
+     * @param mixed             $content   Content used to build fallback identifier
+     * @param array             $params    Query parameters
+     * @return mixed                      Single document object, array of document objects, or false/empty array if not found
+     */
+    private function retreive_doc_following_params($DB, $multiple, $content, $params) {
+        $fetchdocuments = function($queryparams) use ($DB, $multiple) {
+            return $multiple
+                ? $DB->get_records('plagiarism_compilatio_files', $queryparams)
+                : $DB->get_record('plagiarism_compilatio_files', $queryparams);
+        };
+
+        $documents = $fetchdocuments($params);
+
+        if (!empty($documents)) {
+            return $documents;
+        }
+
+        $params['identifier'] = $content instanceof stored_file ? $content->get_contenthash() : sha1($content ?? '');
+
+        return $fetchdocuments($params);
     }
 
     /**
@@ -512,7 +559,7 @@ class file {
      * @param stored_file $file File
      * @return bool True if valid, false if not
      */
-    private static function checkisfilevalid($cmpfile, $file): bool {
+    private static function is_file_valid($cmpfile, $file): bool {
         if (!self::supported_file_type($cmpfile->filename)) {
             $cmpfile->status = "error_unsupported";
             return false;

@@ -852,7 +852,6 @@ class api {
     public function get_translation($lang, $key) {
         $endpoint = '/api/public/translation/last-version/' . $lang . '/key/' . $key;
         $response = json_decode($this->build_curl($endpoint));
-        var_dump($key);
         if ($this->get_error_response($response, 200) === false) {
             return $response->data->{$key};
         }

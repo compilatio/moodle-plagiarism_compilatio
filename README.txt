@@ -8,9 +8,12 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 3.2.10
+- [Fix] Resend attached files in quiz
+- [Fix] User can't do multiples attempts in quiz with same file
+- [Fix] Can't send files in forum
+- [Fix] Errors on translations retrieving
 - Add link to Toolbox for teachers in the help tabs in compilatio frame
 - Add configurable folder to activity settings to allow or not certain detections for Magister+
-- [Fix] Resend attached files in quiz
 
 3.2.9
 - [Fix] Typing analysistime in course_module_settings
