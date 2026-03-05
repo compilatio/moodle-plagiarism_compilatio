@@ -36,7 +36,6 @@ use moodle_url;
  * course_module_settings class
  */
 class course_module_settings {
-
     /**
      * Contain all config key about configurable detections.
      */
@@ -424,7 +423,7 @@ class course_module_settings {
                 $mform->addElement(
                     'select',
                     $detection->process . 'enabled',
-                    get_string('detection_' . $detection->process .'_activated', 'plagiarism_compilatio'),
+                    get_string('detection_' . $detection->process . '_activated', 'plagiarism_compilatio'),
                     $ynoptions
                 );
                 $mform->setDefault($detection->process . 'enabled', 1);
@@ -432,7 +431,7 @@ class course_module_settings {
                 $mform->addElement(
                     'select',
                     $detection->process . 'enabled',
-                    get_string('detection_' . $detection->process .'_configurable', 'plagiarism_compilatio'),
+                    get_string('detection_' . $detection->process . '_configurable', 'plagiarism_compilatio'),
                     $ynoptions
                 );
                 $mform->setDefault($detection->process . 'enabled', 0);
@@ -440,7 +439,7 @@ class course_module_settings {
                 $mform->addElement(
                     'select',
                     $detection->process . 'enabled',
-                    get_string('detection_' . $detection->process .'_desactivated', 'plagiarism_compilatio'),
+                    get_string('detection_' . $detection->process . '_desactivated', 'plagiarism_compilatio'),
                     [0 => get_string('no')]
                 );
                 $mform->setDefault($detection->process . 'enabled', 0);
@@ -509,7 +508,8 @@ class course_module_settings {
                 $managedbundle = new managed_bundle($compilatiouser);
 
                 foreach ($managedbundle->get_bundle_detections() as $detection) {
-                    if (!in_array($detection->process, managed_bundle::DETECTIONSTYPE) ||
+                    if (
+                        !in_array($detection->process, managed_bundle::DETECTIONSTYPE) ||
                         ($managedbundle->is_anasim_recipe() && in_array($detection->process, ['ai_detection', 'rewording']))
                     ) {
                         continue;
@@ -521,7 +521,7 @@ class course_module_settings {
                     }
 
                     $detectiosnenabled[] = [
-                        'process' => $detection->process ,
+                        'process' => $detection->process,
                         'enabled' => $data->{$detection->process . 'enabled'},
                         'configurable' => 1,
                     ];

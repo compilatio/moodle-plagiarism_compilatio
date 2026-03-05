@@ -142,7 +142,6 @@ if (!empty($plagiarismsettings['enabled'])) {
                     ($quota->blocking === false && $quota->resource === 'analysis_count') ||
                     ($quota->blocking === true && $quota->resource === 'analysis_page_count')
                 ) {
-
                     $subscriptioninfos .= '<li>'
                         . get_string('subscription_' . $quota->resource, 'plagiarism_compilatio', $quota) .
                         '</li>';

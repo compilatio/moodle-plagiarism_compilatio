@@ -48,13 +48,13 @@ foreach ($notifications as $index => $notification) {
     $currentlanguagenotification = $compilatiomarketingnotification
         ->get_notification_current_language($notification->content_by_language);
 
-    if ( $currentlanguagenotification === null) {
+    if ($currentlanguagenotification === null) {
         continue;
     }
 
     $notificationsids[] = $notification->id;
 
-    $body = $compilatiomarketingnotification->format_notification_body( $currentlanguagenotification->body);
+    $body = $compilatiomarketingnotification->format_notification_body($currentlanguagenotification->body);
 
     $status = in_array($notification->id, $ignored) ? 'ignored' : 'unread';
     in_array($notification->id, $read) ? $status = 'read' : null;
@@ -64,7 +64,7 @@ foreach ($notifications as $index => $notification) {
     $titles .= $compilatiomarketingnotification->get_notification_title_body(
         $notification->id,
         $status,
-         $currentlanguagenotification->title,
+        $currentlanguagenotification->title,
         new DateTime($notification->activation_period->start),
         $index === (count($notifications) - 1)
     );
@@ -73,7 +73,7 @@ foreach ($notifications as $index => $notification) {
 
     if ($floatingnotification == '' && $status == 'unread') {
         $floatingnotification = $compilatiomarketingnotification
-            ->get_notification_floatingnotification_body($notification->id,  $currentlanguagenotification->title);
+            ->get_notification_floatingnotification_body($notification->id, $currentlanguagenotification->title);
     }
 }
 
@@ -88,4 +88,4 @@ echo json_encode(
             $countbadge,
             $notificationsids
         )
-    );
+);

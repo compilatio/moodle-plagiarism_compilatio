@@ -32,7 +32,6 @@ use stdClass;
  * Handle managed bundle methods.
  */
 class managed_bundle {
-
     /**
      * Contain differents detections types.
      */

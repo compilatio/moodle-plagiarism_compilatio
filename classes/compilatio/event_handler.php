@@ -585,7 +585,7 @@ class event_handler {
         if (
             $event['eventname'] === '\\core\\event\\grade_item_created'
             && $event['objecttable'] === 'grade_items'
-            ) {
+        ) {
             $gradeitem = $DB->get_record('grade_items', ['id' => $event['objectid']]);
 
             $module = $DB->get_record('modules', ['name' => $gradeitem->itemmodule]);
