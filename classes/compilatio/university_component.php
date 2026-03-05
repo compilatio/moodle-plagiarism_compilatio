@@ -31,7 +31,6 @@ use moodle_database;
  * University component class.
  */
 class university_component {
-
     /**
      * Course module identifier linked to the component.
      *

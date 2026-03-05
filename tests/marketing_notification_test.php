@@ -40,7 +40,6 @@ global $CFG;
  * @coversDefaultClass \plagiarism_compilatio\compilatio\marketing_notification
  */
 final class marketing_notification_test extends \advanced_testcase {
-
     /**
      * Base HTML input for testing notification body formatting.
      *

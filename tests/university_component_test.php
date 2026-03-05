@@ -36,7 +36,6 @@ use plagiarism_compilatio\compilatio\university_component;
  * @coversDefaultClass \plagiarism_compilatio\compilatio\university_component
  */
 final class university_component_test extends \advanced_testcase {
-
     /**
      * Reset DB after each test.
      */

@@ -87,8 +87,7 @@ class file {
                 ['groupid' => $cmpfile->groupid],
                 false,
                 ['attemptid' => $attemptid, 'slot' => $slot]
-            )
-            )
+            ))
         ) {
             return false;
         }
@@ -482,7 +481,7 @@ class file {
      * @return mixed                      Single document object, array of document objects, or false/empty array if not found
      */
     private function retreive_doc_following_params($DB, $multiple, $content, $params) {
-        $fetchdocuments = function($queryparams) use ($DB, $multiple) {
+        $fetchdocuments = function ($queryparams) use ($DB, $multiple) {
             return $multiple
                 ? $DB->get_records('plagiarism_compilatio_files', $queryparams)
                 : $DB->get_record('plagiarism_compilatio_files', $queryparams);

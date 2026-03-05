@@ -300,7 +300,6 @@ class compilatio_frame {
             has_capability('plagiarism/compilatio:triggeranalysis', $PAGE->context)
             && ($startallanalyses || $sendalldocs || $resetdocsinerror)
         ) {
-
             $output .= "<div class='btn-group ml-auto pl-5' role='group'>";
 
             if ($startallanalyses) {
@@ -365,9 +364,9 @@ class compilatio_frame {
         $output .= "<a
                 href='https://support.compilatio.net/hc/fr/sections/360001345397'
                 target='_blank'
-            >".
+            >" .
                 get_string('teacher_toolbox', 'plagiarism_compilatio')
-                ."<i class='ml-2 fa fa-external-link'></i>
+                . "<i class='ml-2 fa fa-external-link'></i>
             </a>";
 
         if ($module == 'quiz') {

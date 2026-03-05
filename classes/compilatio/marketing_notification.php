@@ -79,7 +79,7 @@ class marketing_notification {
 
         $body = preg_replace_callback(
             '/<img([^>]*?)>/i',
-            function($matches) {
+            function ($matches) {
                 $imgattributes = $matches[1];
 
                 $hasstyle = stripos($imgattributes, 'style=') !== false;
@@ -146,7 +146,7 @@ class marketing_notification {
         string $status,
         string $title,
         DateTime $date,
-        bool $islast=false
+        bool $islast = false
     ) {
         $html = "<div id='cmp-notifications-" . $notificationid . "'
                     class='cmp-notifications-title cmp-cursor-pointer p-2 mb-1 cmp-notification-hover rounded'
@@ -172,8 +172,10 @@ class marketing_notification {
             . $title .
             "</div>"
             . "<small class='text-muted'>" .
-                \userdate($date->getTimestamp(),
-                \get_string('strftimedatetime', 'core_langconfig')) .
+                \userdate(
+                    $date->getTimestamp(),
+                    \get_string('strftimedatetime', 'core_langconfig')
+                ) .
             "</small>" .
         "</div>";
 

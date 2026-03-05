@@ -55,8 +55,10 @@ class analysis {
         } else if (strpos($analyse, 'Document exceed maximum word limit') !== false) {
             $cmpfile->status = 'error_too_long';
         } else if (strpos($analyse, 'is not extracted, wait few seconds and retry.') !== false) {
-            if (is_object($document = $compilatio->get_document($cmpfile->externalid))
-                && in_array('extraction_error', $document->tags)) {
+            if (
+                is_object($document = $compilatio->get_document($cmpfile->externalid))
+                && in_array('extraction_error', $document->tags)
+            ) {
                 $cmpfile->status = 'error_extraction_failed';
             } else {
                 return get_string('extraction_in_progress', 'plagiarism_compilatio');
