@@ -71,11 +71,11 @@ class api {
         $this->urlrest = 'https://app.compilatio.net';
         $this->userid = $userid;
 
-        if (isset($apikey) && $apikey !== '') {
-            $this->apikey = $apikey;
-        } else {
+        if (!isset($apikey) || '' === $apikey) {
             return 'API key not available';
         }
+
+        $this->apikey = $apikey;
     }
 
     /**
@@ -440,6 +440,22 @@ class api {
     public function delete_document($docid) {
         $endpoint = '/api/private/document/' . $docid;
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'delete'));
+
+        if ($this->get_error_response($response, 200) === false) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Archive a document on the Compilatio account
+     *
+     * @param  string   $docid  Document ID
+     * @return boolean          Return true if succeed, an error message otherwise
+     */
+    public function archive_document($docid) {
+        $endpoint = '/api/private/documents/' . $docid . '/archive';
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post'));
 
         if ($this->get_error_response($response, 200) === false) {
             return true;
