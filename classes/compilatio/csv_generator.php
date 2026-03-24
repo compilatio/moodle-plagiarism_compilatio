@@ -68,9 +68,9 @@ class csv_generator {
 
         $sql = "
             SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname,
-                pcf.status, pcf.globalscore, pcf.timesubmitted
+                pcf.status, pcf.globalscore, pcf.simscore, pcf.utlscore, pcf.aiscore, pcf.externalid, pcf.timesubmitted
             FROM {plagiarism_compilatio_files} pcf
-            JOIN {user} usr ON pcf.userid= usr.id
+            JOIN {user} usr ON pcf.userid = usr.id
             WHERE pcf.cm=?";
 
         $files = $DB->get_records_sql($sql, [$cmid]);
@@ -101,13 +101,17 @@ class csv_generator {
 
         foreach ($files as $file) {
             $line = [];
+            $line["externalid"]    = $file->externalid;
+            $line["filename"]      = $file->filename;
             $line["lastname"]      = $file->lastname;
             $line["firstname"]     = $file->firstname;
-            $line["filename"]      = $file->filename;
             $line["timesubmitted"] = date("d/m/y H:i:s", $file->timesubmitted);
 
             if ($file->status == "scored") {
                 $line["stats_score"] = $file->globalscore;
+                $line["stats_simscore"] = $file->simscore;
+                $line["stats_aiscore"] = $file->aiscore;
+                $line["stats_utlscore"] = $file->utlscore;
             } else if ($file->status == "sent") {
                 if ($cmpcm->analysistype == 'manual') {
                     $line["stats_score"] = get_string("manual_analysis", "plagiarism_compilatio");
