@@ -501,6 +501,8 @@ class event_handler {
 
     /**
      * Handle submit quiz
+     * @param  global $DB Database object
+     * @param  global $CFG Config object
      * @param  mixed $event Moodle event
      * @return void
      */

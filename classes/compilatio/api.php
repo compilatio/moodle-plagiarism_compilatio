@@ -470,6 +470,7 @@ class api {
      * @param   boolean        $defaultindexing   Folder's default indexing
      * @param   string         $analysistype      Analysis type
      * @param   string         $analysistime      Date for scheduled analysis
+     * @param   array          $detectionsenabled Array of enabled detections
      * @param   int            $warningthreshold  Folder's warning threshold
      * @param   int            $criticalthreshold Folder's critical threshold
      * @return  string|false   Return the folder's ID, an error message otherwise, or false
@@ -523,6 +524,7 @@ class api {
      * @param   boolean  $defaultindexing   Folder's default indexing
      * @param   string   $analysistype      Analysis type
      * @param   string   $analysistime      Date for scheduled analysis
+     * @param   array    $detectionsenabled Array of enabled detections
      * @param   int      $warningthreshold  Folder's warning threshold
      * @param   int      $criticalthreshold Folder's critical threshold
      * @return  string   Return true if succeed, an error message otherwise

@@ -60,9 +60,11 @@ class file {
      * @param int    $userid     User identifier
      * @param mixed $content    File to send to Compilatio
      * @param string $filename   Filename for text content
+     * @param string|null $attemptid Attempt ID for quiz content
+     * @param string|null $slot Slot ID for quiz content
      * @return Return cmpfile id send, false if not
      */
-    public static function send_file($cmid, $userid, $content, $filename = null, $attemptid = null, $slot = null) {
+    public static function send_file($cmid, $userid, $content, $filename = null, ?string $attemptid = null, ?string $slot = null) {
 
         global $DB, $CFG;
 
@@ -557,7 +559,7 @@ class file {
     /**
      * Check if the file is valid before sending to Compilatio
      *
-     * @param $cmpfile Compilatio File
+     * @param mixed $cmpfile Compilatio File
      * @param stored_file $file File
      * @return bool True if valid, false if not
      */

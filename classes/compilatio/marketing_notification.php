@@ -139,6 +139,7 @@ class marketing_notification {
      * @param string $status The notification status ('read', 'unread', 'ignored')
      * @param string $title The notification title text
      * @param DateTime $date The activation date of the notification
+     * @param bool $islast Whether this is the last notification in the list (to conditionally add separator)
      * @return string The complete HTML structure for notification title with optional HR separator
      */
     public function get_notification_title_body(
