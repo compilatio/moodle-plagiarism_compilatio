@@ -67,8 +67,7 @@ if ($isteacher) {
 } else {
     $doc = $compilatio->get_document($docid);
 
-    $lang = substr(current_language(), 0, 2);
-    $lang = in_array($lang, ['fr', 'en', 'it', 'es', 'de', 'pt']) ? $lang : 'fr';
+    $lang = compilatio_retreive_user_language();
 
     $recipe = get_config('plagiarism_compilatio', 'recipe');
 

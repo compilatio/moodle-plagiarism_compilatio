@@ -37,8 +37,7 @@ if (isguestuser()) {
 
 global $USER;
 
-$lang = substr(current_language(), 0, 2);
-$lang = in_array($lang, ['fr', 'en', 'it', 'es', 'de', 'pt']) ? $lang : 'fr';
+$lang = compilatio_retreive_user_language();
 
 $userid = $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => $USER->id]);
 if ($userid === false) {
