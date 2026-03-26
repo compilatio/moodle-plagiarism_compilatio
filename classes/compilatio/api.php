@@ -232,8 +232,7 @@ class api {
      * @return  string|false            Return the user's ID, an error message otherwise or false
      */
     private function set_user($firstname, $lastname, $email) {
-        $lang = substr(current_language(), 0, 2);
-
+        $userlang = compilatio_retreive_user_language();
         $endpoint = '/api/private/user/create';
         $params = [
             'firstname' => $firstname,
@@ -241,7 +240,7 @@ class api {
             'email' => $email,
             'locale' => [
                 'timezone' => date_default_timezone_get(),
-                'lang' => $lang,
+                'lang' => $userlang,
             ],
             'origin' => 'LMS-Moodle',
         ];

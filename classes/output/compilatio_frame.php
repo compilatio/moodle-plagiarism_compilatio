@@ -185,7 +185,7 @@ class compilatio_frame {
         }
 
         $compilatio = new api();
-        $language = substr(current_language(), 0, 2);
+        $language = compilatio_retreive_user_language();
 
         foreach ($compilatio->get_alerts() as $alert) {
             $translation = $compilatio->get_translation($language, $alert->text);
