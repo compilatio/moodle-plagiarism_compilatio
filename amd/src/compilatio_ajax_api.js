@@ -507,6 +507,21 @@ define(['jquery'], function($) {
         });
     };
 
+    exports.getAlerts = function(basepath, userid, module, cmid) {
+        $(document).ready(function() {
+            $.post(basepath + '/plagiarism/compilatio/ajax/get_alerts.php', {'userid': userid, 'module': module, 'cmid': cmid}, function(compilatioAlerts) {
+                compilatioAlerts = JSON.parse(compilatioAlerts);
+                compilatioAlerts.forEach(alerts => {
+                    $('#cmp-alerts').append(alerts);
+                    $('.cmp-close').on('click', function() {
+                        $(this).parent().remove();
+                    });
+                });
+            });
+        });
+    };
+
+
     /**
      * Compilatio tabs
      * @param {number} docid
