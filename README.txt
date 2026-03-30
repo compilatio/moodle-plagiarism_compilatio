@@ -8,6 +8,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 3.2.10
+- [Fix] Add asynchronous alerts retriving
 - [Fix] Resend attached files in quiz
 - [Fix] User can't do multiples attempts in quiz with same file
 - [Fix] Can't send files in forum

@@ -517,7 +517,7 @@ function compilatio_retreive_user_language() {
     $compialtiolanguages = get_config('plagiarism_compilatio', 'supported_languages');
     $supportedlanguages = !empty($compialtiolanguages) ? json_decode($compialtiolanguages) : [];
 
-    if (str_starts_with($userlanguage, 'ca_')) {
+    if (0 === strpos($userlanguage, 'ca_')) {
         $userlanguage = 'cat';
     }
 

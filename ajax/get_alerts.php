@@ -15,20 +15,41 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * version.php - Contains plugin version settings.
+ * Get Compilatio alerts
  *
  * @package   plagiarism_compilatio
- * @author    Compilatio <support@compilatio.net>
  * @copyright 2026 Compilatio.net {@link https://www.compilatio.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+use plagiarism_compilatio\compilatio\alerts;
 
-/** @var stdClass $plugin */
-$plugin->version    = 2026032700;
-$plugin->requires   = 2022041900;
-$plugin->cron       = 300; // Only run every 5 minutes.
-$plugin->component  = 'plagiarism_compilatio';
-$plugin->maturity   = MATURITY_STABLE;
-$plugin->release    = '3.2.10';
+require_once(dirname(dirname(__FILE__)) . '/../../config.php');
+require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+
+require_login();
+if (isguestuser()) {
+    redirect(new moodle_url('/'));
+    die();
+}
+
+$userid = required_param('userid', PARAM_TEXT);
+$module = required_param('module', PARAM_TEXT);
+$cmid = required_param('cmid', PARAM_INT);
+global $SESSION;
+
+$compilatioalerts = new alerts(compilatio_retreive_user_language(), $userid, $module);
+$alerts = $compilatioalerts->get($SESSION, $cmid);
+$html = [];
+
+foreach ($alerts as $index => $alert) {
+    if (isset($alert['content'])) {
+        $html[] = $compilatioalerts->get_alert_body($alert, $index);
+        continue;
+    }
+
+    $html[] = $alert;
+}
+
+echo json_encode($html);
