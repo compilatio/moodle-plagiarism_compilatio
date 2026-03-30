@@ -45,7 +45,7 @@ class update_meta extends \core\task\scheduled_task {
      * @return void
      */
     public function execute() {
-        global $DB, $CFG;
+        global $CFG;
 
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
@@ -84,6 +84,8 @@ class update_meta extends \core\task\scheduled_task {
             set_config('helpcenter_admin', $config->zendeskPages->moodle_admin, 'plagiarism_compilatio');
             set_config('helpcenter_teacher', $config->zendeskPages->moodle_teacher, 'plagiarism_compilatio');
             set_config('helpcenter_service_status', $config->zendeskPages->service_status, 'plagiarism_compilatio');
+
+            set_config('supported_languages', json_encode($config->translation->supported_languages), 'plagiarism_compilatio');
         }
 
         $filetypes = $compilatio->get_allowed_file_types();

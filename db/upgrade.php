@@ -427,6 +427,8 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
                 $managedbundle->set_all_course_module_to_folder_detections_options($DB);
             }
         }
+
+        upgrade_plugin_savepoint(true, 2026012300, 'plagiarism', 'compilatio');
     }
 
     foreach ($tablestodelete as $table) {

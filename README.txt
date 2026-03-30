@@ -8,7 +8,10 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 3.2.11
+- [Fix] Add asynchronous alerts retriving
+- [Fix] Check user languages before user creation and alerts / notification retrieving and use english if language not supported
 - Move deleted documents to the archive if selected by administrator in admin tabs
+- Add detailled score in Compilatio course module CSV export
 
 3.2.10
 - [Fix] Resend attached files in quiz

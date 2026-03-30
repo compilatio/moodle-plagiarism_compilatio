@@ -38,7 +38,7 @@ $userid = required_param('userid', PARAM_TEXT);
 $read = optional_param_array('read', [], PARAM_TEXT);
 $ignored = optional_param_array('ignored', [], PARAM_TEXT);
 
-$compilatiomarketingnotification = new marketing_notification(substr(current_language(), 0, 2), $userid);
+$compilatiomarketingnotification = new marketing_notification(compilatio_retreive_user_language(), $userid);
 $notifications = $compilatiomarketingnotification->get();
 $titles = $contents = $floatingnotification = '';
 $countbadge = 0;

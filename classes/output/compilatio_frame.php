@@ -68,7 +68,7 @@ class compilatio_frame {
      */
     public static function get_frame() {
 
-        global $CFG, $PAGE, $OUTPUT, $DB, $SESSION, $USER;
+        global $CFG, $PAGE, $DB, $SESSION, $USER;
 
         $compilatio = new api();
 
@@ -114,14 +114,6 @@ class compilatio_frame {
         // Store plagiarismfiles in $SESSION.
         $sql = 'cm = ? AND externalid IS NOT null';
         $SESSION->compilatio_plagiarismfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, [$cmid]);
-        $filesids = array_keys($SESSION->compilatio_plagiarismfiles);
-
-        $alerts = [];
-
-        if (isset($SESSION->compilatio_alerts)) {
-            $alerts = $SESSION->compilatio_alerts;
-            unset($SESSION->compilatio_alerts);
-        }
 
         $startallanalyses = $sendalldocs = $resetdocsinerror = false;
 
@@ -142,22 +134,6 @@ class compilatio_frame {
             }
         }
 
-        $webservicestatus = get_config('plagiarism_compilatio', 'connection_webservice');
-
-        if ($webservicestatus != null && $webservicestatus === '0' && !$compilatio->is_in_maintenance()) {
-            $alerts[] = [
-                'class' => 'danger',
-                'content' => get_string('webservice_unreachable', 'plagiarism_compilatio'),
-            ];
-        }
-
-        if (get_config('plagiarism_compilatio', 'read_only_apikey') === '1') {
-            $alerts[] = [
-                'class' => 'danger',
-                'content' => get_string('read_only_apikey', 'plagiarism_compilatio'),
-            ];
-        }
-
         // Display reset docs in error button if necesseary.
         $sql = "SELECT COUNT(DISTINCT pcf.id) FROM {plagiarism_compilatio_files} pcf
             WHERE pcf.cm=? AND (status = 'error_analysis_failed'
@@ -169,58 +145,13 @@ class compilatio_frame {
             $resetdocsinerror = true;
         }
 
-        // Check for unsend documents.
-        if ($module == 'assign') {
-            $countunsend = count(compilatio_get_unsent_documents($cmid));
-
-            if ($countunsend !== 0) {
-                $alerts[] = [
-                    'class' => 'danger',
-                    'content' => get_string('unsent_docs', 'plagiarism_compilatio'),
-                ];
-                $sendalldocs = true;
-            }
-        } else {
-            $countunsend = 0;
-        }
-
         $compilatio = new api();
-        $language = substr(current_language(), 0, 2);
 
-        foreach ($compilatio->get_alerts() as $alert) {
-            $translation = $compilatio->get_translation($language, $alert->text);
-
-            if (empty($translation)) {
-                $text = $alert->text;
-            } else {
-                $text = $translation;
-            }
-
-            if ($text === 'DONT_DISPLAY') {
-                continue;
-            }
-
-            if (time() > strtotime($alert->activation_period->start) && time() < strtotime($alert->activation_period->end)) {
-                $alerts[] = [
-                    'class' => 'info',
-                    'content' => "<span class='cmp-md'>" . $text . '</span>',
-                ];
-            }
-        }
-
-        // Check if compilatio is under maintenance.
-        if ($compilatio->is_in_maintenance()) {
-            $alerts[] = [
-                'class'   => 'maintenance',
-                'content' => '
-                    <div id="maintenance-modal" class="mt-3">
-                        ' . get_string('compilatio_maintenance_title', 'plagiarism_compilatio') . '
-                        <p class="cmp-alert-description">
-                        ' . get_string('compilatio_maintenance_content', 'plagiarism_compilatio', current_language()) . '
-                        </p>
-                    </div>',
-            ];
-        }
+        $PAGE->requires->js_call_amd(
+            'plagiarism_compilatio/compilatio_ajax_api',
+            'getAlerts',
+            [$CFG->httpswwwroot, $cmconfig->userid, $module, $cmid]
+        );
 
         $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => $USER->id]);
 
@@ -266,7 +197,7 @@ class compilatio_frame {
             </i>";
 
         // Stat per student quiz icon.
-        if ($module == 'quiz') {
+        if ('quiz' === $module) {
             $output .=
             "<span
                 id='show-stats-per-student'
@@ -294,6 +225,11 @@ class compilatio_frame {
             </i>
             <span id='cmp-count-notifications' class='badge badge-pill badge-primary'></span>
         </span>";
+
+        // Check for unsend documents.
+        if ('assign' === $module) {
+            $sendalldocs = count(compilatio_get_unsent_documents($cmid)) !== 0 ? true : false;
+        }
 
         // Display buttons.
         if (
@@ -465,37 +401,10 @@ class compilatio_frame {
         $output .= "</div></div>";
 
         // Alerts.
-        $output .= "<div class='d-flex'><div id='cmp-alerts' class='ml-auto mt-1'>";
-
-        foreach ($alerts as $index => $alert) {
-            if (isset($alert['content'])) {
-                switch ($alert['class']) {
-                    case 'info':
-                        $icon = 'fa-bell';
-                        break;
-                    case 'warning':
-                        $icon = 'fa-exclamation-circle';
-                        break;
-                    case 'danger' || 'maintenance':
-                        $icon = 'fa-exclamation-triangle text-danger';
-                        break;
-                    case 'success':
-                        $icon = 'fa-check-circle';
-                        break;
-                }
-
-                $output .= "
-                    <div class='cmp-alert cmp-alert-" . $alert['class'] . "'>
-                        <span class='mr-1 d-flex'>
-                            <i class='cmp-alert-icon fa-lg fa " . $icon . "'></i>" . $alert['content'] .
-                        "</span>
-                        <i id='cmp-alert-" . $index . "' class='cmp-cursor-pointer ml-auto my-auto fa fa-times'></i>
-                    </div>";
-            } else {
-                $output .= $alert;
-            }
-        }
-        $output .= "</div></div>";
+        $output .= "<div class='d-flex'>
+                <div id='cmp-alerts' class='ml-auto mt-1'>
+                </div>
+            </div>";
 
         // Close container.
         $output .= "</div>";

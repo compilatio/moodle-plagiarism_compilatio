@@ -49,7 +49,7 @@ class submission {
     /**
      * Get submission records
      *
-     * @param $cm Course module
+     * @param stdClass $cm Course module
      * @param object $content Storedfile or onlinetext object
      * @param string $userid Userid of the author of the document
      * @param string $filename Filename of the document

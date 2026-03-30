@@ -506,3 +506,23 @@ function compilatio_format_date($date) {
 
     return $fmt->format(strtotime($date));
 }
+
+/**
+ * Function to retrieve user language and check if it's supported by Compilatio, if not return english as default
+ *
+ * @return string Return user language
+ */
+function compilatio_retreive_user_language() {
+    $userlanguage = substr(current_language(), 0, 2);
+    $compialtiolanguages = get_config('plagiarism_compilatio', 'supported_languages');
+    $supportedlanguages = !empty($compialtiolanguages) ? json_decode($compialtiolanguages) : [];
+
+    if (0 === strpos($userlanguage, 'ca_')) {
+        $userlanguage = 'cat';
+    }
+
+    if (in_array($userlanguage, $supportedlanguages)) {
+        return $userlanguage;
+    }
+    return 'en';
+}

@@ -610,9 +610,9 @@ class document_frame {
     /**
      * Format translation string if needed
      *
-     * @param  string $stringid  String identifier
-     * @param  string $component moodle component
-     * @param  string $a         optional string to include in translation
+     * @param  string  $stringid  String identifier
+     * @param  string  $component moodle component
+     * @param  ?string $a         optional string to include in translation
      * @return string Formated string
      */
     private static function formatstring(string $stringid, string $component = 'plagiarism_compilatio', ?string $a = null) {
