@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 /** @var stdClass $plugin */
-$plugin->version    = 2026032700;
+$plugin->version    = 2026033000;
 $plugin->requires   = 2022041900;
 $plugin->cron       = 300; // Only run every 5 minutes.
 $plugin->component  = 'plagiarism_compilatio';
