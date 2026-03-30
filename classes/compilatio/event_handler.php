@@ -449,8 +449,6 @@ class event_handler {
 
             $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND filename NOT LIKE 'forum-%'";
             $allcmpfiles = $DB->get_records_sql($sql, [$cmid]);
-
-            $filename = "forum-" . $event["objectid"];
         }
 
         if ($event['objecttable'] == 'workshop_submissions') {
@@ -495,7 +493,7 @@ class event_handler {
                 continue;
             }
 
-            file::send_file($cmid, $userid, $file, $filename ?? null);
+            file::send_file($cmid, $userid, $file);
         }
     }
 
