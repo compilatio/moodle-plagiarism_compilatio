@@ -14,7 +14,6 @@ CHANGES
 - Add detailled score in Compilatio course module CSV export
 
 3.2.10
-- [Fix] Add asynchronous alerts retriving
 - [Fix] Resend attached files in quiz
 - [Fix] User can't do multiples attempts in quiz with same file
 - [Fix] Can't send files in forum
