@@ -7,6 +7,9 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+3.2.11
+- Move deleted documents to the archive if selected by administrator in admin tabs
+
 3.2.10
 - [Fix] Resend attached files in quiz
 - [Fix] User can't do multiples attempts in quiz with same file
