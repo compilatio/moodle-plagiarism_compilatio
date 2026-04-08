@@ -7,10 +7,16 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+3.2.11
+- [Fix] Add asynchronous alerts retriving
+- [Fix] Check user languages before user creation and alerts / notification retrieving and use english if language not supported
+- [Fix] Can't send files in forum
+- Move deleted documents to the archive if selected by administrator in admin tabs
+- Add detailled score in Compilatio course module CSV export
+
 3.2.10
 - [Fix] Resend attached files in quiz
 - [Fix] User can't do multiples attempts in quiz with same file
-- [Fix] Can't send files in forum
 - [Fix] Errors on translations retrieving
 - Add link to Toolbox for teachers in the help tabs in compilatio frame
 - Add configurable folder to activity settings to allow or not certain detections for Magister+

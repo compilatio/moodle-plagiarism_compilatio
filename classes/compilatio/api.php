@@ -71,11 +71,11 @@ class api {
         $this->urlrest = 'https://app.compilatio.net';
         $this->userid = $userid;
 
-        if (isset($apikey) && $apikey !== '') {
-            $this->apikey = $apikey;
-        } else {
+        if (!isset($apikey) || '' === $apikey) {
             return 'API key not available';
         }
+
+        $this->apikey = $apikey;
     }
 
     /**
@@ -232,8 +232,7 @@ class api {
      * @return  string|false            Return the user's ID, an error message otherwise or false
      */
     private function set_user($firstname, $lastname, $email) {
-        $lang = substr(current_language(), 0, 2);
-
+        $userlang = compilatio_retreive_user_language();
         $endpoint = '/api/private/user/create';
         $params = [
             'firstname' => $firstname,
@@ -241,7 +240,7 @@ class api {
             'email' => $email,
             'locale' => [
                 'timezone' => date_default_timezone_get(),
-                'lang' => $lang,
+                'lang' => $userlang,
             ],
             'origin' => 'LMS-Moodle',
         ];
@@ -448,12 +447,29 @@ class api {
     }
 
     /**
+     * Archive a document on the Compilatio account
+     *
+     * @param  string   $docid  Document ID
+     * @return boolean          Return true if succeed, an error message otherwise
+     */
+    public function archive_document($docid) {
+        $endpoint = '/api/private/documents/' . $docid . '/archive';
+        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post'));
+
+        if ($this->get_error_response($response, 200) === false) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Create folder on Compilatio account
      *
      * @param   string         $name              Folder's name
      * @param   boolean        $defaultindexing   Folder's default indexing
      * @param   string         $analysistype      Analysis type
      * @param   string         $analysistime      Date for scheduled analysis
+     * @param   array          $detectionsenabled Array of enabled detections
      * @param   int            $warningthreshold  Folder's warning threshold
      * @param   int            $criticalthreshold Folder's critical threshold
      * @return  string|false   Return the folder's ID, an error message otherwise, or false
@@ -507,6 +523,7 @@ class api {
      * @param   boolean  $defaultindexing   Folder's default indexing
      * @param   string   $analysistype      Analysis type
      * @param   string   $analysistime      Date for scheduled analysis
+     * @param   array    $detectionsenabled Array of enabled detections
      * @param   int      $warningthreshold  Folder's warning threshold
      * @param   int      $criticalthreshold Folder's critical threshold
      * @return  string   Return true if succeed, an error message otherwise

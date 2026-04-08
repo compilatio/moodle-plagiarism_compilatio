@@ -261,10 +261,7 @@ class event_handler {
         }
 
         // Get user id.
-        $userid = $event['relateduserid'];
-        if ($userid == null) {
-            $userid = $event['userid'];
-        }
+        $userid = $event['relateduserid'] ?? $event['userid'];
 
         if ($event['objecttable'] == 'assign_submission') {
             $submission = $DB->get_record('assign_submission', ['id' => $event['objectid']]);
@@ -291,11 +288,11 @@ class event_handler {
                 $event["objectid"]
             );
 
-            // If the documents have been deleted in the mdl_files table, we also delete them on our side.
+            // If submissionfiles, its meen that the file as been deleted, we need to delete it in Compilatio.
             if (empty($submissionfiles)) {
                 if ($assign && $assign->teamsubmission == 1) {
                     // Group submission.
-                    $duplicates = $DB->get_records_sql(
+                    $filetodelete = $DB->get_records_sql(
                         "SELECT pcf.* FROM {plagiarism_compilatio_files} pcf
                         WHERE pcf.cm = ? AND pcf.userid = 0
                         AND pcf.groupid = ?
@@ -309,18 +306,17 @@ class event_handler {
                     );
                 } else {
                     // Normal submission.
-                    $duplicates = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
+                    $filetodelete = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
                 }
-
-                compilatio_delete_files($duplicates);
+                $keepfileindexed = boolval(get_config('plagiarism_compilatio', 'keep_docs_indexed'));
+                compilatio_delete_files($filetodelete, $keepfileindexed);
             }
         }
 
-        // Re-submit file when student submit a draft submission.
+        // Delete file in Compilatio and send it again to apply the modification in the student document.
         $plugincm = compilatio_cm_use($cmid);
         if ($event['target'] == 'assessable' && $plugincm->studentanalyses === '1') {
             $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
-            $compilatio = new api($plugincm->userid);
 
             foreach ($files as $file) {
                 compilatio_delete_files($files);
@@ -453,8 +449,6 @@ class event_handler {
 
             $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND filename NOT LIKE 'forum-%'";
             $allcmpfiles = $DB->get_records_sql($sql, [$cmid]);
-
-            $filename = "forum-" . $event["objectid"];
         }
 
         if ($event['objecttable'] == 'workshop_submissions') {
@@ -499,12 +493,14 @@ class event_handler {
                 continue;
             }
 
-            file::send_file($cmid, $userid, $file, $filename ?? null);
+            file::send_file($cmid, $userid, $file);
         }
     }
 
     /**
      * Handle submit quiz
+     * @param  global $DB Database object
+     * @param  global $CFG Config object
      * @param  mixed $event Moodle event
      * @return void
      */

@@ -129,6 +129,8 @@ class cmpfile {
      * @param mixed $content Content to send to Compilatio
      * @param mixed $submission Submission
      * @param ?string $filename Name to set to the file
+     * @param ?string $attemptid Attempt ID
+     * @param ?string $slot Slot ID
      *
      * @return cmpfile Return the cmpfile
      */
@@ -138,8 +140,8 @@ class cmpfile {
         $content,
         $submission,
         ?string $filename = null,
-        $attemptid = null,
-        $slot = null
+        ?string $attemptid = null,
+        ?string $slot = null
     ) {
         $cm = get_coursemodule_from_id(null, $cmid);
 
@@ -161,9 +163,8 @@ class cmpfile {
      * Create the filename for the cmpfile if not passed at the sending of the file
      *
      * @param string $modname Module name
-     * @param ?stored_file $file Moodle stored file || null if content passed is not a stored file
-     * @param int $userid User ID
-     * @param $submission Submission || null if the content passed come from a quiz
+     * @param mixed $submission Submission
+     * @param Stored_file $file Moodle stored file || null if content passed is not a stored file
      * @return string Return the filename of the cmpfile
      */
     private function createfilename(string $modname, $submission, ?stored_file $file = null): string {
@@ -181,10 +182,12 @@ class cmpfile {
      *
      * @param string $cmid Module module id
      * @param string $userid User ID
-     * @param mixed $content Content to create the identifier from
+     * @param mixed  $content Content to create the identifier from
+     * @param ?string $attemptid Attempt ID
+     * @param ?string $slot Slot ID
      * @return void
      */
-    private function setidentifier($cmid, $userid, $content, $attemptid = null, $slot = null): void {
+    private function setidentifier($cmid, $userid, $content, ?string $attemptid = null, ?string $slot = null): void {
         $identifier = new identifier($userid, $cmid);
 
         if (isset($attemptid) && isset($slot)) {

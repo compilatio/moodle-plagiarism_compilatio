@@ -67,14 +67,14 @@ class csv_generator {
         global $DB;
 
         $sql = "
-            SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname,
-                pcf.status, pcf.globalscore, pcf.timesubmitted
+            SELECT DISTINCT pcf.id, pcf.filename, usr.firstname, usr.lastname, g.name AS groupname,
+                pcf.status, pcf.globalscore, pcf.simscore, pcf.utlscore, pcf.aiscore, pcf.externalid, pcf.timesubmitted
             FROM {plagiarism_compilatio_files} pcf
-            JOIN {user} usr ON pcf.userid= usr.id
+            LEFT JOIN {user} usr ON pcf.userid = usr.id AND pcf.userid != 0
+            LEFT JOIN {groups} g ON pcf.groupid = g.id
             WHERE pcf.cm=?";
 
         $files = $DB->get_records_sql($sql, [$cmid]);
-
         $cmpcm = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
         // Get the name of the activity in order to generate header line and the filename.
@@ -99,15 +99,27 @@ class csv_generator {
         // Add the first line to the content : "{Name of the module} - {date}".
         $csv = $head;
 
+        $aienabled = !empty($cmpcm->ai_detectionenabled);
+
         foreach ($files as $file) {
             $line = [];
-            $line["lastname"]      = $file->lastname;
-            $line["firstname"]     = $file->firstname;
+            $line["externalid"]    = $file->externalid;
             $line["filename"]      = $file->filename;
+            if (!empty($file->groupname)) {
+                $line["group"] = $file->groupname;
+            } else {
+                $line["lastname"]  = $file->lastname;
+                $line["firstname"] = $file->firstname;
+            }
             $line["timesubmitted"] = date("d/m/y H:i:s", $file->timesubmitted);
 
             if ($file->status == "scored") {
                 $line["stats_score"] = $file->globalscore;
+                $line["stats_simscore"] = $file->simscore;
+                if ($aienabled) {
+                    $line["stats_aiscore"] = $file->aiscore;
+                }
+                $line["stats_utlscore"] = $file->utlscore;
             } else if ($file->status == "sent") {
                 if ($cmpcm->analysistype == 'manual') {
                     $line["stats_score"] = get_string("manual_analysis", "plagiarism_compilatio");
@@ -174,7 +186,12 @@ class csv_generator {
         $line["tot"] = get_string('total', 'plagiarism_compilatio') . ' (%)';
         $line["sim"] = get_string('simscore', 'plagiarism_compilatio') . ' (%)';
         $line["utl"] = get_string('utlscore', 'plagiarism_compilatio') . ' (%)';
-        $line["IA"] = get_string('aiscore', 'plagiarism_compilatio') . ' (%)';
+
+        $cmpcm = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
+        $aienabled = !empty($cmpcm->ai_detectionenabled);
+        if ($aienabled) {
+            $line["IA"] = get_string('aiscore', 'plagiarism_compilatio') . ' (%)';
+        }
 
         $csv .= '"' . implode('","', $line) . "\"\n";
         foreach ($userssubmittedtest as $user) {
@@ -185,7 +202,10 @@ class csv_generator {
                 $line["question"] = 'Q' . $question['question_number'];
                 $line["suspect/totalwords"] = $question['suspect_words'] . '/' . $question['cmpfile']->wordcount;
 
-                $scores = ['globalscore', 'simscore', 'utlscore', 'aiscore'];
+                $scores = ['globalscore', 'simscore', 'utlscore'];
+                if ($aienabled) {
+                    $scores[] = 'aiscore';
+                }
 
                 foreach ($scores as $score) {
                     $line[get_string($score, 'plagiarism_compilatio')] =
@@ -247,16 +267,17 @@ class csv_generator {
                 CONCAT(COALESCE(assign.name, ''), COALESCE(forum.name, ''), COALESCE(workshop.name, ''),
                 COALESCE(quiz.name, '')) module_name,
                 student.id student_id,
-                student.firstname student_firstname,
-                student.lastname student_lastname,
-                student.email student_email,
+                COALESCE(student.firstname, '') student_firstname,
+                COALESCE(student.lastname, g.name) student_lastname,
+                COALESCE(student.email, '') student_email,
                 pcf.id file_id,
                 pcf.filename file_name,
                 pcf.status file_status,
                 pcf.globalscore file_score,
                 {$todate} (pcf.timesubmitted) file_submitted_on
             FROM {plagiarism_compilatio_files} pcf
-            JOIN {user} student ON pcf.userid=student.id
+            LEFT JOIN {user} student ON pcf.userid=student.id AND pcf.userid != 0
+            LEFT JOIN {groups} g ON pcf.groupid = g.id
             JOIN {course_modules} cm ON pcf.cm = cm.id
             JOIN {modules} modules ON modules.id = cm.module
             LEFT JOIN {assign} assign ON cm.instance = assign.id AND modules.name = 'assign'

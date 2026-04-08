@@ -423,25 +423,30 @@ function compilatio_delete_course_modules($cmconfigs) {
  * @param bool     $keepfilesindexed
  */
 function compilatio_delete_files($files, $keepfilesindexed = false) {
-    if (is_array($files)) {
-        global $DB;
-        $compilatio = new api();
+    if (!is_array($files)) {
+        return;
+    }
 
-        foreach ($files as $doc) {
-            if (is_null($doc->externalid)) {
-                $DB->delete_records('plagiarism_compilatio_files', ['id' => $doc->id]);
-            } else {
-                $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $doc->cm]);
-                $compilatio->set_user_id($userid);
+    global $DB;
+    $compilatio = new api();
 
-                if ($keepfilesindexed || $compilatio->set_indexing_state($doc->externalid, 0)) {
-                    $compilatio->delete_document($doc->externalid);
-                    $DB->delete_records('plagiarism_compilatio_files', ['id' => $doc->id]);
-                } else {
-                    mtrace('Error deindexing document ' . $doc->externalid);
-                }
-            }
+    foreach ($files as $doc) {
+        if (is_null($doc->externalid)) {
+            $DB->delete_records('plagiarism_compilatio_files', ['id' => $doc->id]);
+            continue;
         }
+
+        $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $doc->cm]);
+        $compilatio->set_user_id($userid);
+
+        if ($keepfilesindexed && boolval($doc->indexed)) {
+            $compilatio->archive_document($doc->externalid);
+        } else {
+            $compilatio->set_indexing_state($doc->externalid, 0);
+            $compilatio->delete_document($doc->externalid);
+        }
+
+        $DB->delete_records('plagiarism_compilatio_files', ['id' => $doc->id]);
     }
 }
 
@@ -500,4 +505,24 @@ function compilatio_format_date($date) {
     );
 
     return $fmt->format(strtotime($date));
+}
+
+/**
+ * Function to retrieve user language and check if it's supported by Compilatio, if not return english as default
+ *
+ * @return string Return user language
+ */
+function compilatio_retreive_user_language() {
+    $userlanguage = substr(current_language(), 0, 2);
+    $compialtiolanguages = get_config('plagiarism_compilatio', 'supported_languages');
+    $supportedlanguages = !empty($compialtiolanguages) ? json_decode($compialtiolanguages) : [];
+
+    if (0 === strpos($userlanguage, 'ca_')) {
+        $userlanguage = 'cat';
+    }
+
+    if (in_array($userlanguage, $supportedlanguages)) {
+        return $userlanguage;
+    }
+    return 'en';
 }
