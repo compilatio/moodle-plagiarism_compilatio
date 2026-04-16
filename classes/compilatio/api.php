@@ -83,7 +83,7 @@ class api {
      * @return stdClass|false Returns an object containing Compilatio configuration or false if an error occurs
      */
     public function get_config() {
-        $endpoint = '/api/public/config/config';
+        $endpoint = '/api/public/configuration';
         $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
@@ -98,7 +98,7 @@ class api {
      * @return boolean Return true if valid, an error message otherwise
      */
     public function check_apikey() {
-        $endpoint = '/api/private/authentication/check-api-key';
+        $endpoint = '/api/private/api-key';
         $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
@@ -114,7 +114,7 @@ class api {
 
         set_config('recipe', $recipe ?? 'anasim', 'plagiarism_compilatio');
 
-        $endpoint = '/api/private/user/lms/23a3a6980c0f49d98c5dc1ec03478e9161ad5d352cb4651b14865d21d0e81be';
+        $endpoint = '/api/private/users/23a3a6980c0f49d98c5dc1ec03478e9161ad5d352cb4651b14865d21d0e81be';
 
         $response = json_decode($this->build_curl($endpoint));
 
@@ -132,7 +132,7 @@ class api {
      * @return stdClass|false Returns user on success, false otherwise
      */
     public function get_apikey_user($updateapikey = true) {
-        $endpoint = '/api/private/authentication/check-api-key';
+        $endpoint = '/api/private/api-key';
 
         $response = json_decode($this->build_curl($endpoint));
 
@@ -172,7 +172,7 @@ class api {
      * @return bool return true if api key has access to student analyses, false otherwise.
      */
     public function check_allow_student_analyses() {
-        $endpoint = '/api/private/authentication/check-api-key';
+        $endpoint = '/api/private/api-key';
 
         $response = json_decode($this->build_curl($endpoint));
 
@@ -204,12 +204,7 @@ class api {
         }
 
         // Check if user already exists in Compilatio.
-        $compilatioid = $this->get_user_by_email($teacher->email);
-
-        // Create the user if doesn't exists.
-        if ($compilatioid == 404) {
-            $compilatioid = $this->set_user($teacher->firstname, $teacher->lastname, $teacher->email);
-        }
+        $compilatioid = $this->set_user($teacher->firstname, $teacher->lastname, $teacher->email);
 
         if (!preg_match('/^[a-f0-9]{40}$/', $compilatioid)) {
             return null;
@@ -233,7 +228,7 @@ class api {
      */
     private function set_user($firstname, $lastname, $email) {
         $userlang = compilatio_retreive_user_language();
-        $endpoint = '/api/private/user/create';
+        $endpoint = '/api/private/users';
         $params = [
             'firstname' => $firstname,
             'lastname' => $lastname,
@@ -260,7 +255,7 @@ class api {
      * @return  mixed   Return the user if succeed, an error message otherwise
      */
     public function get_user($userid) {
-        $endpoint = '/api/private/user/' . $userid;
+        $endpoint = '/api/private/users/' . $userid;
 
         $response = json_decode($this->build_curl($endpoint));
 
@@ -269,24 +264,6 @@ class api {
             return $response->data->user;
         }
         return false;
-    }
-
-    /**
-     * Get user if exist for email
-     *
-     * @param   string  $email          Teacher's moodle email
-     * @return  string|false            Return the user's ID if exist, the status error code or false
-     */
-    private function get_user_by_email($email) {
-        $endpoint = '/api/private/user/lms/' . strtolower($email);
-
-        $response = json_decode($this->build_curl($endpoint));
-
-        $error = $this->get_error_response($response, 200);
-        if ($error === false) {
-            return $response->data->user->id;
-        }
-        return $response->status->code ?? false;
     }
 
     /**
@@ -299,7 +276,7 @@ class api {
      * @return  string                                 Return true if succeed, false otherwise
      */
     public function update_user($userid, $firstname, $lastname, $email) {
-        $endpoint = '/api/private/user/' . $userid;
+        $endpoint = '/api/private/users/' . $userid;
         $params = [
             'firstname' => $firstname,
             'lastname' => $lastname,
@@ -347,7 +324,7 @@ class api {
      * @return  string                  Return the document's ID, an error message otherwise
      */
     public function set_document($filename, $folderid, $filepath, $indexed, $depositor, $authors) {
-        $endpoint = '/api/private/document/';
+        $endpoint = '/api/private/documents/';
         $params = [
             'file' => new \CURLFile($filepath),
             'filename' => $filename,
@@ -421,7 +398,7 @@ class api {
      * @return mixed           Return the document if succeed, an error message otherwise
      */
     public function get_document($docid) {
-        $endpoint = '/api/private/document/' . $docid;
+        $endpoint = '/api/private/documents/' . $docid;
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
         $error = $this->get_error_response($response, 200);
         if ($error === false) {
@@ -437,7 +414,7 @@ class api {
      * @return boolean          Return true if succeed, an error message otherwise
      */
     public function delete_document($docid) {
-        $endpoint = '/api/private/document/' . $docid;
+        $endpoint = '/api/private/documents/' . $docid;
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'delete'));
 
         if ($this->get_error_response($response, 200) === false) {
@@ -483,7 +460,7 @@ class api {
         $warningthreshold = 10,
         $criticalthreshold = 25
     ) {
-        $endpoint = '/api/private/folder/create';
+        $endpoint = '/api/private/folders';
         $params = [
             'name' => $name,
             'thresholds' => [
@@ -538,7 +515,7 @@ class api {
         $warningthreshold = 10,
         $criticalthreshold = 25
     ) {
-        $endpoint = '/api/private/folder/' . $folderid;
+        $endpoint = '/api/private/folders/' . $folderid;
 
         $params = [
             'name' => $name,
@@ -577,7 +554,7 @@ class api {
      * @return boolean            Return true if succeed, an error message otherwise
      */
     public function delete_folder($folderid) {
-        $endpoint = '/api/private/folder/' . $folderid;
+        $endpoint = '/api/private/folders/' . $folderid;
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'delete'));
 
         if ($this->get_error_response($response, 200) === false) {
@@ -594,7 +571,7 @@ class api {
      * @return  mixed               Return true if succeed, an error message otherwise
      */
     public function set_indexing_state($docid, $indexed) {
-        $endpoint = '/api/private/document/' . $docid;
+        $endpoint = '/api/private/documents/' . $docid;
 
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', json_encode(['indexed' => $indexed])));
 
@@ -611,7 +588,7 @@ class api {
      * @return string Return a JWT if succeed, an error otherwise
      */
     public function get_report_token($docid) {
-        $endpoint = '/api/private/documents/' . $docid . '/report/jwt';
+        $endpoint = '/api/private/documents/' . $docid . '/report-jwt ';
 
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post'));
 
@@ -632,7 +609,7 @@ class api {
     public function get_pdf_report($idreport, $lang = 'en', $type = 'detailed') {
         global $CFG;
 
-        $endpoint = '/api/private/report/anasim/' . $idreport . '/pdf/' . $lang . '/' . $type . '/';
+        $endpoint = '/api/private/reports/' . $idreport . '/pdf?lang=' . $lang . '&type=' . $type;
         $filepath = $CFG->dataroot . '/temp/compilatio/' . $idreport . '_' . $lang . '_' . $type . '.pdf';
 
         $handle = fopen($filepath, 'wb');
@@ -652,16 +629,11 @@ class api {
      * @return mixed    Return update_task_id if succeed, false otherwise
      */
     public function update_and_rebuild_report($analysisid, $ignoredtypes) {
-        $endpoint = '/api/private/anasim/report/' . $analysisid;
+        $endpoint = '/api/private/reports/' . $analysisid;
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', $ignoredtypes));
 
         if ($this->get_error_response($response, 200) === false) {
-            $endpoint = '/api/private/anasim/report/' . $analysisid . '/rebuild';
-            $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post'));
-
-            if ($this->get_error_response($response, 200) === false) {
-                return $response->data->update_task_id;
-            }
+            return $response->data->update_task_id;
         }
         return false;
     }
@@ -670,18 +642,17 @@ class api {
      * Get updated report
      *
      * @param  string   $analysisid    Analysis ID
-     * @param  array    $updatetaskid  Update task ID
      * @return mixed    Return report if succeed, false otherwise
      */
-    public function get_updated_report($analysisid, $updatetaskid) {
-        $endpoint = '/api/private/report/anasim/' . $analysisid . '/is-updated/' . $updatetaskid;
+    public function get_updated_report($analysisid, $ignoredtypes) {
+        $endpoint = '/api/private/reports/' . $analysisid;
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
             return $response->data->report;
         } else if ($response->status->code == 202) {
             sleep(1);
-            return $this->get_updated_report($analysisid, $updatetaskid);
+            return $this->get_updated_report($analysisid, $ignoredtypes);
         }
         return false;
     }
@@ -693,7 +664,7 @@ class api {
      * @return mixed    Return true if succeed, an error message otherwise
      */
     public function start_analyse($docid) {
-        $endpoint = '/api/private/analysis/';
+        $endpoint = '/api/private/analyses/';
         $params = [
             'doc_id' => $docid,
             'tags' => [
@@ -713,22 +684,6 @@ class api {
             return $response->errors->form[0];
         }
         return $error;
-    }
-
-    /**
-     * Get a list of the allowed file types by Compilatio.
-     *
-     * @return  array   Return an array of the different allowed file types
-     */
-    public function get_allowed_file_types() {
-        $endpoint = '/api/public/file/allowed-extensions';
-
-        $response = json_decode($this->build_curl($endpoint));
-
-        if ($this->get_error_response($response, 200) === false) {
-            return $response->data;
-        }
-        return false;
     }
 
     /**
@@ -762,22 +717,6 @@ class api {
     }
 
     /**
-     * Validate user's terms of service.
-     *
-     * @return boolean Return true if terms of service has been validated, false otherwise
-     */
-    public function validate_terms_of_service() {
-        $endpoint = '/api/private/terms-of-service/validate';
-
-        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
-
-        if ($this->get_error_response($response, 200) === false) {
-            return $response->data->termsOfService_validated;
-        }
-        return false;
-    }
-
-    /**
      * Get zendesk jwt to authenticate user to help center.
      *
      * @return boolean Return jwt if succeed, false otherwise
@@ -796,10 +735,11 @@ class api {
     /**
      * Get a list of Compilatio alerts.
      *
+     * @param  string  $lang  Language
      * @return  array   Return an array of alerts
      */
-    public function get_alerts() {
-        $endpoint = '/api/public/alerts/moodle/' . get_config('plagiarism_compilatio', 'version');
+    public function get_alerts($lang) {
+        $endpoint = '/api/private/alerts?lang=' . $lang;
 
         $response = json_decode($this->build_curl($endpoint));
 
@@ -833,7 +773,7 @@ class api {
      * @return  stdClass   Return subscription info.
      */
     public function get_subscription_info() {
-        $endpoint = '/api/private/authentication/check-api-key';
+        $endpoint = '/api/private/api-key';
         $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
@@ -848,7 +788,7 @@ class api {
             return false;
         }
 
-        $endpoint = '/api/private/subscription/bundles/' . $magisterstandardbundleid . '/last-subscription';
+        $endpoint = '/api/private/bundle/subscriptions';
 
         $response = json_decode($this->build_curl($endpoint));
 
@@ -856,22 +796,6 @@ class api {
             return $response->data->subscription;
         }
 
-        return false;
-    }
-
-    /**
-     * Get a Compilatio translation.
-     *
-     * @param  string  $lang  Language
-     * @param  string  $key   Translation Key
-     * @return string  Return the translation string
-     */
-    public function get_translation($lang, $key) {
-        $endpoint = '/api/public/translation/last-version/' . $lang . '/key/' . $key;
-        $response = json_decode($this->build_curl($endpoint));
-        if ($this->get_error_response($response, 200) === false) {
-            return $response->data->{$key};
-        }
         return false;
     }
 
@@ -896,15 +820,6 @@ class api {
             return 'Error response status not found';
         } else if ($response->status->code === $expectedstatuscode) {
             return false;
-        } else if ($response->status->code === 403) {
-            foreach (($response->errors ?? []) as $error) {
-                if (isset($error->key) && $error->key === 'need_terms_of_service_validation') {
-                    if (!empty($this->userid)) {
-                        $this->validate_terms_of_service();
-                    }
-                    return $error->key;
-                }
-            }
         } else if ($response->status->message === 'Forbidden ! Your read only API key cannot modify this resource') {
             set_config('read_only_apikey', 1, 'plagiarism_compilatio');
         }
@@ -932,12 +847,7 @@ class api {
             $userid = $DB->get_field('plagiarism_compilatio_user', 'compilatioid', ['userid' => 0]);
             if ($userid === false) {
                 $user0compilatioemail = 'moodle-' . substr($this->apikey, 0, 10) . '@' . preg_replace('/^.*@/', '', $USER->email);
-
-                $userid = $this->get_user_by_email($user0compilatioemail);
-
-                if (!preg_match('/^[a-f0-9]{40}$/', $userid)) {
-                    $userid = $this->set_user($USER->firstname, $USER->lastname, $user0compilatioemail);
-                }
+                $userid = $this->set_user($USER->firstname, $USER->lastname, $user0compilatioemail);
 
                 if ($userid === false) {
                     return json_encode(['status' => ['code' => 500, 'message' => 'User could not be created']]);
