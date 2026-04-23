@@ -83,7 +83,7 @@ class api {
      * @return stdClass|false Returns an object containing Compilatio configuration or false if an error occurs
      */
     public function get_config() {
-        $endpoint = '/api/public/configuration';
+        $endpoint = '/api/public/configuration-lms';
         $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
@@ -98,7 +98,7 @@ class api {
      * @return boolean Return true if valid, an error message otherwise
      */
     public function check_apikey() {
-        $endpoint = '/api/private/api-key';
+        $endpoint = '/api/private/authentication/check-api-key';
         $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
@@ -132,7 +132,7 @@ class api {
      * @return stdClass|false Returns user on success, false otherwise
      */
     public function get_apikey_user($updateapikey = true) {
-        $endpoint = '/api/private/api-key';
+        $endpoint = '/api/private/authentication/check-api-key';
 
         $response = json_decode($this->build_curl($endpoint));
 
@@ -172,7 +172,7 @@ class api {
      * @return bool return true if api key has access to student analyses, false otherwise.
      */
     public function check_allow_student_analyses() {
-        $endpoint = '/api/private/api-key';
+        $endpoint = '/api/private/authentication/check-api-key';
 
         $response = json_decode($this->build_curl($endpoint));
 
@@ -588,7 +588,7 @@ class api {
      * @return string Return a JWT if succeed, an error otherwise
      */
     public function get_report_token($docid) {
-        $endpoint = '/api/private/documents/' . $docid . '/report-jwt ';
+        $endpoint = '/api/private/documents/' . $docid . '/report-jwt';
 
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post'));
 
@@ -773,7 +773,7 @@ class api {
      * @return  stdClass   Return subscription info.
      */
     public function get_subscription_info() {
-        $endpoint = '/api/private/api-key';
+        $endpoint = '/api/private/authentication/check-api-key';
         $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
@@ -788,7 +788,7 @@ class api {
             return false;
         }
 
-        $endpoint = '/api/private/bundle/subscriptions';
+        $endpoint = '/api/private/subscription/bundles/' . $magisterstandardbundleid . '/last-subscription';
 
         $response = json_decode($this->build_curl($endpoint));
 
