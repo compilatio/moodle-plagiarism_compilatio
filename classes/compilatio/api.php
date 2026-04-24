@@ -631,26 +631,7 @@ class api {
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', $ignoredtypes));
 
         if ($this->get_error_response($response, 200) === false) {
-            return $response->data->update_task_id;
-        }
-        return false;
-    }
-
-    /**
-     * Get updated report
-     *
-     * @param  string   $analysisid    Analysis ID
-     * @return mixed    Return report if succeed, false otherwise
-     */
-    public function get_updated_report($analysisid, $ignoredtypes) {
-        $endpoint = '/api/private/reports/' . $analysisid;
-        $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
-
-        if ($this->get_error_response($response, 200) === false) {
             return $response->data->report;
-        } else if ($response->status->code == 202) {
-            sleep(1);
-            return $this->get_updated_report($analysisid, $ignoredtypes);
         }
         return false;
     }
