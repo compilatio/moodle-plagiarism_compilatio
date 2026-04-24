@@ -436,7 +436,7 @@ define(['jquery'], function($) {
                     url,
                     domid
                 );
-            }, 3 * 6000);
+            }, 3 * 60000);
         });
     };
 
