@@ -83,7 +83,8 @@ class api {
      * @return stdClass|false Returns an object containing Compilatio configuration or false if an error occurs
      */
     public function get_config() {
-        $endpoint = '/api/public/configuration-lms';
+        // $endpoint = '/api/public/configuration-lms';
+        $endpoint = '/api/public/config/config';
         $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
@@ -114,11 +115,8 @@ class api {
 
         set_config('recipe', $recipe ?? 'anasim', 'plagiarism_compilatio');
 
-        $endpoint = '/api/private/users/23a3a6980c0f49d98c5dc1ec03478e9161ad5d352cb4651b14865d21d0e81be';
+        $error = $this->get_error_response($response, 200);
 
-        $response = json_decode($this->build_curl($endpoint));
-
-        $error = $this->get_error_response($response, 404);
         if ($error === false) {
             return true;
         }
@@ -324,7 +322,7 @@ class api {
      * @return  string                  Return the document's ID, an error message otherwise
      */
     public function set_document($filename, $folderid, $filepath, $indexed, $depositor, $authors) {
-        $endpoint = '/api/private/documents/';
+        $endpoint = '/api/private/documents';
         $params = [
             'file' => new \CURLFile($filepath),
             'filename' => $filename,
@@ -664,7 +662,7 @@ class api {
      * @return mixed    Return true if succeed, an error message otherwise
      */
     public function start_analyse($docid) {
-        $endpoint = '/api/private/analyses/';
+        $endpoint = '/api/private/analyses';
         $params = [
             'doc_id' => $docid,
             'tags' => [
