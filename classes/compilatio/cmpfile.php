@@ -164,7 +164,7 @@ class cmpfile {
      *
      * @param string $modname Module name
      * @param mixed $submission Submission
-     * @param Stored_file $file Moodle stored file || null if content passed is not a stored file
+     * @param ?Stored_file $file Moodle stored file || null if content passed is not a stored file
      * @return string Return the filename of the cmpfile
      */
     private function createfilename(string $modname, $submission, ?stored_file $file = null): string {

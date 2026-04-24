@@ -388,7 +388,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024030100, 'plagiarism', 'compilatio');
     }
 
-    if ($oldversion < 2024011700) {
+    if ($oldversion < 2025061200) {
         $table = new xmldb_table('plagiarism_compilatio_files');
         $field = new xmldb_field('groupid', XMLDB_TYPE_INTEGER, '10', null, false, false, null, 'userid');
 
