@@ -374,5 +374,5 @@ a.cmp-btn-primary:hover {
 }
 
 .cmp-border-none {
-    border: none !important;
+    border: none;
 }

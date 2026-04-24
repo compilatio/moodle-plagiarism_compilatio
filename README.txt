@@ -8,6 +8,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 3.3.1
+- [Fix] Analysis score changes following several student changes in evaluation view 
 - API Path Update
 
 3.2.11
