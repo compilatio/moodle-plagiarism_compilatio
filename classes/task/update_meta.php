@@ -86,12 +86,7 @@ class update_meta extends \core\task\scheduled_task {
             set_config('helpcenter_service_status', $config->zendeskPages->service_status, 'plagiarism_compilatio');
 
             set_config('supported_languages', json_encode($config->translation->supported_languages), 'plagiarism_compilatio');
-        }
-
-        $filetypes = $compilatio->get_allowed_file_types();
-
-        if (!empty($filetypes)) {
-            set_config('file_types', json_encode($filetypes), 'plagiarism_compilatio');
+            set_config('file_types', json_encode($config->allowed_extensions_for_document), 'plagiarism_compilatio');
         }
     }
 }

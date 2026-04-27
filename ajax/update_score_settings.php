@@ -77,11 +77,7 @@ foreach ($files as $file) {
         $file = analysis::check_analysis($file);
     }
 
-    $file->updatetaskid = $compilatio->update_and_rebuild_report($file->analysisid, $ignoredtypes);
-}
-
-foreach ($files as $file) {
-    $report = $compilatio->get_updated_report($file->analysisid, $file->updatetaskid);
+    $report = $compilatio->update_and_rebuild_report($file->analysisid, $ignoredtypes);
 
     if ($report === false) {
         continue;
