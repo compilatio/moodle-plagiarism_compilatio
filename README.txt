@@ -9,7 +9,8 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 CHANGES
 3.3.1
 - [Fix] Fix redirections to reports and helpcenter
-- [Fix] Analysis score changes following several student changes in evaluation view 
+- [Fix] Analysis score changes following several student changes in evaluation view
+- [Fix] URL Param directly passed in SQL
 - API Path Update
 
 3.2.11
