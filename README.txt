@@ -13,6 +13,7 @@ CHANGES
 - [Fix] URL Param directly passed in SQL
 - [Fix] Add missing require_once() in redirect_report.php
 - [Fix] Add check_dir_exists before put file for pdf creation
+- [Fix] Retreive forum and workshop files for retrieve_and_send_file
 - API Path Update
 
 3.2.11
