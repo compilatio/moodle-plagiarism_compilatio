@@ -29,7 +29,6 @@ global $CFG;
 
 require_once($CFG->dirroot . '/plagiarism/lib.php');
 
-use plagiarism_compilatio\compilatio\csv_generator;
 use plagiarism_compilatio\compilatio\api;
 use plagiarism_compilatio\compilatio\course_module_settings;
 use plagiarism_compilatio\compilatio\file;

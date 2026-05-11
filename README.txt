@@ -11,6 +11,8 @@ CHANGES
 - [Fix] Fix redirections to reports and helpcenter
 - [Fix] Analysis score changes following several student changes in evaluation view
 - [Fix] URL Param directly passed in SQL
+- [Fix] Add missing require_once() in redirect_report.php
+- [Fix] Add check_dir_exists before put file for pdf creation
 - API Path Update
 
 3.2.11
