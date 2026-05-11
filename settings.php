@@ -124,10 +124,6 @@ if (!empty($plagiarismsettings['enabled'])) {
         $managedbundle = new managed_bundle($compilatiouser);
         $managedbundle->set_all_course_module_to_folder_detections_options($DB);
 
-        if (!$compilatio->check_allow_student_analyses()) {
-            set_config('enable_student_analyses', 0, 'plagiarism_compilatio');
-        }
-
         $subscription = $compilatio->get_subscription_info();
 
         $subscriptioninfos = '';

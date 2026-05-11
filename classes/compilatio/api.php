@@ -83,12 +83,13 @@ class api {
      * @return stdClass|false Returns an object containing Compilatio configuration or false if an error occurs
      */
     public function get_config() {
-        // $endpoint = '/api/public/configuration-lms';
-        $endpoint = '/api/public/config/config';
-        $response = json_decode($this->build_curl($endpoint));
+        $endpoint = '/api/public/configuration-lms';
+        $configurationlmsresponse = json_decode($this->build_curl($endpoint));
+        $endpoint = '/api/public/configuration';
+        $configurationresponse = json_decode($this->build_curl($endpoint));
 
-        if ($this->get_error_response($response, 200) === false) {
-            return $response->data;
+        if (!$this->get_error_response($configurationlmsresponse, 200) && !$this->get_error_response($configurationresponse, 200)) {
+            return (object) array_merge((array) $configurationlmsresponse->data, (array) $configurationresponse->data);
         }
         return false;
     }
@@ -99,7 +100,7 @@ class api {
      * @return boolean Return true if valid, an error message otherwise
      */
     public function check_apikey() {
-        $endpoint = '/api/private/authentication/check-api-key';
+        $endpoint = '/api/private/user';
         $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
@@ -130,8 +131,7 @@ class api {
      * @return stdClass|false Returns user on success, false otherwise
      */
     public function get_apikey_user($updateapikey = true) {
-        $endpoint = '/api/private/authentication/check-api-key';
-
+        $endpoint = '/api/private/user';
         $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
@@ -161,30 +161,6 @@ class api {
             return true;
         }
 
-        return false;
-    }
-
-    /**
-     * Check if the API key has access rights to the analyses by students.
-     *
-     * @return bool return true if api key has access to student analyses, false otherwise.
-     */
-    public function check_allow_student_analyses() {
-        $endpoint = '/api/private/authentication/check-api-key';
-
-        $response = json_decode($this->build_curl($endpoint));
-
-        if ($this->get_error_response($response, 200) === false) {
-            $bundle = $response->data->user->current_bundle;
-
-            foreach ($bundle->accesses as $access) {
-                if ($access->resource == 'api') {
-                    if (isset($access->config, $access->config->allow_student_analysis_from_lms)) {
-                        return $access->config->allow_student_analysis_from_lms;
-                    }
-                }
-            }
-        }
         return false;
     }
 
@@ -752,7 +728,7 @@ class api {
      * @return  stdClass   Return subscription info.
      */
     public function get_subscription_info() {
-        $endpoint = '/api/private/authentication/check-api-key';
+        $endpoint = '/api/private/user';
         $response = json_decode($this->build_curl($endpoint));
 
         if ($this->get_error_response($response, 200) === false) {
@@ -768,6 +744,7 @@ class api {
         }
 
         $endpoint = '/api/private/subscription/bundles/' . $magisterstandardbundleid . '/last-subscription';
+        // ...[DEV] Attendre le fix de Compi pour utiliser /bundle/subscriptions.
 
         $response = json_decode($this->build_curl($endpoint));
 
