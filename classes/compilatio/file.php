@@ -276,11 +276,13 @@ class file {
             $allfiles = $DB->get_records_sql(
                 "SELECT * FROM {files}
                 WHERE contextid = ?
-                    AND component IN ('assignsubmission_file', 'question')
+                    AND component IN ('assignsubmission_file', 'question', 'mod_workshop', 'mod_forum')
                     AND contenthash != '" . self::EMPTY_TEXT_HASH . "'",
                 ['contextid' => $contextid]
             );
             $matchedfiles = [];
+            global $CFG;
+            file_put_contents($CFG->dataroot . '/temp/compilatio/curl.log', var_export($allfiles, true) . "\n", FILE_APPEND);
 
             foreach ($allfiles as $file) {
                 $storedfile = $fs->get_file_by_id($file->id);
