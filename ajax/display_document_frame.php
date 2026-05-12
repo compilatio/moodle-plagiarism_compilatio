@@ -35,14 +35,12 @@ if (isguestuser()) {
 
 $cmpfileid = required_param('cmpfileid', PARAM_RAW);
 $cantriggeranalysis = required_param('cantriggeranalysis', PARAM_BOOL);
-$isstudentanalyse = required_param('isstudentanalyse', PARAM_BOOL);
 $canviewreport = required_param('canviewreport', PARAM_BOOL);
 $isteacher = required_param('isteacher', PARAM_BOOL);
 $url = required_param('url', PARAM_RAW);
 
 echo document_frame::display_document_frame(
     $cantriggeranalysis,
-    $isstudentanalyse,
     $cmpfileid,
     $canviewreport,
     $isteacher,

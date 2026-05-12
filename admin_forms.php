@@ -91,21 +91,6 @@ class compilatio_setup_form extends moodleform {
         );
         $mform->setDefault('enable_show_reports', 0);
 
-        $apikey = get_config('plagiarism_compilatio', 'apikey');
-        if (!empty($apikey)) {
-            $compilatio = new api($apikey);
-
-            if ($compilatio->check_allow_student_analyses()) {
-                $mform->addElement(
-                    'checkbox',
-                    'enable_student_analyses',
-                    get_string("enable_student_analyses", "plagiarism_compilatio")
-                );
-                $mform->setDefault('enable_student_analyses', 0);
-                $mform->addHelpButton('enable_student_analyses', 'enable_student_analyses', 'plagiarism_compilatio');
-            }
-        }
-
         $mform->addElement('checkbox', 'enable_analyses_auto', get_string("enable_analyses_auto", "plagiarism_compilatio"));
         $mform->setDefault('enable_analyses_auto', 0);
         $mform->addHelpButton('enable_analyses_auto', 'enable_analyses_auto', 'plagiarism_compilatio');
