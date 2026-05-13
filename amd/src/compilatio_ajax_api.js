@@ -306,16 +306,15 @@ define(['jquery'], function($) {
      * Display document frame
      * @param {string} basepath
      * @param {boolean} cantriggeranalysis
-     * @param {boolean} isstudentanalyse
      * @param {number} cmpfileid
      * @param {boolean} canviewreport
      * @param {boolean} isteacher
      * @param {string} url
      * @param {string} domid
      */
-    function displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, domid) {
+    function displayDocumentFrame(basepath, cantriggeranalysis, cmpfileid, canviewreport, isteacher, url, domid) {
         $.post(basepath + '/plagiarism/compilatio/ajax/display_document_frame.php',
-            {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url},
+            {cantriggeranalysis, cmpfileid, canviewreport, isteacher, url},
         function(button) {
             let el = $('#cmp-' + domid);
             el.empty().append(button);
@@ -394,7 +393,6 @@ define(['jquery'], function($) {
      * Display document frame
      * @param {string} basepath
      * @param {boolean} cantriggeranalysis
-     * @param {boolean} isstudentanalyse
      * @param {number} cmpfileid
      * @param {boolean} canviewreport
      * @param {boolean} isteacher
@@ -403,7 +401,6 @@ define(['jquery'], function($) {
      */
     exports.displayDocumentFrame = function(basepath,
         cantriggeranalysis,
-        isstudentanalyse,
         cmpfileid,
         canviewreport,
         isteacher,
@@ -414,7 +411,6 @@ define(['jquery'], function($) {
         $(document).ready(function () {
             displayDocumentFrame(basepath,
                 cantriggeranalysis,
-                isstudentanalyse,
                 cmpfileid,
                 canviewreport,
                 isteacher,
@@ -429,7 +425,6 @@ define(['jquery'], function($) {
             displayIntervals[domid] = setInterval(function () {
                 displayDocumentFrame(basepath,
                     cantriggeranalysis,
-                    isstudentanalyse,
                     cmpfileid,
                     canviewreport,
                     isteacher,

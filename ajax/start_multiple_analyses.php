@@ -154,7 +154,7 @@ if ($plugincm->analysistype == 'manual') {
     }
 
     foreach ($cmpfiles as $file) {
-        if (empty($file) || compilatio_student_analysis($plugincm->studentanalyses, $cmid, $file->userid)) {
+        if (empty($file)) {
             continue;
         }
 
