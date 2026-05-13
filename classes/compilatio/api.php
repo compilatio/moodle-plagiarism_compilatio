@@ -586,6 +586,10 @@ class api {
         $endpoint = '/api/private/reports/' . $idreport . '/pdf?lang=' . $lang . '&type=' . $type;
         $filepath = $CFG->dataroot . '/temp/compilatio/' . $idreport . '_' . $lang . '_' . $type . '.pdf';
 
+        if (!check_dir_exists($CFG->dataroot . "/temp/compilatio", true, true)) {
+            debugging("Error when creating the pdf file for compilatio : failed to create compilatio temp directory");
+        }
+
         $handle = fopen($filepath, 'wb');
 
         if ($this->build_curl_on_behalf_of_user($endpoint, 'download', null, $handle) == 200) {
