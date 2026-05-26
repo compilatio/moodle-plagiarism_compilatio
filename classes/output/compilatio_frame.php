@@ -36,6 +36,7 @@ use plagiarism_compilatio\compilatio\csv_generator;
 use plagiarism_compilatio\output\statistics;
 use plagiarism_compilatio\output\icons;
 use plagiarism_compilatio\compilatio\analysis;
+use plagiarism_compilatio\compilatio\assignment\assign_filters;
 use moodle_url;
 
 /**
@@ -431,6 +432,7 @@ class compilatio_frame {
     private static function display_start_all_analyses_button($cmid, $module) {
         global $DB, $CFG, $PAGE;
         $compilatio = new api();
+        $assignhasactivefilters = $module === 'assign' && (new assign_filters($cmid))->has_active_filters();
 
         $output = $questionselector = '';
 
@@ -439,6 +441,7 @@ class compilatio_frame {
                 title='" . ($compilatio->is_in_maintenance() ?
                     get_string('disabled_in_maintenance', 'plagiarism_compilatio') :
                     get_string('start_all_analysis', 'plagiarism_compilatio')) . "'
+                id='cmp-start-visible-btn'
                 class='btn btn-primary cmp-action-btn cmp-start-btn'
                 data-toggle='tooltip'
             >
@@ -448,7 +451,13 @@ class compilatio_frame {
         $PAGE->requires->js_call_amd(
             'plagiarism_compilatio/compilatio_ajax_api',
             'startAllAnalysis',
-            [$CFG->httpswwwroot, $cmid, get_string('start_analysis_in_progress', 'plagiarism_compilatio')]
+            [
+                $CFG->httpswwwroot,
+                $cmid,
+                get_string('start_analysis_in_progress', 'plagiarism_compilatio'),
+                $module,
+                $assignhasactivefilters,
+            ]
         );
 
         if ($module !== 'quiz' && $module !== 'assign') {
@@ -512,6 +521,7 @@ class compilatio_frame {
                 <i class='cmp-icon-lg fa fa-ellipsis-v'></i>
                 <div id='cmp-dropdown-menu' class='dropdown-menu overflow-hidden p-0' aria-labelledby='dropdownMenuButton'>
                     <div
+                        id='cmp-start-all-btn'
                         class='cmp-action-btn p-2 cmp-start-btn'
                         role='button'
                     >

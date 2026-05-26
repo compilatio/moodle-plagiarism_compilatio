@@ -12,6 +12,7 @@ CHANGES
 - [Fix] Analysis score changes following several student changes in evaluation view
 - [Fix] URL Param directly passed in SQL
 - API Path Update
+- Button Launch all analyse launch only accessible / visible / filtered documents 
 
 3.2.11
 - [Fix] Add asynchronous alerts retriving
