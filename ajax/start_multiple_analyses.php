@@ -29,6 +29,7 @@ require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 use plagiarism_compilatio\compilatio\analysis;
+use plagiarism_compilatio\compilatio\assign_group_restriction;
 use core\exception\moodle_exception;
 
 require_login();
@@ -148,6 +149,16 @@ if ($plugincm->analysistype == 'manual') {
             [$insql, $inparams] = $DB->get_in_or_equal($selectedstudents, SQL_PARAMS_NAMED, 'sid');
             $where .= " AND userid $insql";
             $params = array_merge($params, $inparams);
+        }
+
+        if ($module->modname === 'assign') {
+            $grouprestriction = new assign_group_restriction($cmid);
+            [$groupwhere, $groupparams] = $grouprestriction->get_sql();
+
+            if ($groupwhere !== '') {
+                $where .= " AND $groupwhere";
+                $params = array_merge($params, $groupparams);
+            }
         }
 
         $cmpfiles = $DB->get_records_select('plagiarism_compilatio_files', $where, $params);
