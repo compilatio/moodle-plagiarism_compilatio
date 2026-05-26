@@ -22,7 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace plagiarism_compilatio\compilatio;
+namespace plagiarism_compilatio\compilatio\assignment;
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 

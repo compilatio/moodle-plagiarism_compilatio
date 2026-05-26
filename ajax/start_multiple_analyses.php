@@ -30,7 +30,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 use plagiarism_compilatio\compilatio\analysis;
 use plagiarism_compilatio\compilatio\assignment\assign_filters;
-use plagiarism_compilatio\compilatio\assign_group_restriction;
+use plagiarism_compilatio\compilatio\assignment\assign_group_restriction;
 use core\exception\moodle_exception;
 
 require_login();
