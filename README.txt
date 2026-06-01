@@ -8,6 +8,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 3.3.1
+- [Fix] Fix for the request to create and update a folder 
 - [Fix] Fix redirections to reports and helpcenter
 - [Fix] Analysis score changes following several student changes in evaluation view
 - [Fix] URL Param directly passed in SQL
