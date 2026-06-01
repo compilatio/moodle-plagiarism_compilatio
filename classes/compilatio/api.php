@@ -465,7 +465,7 @@ class api {
                 'warning' => $warningthreshold,
                 'critical' => $criticalthreshold,
             ],
-            'default_indexing' => $defaultindexing,
+            'default_indexing' => false,
             'auto_analysis' => false,
             'scheduled_analysis_enabled' => false,
             'origin' => 'LMS-Moodle',
@@ -475,6 +475,9 @@ class api {
             $params['recipe_detections'][] = $detection;
         }
 
+        if ($defaultindexing === 1) {
+            $params['default_indexing'] = true;
+        }
         if ($analysistype == 'auto') {
             $params['auto_analysis'] = true;
         } else if ($analysistype == 'planned') {
@@ -521,7 +524,7 @@ class api {
                 'warning' => $warningthreshold,
                 'critical' => $criticalthreshold,
             ],
-            'default_indexing' => $defaultindexing,
+            'default_indexing' => false,
             'auto_analysis' => false,
             'scheduled_analysis_enabled' => false,
         ];
@@ -530,6 +533,9 @@ class api {
             $params['recipe_detections'][] = $detection;
         }
 
+        if ($defaultindexing === 1) {
+            $params['default_indexing'] = true;
+        }
         if ($analysistype == 'auto') {
             $params['auto_analysis'] = true;
         } else if ($analysistype == 'planned') {
