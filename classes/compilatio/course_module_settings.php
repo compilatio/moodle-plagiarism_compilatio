@@ -520,11 +520,13 @@ class course_module_settings {
                         continue;
                     }
 
-                    $detectiosnenabled[] = [
-                        'process' => $detection->process,
-                        'enabled' => $data->{$detection->process . 'enabled'},
-                        'configurable' => 1,
-                    ];
+                    if ($detection->configurable) {
+                        $detectiosnenabled[] = [
+                            'process' => $detection->process,
+                            'enabled' => (bool) $data->{$detection->process . 'enabled'},
+                            'configurable' => true,
+                        ];
+                    }
                 }
             }
 
