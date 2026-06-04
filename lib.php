@@ -76,7 +76,6 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
             'showstudentscore',
             'showstudentreport',
             'reporttype',
-            'studentanalyses',
             'analysistype',
             'analysistime',
             'warningthreshold',
@@ -447,31 +446,6 @@ function compilatio_delete_files($files, $keepfilesindexed = false) {
 
         $DB->delete_records('plagiarism_compilatio_files', ['id' => $doc->id]);
     }
-}
-
-/**
- * Check if a submission can be analyzed by student.
- *
- * @param  int  $studentanalysesparam Value of the parameter studentanalyses for the cm
- * @param  int  $cmid
- * @param  int  $userid
- * @return bool  Return true if it's a student analyse, false otherwise
- */
-function compilatio_student_analysis($studentanalysesparam, $cmid, $userid) {
-    global $DB;
-    if (get_config('plagiarism_compilatio', 'enable_student_analyses') === '1' && $studentanalysesparam === '1') {
-        $sql = 'SELECT sub.status
-            FROM {course_modules} cm
-            JOIN {assign_submission} sub ON cm.instance = sub.assignment
-            WHERE cm.id = ? AND userid = ?';
-
-        $status = $DB->get_field_sql($sql, [$cmid, $userid]);
-
-        if ($status == 'draft' || $status == 'new') {
-            return true;
-        }
-    }
-    return false;
 }
 
 /**

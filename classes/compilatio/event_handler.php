@@ -246,11 +246,11 @@ class event_handler {
     }
 
     /**
-     * Handle delete or submit an assign file
+     * Handle assign submission status changes and final submission file cleanup
      * @param  mixed $event Moodle event
      * @return void
      */
-    public static function student_analyses($event) {
+    public static function handle_assign_submission_change($event) {
         global $DB;
 
         $cmid = $event["contextinstanceid"];
@@ -313,14 +313,46 @@ class event_handler {
             }
         }
 
-        // Delete file in Compilatio and send it again to apply the modification in the student document.
-        $plugincm = compilatio_cm_use($cmid);
-        if ($event['target'] == 'assessable' && $plugincm->studentanalyses === '1') {
-            $files = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
+        // Clean up Compilatio files that are no longer present in the final Moodle submission.
+        if ('assessable' === $event['target']) {
+            $compilatiofile = new file();
+            $fs = get_file_storage();
+            $submissionfiles = $fs->get_area_files(
+                $event["contextid"],
+                "assignsubmission_file",
+                'submission_files',
+                $event["objectid"]
+            );
 
-            foreach ($files as $file) {
-                compilatio_delete_files($files);
-                file::retrieve_and_send_file($file);
+            $cmpfilestokeep = [];
+            foreach ($submissionfiles as $mdlfile) {
+                if ('.' === $mdlfile->get_filename()) {
+                    continue;
+                }
+                $cmpfile = $compilatiofile->compilatio_get_document($cmid, $mdlfile, $userid, null, ['groupid' => $groupid]);
+                if ($cmpfile) {
+                    $cmpfilestokeep[] = $cmpfile;
+                }
+            }
+
+            $useridsql = null !== $groupid ? 'userid = 0 AND groupid = ?' : 'userid = ?';
+            $params = null !== $groupid ? [$cmid, $groupid] : [$cmid, $userid];
+            $sql = "SELECT * FROM {plagiarism_compilatio_files}
+                WHERE cm = ? AND {$useridsql} AND filename NOT LIKE 'assign-%'";
+
+            $allcmpfiles = $DB->get_records_sql($sql, $params);
+
+            $orphans = array_udiff(
+                $allcmpfiles,
+                $cmpfilestokeep,
+                function ($filea, $fileb) {
+                    return $filea->id - $fileb->id;
+                }
+            );
+
+            if (!empty($orphans)) {
+                $keepfileindexed = boolval(get_config('plagiarism_compilatio', 'keep_docs_indexed'));
+                compilatio_delete_files($orphans, $keepfileindexed);
             }
         }
     }
@@ -438,10 +470,11 @@ class event_handler {
         if ($event['objecttable'] == 'assign_submission') {
             $mdlfiles = $fs->get_area_files($event["contextid"], $event["component"], 'submission_files', $event["objectid"]);
 
+            $useridsql = null !== $groupid ? 'userid = 0 AND groupid = ?' : 'userid = ?';
+            $params = null !== $groupid ? [$cmid, $groupid] : [$cmid, $userid];
             $sql = "SELECT * FROM {plagiarism_compilatio_files}
-                WHERE cm = ? AND userid = ? AND groupid = ? AND filename NOT LIKE 'assign-%'";
-
-            $allcmpfiles = $DB->get_records_sql($sql, [$cmid, 0, $groupid]);
+                WHERE cm = ? AND {$useridsql} AND filename NOT LIKE 'assign-%'";
+            $allcmpfiles = $DB->get_records_sql($sql, $params);
         }
 
         if ($event['objecttable'] == 'forum_posts') {

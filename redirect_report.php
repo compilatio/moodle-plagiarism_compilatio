@@ -70,10 +70,12 @@ if ($isteacher) {
 
     $lang = compilatio_retreive_user_language();
 
-    $recipe = get_config('plagiarism_compilatio', 'recipe');
+    $recipe = !empty($doc->analyses) ? array_key_first((array) $doc->analyses) : null;
 
-    if (isset($doc->analyses->$recipe->id)) {
-        $filepath = $compilatio->get_pdf_report($doc->analyses->$recipe->id, $lang, $reporttype);
+    if ($recipe !== null && isset($doc->analyses->$recipe->id)) {
+        $analysisid = $doc->analyses->$recipe->id;
+
+        $filepath = $compilatio->get_pdf_report($analysisid, $lang, $reporttype);
 
         if (is_file($filepath)) {
             header('HTTP/1.1 200 OK');

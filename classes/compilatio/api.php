@@ -165,30 +165,6 @@ class api {
     }
 
     /**
-     * Check if the API key has access rights to the analyses by students.
-     *
-     * @return bool return true if api key has access to student analyses, false otherwise.
-     */
-    public function check_allow_student_analyses() {
-        $endpoint = '/api/private/authentication/check-api-key';
-
-        $response = json_decode($this->build_curl($endpoint));
-
-        if ($this->get_error_response($response, 200) === false) {
-            $bundle = $response->data->user->current_bundle;
-
-            foreach ($bundle->accesses as $access) {
-                if ($access->resource == 'api') {
-                    if (isset($access->config, $access->config->allow_student_analysis_from_lms)) {
-                        return $access->config->allow_student_analysis_from_lms;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * Get or create Compilatio user from current Moodle user id
      *
      * @param  mixed $teacher

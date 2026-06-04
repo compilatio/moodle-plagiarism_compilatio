@@ -36,6 +36,8 @@ use plagiarism_compilatio\compilatio\managed_bundle;
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
 
+global $DB, $CFG, $OUTPUT, $USER;
+
 $context = context_system::instance();
 require_capability('moodle/site:config', $context, $USER->id, true, 'nopermissions');
 
@@ -55,7 +57,6 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         'enable_mod_quiz',
         'enable_show_reports',
         'enable_search_tab',
-        'enable_student_analyses',
         'enable_analyses_auto',
         'disable_ssl_verification',
         'keep_docs_indexed',
@@ -88,7 +89,6 @@ if (($data = $mform->get_data()) && confirm_sesskey()) {
         $defaultconfig->activated = 1;
         $defaultconfig->showstudentscore = 'never';
         $defaultconfig->showstudentreport = 'never';
-        $defaultconfig->studentanalyses = 0;
         $defaultconfig->analysistype = 'manual';
         $defaultconfig->warningthreshold = 10;
         $defaultconfig->criticalthreshold = 25;
@@ -123,10 +123,6 @@ if (!empty($plagiarismsettings['enabled'])) {
         $compilatiouser = $compilatio->get_apikey_user();
         $managedbundle = new managed_bundle($compilatiouser);
         $managedbundle->set_all_course_module_to_folder_detections_options($DB);
-
-        if (!$compilatio->check_allow_student_analyses()) {
-            set_config('enable_student_analyses', 0, 'plagiarism_compilatio');
-        }
 
         $subscription = $compilatio->get_subscription_info();
 
