@@ -88,7 +88,6 @@ class file {
                 null,
                 ['groupid' => $cmpfile->groupid],
                 false,
-                ['attemptid' => $attemptid, 'slot' => $slot]
             ))
         ) {
             return false;
