@@ -19,7 +19,52 @@ define(['jquery'], function($) {
     var isInMaintenance = false;
     var displayIntervals = {};
 
+    /**
+     * Initialize tooltips for both Bootstrap 4 (jQuery plugin)
+     * and Bootstrap 5 (bootstrap.Tooltip).
+     *
+     * @param {HTMLElement|jQuery|Document} context
+     */
+    function initTooltips(context = document) {
+        const selector = `[data-toggle="tooltip"], [data-bs-toggle="tooltip"]`;
+        const root = $(context);
+
+        const elements = root.is(selector) ? root : root.find(selector);
+
+        elements.each(function() {
+            const el = this;
+            const $el = $(el);
+
+            if ($el.data('cmpTooltipInitialized')) {
+                return;
+            }
+
+            const htmlEnabled = $el.attr('data-html') === 'true' || $el.attr('data-bs-html') === 'true';
+            const title = $el.attr('data-bs-title') || $el.attr('title') || '';
+
+            if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                const options = {
+                    html: htmlEnabled,
+                    title: title,
+                    trigger: 'hover focus'
+                };
+
+                new bootstrap.Tooltip(el, options);
+            } else if ($.fn.tooltip) {
+                $el.tooltip({
+                    html: htmlEnabled,
+                    title: title,
+                    trigger: 'hover focus'
+                });
+            }
+
+            $el.data('cmpTooltipInitialized', true);
+        });
+    }
+
     $(document).ready(function() {
+        initTooltips();
+
         if ($('#maintenance-modal').length) {
             isInMaintenance = true;
             disableCompilatioButtons();
@@ -466,6 +511,7 @@ define(['jquery'], function($) {
         function(button) {
             let el = $('#cmp-' + domid);
             el.empty().append(button);
+            initTooltips(el);
 
             setTimeout(() => {
                 if (isteacher) {
@@ -486,6 +532,7 @@ define(['jquery'], function($) {
                         refreshScoreBtn.empty();
                         $.post(basepath + '/plagiarism/compilatio/ajax/update_score.php', {'docId': cmpfileid}, function(res) {
                             refreshScoreBtn.replaceWith(res);
+                            initTooltips($('#cmp-' + domid));
                         });
                     });
                 }
@@ -530,6 +577,7 @@ define(['jquery'], function($) {
                             startAnalysisBtn.find('i').removeClass('fa-spinner fa-spin').addClass('fa-play-circle');
                         } else {
                             startAnalysisBtn.replaceWith(res.documentFrame);
+                            initTooltips($('#cmp-' + domid));
                         }
                     });
                 });

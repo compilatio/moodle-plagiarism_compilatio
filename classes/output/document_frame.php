@@ -581,7 +581,8 @@ class document_frame {
         }
 
         $html .= "<span id='cmp-score-icons' class='" . ($nowrap === true ? "flex-nowrap" : "d-flex") .
-            "' data-toggle='tooltip' data-html='true' title='{$tooltip}'>
+            "' data-toggle='tooltip' data-bs-toggle='tooltip' data-html='true' data-bs-html='true'
+                data-bs-title='{$tooltip}' title='{$tooltip}'>
                         {$icons}
                 </span>";
 
