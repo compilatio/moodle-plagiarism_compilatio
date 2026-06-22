@@ -88,7 +88,6 @@ class file {
                 null,
                 ['groupid' => $cmpfile->groupid],
                 false,
-                ['attemptid' => $attemptid, 'slot' => $slot]
             ))
         ) {
             return false;
@@ -276,7 +275,7 @@ class file {
             $allfiles = $DB->get_records_sql(
                 "SELECT * FROM {files}
                 WHERE contextid = ?
-                    AND component IN ('assignsubmission_file', 'question')
+                    AND component IN ('assignsubmission_file', 'question', 'mod_workshop', 'mod_forum')
                     AND contenthash != '" . self::EMPTY_TEXT_HASH . "'",
                 ['contextid' => $contextid]
             );
@@ -305,7 +304,7 @@ class file {
                 $sql = "SELECT f.* FROM {files} f
                         JOIN {assign_submission} sub ON f.itemid = sub.id
                         WHERE f.contextid = ?
-                        AND f.component IN ('assignsubmission_file', 'question')
+                        AND f.component IN ('assignsubmission_file', 'question', 'mod_workshop', 'mod_forum')
                         AND f.filename = ?
                         AND (sub.userid = ? OR sub.groupid IN (
                             SELECT groupid FROM {groups_members} WHERE userid = ?
@@ -324,7 +323,7 @@ class file {
             if (empty($matchedfiles)) {
                 $sql = "SELECT * FROM {files}
                         WHERE contextid = ?
-                        AND component IN ('assignsubmission_file', 'question')
+                        AND component IN ('assignsubmission_file', 'question', 'mod_workshop', 'mod_forum')
                         AND filename = ?
                         AND contenthash != '" . self::EMPTY_TEXT_HASH . "'";
 

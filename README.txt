@@ -8,9 +8,14 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 3.3.1
+- [Fix] Fix for the requests to create and update a folder 
 - [Fix] Fix redirections to reports and helpcenter
 - [Fix] Analysis score changes following several student changes in evaluation view
 - [Fix] URL Param directly passed in SQL
+- [Fix] Add missing require_once() in redirect_report.php
+- [Fix] Add check_dir_exists before put file for pdf creation
+- [Fix] Retreive forum and workshop files for retrieve_and_send_file
+- [Fix] Document update by student doesn't delete the document in Compilatio
 - API Path Update
 - Button Launch all analyse launch only accessible / visible / filtered documents 
 

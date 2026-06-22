@@ -195,7 +195,7 @@ class plagiarism_compilatio_observer {
     public static function assign_submission_status_updated(\mod_assign\event\submission_status_updated $event) {
         global $CFG;
         try {
-            event_handler::student_analyses($event->get_data());
+            event_handler::handle_assign_submission_change($event->get_data());
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -293,7 +293,7 @@ class plagiarism_compilatio_observer {
     public static function assign_assessable_submitted(\mod_assign\event\assessable_submitted $event) {
         global $CFG;
         try {
-            event_handler::student_analyses($event->get_data());
+            event_handler::handle_assign_submission_change($event->get_data());
         } catch (Exception $e) {
             return $e->getMessage();
         }
