@@ -17,6 +17,7 @@ CHANGES
 - [Fix] Retreive forum and workshop files for retrieve_and_send_file
 - [Fix] Document update by student doesn't delete the document in Compilatio
 - API Path Update
+- Button Launch all analyse launch only accessible / visible / filtered documents 
 
 3.2.11
 - [Fix] Add asynchronous alerts retriving

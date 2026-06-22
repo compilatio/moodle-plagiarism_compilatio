@@ -77,15 +77,15 @@ class update_meta extends \core\task\scheduled_task {
         // Update compilatio config.
         $config = $compilatio->get_config();
         if (!empty($config)) {
-            set_config('min_word', $config->minDocumentWord, 'plagiarism_compilatio');
-            set_config('max_word', $config->maxDocumentWord, 'plagiarism_compilatio');
-            set_config('max_size', $config->maxDocumentSize, 'plagiarism_compilatio');
+            set_config('min_word', $config->min_document_word, 'plagiarism_compilatio');
+            set_config('max_word', $config->max_document_word, 'plagiarism_compilatio');
+            set_config('max_size', $config->max_document_size, 'plagiarism_compilatio');
 
-            set_config('helpcenter_admin', $config->zendeskPages->moodle_admin, 'plagiarism_compilatio');
-            set_config('helpcenter_teacher', $config->zendeskPages->moodle_teacher, 'plagiarism_compilatio');
-            set_config('helpcenter_service_status', $config->zendeskPages->service_status, 'plagiarism_compilatio');
+            set_config('helpcenter_admin', $config->zendesk_pages->moodle_admin, 'plagiarism_compilatio');
+            set_config('helpcenter_teacher', $config->zendesk_pages->moodle_teacher, 'plagiarism_compilatio');
+            set_config('helpcenter_service_status', $config->zendesk_pages->service_status, 'plagiarism_compilatio');
 
-            set_config('supported_languages', json_encode($config->translation->supported_languages), 'plagiarism_compilatio');
+            set_config('supported_languages', json_encode($config->supported_languages), 'plagiarism_compilatio');
             set_config('file_types', json_encode($config->allowed_extensions_for_document), 'plagiarism_compilatio');
         }
     }
