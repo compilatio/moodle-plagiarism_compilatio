@@ -7,6 +7,8 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+3.3.2
+
 3.3.1
 - [Fix] Fix for the requests to create and update a folder 
 - [Fix] Fix redirections to reports and helpcenter
