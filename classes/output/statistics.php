@@ -354,12 +354,12 @@ class statistics {
                 ? str_word_count(mb_convert_encoding(strip_tags($content), 'ISO-8859-1', 'UTF-8'))
                 : 0;
             if ($wordcount >= $nbmotsmin) {
-                $courseid = $DB->get_field('course_modules', 'course', ['id' => $cmid]);
                 $content = $answer->get_response_summary();
 
-                $cmpfile = $compilatiofile->compilatio_get_document(
+                $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
                     $cmid,
                     $content,
+                    ['attemptid' => $attemptid, 'slot' => $slot],
                     $studentid
                 );
                 if (!empty($cmpfile)) {
@@ -370,9 +370,10 @@ class statistics {
 
             $files = $answer->get_last_qt_files('attachments', $context->id);
             foreach ($files as $file) {
-                $cmpfile = $compilatiofile->compilatio_get_document(
+                $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
                     $cmid,
                     $file,
+                    ['attemptid' => $attemptid, 'slot' => $slot],
                     $studentid
                 );
 
