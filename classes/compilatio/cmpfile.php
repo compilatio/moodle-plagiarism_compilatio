@@ -148,7 +148,10 @@ class cmpfile {
         $this->cm = $cmid;
         $this->timesubmitted = time();
         $this->setidentifier($cmid, $userid, $content, $attemptid, $slot);
-        $this->setdatafromconfig($cmid, $userid);
+
+        $plugincm = compilatio_cm_use($cmid);
+        $this->indexed = $plugincm->defaultindexing ?? true;
+
         $this->filename = $filename ?? $this->createfilename(
             $cm->modname,
             $submission,
@@ -164,7 +167,7 @@ class cmpfile {
      *
      * @param string $modname Module name
      * @param mixed $submission Submission
-     * @param Stored_file $file Moodle stored file || null if content passed is not a stored file
+     * @param ?Stored_file $file Moodle stored file || null if content passed is not a stored file
      * @return string Return the filename of the cmpfile
      */
     private function createfilename(string $modname, $submission, ?stored_file $file = null): string {
@@ -199,22 +202,6 @@ class cmpfile {
             $this->identifier = $identifier->create_from_file($content);
         } else {
             $this->identifier = $identifier->create_from_string($content);
-        }
-    }
-
-    /**
-     * Set the datas from the course module configuration
-     *
-     * @param string $cmid Module module id
-     * @param string $userid User ID
-     * @return void
-     */
-    private function setdatafromconfig($cmid, $userid): void {
-        $plugincm = compilatio_cm_use($cmid);
-        $this->indexed = $plugincm->defaultindexing ?? true;
-
-        if (compilatio_student_analysis($plugincm->studentanalyses, $cmid, $userid)) {
-            $this->indexed = false;
         }
     }
 

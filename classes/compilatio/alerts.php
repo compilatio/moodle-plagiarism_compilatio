@@ -62,17 +62,13 @@ class alerts {
      * @return array Array of alerts
      */
     public function get($SESSION, $cmid) {
-        $compilatioalerts = $this->compilatioapi->get_alerts();
+        $compilatioalerts = $this->compilatioapi->get_alerts($this->language);
 
         $alerts = [];
 
         foreach ($compilatioalerts as $alert) {
-            $translation = $this->compilatioapi->get_translation($this->language, $alert->text);
-
-            $text = empty($translation) ? $alert->text : $translation;
-
             if (
-                $text === 'DONT_DISPLAY' ||
+                $alert->text === 'DONT_DISPLAY' ||
                 time() <= strtotime($alert->activation_period->start) ||
                 time() >= strtotime($alert->activation_period->end)
             ) {
@@ -81,7 +77,7 @@ class alerts {
 
             $alerts[] = [
                 'class' => 'info',
-                'content' => "<span class='cmp-md'>" . $text . '</span>',
+                'content' => "<span class='cmp-md'>" . $alert->text . '</span>',
             ];
         }
 

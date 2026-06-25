@@ -17,6 +17,7 @@ define(['jquery'], function($) {
 
     var exports = {};
     var isInMaintenance = false;
+    var displayIntervals = {};
 
     $(document).ready(function() {
         if ($('#maintenance-modal').length) {
@@ -33,8 +34,9 @@ define(['jquery'], function($) {
      * @param {Array|null} selectedstudents
      * @param {Array} selectedquestions
      * @param {number|null} quizid
+     * @param {string} scope
      */
-    function startAnalyses(message, basepath, cmid, selectedstudents = null, selectedquestions = [], quizid = null) {
+    function startAnalyses(message, basepath, cmid, selectedstudents = null, selectedquestions = [], quizid = null, scope = 'all') {
         disableCompilatioButtons();
 
         $('#cmp-dropdown-menu').removeClass('show');
@@ -48,8 +50,13 @@ define(['jquery'], function($) {
         let params = {
             'cmid': cmid,
             'selectedquestions': selectedquestions,
-            'quizid': quizid
+            'quizid': quizid,
+            'scope': scope
         };
+
+        if (scope === 'filtered') {
+            addAssignFilterParams(params);
+        }
 
         if (selectedstudents !== null) {
             params.selectedstudents = selectedstudents.toString();
@@ -119,19 +126,167 @@ define(['jquery'], function($) {
      * @param {string} basepath
      * @param {number} cmid
      * @param {string} message
+     * @param {string} module
+     * @param {boolean} assignhasfilters
      */
-    exports.startAllAnalysis = function(basepath, cmid, message) {
+    exports.startAllAnalysis = function(basepath, cmid, message, module, assignhasfilters) {
         $(document).ready(function() {
             $('#cmp-dropdown-menu').on('click', function(event) {
                 event.stopPropagation();
             });
 
-            var startAllAnalysis = $('.cmp-start-btn');
-            startAllAnalysis.click(function() {
-                startAnalyses(message, basepath, cmid);
+            if (module !== 'assign') {
+                $('.cmp-start-btn').click(function() {
+                    startAnalyses(message, basepath, cmid);
+                });
+                return;
+            }
+
+            $('#cmp-start-visible-btn').click(function() {
+                const selectedUsers = getSelectedAssignUsers();
+                if (selectedUsers.length > 0) {
+                    startAnalyses(message, basepath, cmid, selectedUsers, [], null, 'selected');
+                    return;
+                }
+
+                if (hasAssignFilters(assignhasfilters)) {
+                    startAnalyses(message, basepath, cmid, null, [], null, 'filtered');
+                    return;
+                }
+
+                startAnalyses(message, basepath, cmid, getVisibleAssignUsers(), [], null, 'page');
+            });
+
+            $('#cmp-start-all-btn').click(function() {
+                startAnalyses(message, basepath, cmid, null, [], null, 'all');
             });
         });
     };
+
+    /**
+     * Get user ids displayed on the current Assign grading page.
+     *
+     * @return {Array}
+     */
+    function getVisibleAssignUsers() {
+        return $('td.c0 input').map(function() {
+            return $(this).val();
+        }).get();
+    }
+
+    /**
+     * Get explicitly selected user ids on the current Assign grading page.
+     *
+     * @return {Array}
+     */
+    function getSelectedAssignUsers() {
+        return $('td.c0 input:checked').map(function() {
+            return $(this).val();
+        }).get();
+    }
+
+    /**
+     * Check if Assign grading filters are active.
+     *
+     * Moodle may keep initials filters in the persistent grading table preferences.
+     *
+     * @return {boolean}
+     */
+    function hasAssignFilters(assignhasfilters) {
+        if (assignhasfilters) {
+            return true;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasUrlFilter = getAssignFilterParams().some(function(param) {
+            return urlParams.has(param) && isActiveAssignFilterParam(param, urlParams.get(param));
+        });
+
+        return hasUrlFilter || hasAssignInitialsFilter() || hasAssignClearFiltersLink();
+    }
+
+    /**
+     * Get Assign filter params handled by the grading table.
+     *
+     * @return {Array}
+     */
+    function getAssignFilterParams() {
+        return [
+            'status',
+            'group',
+            'tifirst',
+            'tilast',
+            'search',
+            'userid',
+            'workflowfilter',
+            'markingallocationfilter',
+            'suspendedparticipantsfilter'
+        ];
+    }
+
+    /**
+     * Check if an Assign filter URL param has an active value.
+     *
+     * @param {string} param
+     * @param {string|null} value
+     * @return {boolean}
+     */
+    function isActiveAssignFilterParam(param, value) {
+        if (value === null || value === '') {
+            return false;
+        }
+
+        if (param === 'status') {
+            return value !== 'none';
+        }
+
+        if (
+            param === 'group'
+                || param === 'userid'
+                || param === 'markingallocationfilter'
+                || param === 'suspendedparticipantsfilter'
+        ) {
+            return value !== '0';
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if Assign initials filters are active in the persistent grading table state.
+     *
+     * @return {boolean}
+     */
+    function hasAssignInitialsFilter() {
+        const gradingTable = $('[data-table-uniqueid^="mod_assign_grading-"]');
+        const firstInitial = gradingTable.attr('data-table-first-initial');
+        const lastInitial = gradingTable.attr('data-table-last-initial');
+
+        return Boolean(firstInitial || lastInitial);
+    }
+
+    /**
+     * Check Moodle's reset filters link for filters stored in user preferences.
+     *
+     * @return {boolean}
+     */
+    function hasAssignClearFiltersLink() {
+        return $('a[href*="action=grading"][href*="tifirst="][href*="tilast="][href*="status="]').length > 0;
+    }
+
+    /**
+     * Add Assign filter URL params to the AJAX request.
+     *
+     * @param {Object} params
+     */
+    function addAssignFilterParams(params) {
+        const urlParams = new URLSearchParams(window.location.search);
+        getAssignFilterParams().forEach(function(param) {
+            if (urlParams.has(param)) {
+                params[param] = urlParams.get(param);
+            }
+        });
+    }
 
     /**
      * Start analyses on selected students
@@ -145,19 +300,10 @@ define(['jquery'], function($) {
             const checkboxes = $('td.c0 input, #selectall');
 
             /**
-             * Get selected lines.
-             */
-            function getSelectedLines() {
-                return checkboxes.filter(':checked').map(function() {
-                    return $(this).val() !== 'on' ? $(this).val() : null;
-                }).get();
-            }
-
-            /**
              * Update button visibility.
              */
             function updateButtonVisibility() {
-                const selectedUsers = getSelectedLines();
+                const selectedUsers = getSelectedAssignUsers();
                 if (selectedUsers.length > 0) {
                     startSelectedStudentsBtn.show();
                 } else {
@@ -167,7 +313,10 @@ define(['jquery'], function($) {
 
             checkboxes.on('change', updateButtonVisibility);
             startSelectedStudentsBtn.click(function() {
-                startAnalyses(message, basepath, cmid, getSelectedLines());
+                const selectedUsers = getSelectedAssignUsers();
+                if (selectedUsers.length > 0) {
+                    startAnalyses(message, basepath, cmid, selectedUsers, [], null, 'selected');
+                }
             });
         });
     };
@@ -191,7 +340,7 @@ define(['jquery'], function($) {
                 });
 
                 if (selectedquestions.length > 0) {
-                    startAnalyses(message, basepath, cmid, null, selectedquestions, quizid);
+                    startAnalyses(message, basepath, cmid, null, selectedquestions, quizid, 'selected');
                 }
             });
         });
@@ -305,16 +454,15 @@ define(['jquery'], function($) {
      * Display document frame
      * @param {string} basepath
      * @param {boolean} cantriggeranalysis
-     * @param {boolean} isstudentanalyse
      * @param {number} cmpfileid
      * @param {boolean} canviewreport
      * @param {boolean} isteacher
      * @param {string} url
      * @param {string} domid
      */
-    function displayDocumentFrame(basepath, cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url, domid) {
+    function displayDocumentFrame(basepath, cantriggeranalysis, cmpfileid, canviewreport, isteacher, url, domid) {
         $.post(basepath + '/plagiarism/compilatio/ajax/display_document_frame.php',
-            {cantriggeranalysis, isstudentanalyse, cmpfileid, canviewreport, isteacher, url},
+            {cantriggeranalysis, cmpfileid, canviewreport, isteacher, url},
         function(button) {
             let el = $('#cmp-' + domid);
             el.empty().append(button);
@@ -393,7 +541,6 @@ define(['jquery'], function($) {
      * Display document frame
      * @param {string} basepath
      * @param {boolean} cantriggeranalysis
-     * @param {boolean} isstudentanalyse
      * @param {number} cmpfileid
      * @param {boolean} canviewreport
      * @param {boolean} isteacher
@@ -402,7 +549,6 @@ define(['jquery'], function($) {
      */
     exports.displayDocumentFrame = function(basepath,
         cantriggeranalysis,
-        isstudentanalyse,
         cmpfileid,
         canviewreport,
         isteacher,
@@ -410,10 +556,9 @@ define(['jquery'], function($) {
         domid
     ) {
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             displayDocumentFrame(basepath,
                 cantriggeranalysis,
-                isstudentanalyse,
                 cmpfileid,
                 canviewreport,
                 isteacher,
@@ -421,10 +566,13 @@ define(['jquery'], function($) {
                 domid
             );
 
-            setInterval(function() {
+            if (displayIntervals[domid]) {
+                clearInterval(displayIntervals[domid]);
+            }
+
+            displayIntervals[domid] = setInterval(function () {
                 displayDocumentFrame(basepath,
                     cantriggeranalysis,
-                    isstudentanalyse,
                     cmpfileid,
                     canviewreport,
                     isteacher,
@@ -509,15 +657,19 @@ define(['jquery'], function($) {
 
     exports.getAlerts = function(basepath, userid, module, cmid) {
         $(document).ready(function() {
-            $.post(basepath + '/plagiarism/compilatio/ajax/get_alerts.php', {'userid': userid, 'module': module, 'cmid': cmid}, function(compilatioAlerts) {
-                compilatioAlerts = JSON.parse(compilatioAlerts);
-                compilatioAlerts.forEach(alerts => {
-                    $('#cmp-alerts').append(alerts);
-                    $('.cmp-close').on('click', function() {
-                        $(this).parent().remove();
+            $.post(
+                basepath + '/plagiarism/compilatio/ajax/get_alerts.php', 
+                {'userid': userid, 'module': module, 'cmid': cmid}, 
+                function(compilatioAlerts) {
+                    compilatioAlerts = JSON.parse(compilatioAlerts);
+                    compilatioAlerts.forEach(alerts => {
+                        $('#cmp-alerts').append(alerts);
+                        $('.cmp-close').on('click', function() {
+                            $(this).parent().remove();
+                        });
                     });
-                });
-            });
+                }
+            );
         });
     };
 

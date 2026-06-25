@@ -287,31 +287,6 @@ class course_module_settings {
             $mform->addElement('html', '<p>' . get_string('admin_disabled_reports', 'plagiarism_compilatio') . '</p>');
         }
 
-        if (get_config('plagiarism_compilatio', 'enable_student_analyses') === '1' && !$defaults) {
-            if ($mform->elementExists('submissiondrafts')) {
-                $mform->addElement(
-                    'select',
-                    'studentanalyses',
-                    get_string('studentanalyses', 'plagiarism_compilatio'),
-                    $ynoptions
-                );
-                $mform->addHelpButton('studentanalyses', 'studentanalyses', 'plagiarism_compilatio');
-
-                $mform->disabledif('studentanalyses', 'submissiondrafts', 'eq', '0');
-
-                $group = [];
-                $group[] = $mform->createElement('html', "<p class='text-danger'>" .
-                    get_string(
-                        'activate_submissiondraft',
-                        'plagiarism_compilatio',
-                        get_string('submissiondrafts', 'assign')
-                    ) .
-                    " <b>" . get_string('submissionsettings', 'assign') . ".</b></p>");
-                $mform->addGroup($group, 'activatesubmissiondraft', '', ' ', false);
-                $mform->hideIf('activatesubmissiondraft', 'submissiondrafts', 'eq', '1');
-            }
-        }
-
         // Indexing state.
         $mform->addElement('select', 'defaultindexing', get_string('defaultindexing', 'plagiarism_compilatio'), $ynoptions);
         $mform->addHelpButton('defaultindexing', 'defaultindexing', 'plagiarism_compilatio');
@@ -520,11 +495,13 @@ class course_module_settings {
                         continue;
                     }
 
-                    $detectiosnenabled[] = [
-                        'process' => $detection->process,
-                        'enabled' => $data->{$detection->process . 'enabled'},
-                        'configurable' => 1,
-                    ];
+                    if ($detection->configurable) {
+                        $detectiosnenabled[] = [
+                            'process' => $detection->process,
+                            'enabled' => (bool) $data->{$detection->process . 'enabled'},
+                            'configurable' => true,
+                        ];
+                    }
                 }
             }
 

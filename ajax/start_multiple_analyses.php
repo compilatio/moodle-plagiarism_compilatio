@@ -29,11 +29,14 @@ require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 use plagiarism_compilatio\compilatio\analysis;
+use plagiarism_compilatio\compilatio\assignment\assign_filters;
+use plagiarism_compilatio\compilatio\assignment\assign_group_restriction;
+use core\exception\moodle_exception;
 
 require_login();
 
 
-$cmid = required_param('cmid', PARAM_TEXT);
+$cmid = required_param('cmid', PARAM_INT);
 
 $context = context_module::instance($cmid);
 require_capability('plagiarism/compilatio:triggeranalysis', context::instance_by_id($context->id));
@@ -42,9 +45,30 @@ global $DB, $SESSION;
 
 $compilatiofile = new \plagiarism_compilatio\compilatio\file();
 
-$selectedstudents = optional_param('selectedstudents', '', PARAM_TEXT);
-$selectedquestions = array_values(optional_param_array('selectedquestions', [], PARAM_TEXT));
-$quizid = optional_param('quizid', '', PARAM_TEXT);
+$selectedstudentsraw = optional_param('selectedstudents', '', PARAM_RAW_TRIMMED);
+$selectedquestions = array_values(optional_param_array('selectedquestions', [], PARAM_INT));
+$quizid = optional_param('quizid', 0, PARAM_INT);
+$scope = optional_param('scope', 'all', PARAM_ALPHA);
+
+if (!in_array($scope, ['all', 'page', 'filtered', 'selected'])) {
+    throw new moodle_exception('invalidparameter');
+}
+
+$selectedstudents = [];
+
+if ('' !== $selectedstudentsraw) {
+    $parts = preg_split('/\s*,\s*/', $selectedstudentsraw, -1, PREG_SPLIT_NO_EMPTY);
+
+    foreach ($parts as $part) {
+        if (!ctype_digit($part)) {
+            throw new moodle_exception('invalidparameter');
+        }
+
+        $selectedstudents[] = (int) $part;
+    }
+
+    $selectedstudents = array_values(array_unique($selectedstudents));
+}
 
 $plugincm = compilatio_cm_use($cmid);
 $module = get_coursemodule_from_id(null, $cmid);
@@ -104,20 +128,58 @@ if ($plugincm->analysistype == 'manual') {
             }
         }
     } else if ($module->modname == "quiz" && !empty($selectedstudents)) {
+        [$insql, $inparams] = $DB->get_in_or_equal($selectedstudents, SQL_PARAMS_NAMED, 'sid');
+
         $sql = "SELECT cmpfile.*
             FROM {plagiarism_compilatio_files} cmpfile
             INNER JOIN {user} ON {user}.id = cmpfile.userid
             INNER JOIN {quiz_attempts} ON {quiz_attempts}.userid = {user}.id
-            WHERE {quiz_attempts}.id IN ('" . $selectedstudents . "') AND cmpfile.status='sent' AND cmpfile.cm = ?";
-        $cmpfiles = $DB->get_records_sql($sql, [$cmid]);
+            WHERE {quiz_attempts}.id $insql
+                AND cmpfile.status = :status
+                AND cmpfile.cm = :cmid";
+
+        $params = array_merge($inparams, [
+            'cmid' => $cmid,
+            'status' => 'sent',
+        ]);
+
+        $cmpfiles = $DB->get_records_sql($sql, $params);
     } else {
-        $sql = "cm = ? AND status = 'sent'";
-        $sql .= !empty($selectedstudents) ? " AND userid IN (" . $selectedstudents . ")" : "";
-        $cmpfiles = $DB->get_records_select('plagiarism_compilatio_files', $sql, [$cmid]);
+        $where = "cm = :cmid AND status = :status";
+        $params = [
+            'cmid' => $cmid,
+            'status' => 'sent',
+        ];
+
+        if (!empty($selectedstudents) && $module->modname !== 'assign') {
+            [$insql, $inparams] = $DB->get_in_or_equal($selectedstudents, SQL_PARAMS_NAMED, 'sid');
+            $where .= " AND userid $insql";
+            $params = array_merge($params, $inparams);
+        }
+
+        if ($module->modname === 'assign') {
+            $assignfilters = new assign_filters($cmid);
+            [$scopewhere, $scopeparams] = $assignfilters->get_scope_sql($scope, $selectedstudents);
+
+            if ($scopewhere !== '') {
+                $where .= " AND $scopewhere";
+                $params = array_merge($params, $scopeparams);
+            }
+
+            $grouprestriction = new assign_group_restriction($cmid);
+            [$groupwhere, $groupparams] = $grouprestriction->get_sql();
+
+            if ($groupwhere !== '') {
+                $where .= " AND $groupwhere";
+                $params = array_merge($params, $groupparams);
+            }
+        }
+
+        $cmpfiles = $DB->get_records_select('plagiarism_compilatio_files', $where, $params);
     }
 
     foreach ($cmpfiles as $file) {
-        if (empty($file) || compilatio_student_analysis($plugincm->studentanalyses, $cmid, $file->userid)) {
+        if (empty($file)) {
             continue;
         }
 

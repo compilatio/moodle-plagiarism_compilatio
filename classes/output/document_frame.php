@@ -92,7 +92,6 @@ class document_frame {
         $modulecontext = \context_module::instance($linkarray['cmid']);
         $isteacher = $canviewscore = $canviewreport = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
         $cantriggeranalysis = has_capability('plagiarism/compilatio:triggeranalysis', $modulecontext);
-        $isstudentanalyse = compilatio_student_analysis($plugincm->studentanalyses, $linkarray['cmid'], $userid);
 
         $groupid = null;
         $isonlinetext = false;
@@ -145,11 +144,6 @@ class document_frame {
         }
 
         if ($USER->id == $userid || (isset($userbelongstogroup) && $userbelongstogroup)) {
-            if ($isstudentanalyse) {
-                $canviewreport = true;
-                $canviewscore = true;
-            }
-
             $assignclosed = false;
             if ($cm->completionexpected != 0 && time() > $cm->completionexpected) {
                 $assignclosed = true;
@@ -203,8 +197,7 @@ class document_frame {
                     $userid,
                     null,
                     ['groupid' => $groupid],
-                    false,
-                    ['attemptid' => $linkarray['area'] ?? null, 'slot' => $linkarray['itemid'] ?? null]
+                    false
                 );
             }
 
@@ -284,7 +277,6 @@ class document_frame {
         $PAGE->requires->js_call_amd('plagiarism_compilatio/compilatio_ajax_api', 'displayDocumentFrame', [
             $CFG->httpswwwroot,
             $cantriggeranalysis,
-            $isstudentanalyse,
             $cmpfile->id ?? null,
             $canviewreport,
             $isteacher,
@@ -299,7 +291,6 @@ class document_frame {
      * Display plagiarism document frame
      *
      * @param boolean  $cantriggeranalysis
-     * @param boolean  $isstudentanalyse
      * @param string   $cmpfileid
      * @param boolean  $canviewreport
      * @param boolean  $isteacher
@@ -308,7 +299,6 @@ class document_frame {
      */
     public static function display_document_frame(
         $cantriggeranalysis,
-        $isstudentanalyse,
         $cmpfileid,
         $canviewreport,
         $isteacher,
@@ -383,7 +373,7 @@ class document_frame {
                         . self::formatstring('btn_planned') .
                     "</div>";
                 $bgcolor = 'primary';
-            } else if ($cantriggeranalysis || ($isstudentanalyse && !$isteacher)) {
+            } else if ($cantriggeranalysis || !$isteacher) {
                 $documentframe =
                     "<div
                         title='" . ($compilatio->is_in_maintenance() ?
@@ -395,8 +385,6 @@ class document_frame {
                         <i class='cmp-icon-lg mr-1 fa fa-play-circle'></i>"
                         . self::formatstring('btn_sent') .
                     "</div>";
-            } else if ($isstudentanalyse && $isteacher) {
-                $documentframe = '';
             } else {
                 return '';
             }
@@ -429,7 +417,7 @@ class document_frame {
                     ) . "' class='cmp-color-error mx-2 text-nowrap'>
                     <i class='mx-2 fa fa-exclamation-triangle'></i>" . self::formatstring('btn_' . $status) . "</div>";
             $bgcolor = 'error';
-        } else if (isset($url) && ($cantriggeranalysis || ($isstudentanalyse && !$isteacher))) {
+        } else if (isset($url) && ($cantriggeranalysis || !$isteacher)) {
             // Display fake unset button if under maintenance.
             if ($compilatio->is_in_maintenance()) {
                 $documentframe =
@@ -457,17 +445,10 @@ class document_frame {
         }
 
         $info = '';
-        if ($isstudentanalyse) {
-            if ($isteacher) {
-                $info = "<div>" . self::formatstring('student_analyse') . "</div>";
-            } else {
-                $info = "<div>" . self::formatstring('student_help') . "</div>";
-            }
-        }
 
         // Add de/indexing feature for teachers.
         $indexed = null;
-        if (!empty($cmpfile->externalid) && $cantriggeranalysis && !$isstudentanalyse) {
+        if (!empty($cmpfile->externalid) && $cantriggeranalysis) {
             // Plugin v2 docs management.
             if (null === $cmpfile->indexed) {
                 $compilatio = new api($config->userid);
