@@ -29,6 +29,8 @@ require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 use plagiarism_compilatio\compilatio\analysis;
+use plagiarism_compilatio\compilatio\assignment\assign_filters;
+use plagiarism_compilatio\compilatio\assignment\assign_group_restriction;
 use core\exception\moodle_exception;
 
 require_login();
@@ -46,6 +48,11 @@ $compilatiofile = new \plagiarism_compilatio\compilatio\file();
 $selectedstudentsraw = optional_param('selectedstudents', '', PARAM_RAW_TRIMMED);
 $selectedquestions = array_values(optional_param_array('selectedquestions', [], PARAM_INT));
 $quizid = optional_param('quizid', 0, PARAM_INT);
+$scope = optional_param('scope', 'all', PARAM_ALPHA);
+
+if (!in_array($scope, ['all', 'page', 'filtered', 'selected'])) {
+    throw new moodle_exception('invalidparameter');
+}
 
 $selectedstudents = [];
 
@@ -144,10 +151,28 @@ if ($plugincm->analysistype == 'manual') {
             'status' => 'sent',
         ];
 
-        if (!empty($selectedstudents)) {
+        if (!empty($selectedstudents) && $module->modname !== 'assign') {
             [$insql, $inparams] = $DB->get_in_or_equal($selectedstudents, SQL_PARAMS_NAMED, 'sid');
             $where .= " AND userid $insql";
             $params = array_merge($params, $inparams);
+        }
+
+        if ($module->modname === 'assign') {
+            $assignfilters = new assign_filters($cmid);
+            [$scopewhere, $scopeparams] = $assignfilters->get_scope_sql($scope, $selectedstudents);
+
+            if ($scopewhere !== '') {
+                $where .= " AND $scopewhere";
+                $params = array_merge($params, $scopeparams);
+            }
+
+            $grouprestriction = new assign_group_restriction($cmid);
+            [$groupwhere, $groupparams] = $grouprestriction->get_sql();
+
+            if ($groupwhere !== '') {
+                $where .= " AND $groupwhere";
+                $params = array_merge($params, $groupparams);
+            }
         }
 
         $cmpfiles = $DB->get_records_select('plagiarism_compilatio_files', $where, $params);
