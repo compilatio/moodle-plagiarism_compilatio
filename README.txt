@@ -16,6 +16,7 @@ CHANGES
 - [Fix] Add check_dir_exists before put file for pdf creation
 - [Fix] Retreive forum and workshop files for retrieve_and_send_file
 - [Fix] Document update by student doesn't delete the document in Compilatio
+- [Fix] Stats per students per questions in Quiz didn't work
 - API Path Update
 - Button Launch all analyse launch only accessible / visible / filtered documents 
 
