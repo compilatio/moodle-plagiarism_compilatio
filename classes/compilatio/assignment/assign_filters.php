@@ -24,8 +24,6 @@
 
 namespace plagiarism_compilatio\compilatio\assignment;
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 /**
  * Helper to read Assign grading filters and build analysis restrictions.
  */

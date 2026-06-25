@@ -24,8 +24,6 @@
 
 namespace plagiarism_compilatio\compilatio\assignment;
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 /**
  * Helper to restrict Assign documents to the grader's separate groups.
  */
