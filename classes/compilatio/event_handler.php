@@ -125,7 +125,7 @@ class event_handler {
 
         foreach ($modules as $modulename => $option) {
             if (isset($options[$option]) && $options[$option] == 1) {
-                $sql = 'SELECT pcf.id, pcf.externalid, pcf.cm
+                $sql = 'SELECT pcf.id, pcf.externalid, pcf.cm, pcf.indexed
                     FROM {plagiarism_compilatio_files} pcf
                     JOIN {course_modules} course_modules ON pcf.cm = course_modules.id
                     JOIN {modules} modules ON modules.id = course_modules.module
@@ -176,6 +176,7 @@ class event_handler {
                 $cmconfig->defaultindexing,
                 $cmconfig->analysistype,
                 $cmconfig->analysistime,
+                folder_detections::from_course_module_config($cmconfig),
                 $cmconfig->warningthreshold,
                 $cmconfig->criticalthreshold
             );
@@ -612,75 +613,78 @@ class event_handler {
         global $DB;
 
         if (
-            $event['eventname'] === '\\core\\event\\grade_item_created'
-            && $event['objecttable'] === 'grade_items'
+            $event['eventname'] !== '\\core\\event\\grade_item_created'
+            || $event['objecttable'] !== 'grade_items'
         ) {
-            $gradeitem = $DB->get_record('grade_items', ['id' => $event['objectid']]);
-
-            $module = $DB->get_record('modules', ['name' => $gradeitem->itemmodule]);
-
-            if (false === $module) {
-                return;
-            }
-
-            $coursemodule = $DB->get_record(
-                'course_modules',
-                ['module' => $module->id, 'instance' => $gradeitem->iteminstance]
-            );
-
-            if (false === $coursemodule) {
-                return;
-            }
-
-            $compicmcfg = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $coursemodule->id]);
-
-            if (!is_object($compicmcfg)) {
-                return;
-            }
-
-            // Look for duplicate course module settings.
-            $anothercompicmcfg = $DB->get_record(
-                'plagiarism_compilatio_cm_cfg',
-                [
-                    'folderid' => $compicmcfg->folderid,
-                    'userid' => $compicmcfg->userid,
-                ]
-            );
-
-            if (!is_object($anothercompicmcfg)) {
-                return;
-            }
-
-            $compicmcfg->userid = null;
-            $compicmcfg->folderid = null;
-
-            $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => $event['userid']]);
-            if (empty($user)) {
-                $compilatio = new api();
-                $user = $compilatio->get_or_create_user();
-                if (!empty($user)) {
-                    $compilatio->set_user_id($user->compilatioid);
-                }
-            } else {
-                $compilatio = new api($user->compilatioid);
-            }
-
-            $compicmcfg->userid = $user->compilatioid;
-
-            $folderid = $compilatio->set_folder(
-                $event['other']['itemname'],
-                $compicmcfg->defaultindexing,
-                $compicmcfg->analysistype,
-                null,
-                $compicmcfg->warningthreshold,
-                $compicmcfg->criticalthreshold
-            );
-            if ($folderid !== false) {
-                $compicmcfg->folderid = $folderid;
-            }
-
-            $DB->update_record('plagiarism_compilatio_cm_cfg', $compicmcfg);
-            unset($compilatio);
+            return;
         }
+
+        $gradeitem = $DB->get_record('grade_items', ['id' => $event['objectid']]);
+
+        $module = $DB->get_record('modules', ['name' => $gradeitem->itemmodule]);
+
+        if (false === $module) {
+            return;
+        }
+
+        $coursemodule = $DB->get_record(
+            'course_modules',
+            ['module' => $module->id, 'instance' => $gradeitem->iteminstance]
+        );
+
+        if (false === $coursemodule) {
+            return;
+        }
+
+        $compicmcfg = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $coursemodule->id]);
+
+        if (!is_object($compicmcfg)) {
+            return;
+        }
+
+        // Look for duplicate course module settings.
+        $anothercompicmcfg = $DB->get_record(
+            'plagiarism_compilatio_cm_cfg',
+            [
+                'folderid' => $compicmcfg->folderid,
+                'userid' => $compicmcfg->userid,
+            ]
+        );
+
+        if (!is_object($anothercompicmcfg)) {
+            return;
+        }
+
+        $compicmcfg->userid = null;
+        $compicmcfg->folderid = null;
+
+        $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => $event['userid']]);
+        if (empty($user)) {
+            $compilatio = new api();
+            $user = $compilatio->get_or_create_user();
+            if (!empty($user)) {
+                $compilatio->set_user_id($user->compilatioid);
+            }
+        } else {
+            $compilatio = new api($user->compilatioid);
+        }
+
+        $compicmcfg->userid = $user->compilatioid;
+
+        $folderid = $compilatio->set_folder(
+            $event['other']['itemname'],
+            $compicmcfg->defaultindexing,
+            $compicmcfg->analysistype,
+            null,
+            folder_detections::from_course_module_config($compicmcfg),
+            $compicmcfg->warningthreshold,
+            $compicmcfg->criticalthreshold
+        );
+        if ($folderid !== false) {
+            $compicmcfg->folderid = $folderid;
+        }
+
+        $DB->update_record('plagiarism_compilatio_cm_cfg', $compicmcfg);
+        unset($compilatio);
     }
 }
