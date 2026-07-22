@@ -167,17 +167,18 @@ class document_frame {
 
         // Get compilatio file record.
         if (isset($linkarray['area']) && isset($linkarray['itemid'])) {
+            $attemptid = $linkarray['cmp_attemptid'] ?? $linkarray['area'];
             $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
                 $linkarray['cmid'],
                 $content,
-                ['attemptid' => $linkarray['area'], 'slot' => $linkarray['itemid']],
+                ['attemptid' => $attemptid, 'slot' => $linkarray['itemid']],
                 $userid
             );
             if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
                 $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
                     $linkarray['cmid'],
                     $linkarray['cmp_filename'],
-                    ['attemptid' => $linkarray['area'], 'slot' => $linkarray['itemid']],
+                    ['attemptid' => $attemptid, 'slot' => $linkarray['itemid']],
                     $userid
                 );
             }
@@ -612,6 +613,13 @@ class document_frame {
      */
     private static function manage_quiz($linkarray) {
         global $DB;
+
+        if (!empty($linkarray['area'])) {
+            $attemptid = $DB->get_field('quiz_attempts', 'id', ['uniqueid' => $linkarray['area']]);
+            if (!empty($attemptid)) {
+                $linkarray['cmp_attemptid'] = $attemptid;
+            }
+        }
 
         if (empty($linkarray['cmid']) || empty($linkarray['content'])) {
             $quba = \question_engine::load_questions_usage_by_activity($linkarray['area']);
