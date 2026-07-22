@@ -373,7 +373,7 @@ class document_frame {
                         . self::formatstring('btn_planned') .
                     "</div>";
                 $bgcolor = 'primary';
-            } else if ($cantriggeranalysis || !$isteacher) {
+            } else if ($cantriggeranalysis) {
                 $documentframe =
                     "<div
                         title='" . ($compilatio->is_in_maintenance() ?
