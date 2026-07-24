@@ -412,7 +412,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
         $DB->execute($sql);
 
-        upgrade_plugin_savepoint(true, 2024011700, 'plagiarism', 'compilatio');
+        upgrade_plugin_savepoint(true, 2025061200, 'plagiarism', 'compilatio');
     }
 
     if ($oldversion < 2026012300) {
