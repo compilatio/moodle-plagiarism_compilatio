@@ -150,7 +150,7 @@ define(['jquery'], function($) {
                     return;
                 }
 
-                if (hasAssignFilters(assignhasfilters)) {
+                if (hasApplicableAssignFilters(assignhasfilters)) {
                     startAnalyses(message, basepath, cmid, null, [], null, 'filtered');
                     return;
                 }
@@ -165,12 +165,23 @@ define(['jquery'], function($) {
     };
 
     /**
+     * Get Assign student selection checkboxes from the grading table.
+     *
+     * @return {jQuery}
+     */
+    function getAssignUserCheckboxes() {
+        return $('input[name="selectedusers"]').filter(function() {
+            return /^\d+$/.test(String($(this).val() || ''));
+        });
+    }
+
+    /**
      * Get user ids displayed on the current Assign grading page.
      *
      * @return {Array}
      */
     function getVisibleAssignUsers() {
-        return $('td.c0 input').map(function() {
+        return getAssignUserCheckboxes().map(function() {
             return $(this).val();
         }).get();
     }
@@ -181,7 +192,7 @@ define(['jquery'], function($) {
      * @return {Array}
      */
     function getSelectedAssignUsers() {
-        return $('td.c0 input:checked').map(function() {
+        return getAssignUserCheckboxes().filter(':checked').map(function() {
             return $(this).val();
         }).get();
     }
@@ -204,6 +215,28 @@ define(['jquery'], function($) {
         });
 
         return hasUrlFilter || hasAssignInitialsFilter() || hasAssignClearFiltersLink();
+    }
+
+    /**
+     * Check if the current page exposes enough Assign filter state to safely use the filtered scope.
+     *
+     * Persisted Moodle preferences can make the server report active filters even when the current
+     * page no longer carries the matching request state. In that case, fallback to the visible page.
+     *
+     * @param {boolean} assignhasfilters
+     * @return {boolean}
+     */
+    function hasApplicableAssignFilters(assignhasfilters) {
+        if (!hasAssignFilters(assignhasfilters)) {
+            return false;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasApplicableUrlFilter = getAssignFilterParams().some(function(param) {
+            return urlParams.has(param) && isActiveAssignFilterParam(param, urlParams.get(param));
+        });
+
+        return hasApplicableUrlFilter || hasAssignInitialsFilter();
     }
 
     /**
@@ -298,7 +331,7 @@ define(['jquery'], function($) {
     exports.startAnalysesOnSelectedStudents = function(basepath, cmid, message) {
         $(document).ready(function() {
             const startSelectedStudentsBtn = $('#start-selected-students-btn').hide();
-            const checkboxes = $('td.c0 input, #selectall');
+            const checkboxes = getAssignUserCheckboxes().add('#selectall');
 
             /**
              * Update button visibility.
