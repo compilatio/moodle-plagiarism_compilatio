@@ -51,7 +51,8 @@ define(['jquery'], function($) {
             'cmid': cmid,
             'selectedquestions': selectedquestions,
             'quizid': quizid,
-            'scope': scope
+            'scope': scope,
+            'sesskey': M.cfg.sesskey
         };
 
         if (scope === 'filtered') {
@@ -361,7 +362,10 @@ define(['jquery'], function($) {
                     + message
                     + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
 
-                $.post(basepath + '/plagiarism/compilatio/ajax/send_unsent_docs.php', {'cmid': cmid}, function() {
+                $.post(basepath + '/plagiarism/compilatio/ajax/send_unsent_docs.php', {
+                    'cmid': cmid,
+                    'sesskey': M.cfg.sesskey
+                }, function() {
                     window.location.reload();
                 });
             });
@@ -383,7 +387,10 @@ define(['jquery'], function($) {
                     + message
                     + "<i class='ml-3 fa fa-lg fa-spinner fa-spin'></i></div>");
 
-                $.post(basepath + '/plagiarism/compilatio/ajax/reset_docs_in_error.php', {'cmid': cmid}, function() {
+                $.post(basepath + '/plagiarism/compilatio/ajax/reset_docs_in_error.php', {
+                    'cmid': cmid,
+                    'sesskey': M.cfg.sesskey
+                }, function() {
                     window.location.reload();
                 });
             });
@@ -419,7 +426,12 @@ define(['jquery'], function($) {
                 $.ajax({
                     type: 'POST',
                     url: basepath + '/plagiarism/compilatio/ajax/update_score_settings.php',
-                    data: {cmid: cmid, checkedvalues: checkedvalues, scores: scores},
+                    data: {
+                        cmid: cmid,
+                        checkedvalues: checkedvalues,
+                        scores: scores,
+                        sesskey: M.cfg.sesskey
+                    },
                     success: function() {
                         let url = new URL(window.location.href);
 
@@ -446,7 +458,10 @@ define(['jquery'], function($) {
      */
     exports.checkUserInfo = function(basepath, cmid) {
         $(document).ready(function() {
-            $.post(basepath + '/plagiarism/compilatio/ajax/check_user_info.php', {'cmid': cmid});
+            $.post(basepath + '/plagiarism/compilatio/ajax/check_user_info.php', {
+                'cmid': cmid,
+                'sesskey': M.cfg.sesskey
+            });
         });
     };
 
@@ -463,9 +478,15 @@ define(['jquery'], function($) {
     function displayDocumentFrame(basepath, cantriggeranalysis, cmpfileid, canviewreport, isteacher, url, domid) {
         $.post(basepath + '/plagiarism/compilatio/ajax/display_document_frame.php',
             {cantriggeranalysis, cmpfileid, canviewreport, isteacher, url},
-        function(button) {
+        function(response) {
+            if (!response || response.error || typeof response.html !== 'string') {
+                clearInterval(displayIntervals[domid]);
+                delete displayIntervals[domid];
+                return;
+            }
+
             let el = $('#cmp-' + domid);
-            el.empty().append(button);
+            el.empty().append(response.html);
 
             setTimeout(() => {
                 if (isteacher) {
@@ -484,7 +505,10 @@ define(['jquery'], function($) {
                         }
                         $('#cmp-' + domid + ' #cmp-score-icons').remove();
                         refreshScoreBtn.empty();
-                        $.post(basepath + '/plagiarism/compilatio/ajax/update_score.php', {'docId': cmpfileid}, function(res) {
+                        $.post(basepath + '/plagiarism/compilatio/ajax/update_score.php', {
+                            'docId': cmpfileid,
+                            'sesskey': M.cfg.sesskey
+                        }, function(res) {
                             refreshScoreBtn.replaceWith(res);
                         });
                     });
@@ -500,16 +524,19 @@ define(['jquery'], function($) {
                     i.removeClass();
                     i.parent().attr('title', '');
                     $.post(basepath + '/plagiarism/compilatio/ajax/set_indexing_state.php',
-                        {'docId': cmpfileid, 'indexingState': indexingState},
+                        {
+                            'docId': cmpfileid,
+                            'indexingState': indexingState,
+                            'sesskey': M.cfg.sesskey
+                        },
                     function(res) {
-                        let response = JSON.parse(res);
-                        if (response.status === 'ok') {
+                        if (res.status === 'ok') {
                             if (indexingState === 0) {
                                 i.addClass('cmp-library-out fa-times-circle fa');
                             } else {
                                 i.addClass('cmp-library-in fa-check-circle fa');
                             }
-                            i.parent().attr('title', response.text);
+                            i.parent().attr('title', res.text);
                         }
                     });
                 });
@@ -521,9 +548,10 @@ define(['jquery'], function($) {
                     }
                     startAnalysisBtn.find('i').removeClass('fa-play-circle').addClass('fa-spinner fa-spin');
 
-                    $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis.php', {'docId': cmpfileid}, function(res) {
-                        res = JSON.parse(res);
-
+                    $.post(basepath + '/plagiarism/compilatio/ajax/start_analysis.php', {
+                        'docId': cmpfileid,
+                        'sesskey': M.cfg.sesskey
+                    }, function(res) {
                         if ('error' in res) {
                             $('#cmp-' + domid + ' p').remove();
                             $('#cmp-' + domid).append("<p class='cmp-color-red'>" + res.error + "</p>");
@@ -598,7 +626,6 @@ define(['jquery'], function($) {
                 'read': notificationsRead ? JSON.parse(notificationsRead) : [],
                 'ignored': notificationsIgnored ? JSON.parse(notificationsIgnored) : [],
             }, function(notifications) {
-                notifications = JSON.parse(notifications);
 
                 $('#cmp-count-notifications').html(notifications.count === 0 ? '' : notifications.count);
                 $('#cmp-notifications').html(notifications.content);
@@ -658,10 +685,9 @@ define(['jquery'], function($) {
     exports.getAlerts = function(basepath, userid, module, cmid) {
         $(document).ready(function() {
             $.post(
-                basepath + '/plagiarism/compilatio/ajax/get_alerts.php', 
-                {'userid': userid, 'module': module, 'cmid': cmid}, 
+                basepath + '/plagiarism/compilatio/ajax/get_alerts.php',
+                {'userid': userid, 'module': module, 'cmid': cmid},
                 function(compilatioAlerts) {
-                    compilatioAlerts = JSON.parse(compilatioAlerts);
                     compilatioAlerts.forEach(alerts => {
                         $('#cmp-alerts').append(alerts);
                         $('.cmp-close').on('click', function() {

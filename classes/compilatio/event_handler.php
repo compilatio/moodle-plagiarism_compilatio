@@ -227,13 +227,23 @@ class event_handler {
                         $postid = $DB->get_field_sql($sql, [$post->identifier]);
 
                         $restoredpost->filename = 'forum-' . $postid . '.htm';
-                        $DB->update_record('plagiarism_compilatio_files', $restoredpost);
+                        $DB->set_field(
+                            'plagiarism_compilatio_files',
+                            'filename',
+                            $restoredpost->filename,
+                            ['id' => $restoredpost->id]
+                        );
                     } else { // File.
                         $filename = explode("-", $post->filename)[2];
                         $moodlefile = $DB->get_record('files', ['filename' => $filename, 'filearea' => 'attachment']);
 
                         $restoredpost->filename = 'forum-' . $moodlefile->itemid . "-" . $filename;
-                        $DB->update_record('plagiarism_compilatio_files', $restoredpost);
+                        $DB->set_field(
+                            'plagiarism_compilatio_files',
+                            'filename',
+                            $restoredpost->filename,
+                            ['id' => $restoredpost->id]
+                        );
                     }
                 }
 

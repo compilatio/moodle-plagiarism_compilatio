@@ -455,7 +455,12 @@ class document_frame {
                 $compilatio = new api($config->userid);
                 $document = $compilatio->get_document($cmpfile->externalid);
                 $cmpfile->indexed = $document->indexed;
-                $DB->update_record('plagiarism_compilatio_files', $cmpfile);
+                $DB->set_field(
+                    'plagiarism_compilatio_files',
+                    'indexed',
+                    $cmpfile->indexed,
+                    ['id' => $cmpfile->id]
+                );
             }
 
             $indexed = $cmpfile->indexed ? true : false;
