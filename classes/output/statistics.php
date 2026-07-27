@@ -294,9 +294,9 @@ class statistics {
      *
      * @param  string $studentid user
      * @param  string $cmid Course module ID
-     * @return string       HTML containing the statistics for this student
+     * @return array Array containing output for the statistics for this student and question data
      */
-    public static function get_statistics_by_student($studentid, $cmid) {
+    public static function get_statistics_by_student($studentid, $cmid): array {
         global $CFG, $DB;
 
         require_once($CFG->dirroot . '/mod/quiz/locallib.php');

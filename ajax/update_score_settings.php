@@ -26,12 +26,14 @@
  * @param   string $_POST['scores']
  */
 
+define('AJAX_SCRIPT', true);
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 
 use plagiarism_compilatio\compilatio\api;
 use plagiarism_compilatio\compilatio\analysis;
 
 require_login();
+require_sesskey();
 
 $cmid = required_param('cmid', PARAM_TEXT);
 
@@ -97,5 +99,14 @@ foreach ($files as $file) {
 
     $file->ignoredscores = $cmconfig->ignoredscores;
 
-    $DB->update_record('plagiarism_compilatio_files', $file);
+    $scoreupdate = (object) [
+        'id' => $file->id,
+        'globalscore' => $file->globalscore,
+        'simscore' => $file->simscore,
+        'utlscore' => $file->utlscore,
+        'aiscore' => $file->aiscore,
+        'ignoredscores' => $file->ignoredscores,
+    ];
+    $DB->update_record('plagiarism_compilatio_files', $scoreupdate);
 }
+echo json_encode(['success' => true]);

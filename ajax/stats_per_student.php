@@ -25,12 +25,13 @@
  * @param string $_POST['selectedstudent']
  */
 
+define('AJAX_SCRIPT', true);
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 
 use plagiarism_compilatio\output\statistics;
 
 require_login();
-
+header('Content-Type: text/html; charset=utf-8');
 
 $cmid = required_param('cmid', PARAM_TEXT);
 

@@ -24,11 +24,13 @@
  * @param string $_POST['userid']
  */
 
+define('AJAX_SCRIPT', true);
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 
 use plagiarism_compilatio\compilatio\api;
 use plagiarism_compilatio\compilatio\university_component;
 require_login();
+require_sesskey();
 
 $cmid = required_param('cmid', PARAM_TEXT);
 
@@ -69,3 +71,4 @@ $currentuniversitycomponent = $cmpuser->bundle_data[0]->university_component;
 if ($currentuniversitycomponent !== $useruniversitycomponent) {
     $compilatio->update_user_university_component($compilatioid, $useruniversitycomponent);
 }
+echo json_encode(['success' => true]);

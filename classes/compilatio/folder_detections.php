@@ -25,8 +25,6 @@
 
 namespace plagiarism_compilatio\compilatio;
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
-
 use stdClass;
 
 /**
