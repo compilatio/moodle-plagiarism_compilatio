@@ -38,7 +38,7 @@ class compilatio_restart_form extends \moodleform {
      * Define the form
      * @return void
      */
-    protected function definition() {
+    protected function definition(): void {
         $mform = & $this->_form;
 
         $mform->addElement(

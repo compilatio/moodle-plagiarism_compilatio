@@ -57,7 +57,7 @@ class marketing_notification {
      *
      * @return array Array of marketing notifications
      */
-    public function get() {
+    public function get(): array {
         return $this->compilatioapi->get_marketing_notifications($this->language);
     }
 
@@ -148,7 +148,7 @@ class marketing_notification {
         string $title,
         DateTime $date,
         bool $islast = false
-    ) {
+    ): string {
         $html = "<div id='cmp-notifications-" . $notificationid . "'
                     class='cmp-notifications-title cmp-cursor-pointer p-2 mb-1 cmp-notification-hover rounded'
                     style='

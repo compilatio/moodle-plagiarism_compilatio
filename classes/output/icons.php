@@ -34,7 +34,7 @@ class icons {
      *
      * @return string
      */
-    public static function arrow_left() {
+    public static function arrow_left(): string {
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" height="1em" class="mr-2">'
             . '<path fill="#6D6D6D" d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.'
             . '3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.'
@@ -47,7 +47,7 @@ class icons {
      *
      * @return string
      */
-    public static function statistics_per_student() {
+    public static function statistics_per_student(): string {
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 512" height="1em">'
             . '<path d="M160 64c0-35.3 28.7-64 64-64H576c35.3 0 64 28.7 64 64V352c0 35.3-28.7 64-64 64H336.8c-11.8-25.5-29.9-47.'
             . '5-52.4-64H384V320c0-17.7 14.3-32 32-32h64c17.7 0 32 14.3 32 32v32h64V64L224 64v49.1C205.2 102.2 183.3 96 160 '
@@ -61,7 +61,7 @@ class icons {
      *
      * @return string
      */
-    public static function report() {
+    public static function report(): string {
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 67" width="20" class="mr-1">'
             . '<!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license '
             . '(Commercial License) Copyright 2023 Fonticons, Inc. -->'
@@ -79,7 +79,7 @@ class icons {
      *
      * @return string
      */
-    public static function library() {
+    public static function library(): string {
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" fill-opacity="50%">
                 <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license'
                 . ' (Commercial License) Copyright 2023 Fonticons, Inc. -->'
@@ -106,7 +106,7 @@ class icons {
      * @param  string $color
      * @return string
      */
-    public static function aiscore($color) {
+    public static function aiscore($color): string {
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" height="1em" class="cmp-score-icon">
         <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license '
         . '(Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -132,7 +132,7 @@ class icons {
      * @param  string $color
      * @return string
      */
-    public static function utlscore($color) {
+    public static function utlscore($color): string {
         return '<svg xmlns="http://www.w3.org/2000/svg" file="none" height="1em" viewBox="0 0 640 512" class="cmp-score-icon">
                 <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license '
                 . '(Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -158,7 +158,7 @@ class icons {
      * @param  string $color
      * @return string
      */
-    public static function simscore($color) {
+    public static function simscore($color): string {
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" height="1em" fill="none" class="cmp-score-icon">
             <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license '
             . '(Commercial License) Copyright 2023 Fonticons, Inc. -->
@@ -179,7 +179,7 @@ class icons {
      *
      * @return string
      */
-    public static function ignoredaiscore() {
+    public static function ignoredaiscore(): string {
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" height="1em" class="cmp-score-icon">
                 <!--!Font Awesome Pro 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license'
                 . ' (Commercial License) Copyright 2024 Fonticons, Inc.-->
@@ -206,7 +206,7 @@ class icons {
      *
      * @return string
      */
-    public static function ignoredutlscore() {
+    public static function ignoredutlscore(): string {
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" height="1em" class="cmp-score-icon">
                 <!--!Font Awesome Pro 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license'
                 . ' (Commercial License) Copyright 2024 Fonticons, Inc.-->
@@ -228,7 +228,7 @@ class icons {
      *
      * @return string
      */
-    public static function ignoredsimscore() {
+    public static function ignoredsimscore(): string {
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" height="1em" class="cmp-score-icon">
                 <!--!Font Awesome Pro 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license'
                 . ' (Commercial License) Copyright 2024 Fonticons, Inc.-->
@@ -251,7 +251,7 @@ class icons {
      * @param  string $color
      * @return string color code
      */
-    private static function get_hexadecimal_color($color) {
+    private static function get_hexadecimal_color($color): string {
         switch ($color) {
             case 'green':
                 return '#38ba7d';

@@ -173,7 +173,7 @@ class managed_bundle {
      * @param string $searchedaccess Searched access
      * @return stdClass|false Return the access if exist, false otherwise.
      */
-    private function get_access(string $searchedaccess) {
+    private function get_access(string $searchedaccess): object|false {
 
         foreach ($this->managedbundle->accesses as $access) {
             if (isset($access->$searchedaccess)) {

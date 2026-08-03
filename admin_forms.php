@@ -40,8 +40,8 @@ class compilatio_setup_form extends moodleform {
      * Define the form
      * @return void
      */
-    protected function definition() {
-        global $CFG, $DB;
+    protected function definition(): void {
+        global $DB;
 
         $mform = $this->_form;
         $mform->addElement('html', get_string('compilatioexplain', 'plagiarism_compilatio'));
@@ -190,8 +190,8 @@ class compilatio_setup_form extends moodleform {
  *
  * @param  string $string    String
  * @param  string $component Component
- * @return mixed             Return the position of the string if succeed, false otherwise
+ * @return bool              Return true if the string exists, false otherwise
  */
-function string_exists($string, $component) {
+function string_exists($string, $component): bool {
     return strpos(@get_string($string, $component), '[[') === false;
 }

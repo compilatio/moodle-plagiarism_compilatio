@@ -32,10 +32,9 @@ class plagiarism_compilatio_observer {
     /**
      * Upload a forum file
      * @param  \mod_forum\event\assessable_uploaded $event Event
-     * @return void
+     * @return string|void
      */
     public static function forum_file_uploaded(\mod_forum\event\assessable_uploaded $event) {
-        global $CFG;
         try {
             $eventdata = $event->get_data();
             event_handler::submit_text($eventdata);
@@ -48,10 +47,9 @@ class plagiarism_compilatio_observer {
     /**
      * Upload a workshop file
      * @param  \mod_workshop\event\assessable_uploaded $event Event
-     * @return void
+     * @return void|string
      */
     public static function workshop_file_uploaded(\mod_workshop\event\assessable_uploaded $event) {
-        global $CFG;
         try {
             $eventdata = $event->get_data();
             event_handler::submit_text($eventdata);
@@ -64,10 +62,9 @@ class plagiarism_compilatio_observer {
     /**
      * Upload a assign online text
      * @param  \assignsubmission_onlinetext\event\assessable_uploaded $event Event
-     * @return void
+     * @return void|string
      */
     public static function assignsubmission_onlinetext_uploaded(\assignsubmission_onlinetext\event\assessable_uploaded $event) {
-        global $CFG;
         try {
             event_handler::submit_text($event->get_data());
         } catch (Exception $e) {
@@ -78,10 +75,9 @@ class plagiarism_compilatio_observer {
     /**
      * Upload a assign file
      * @param  \assignsubmission_file\event\assessable_uploaded $event Event
-     * @return void
+     * @return void|string
      */
     public static function assignsubmission_file_uploaded(\assignsubmission_file\event\assessable_uploaded $event) {
-        global $CFG;
         try {
             event_handler::submit_file($event->get_data());
         } catch (Exception $e) {
@@ -92,7 +88,7 @@ class plagiarism_compilatio_observer {
     /**
      * Upload a file / online text in essay question in quiz
      * @param  \mod_quiz\event\attempt_submitted $event Event
-     * @return void
+     * @return void|string
      */
     public static function quiz_submitted(\mod_quiz\event\attempt_submitted $event) {
             global $DB, $CFG;
@@ -106,10 +102,9 @@ class plagiarism_compilatio_observer {
     /**
      * Delete a attempt in quiz
      * @param  \mod_quiz\event\attempt_deleted $event Event
-     * @return void
+     * @return void|string
      */
     public static function quiz_attempt_deleted(\mod_quiz\event\attempt_deleted $event) {
-            global $CFG;
         try {
             event_handler::deletion($event->get_data());
         } catch (Exception $e) {
@@ -120,10 +115,9 @@ class plagiarism_compilatio_observer {
     /**
      * Delete a post
      * @param  \mod_forum\event\post_deleted $event Event
-     * @return void
+     * @return void|string
      */
     public static function forum_post_deleted(\mod_forum\event\post_deleted $event) {
-            global $CFG;
         try {
             event_handler::deletion($event->get_data());
         } catch (Exception $e) {
@@ -134,10 +128,9 @@ class plagiarism_compilatio_observer {
     /**
      * Delete a workshop file and/or content
      * @param  \mod_workshop\event\submission_deleted $event Event
-     * @return void
+     * @return void|string
      */
     public static function workshop_submission_deleted(\mod_workshop\event\submission_deleted $event) {
-        global $CFG;
         try {
             event_handler::deletion($event->get_data());
         } catch (Exception $e) {
@@ -148,10 +141,9 @@ class plagiarism_compilatio_observer {
     /**
      * Delete all the coursemodule files
      * @param  \core\event\course_module_deleted $event Event
-     * @return void
+     * @return void|string
      */
     public static function core_course_module_deleted(\core\event\course_module_deleted $event) {
-        global $CFG;
         try {
             event_handler::deletion($event->get_data());
         } catch (Exception $e) {
@@ -162,10 +154,9 @@ class plagiarism_compilatio_observer {
     /**
      * Delete all the user files
      * @param  \core\event\user_deleted $event Event
-     * @return void
+     * @return void|string
      */
     public static function core_user_deleted(\core\event\user_deleted $event) {
-        global $CFG;
         try {
             event_handler::deletion($event->get_data());
         } catch (Exception $e) {
@@ -176,10 +167,9 @@ class plagiarism_compilatio_observer {
     /**
      * Delete all the course files
      * @param  \core\event\course_reset_started $event Event
-     * @return void
+     * @return void|string
      */
     public static function core_course_reset_started(\core\event\course_reset_started $event) {
-        global $CFG;
         try {
             event_handler::course_reset($event->get_data());
         } catch (Exception $e) {
@@ -190,10 +180,9 @@ class plagiarism_compilatio_observer {
     /**
      * Delete a assign file
      * @param  \mod_assign\event\submission_status_updated $event Event
-     * @return void
+     * @return void|string
      */
     public static function assign_submission_status_updated(\mod_assign\event\submission_status_updated $event) {
-        global $CFG;
         try {
             event_handler::handle_assign_submission_change($event->get_data());
         } catch (Exception $e) {
@@ -204,10 +193,9 @@ class plagiarism_compilatio_observer {
     /**
      * Course module recycle bin restored
      * @param  \tool_recyclebin\event\course_bin_item_restored $event Event
-     * @return void
+     * @return void|string
      */
     public static function recyclebin_course_item_restored(\tool_recyclebin\event\course_bin_item_restored $event) {
-        global $CFG;
         try {
             event_handler::recycle_bin($event->get_data());
         } catch (Exception $e) {
@@ -218,10 +206,9 @@ class plagiarism_compilatio_observer {
     /**
      * Course module recycle bin deleted
      * @param  \tool_recyclebin\event\course_bin_item_deleted $event Event
-     * @return void
+     * @return void|string
      */
     public static function recyclebin_course_item_deleted(\tool_recyclebin\event\course_bin_item_deleted $event) {
-        global $CFG;
         try {
             event_handler::recycle_bin($event->get_data());
         } catch (Exception $e) {
@@ -232,10 +219,9 @@ class plagiarism_compilatio_observer {
     /**
      * Course module recycle bin created
      * @param  \tool_recyclebin\event\course_bin_item_created $event Event
-     * @return void
+     * @return void|string
      */
     public static function recyclebin_course_item_created(\tool_recyclebin\event\course_bin_item_created $event) {
-        global $CFG;
         try {
             event_handler::recycle_bin($event->get_data());
         } catch (Exception $e) {
@@ -246,10 +232,9 @@ class plagiarism_compilatio_observer {
     /**
      * Course recycle bin restored
      * @param  \tool_recyclebin\event\category_bin_item_restored $event Event
-     * @return void
+     * @return void|string
      */
     public static function recyclebin_category_item_restored(\tool_recyclebin\event\category_bin_item_restored $event) {
-        global $CFG;
         try {
             event_handler::recycle_bin($event->get_data());
         } catch (Exception $e) {
@@ -260,10 +245,9 @@ class plagiarism_compilatio_observer {
     /**
      * Course recycle bin deleted
      * @param  \tool_recyclebin\event\category_bin_item_deleted $event Event
-     * @return void
+     * @return void|string
      */
     public static function recyclebin_category_item_deleted(\tool_recyclebin\event\category_bin_item_deleted $event) {
-        global $CFG;
         try {
             event_handler::recycle_bin($event->get_data());
         } catch (Exception $e) {
@@ -274,10 +258,9 @@ class plagiarism_compilatio_observer {
     /**
      * Course recycle bin created
      * @param  \tool_recyclebin\event\category_bin_item_created $event Event
-     * @return void
+     * @return void|string
      */
     public static function recyclebin_category_item_created(\tool_recyclebin\event\category_bin_item_created $event) {
-        global $CFG;
         try {
             event_handler::recycle_bin($event->get_data());
         } catch (Exception $e) {
@@ -288,10 +271,9 @@ class plagiarism_compilatio_observer {
     /**
      * Student final submit on assign with draft
      * @param  \mod_assign\event\assessable_submitted $event Event
-     * @return void
+     * @return void|string
      */
     public static function assign_assessable_submitted(\mod_assign\event\assessable_submitted $event) {
-        global $CFG;
         try {
             event_handler::handle_assign_submission_change($event->get_data());
         } catch (Exception $e) {
@@ -302,7 +284,7 @@ class plagiarism_compilatio_observer {
     /**
      * Grade item creation
      * @param  \core\event\grade_item_created $event Event
-     * @return void
+     * @return void|string
      */
     public static function grade_item_created(\core\event\grade_item_created $event) {
         try {

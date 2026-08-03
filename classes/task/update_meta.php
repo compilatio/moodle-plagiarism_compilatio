@@ -36,7 +36,7 @@ class update_meta extends \core\task\scheduled_task {
      * Get the task name
      * @return string Name
      */
-    public function get_name() {
+    public function get_name(): string {
         return get_string('update_meta', 'plagiarism_compilatio');
     }
 
@@ -44,7 +44,7 @@ class update_meta extends \core\task\scheduled_task {
      * Execute the task
      * @return void
      */
-    public function execute() {
+    public function execute(): void {
         global $CFG;
 
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');

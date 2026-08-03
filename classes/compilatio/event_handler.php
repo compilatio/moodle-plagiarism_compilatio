@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 use plagiarism_compilatio\compilatio\file;
 use plagiarism_compilatio\compilatio\api;
-use logstore_standard\log\store;
+use mod_quiz\quiz_attempt;
 
 /**
  * event_handler class
@@ -42,7 +42,7 @@ class event_handler {
      * @param  mixed $event Moodle event
      * @return void
      */
-    public static function deletion($event) {
+    public static function deletion($event): void {
         global $DB, $SESSION;
 
         $cmid = $event["contextinstanceid"];
@@ -111,7 +111,7 @@ class event_handler {
      * @param  mixed $event Moodle event
      * @return void
      */
-    public static function course_reset($event) {
+    public static function course_reset($event): void {
         global $DB;
 
         $options = $event['other']['reset_options'];
@@ -149,7 +149,7 @@ class event_handler {
      * @param  string $modulename Activity name
      * @return void
      */
-    private static function create_folder_if_not_set($courseid, $modulename) {
+    private static function create_folder_if_not_set($courseid, $modulename): void {
         global $DB;
 
         $user = $DB->get_record('plagiarism_compilatio_user', ['userid' => 0]);
@@ -193,7 +193,7 @@ class event_handler {
      * @param  mixed $event Moodle event
      * @return void
      */
-    public static function recycle_bin($event) {
+    public static function recycle_bin($event): void {
         global $DB, $SESSION;
 
         if ($event['crud'] == 'c') { // Recycle bin created.
@@ -251,7 +251,7 @@ class event_handler {
      * @param  mixed $event Moodle event
      * @return void
      */
-    public static function handle_assign_submission_change($event) {
+    public static function handle_assign_submission_change($event): void {
         global $DB;
 
         $cmid = $event["contextinstanceid"];
@@ -363,7 +363,7 @@ class event_handler {
      * @param  mixed $event Moodle event
      * @return void
      */
-    public static function submit_text($event) {
+    public static function submit_text($event): void {
         global $DB;
 
         $content = $event["other"]["content"];
@@ -434,7 +434,7 @@ class event_handler {
      * @param  mixed $event Moodle event
      * @return void
      */
-    public static function submit_file($event) {
+    public static function submit_file($event): void {
         global $DB;
         $compilatiofile = new file();
         $cmid = $event["contextinstanceid"];
@@ -538,13 +538,13 @@ class event_handler {
      * @param  mixed $event Moodle event
      * @return void
      */
-    public static function submit_quiz($DB, $CFG, $event) {
+    public static function submit_quiz($DB, $CFG, $event): void {
         $compilatiofile = new file();
         require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
         $attemptid = $event['objectid'];
 
-        $attempt = $CFG->version < 2023100900 ? \quiz_attempt::create($attemptid) : \mod_quiz\quiz_attempt::create($attemptid);
+        $attempt = quiz_attempt::create($attemptid);
         $userid = $attempt->get_userid();
         $cmid = $attempt->get_cmid();
 

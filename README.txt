@@ -1,4 +1,4 @@
-Compilatio.net Plagiarism plugin for Moodle 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 5.0, 5.1
+Compilatio.net Plagiarism plugin for Moodle 4.5, 5.0, 5.1
 
 Author: Compilatio <support@compilatio.net>
 Copyright 2026 Compilatio.net https://www.compilatio.net

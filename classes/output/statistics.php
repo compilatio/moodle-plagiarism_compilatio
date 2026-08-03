@@ -28,6 +28,7 @@ namespace plagiarism_compilatio\output;
 use plagiarism_compilatio\compilatio\api;
 use plagiarism_compilatio\compilatio\csv_generator;
 use plagiarism_compilatio\output\document_frame;
+use mod_quiz\quiz_attempt;
 use moodle_url;
 
 /**
@@ -40,7 +41,7 @@ class statistics {
      * @param bool   $html display HTML if true, text otherwise
      * @return array       containing associative arrays for the statistics
      */
-    public static function get_global_statistics($html = true) {
+    public static function get_global_statistics($html = true): array {
 
         global $DB;
 
@@ -155,9 +156,9 @@ class statistics {
      * @param  string $cmid Course module ID
      * @return string       HTML containing the statistics
      */
-    public static function get_statistics($cmid) {
+    public static function get_statistics($cmid): string {
 
-        global $DB, $PAGE;
+        global $DB;
 
         $sql = "SELECT status, COUNT(DISTINCT id) AS count FROM {plagiarism_compilatio_files}  WHERE cm = ? GROUP BY status";
         $countbystatus = $DB->get_records_sql($sql, [$cmid]);
@@ -294,9 +295,9 @@ class statistics {
      *
      * @param  string $studentid user
      * @param  string $cmid Course module ID
-     * @return string       HTML containing the statistics for this student
+     * @return array       HTML containing the statistics for this student
      */
-    public static function get_statistics_by_student($studentid, $cmid) {
+    public static function get_statistics_by_student($studentid, $cmid): array {
         global $CFG, $DB;
 
         require_once($CFG->dirroot . '/mod/quiz/locallib.php');
@@ -313,7 +314,7 @@ class statistics {
 
         $attemptid = $DB->get_field_sql($sql, [$cmid, $studentid]);
 
-        $attempt = $CFG->version < 2023100900 ? \quiz_attempt::create($attemptid) : \mod_quiz\quiz_attempt::create($attemptid);
+        $attempt = quiz_attempt::create($attemptid);
 
         $counttotalattemptwords = 0;
         $globalattemptscore = 0;
@@ -432,9 +433,9 @@ class statistics {
                     . $counttotalattemptwords . ' ' . get_string('word', 'plagiarism_compilatio') .
                 "</td>";
 
-            $color = $globalattemptscore <= $config->warningthreshold ?? 10
-                ? 'green'
-                : ($globalattemptscore <= $config->criticalthreshold ?? 25
+            $color = $globalattemptscore <= ($config->warningthreshold ?? 10)
+            ? 'green'
+            : ($globalattemptscore <= ($config->criticalthreshold ?? 25)
                 ? 'orange'
                 : 'red');
 
@@ -465,9 +466,9 @@ class statistics {
      *
      * @param  int   $cmid Course module ID
      * @param  mixed $user User
-     * @return string
+     * @return array
      */
-    public static function get_question_data($cmid, $user) {
+    public static function get_question_data($cmid, $user): array {
         return self::get_statistics_by_student($user, $cmid)['question_data'];
     }
 
@@ -491,8 +492,8 @@ class statistics {
         $config = null,
         $suspectwordsquestion = null,
         $wordcount = null
-    ) {
-        global $DB, $CFG;
+    ): string {
+        global $CFG;
 
         $output = "<tr class='font-weight-light'>";
 
@@ -525,10 +526,6 @@ class statistics {
 
             $href = "{$CFG->httpswwwroot}/plagiarism/compilatio/redirect_report.php?" . http_build_query($params);
 
-            if (isset($cmpfile->reporturl)) {
-                $href = $cmpfile->reporturl;
-            }
-
             $output .=
                 "<a href='{$href}' target='_blank' class='text-decoration-none'>
                     <span class='text-primary text-nowrap font-weight-bold'>"
@@ -551,10 +548,9 @@ class statistics {
      * @param  string $cmid Course module ID
      * @return string       HTML containing the statistics per student
      */
-    public static function get_quiz_students_statistics($cmid) {
+    public static function get_quiz_students_statistics($cmid): string {
 
         global $DB, $PAGE, $CFG;
-        $compilatio = new api();
 
         $sql = "SELECT DISTINCT {user}.id, {user}.lastname, {user}.firstname
             FROM {user}

@@ -35,7 +35,7 @@ class trigger_analyses extends \core\task\scheduled_task {
      * Get the task name
      * @return string Name
      */
-    public function get_name() {
+    public function get_name(): string {
         return get_string('trigger_analyses', 'plagiarism_compilatio');
     }
 
@@ -43,7 +43,7 @@ class trigger_analyses extends \core\task\scheduled_task {
      * Execute the task
      * @return void
      */
-    public function execute() {
+    public function execute(): void {
         global $DB;
 
         if (get_config('plagiarism_compilatio', 'compilatio_maintenance') === "1") {
