@@ -74,13 +74,64 @@ class marketing_notification {
      * @return string The formatted HTML content ready for display
      */
     public function format_notification_body(string $body): string {
-        $body = str_replace('<a', '<a target="_blank" rel="noopener noreferrer"', $body);
-        $body = str_replace('button', 'btn btn-primary', $body);
+        // Convert buttons to an element accepted by Moodle's HTML Purifier.
+        $body = preg_replace_callback('/<button\b([^>]*)>/i', function (array $matches): string {
+            $attributes = $matches[1];
+            if (preg_match('/\bclass\s*=\s*(["\'])(.*?)\1/i', $attributes)) {
+                $attributes = preg_replace_callback(
+                    '/\bclass\s*=\s*(["\'])(.*?)\1/i',
+                    fn(array $classmatches): string =>
+                        'class=' . $classmatches[1] . $classmatches[2] . ' btn btn-primary' . $classmatches[1],
+                    $attributes,
+                    1
+                );
+            } else {
+                $attributes .= ' class="btn btn-primary"';
+            }
+
+            return '<span' . $attributes . '>';
+        }, $body);
+        $body = preg_replace('/<\/button\s*>/i', '</span>', $body);
+
+        $body = preg_replace('/<a\b/i', '<a target="_blank" rel="noopener noreferrer"', $body);
+        $body = preg_replace_callback(
+            '/\bclass\s*=\s*(["\'])(.*?)\1/i',
+            function (array $matches): string {
+                $classes = preg_split('/\s+/', trim($matches[2]));
+                $buttonkey = array_search('button', $classes);
+                if ($buttonkey === false) {
+                    return $matches[0];
+                }
+
+                unset($classes[$buttonkey]);
+                $classes[] = 'btn';
+                $classes[] = 'btn-primary';
+
+                return 'class=' . $matches[1] . implode(' ', array_unique($classes)) . $matches[1];
+            },
+            $body
+        );
 
         $body = preg_replace_callback(
             '/<img([^>]*?)>/i',
             function ($matches) {
                 $imgattributes = $matches[1];
+
+                if (preg_match('/\bclass\s*=\s*(["\'])(.*?)\1/i', $imgattributes)) {
+                    $imgattributes = preg_replace_callback(
+                        '/\bclass\s*=\s*(["\'])(.*?)\1/i',
+                        function (array $classmatches): string {
+                            $classes = preg_split('/\s+/', trim($classmatches[2]));
+                            $classes = array_unique(array_merge($classes, ['img-fluid', 'd-block', 'mx-auto']));
+
+                            return 'class=' . $classmatches[1] . implode(' ', $classes) . $classmatches[1];
+                        },
+                        $imgattributes,
+                        1
+                    );
+                } else {
+                    $imgattributes .= ' class="img-fluid d-block mx-auto"';
+                }
 
                 $hasstyle = stripos($imgattributes, 'style=') !== false;
                 $haswidth = stripos($imgattributes, 'width=') !== false;
@@ -101,7 +152,9 @@ class marketing_notification {
             $body
         );
 
-        return $body;
+        // The body comes from an external API. Keep this as the final operation so
+        // every transformation above is covered by the same security boundary.
+        return \clean_text($body, FORMAT_HTML);
     }
 
     /**
