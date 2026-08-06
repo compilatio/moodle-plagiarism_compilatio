@@ -464,7 +464,9 @@ class course_module_settings {
         }
 
         if (isset($cmconfig->userid)) {
-            $compilatio ??= new api($cmconfig->userid);
+            if (!isset($compilatio)) {
+                $compilatio = new api($cmconfig->userid);
+            }
 
             // Get Datetime for Compilatio folder if it exist.
             $analysistime = $data->analysistime ?? null;

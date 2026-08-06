@@ -24,6 +24,7 @@
  * @param string $_POST['cmid']
  */
 
+define('AJAX_SCRIPT', true);
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
@@ -35,6 +36,7 @@ use core\exception\moodle_exception;
 use mod_quiz\quiz_attempt;
 
 require_login();
+require_sesskey();
 
 
 $cmid = required_param('cmid', PARAM_INT);
@@ -52,7 +54,7 @@ $quizid = optional_param('quizid', 0, PARAM_INT);
 $scope = optional_param('scope', 'all', PARAM_ALPHA);
 
 if (!in_array($scope, ['all', 'page', 'filtered', 'selected'])) {
-    throw new moodle_exception('invalidparameter');
+    throw new \moodle_exception('invalidparameter');
 }
 
 $selectedstudents = [];
@@ -62,7 +64,7 @@ if ('' !== $selectedstudentsraw) {
 
     foreach ($parts as $part) {
         if (!ctype_digit($part)) {
-            throw new moodle_exception('invalidparameter');
+            throw new \moodle_exception('invalidparameter');
         }
 
         $selectedstudents[] = (int) $part;
@@ -76,6 +78,7 @@ $module = get_coursemodule_from_id(null, $cmid);
 
 $countsuccess = 0;
 $cmpfiles = $docsfailed = $docsinextraction = $SESSION->compilatio_alerts = [];
+global $CFG;
 
 if ($plugincm->analysistype == 'manual') {
     if (!empty($selectedquestions)) {
@@ -223,3 +226,5 @@ if (count($cmpfiles) === 0) {
         ];
     }
 }
+
+echo json_encode(['success' => true]);

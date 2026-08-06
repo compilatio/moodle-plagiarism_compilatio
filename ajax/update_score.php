@@ -25,12 +25,15 @@
  * @return  boolean
  */
 
+define('AJAX_SCRIPT', true);
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 
 use plagiarism_compilatio\compilatio\analysis;
 use plagiarism_compilatio\output\document_frame;
 
 require_login();
+require_sesskey();
+header('Content-Type: text/html; charset=utf-8');
 
 global $DB, $USER;
 

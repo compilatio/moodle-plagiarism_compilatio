@@ -345,7 +345,12 @@ class file {
 
                 if (is_object($newcmpfile) && $startanalysis) {
                     $newcmpfile->status = 'to_analyze';
-                    $DB->update_record('plagiarism_compilatio_files', $newcmpfile);
+                    $DB->set_field(
+                        'plagiarism_compilatio_files',
+                        'status',
+                        $newcmpfile->status,
+                        ['id' => $newcmpfile->id]
+                    );
                 }
 
                 return is_object($newcmpfile);

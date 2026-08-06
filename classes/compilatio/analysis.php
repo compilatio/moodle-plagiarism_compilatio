@@ -32,6 +32,20 @@ use plagiarism_compilatio\compilatio\api as compilatioApi;
  * analysis class
  */
 class analysis {
+    /** @var array Analysis status order used to prevent status regressions. */
+    private const STATUS_PRIORITY = [
+        'sent' => 0,
+        'to_analyze' => 0,
+        'queue' => 1,
+        'analysing' => 2,
+        'error_not_found' => 3,
+        'error_too_short' => 3,
+        'error_too_long' => 3,
+        'error_extraction_failed' => 3,
+        'error_analysis_failed' => 3,
+        'scored' => 4,
+    ];
+
     /**
      * Start an analyse
      *
@@ -42,6 +56,7 @@ class analysis {
 
         global $DB;
 
+        $originalcmpfile = clone $cmpfile;
         $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmpfile->cm]);
         $compilatio = new compilatioApi($userid);
 
@@ -68,7 +83,7 @@ class analysis {
         } else {
             return $analyse;
         }
-        $DB->update_record('plagiarism_compilatio_files', $cmpfile);
+        self::update_changed_fields($originalcmpfile, $cmpfile);
 
         return $cmpfile->status;
     }
@@ -83,6 +98,7 @@ class analysis {
 
         global $DB;
 
+        $originalcmpfile = clone $cmpfile;
         $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmpfile->cm]);
         $compilatio = new api($userid);
 
@@ -99,7 +115,9 @@ class analysis {
         if (isset($doc->analyses->$recipe->state)) {
             $state = $doc->analyses->$recipe->state;
 
-            $cmpfile->analysisid ??= $doc->analyses->$recipe->id;
+            if (!isset($cmpfile->analysisid)) {
+                $cmpfile->analysisid = $doc->analyses->$recipe->id;
+            }
 
             if ($state == 'running') {
                 $cmpfile->status = 'analysing';
@@ -138,8 +156,102 @@ class analysis {
             }
         }
 
-        $DB->update_record('plagiarism_compilatio_files', $cmpfile);
+        self::update_changed_fields($originalcmpfile, $cmpfile);
 
         return $cmpfile;
+    }
+
+    /**
+     * Update only fields changed while processing an analysis.
+     *
+     * Updating a complete record loaded before an API call can overwrite changes
+     * made by another request while the API call is in progress.
+     *
+     * @param object $originalcmpfile File before processing
+     * @param object $cmpfile File after processing
+     * @return void
+     */
+    private static function update_changed_fields($originalcmpfile, $cmpfile) {
+        global $DB;
+
+        $record = (object) ['id' => $cmpfile->id];
+        $columns = $DB->get_columns('plagiarism_compilatio_files');
+
+        foreach (get_object_vars($cmpfile) as $field => $value) {
+            if ($field === 'id' || !isset($columns[$field])) {
+                continue;
+            }
+
+            if (!property_exists($originalcmpfile, $field) || $originalcmpfile->$field !== $value) {
+                $record->$field = $value;
+            }
+        }
+
+        if (count(get_object_vars($record)) === 1) {
+            return;
+        }
+
+        if (!property_exists($record, 'status')) {
+            $DB->update_record('plagiarism_compilatio_files', $record);
+            return;
+        }
+
+        $setfields = [];
+        $values = get_object_vars($record);
+        unset($values['id']);
+
+        foreach (array_keys($values) as $field) {
+            $setfields[] = "$field = ?";
+        }
+
+        $expectedstatus = $originalcmpfile->status;
+        $maxattempts = count(self::STATUS_PRIORITY) + 1;
+
+        for ($attempt = 0; $attempt < $maxattempts; $attempt++) {
+            $params = array_values($values);
+            $params[] = $cmpfile->id;
+            $params[] = $expectedstatus;
+
+            $DB->execute(
+                'UPDATE {plagiarism_compilatio_files}
+                    SET ' . implode(', ', $setfields) . '
+                  WHERE id = ? AND status = ?',
+                $params
+            );
+
+            $currentstatus = $DB->get_field('plagiarism_compilatio_files', 'status', ['id' => $cmpfile->id]);
+
+            if ($currentstatus === false || $currentstatus === $record->status) {
+                return;
+            }
+
+            if (!self::can_transition_to($currentstatus, $record->status)) {
+                $cmpfile->status = $currentstatus;
+                return;
+            }
+
+            $expectedstatus = $currentstatus;
+        }
+
+        $cmpfile->status = $currentstatus;
+    }
+
+    /**
+     * Check whether an analysis status can move forward.
+     *
+     * @param string $currentstatus Current database status
+     * @param string $newstatus Requested status
+     * @return bool
+     */
+    private static function can_transition_to($currentstatus, $newstatus) {
+        if ($currentstatus === $newstatus) {
+            return true;
+        }
+
+        if (!isset(self::STATUS_PRIORITY[$currentstatus], self::STATUS_PRIORITY[$newstatus])) {
+            return false;
+        }
+
+        return self::STATUS_PRIORITY[$newstatus] > self::STATUS_PRIORITY[$currentstatus];
     }
 }
