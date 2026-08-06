@@ -67,23 +67,23 @@ class compilatio_frame {
      * Display compilatio frame
      * @return string Return the HTML formatted string.
      */
-    public static function get_frame() {
+    public static function get_frame(): ?string {
 
         global $CFG, $PAGE, $DB, $SESSION, $USER;
 
         $compilatio = new api();
 
         if (!$PAGE->context instanceof \context_module) {
-            return;
+            return null;
         }
 
         if (!has_capability('plagiarism/compilatio:viewreport', $PAGE->context)) {
-            return;
+            return null;
         }
 
         if ($PAGE->url->compare(new moodle_url('/mod/assign/view.php'), URL_MATCH_BASE)) {
             if (optional_param('action', null, PARAM_RAW) != 'grading') {
-                return;
+                return null;
             }
             $module = 'assign';
         } else if ($PAGE->url->compare(new moodle_url('/mod/forum/view.php'), URL_MATCH_BASE)) {
@@ -93,7 +93,7 @@ class compilatio_frame {
         } else if ($PAGE->url->compare(new moodle_url('/mod/quiz/report.php'), URL_MATCH_BASE)) {
             $module = 'quiz';
         } else {
-            return;
+            return null;
         }
 
         $cmid = $PAGE->context->instanceid;
@@ -104,7 +104,7 @@ class compilatio_frame {
         $compilatioactivated = $DB->get_field('plagiarism_compilatio_cm_cfg', 'activated', ['cmid' => $cmid]);
 
         if ($compilatioactivated != 1 || !$compilatioenabled) {
-            return;
+            return null;
         }
 
         $export = optional_param('cmp_csv_export', '', PARAM_BOOL);
@@ -429,7 +429,7 @@ class compilatio_frame {
      * @param  string $module Module name
      * @return string HTML
      */
-    private static function display_start_all_analyses_button($cmid, $module) {
+    private static function display_start_all_analyses_button($cmid, $module): string {
         global $DB, $CFG, $PAGE;
         $compilatio = new api();
         $assignhasactivefilters = $module === 'assign' && (new assign_filters($cmid))->has_active_filters();
@@ -553,7 +553,7 @@ class compilatio_frame {
      * @param  int $cmid Course module ID
      * @return string HTML
      */
-    private static function display_score_settings($cmid) {
+    private static function display_score_settings($cmid): string {
         global $DB, $PAGE, $CFG;
 
         $compilatio = new api();

@@ -45,11 +45,6 @@ class api {
     private ?string $userid;
 
     /**
-     * @var string $recipe Analysis recipe
-     */
-    private string $recipe;
-
-    /**
      * User ID setter
      * @param  string $userid
      * @return void
@@ -71,8 +66,8 @@ class api {
         $this->urlrest = 'https://app.compilatio.net';
         $this->userid = $userid;
 
-        if (!isset($apikey) || '' === $apikey) {
-            return 'API key not available';
+        if (empty($apikey)) {
+            throw new \moodle_exception('missingapikey', 'plagiarism_compilatio');
         }
 
         $this->apikey = $apikey;
@@ -82,7 +77,7 @@ class api {
      * Get Compilatio configuration
      * @return stdClass|false Returns an object containing Compilatio configuration or false if an error occurs
      */
-    public function get_config() {
+    public function get_config(): object|false {
         $endpoint = '/api/public/configuration-lms';
         $configurationlmsresponse = json_decode($this->build_curl($endpoint));
         $endpoint = '/api/public/configuration';
@@ -97,9 +92,9 @@ class api {
     /**
      * Check if the api key is valid
      *
-     * @return boolean Return true if valid, an error message otherwise
+     * @return bool|string Return true if valid, an error message otherwise
      */
-    public function check_apikey() {
+    public function check_apikey(): bool|string {
         $endpoint = '/api/private/user';
         $response = json_decode($this->build_curl($endpoint));
 
@@ -128,9 +123,9 @@ class api {
      * Get Compilatio user ID of legacy account attached to Moodle instance
      *
      * @param  boolean $updateapikey
-     * @return stdClass|false Returns user on success, false otherwise
+     * @return object|false Returns user on success, false otherwise
      */
-    public function get_apikey_user($updateapikey = true) {
+    public function get_apikey_user($updateapikey = true): object|false {
         $endpoint = '/api/private/user';
         $response = json_decode($this->build_curl($endpoint));
 
@@ -150,9 +145,9 @@ class api {
 
     /**
      * Update API key for plugin v3 use
-     * @return boolean Returns true on success, false otherwise
+     * @return bool Returns true on success, false otherwise
      */
-    public function update_apikey() {
+    public function update_apikey(): bool {
         $endpoint = '/api/private/moodle-configuration/update-api-key';
 
         $response = json_decode($this->build_curl($endpoint, 'post'));
@@ -170,7 +165,7 @@ class api {
      * @param  mixed $teacher
      * @return mixed return the user if find, null instead.
      */
-    public function get_or_create_user($teacher = null) {
+    public function get_or_create_user($teacher = null): object|null {
         global $USER, $DB;
 
         if (!isset($teacher)) {
@@ -200,7 +195,7 @@ class api {
      * @param   string  $email          User's email
      * @return  string|false            Return the user's ID, an error message otherwise or false
      */
-    private function set_user($firstname, $lastname, $email) {
+    private function set_user($firstname, $lastname, $email): string|false {
         $userlang = compilatio_retreive_user_language();
         $endpoint = '/api/private/users';
         $params = [
@@ -226,9 +221,9 @@ class api {
      * Get user
      *
      * @param   string  $userid
-     * @return  mixed   Return the user if succeed, an error message otherwise
+     * @return  object|false   Return the user if succeed, an error message otherwise
      */
-    public function get_user($userid) {
+    public function get_user($userid): object|false {
         $endpoint = '/api/private/users/' . $userid;
 
         $response = json_decode($this->build_curl($endpoint));
@@ -241,15 +236,15 @@ class api {
     }
 
     /**
-     * Update Elastisafe user
+     * Update Compilatio user
      *
      * @param   string  $userid                        User's identifier
      * @param   string  $firstname                     User's firstname
      * @param   string  $lastname                      User's lastname
      * @param   string  $email                         User's email
-     * @return  string                                 Return true if succeed, false otherwise
+     * @return  bool                                 Return true if succeed, false otherwise
      */
-    public function update_user($userid, $firstname, $lastname, $email) {
+    public function update_user($userid, $firstname, $lastname, $email): bool {
         $endpoint = '/api/private/users/' . $userid;
         $params = [
             'firstname' => $firstname,
@@ -266,13 +261,13 @@ class api {
     }
 
     /**
-     * Update Elastisafe user university component
+     * Update Compilatio user university component
      *
      * @param   string  $userid                        User's identifier
      * @param   string  $universitycomponent          User's university component
-     * @return  string                                 Return true if succeed, false otherwise
+     * @return  bool                                 Return true if succeed, false otherwise
      */
-    public function update_user_university_component($userid, $universitycomponent) {
+    public function update_user_university_component($userid, $universitycomponent): bool {
         $endpoint = '/api/private/users/' . $userid . '/university-components';
         $params = [
             'university_component' => $universitycomponent,
@@ -295,9 +290,9 @@ class api {
      * @param   boolean $indexed        Document's indexing state
      * @param   object  $depositor      Document's depositor
      * @param   array   $authors        Document's authors
-     * @return  string                  Return the document's ID, an error message otherwise
+     * @return  string|false            Return the document's ID, false if extraction error occurs, an error message otherwise
      */
-    public function set_document($filename, $folderid, $filepath, $indexed, $depositor, $authors) {
+    public function set_document($filename, $folderid, $filepath, $indexed, $depositor, $authors): string|false {
         $endpoint = '/api/private/documents';
         $params = [
             'file' => new \CURLFile($filepath),
@@ -338,9 +333,9 @@ class api {
      * Replace forbidden characters
      *
      * @param  string $value
-     * @return string Returns sanitized string
+     * @return string|null Returns sanitized string or null if input is not a valid string
      */
-    private function sanitize($value) {
+    private function sanitize($value): string|null {
         $forbiddencharacters = [
             ".", "!", "?", " => ", "%", "&", "*", "=", "#", "$", "@", "/", "\\", "<", ">", "(", ")", "[", "]", "{", "}",
         ];
@@ -360,7 +355,7 @@ class api {
      * @param  string $email
      * @return string|null Returns e-mail if it's valid, null otherwise
      */
-    private function validate_email($email) {
+    private function validate_email($email): string|null {
         $email = filter_var($email, FILTER_SANITIZE_EMAIL);
         return filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
     }
@@ -371,7 +366,7 @@ class api {
      * @param string   $docid  Document ID
      * @return mixed           Return the document if succeed, an error message otherwise
      */
-    public function get_document($docid) {
+    public function get_document($docid): object|string {
         $endpoint = '/api/private/documents/' . $docid;
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
         $error = $this->get_error_response($response, 200);
@@ -385,9 +380,9 @@ class api {
      * Delete a document on the Compilatio account
      *
      * @param  string   $docid  Document ID
-     * @return boolean          Return true if succeed, an error message otherwise
+     * @return bool          Return true if succeed, an error message otherwise
      */
-    public function delete_document($docid) {
+    public function delete_document($docid): bool {
         $endpoint = '/api/private/documents/' . $docid;
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'delete'));
 
@@ -401,9 +396,9 @@ class api {
      * Archive a document on the Compilatio account
      *
      * @param  string   $docid  Document ID
-     * @return boolean          Return true if succeed, an error message otherwise
+     * @return bool          Return true if succeed, an error message otherwise
      */
-    public function archive_document($docid) {
+    public function archive_document($docid): bool {
         $endpoint = '/api/private/documents/' . $docid . '/archive';
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post'));
 
@@ -433,7 +428,7 @@ class api {
         $detectionsenabled,
         $warningthreshold = 10,
         $criticalthreshold = 25
-    ) {
+    ): string|false {
         $endpoint = '/api/private/folders';
         $params = [
             'name' => $name,
@@ -474,13 +469,13 @@ class api {
      *
      * @param   int      $folderid          Folder ID
      * @param   string   $name              Folder's name
-     * @param   boolean  $defaultindexing   Folder's default indexing
+     * @param   bool     $defaultindexing   Folder's default indexing
      * @param   string   $analysistype      Analysis type
      * @param   string   $analysistime      Date for scheduled analysis
      * @param   array    $detectionsenabled Array of enabled detections
      * @param   int      $warningthreshold  Folder's warning threshold
      * @param   int      $criticalthreshold Folder's critical threshold
-     * @return  string   Return true if succeed, an error message otherwise
+     * @return  bool   Return true if succeed, an error message otherwise
      */
     public function update_folder(
         $folderid,
@@ -491,7 +486,7 @@ class api {
         $detectionsenabled,
         $warningthreshold = 10,
         $criticalthreshold = 25
-    ) {
+    ): bool {
         $endpoint = '/api/private/folders/' . $folderid;
 
         $params = [
@@ -531,9 +526,9 @@ class api {
      * Delete a folder on the Compilatio account
      *
      * @param string   $folderid  Folder ID
-     * @return boolean            Return true if succeed, an error message otherwise
+     * @return bool            Return true if succeed, an error message otherwise
      */
-    public function delete_folder($folderid) {
+    public function delete_folder($folderid): bool {
         $endpoint = '/api/private/folders/' . $folderid;
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'delete'));
 
@@ -548,9 +543,9 @@ class api {
      *
      * @param   string  $docid      Document ID
      * @param   bool    $indexed    Indexing state
-     * @return  mixed               Return true if succeed, an error message otherwise
+     * @return  bool               Return true if succeed, an error message otherwise
      */
-    public function set_indexing_state($docid, $indexed) {
+    public function set_indexing_state($docid, $indexed): bool {
         $endpoint = '/api/private/documents/' . $docid;
 
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', json_encode(['indexed' => $indexed])));
@@ -567,7 +562,7 @@ class api {
      * @param  string $docid Document ID
      * @return string Return a JWT if succeed, an error otherwise
      */
-    public function get_report_token($docid) {
+    public function get_report_token($docid): string|false {
         $endpoint = '/api/private/documents/' . $docid . '/report-jwt';
 
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'post'));
@@ -584,9 +579,9 @@ class api {
      * @param  string $idreport Report ID
      * @param  string $lang     Language
      * @param  string $type     Report type
-     * @return string           Return the PDF if succeed, an error message otherwise
+     * @return string|false     Return the PDF if succeed, an error message otherwise
      */
-    public function get_pdf_report($idreport, $lang = 'en', $type = 'detailed') {
+    public function get_pdf_report($idreport, $lang = 'en', $type = 'detailed'): string|false {
         global $CFG;
 
         $endpoint = '/api/private/reports/' . $idreport . '/pdf?lang=' . $lang . '&type=' . $type;
@@ -610,9 +605,9 @@ class api {
      *
      * @param  string   $analysisid   Analysis ID
      * @param  array    $ignoredtypes Ignored scores
-     * @return mixed    Return update_task_id if succeed, false otherwise
+     * @return object|false    Return update_task_id if succeed, false otherwise
      */
-    public function update_and_rebuild_report($analysisid, $ignoredtypes) {
+    public function update_and_rebuild_report($analysisid, $ignoredtypes): object|false {
         $endpoint = '/api/private/reports/' . $analysisid;
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint, 'patch', $ignoredtypes));
 
@@ -626,9 +621,9 @@ class api {
      * Start an analyse of a document
      *
      * @param  string   $docid  Document ID
-     * @return mixed    Return true if succeed, an error message otherwise
+     * @return bool|string    Return true if succeed, an error message otherwise
      */
-    public function start_analyse($docid) {
+    public function start_analyse($docid): bool|string {
         $endpoint = '/api/private/analyses';
         $params = [
             'doc_id' => $docid,
@@ -660,9 +655,9 @@ class api {
      * @param  string   $language       Language
      * @param  int      $cronfrequency  CRON frequency
      * @param  int      $instancekey    Instance key
-     * @return mixed                    Return true if succeed, an error message otherwise
+     * @return bool                     Return true if succeed, an error message otherwise
      */
-    public function set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency, $instancekey) {
+    public function set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency, $instancekey): bool {
         $endpoint = '/api/private/moodle-configuration/';
         $params = [
             'php_version' => $releasephp,
@@ -684,9 +679,9 @@ class api {
     /**
      * Get zendesk jwt to authenticate user to help center.
      *
-     * @return boolean Return jwt if succeed, false otherwise
+     * @return string|false Return jwt if succeed, false otherwise
      */
-    public function get_zendesk_jwt() {
+    public function get_zendesk_jwt(): string|false {
         $endpoint = '/api/private/user/zendesk/jwt';
 
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
@@ -703,7 +698,7 @@ class api {
      * @param  string  $lang  Language
      * @return  array   Return an array of alerts
      */
-    public function get_alerts($lang) {
+    public function get_alerts($lang): array {
         $endpoint = '/api/private/alerts?lang=' . $lang;
 
         $response = json_decode($this->build_curl($endpoint));
@@ -720,7 +715,7 @@ class api {
      * @param  string  $lang lang
      * @return array   Return an array of marketing notifications
      */
-    public function get_marketing_notifications($lang) {
+    public function get_marketing_notifications($lang): array {
         $endpoint = '/api/private/marketing-notifications/' . $lang;
 
         $response = json_decode($this->build_curl_on_behalf_of_user($endpoint));
@@ -735,9 +730,9 @@ class api {
     /**
      * Get subscription info.
      *
-     * @return  stdClass   Return subscription info.
+     * @return object|false     Return subscription info.
      */
-    public function get_subscription_info() {
+    public function get_subscription_info(): object|false {
         $endpoint = '/api/private/user';
         $response = json_decode($this->build_curl($endpoint));
 
@@ -768,9 +763,9 @@ class api {
     /**
      * Returns a boolean to know if the API is under maintenance
      *
-     * @return boolean
+     * @return bool
      */
-    public function is_in_maintenance() {
+    public function is_in_maintenance(): bool {
         return get_config('plagiarism_compilatio', 'compilatio_maintenance') === '1';
     }
 
@@ -781,7 +776,7 @@ class api {
      * @param  int   $expectedstatuscode Expected HTTP code
      * @return false|string Returns false if expected HTTP code is found in API response, or a message otherwise
      */
-    private function get_error_response($response, int $expectedstatuscode) {
+    private function get_error_response($response, int $expectedstatuscode): string|false {
         if (!isset($response->status->code, $response->status->message)) {
             return 'Error response status not found';
         } else if ($response->status->code === $expectedstatuscode) {
@@ -800,9 +795,9 @@ class api {
      * @param  string   $method   Desired action on endpoint
      * @param  string   $data     Data to be send in CURLOPT_POSTFIELDS
      * @param  resource $handle   File handler
-     * @return string curl response
+     * @return object|string curl response
      */
-    private function build_curl_on_behalf_of_user($endpoint, $method = null, $data = null, $handle = null) {
+    private function build_curl_on_behalf_of_user($endpoint, $method = null, $data = null, $handle = null): object|string {
         global $DB, $USER;
 
         $header = [];
@@ -836,9 +831,9 @@ class api {
      * @param  string   $data     Data to be send in CURLOPT_POSTFIELDS
      * @param  resource $handle   File handler
      * @param  array    $header   HTTP headers
-     * @return string curl response
+     * @return object|string curl response
      */
-    private function build_curl($endpoint, $method = null, $data = null, $handle = null, $header = []) {
+    private function build_curl($endpoint, $method = null, $data = null, $handle = null, $header = []): object|string {
         global $CFG;
 
         $ch = curl_init();
@@ -927,7 +922,7 @@ class api {
      * @param  array  $returnarray
      * @return array
      */
-    private function build_post_fields($data, $existingkeys = '', &$returnarray = []) {
+    private function build_post_fields($data, $existingkeys = '', &$returnarray = []): array {
         if (($data instanceof \CURLFile) || !(is_array($data) || is_object($data))) {
             $returnarray[$existingkeys] = $data;
             return $returnarray;
@@ -943,9 +938,9 @@ class api {
      * Check if Compilatio API is under maintenance by the CURL result.
      *
      * @param  mixed  $result
-     * @return boolean
+     * @return bool
      */
-    private function check_if_under_maintenance($result) {
+    private function check_if_under_maintenance($result): bool {
 
         $decodedresult = json_decode($result);
 

@@ -33,7 +33,7 @@ use plagiarism_compilatio\compilatio\managed_bundle;
  * @param  int  $oldversion Old version
  * @return bool Return true if succeed, false otherwise
  */
-function xmldb_plagiarism_compilatio_upgrade($oldversion) {
+function xmldb_plagiarism_compilatio_upgrade($oldversion): bool {
     global $CFG, $DB, $OUTPUT;
     $dbman = $DB->get_manager();
 
@@ -234,11 +234,6 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         set_config('allow_search_tab', 0, 'plagiarism_compilatio');
         $DB->execute("UPDATE {plagiarism_compilatio_config} SET value='1' WHERE name='compilatio_analysistype' AND value='0'");
         upgrade_plugin_savepoint(true, 2021012500, 'plagiarism', 'compilatio');
-    }
-
-    if ($oldversion < 2021021800) {
-        compilatio_update_meta();
-        upgrade_plugin_savepoint(true, 2021021800, 'plagiarism', 'compilatio');
     }
 
     if ($oldversion < 2021062300) {

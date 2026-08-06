@@ -27,44 +27,21 @@ namespace plagiarism_compilatio\privacy;
 
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\contextlist;
-use core_privacy\local\request\userlist;
-use core_privacy\local\request\context;
 use core_privacy\local\request\writer;
-use plagiarism_compilatio\compilatio\api;
 use core_privacy\local\metadata\provider as metadata_provider;
 use core_plagiarism\privacy\plagiarism_provider;
 use core_privacy\local\legacy_polyfill as local_polyfill;
 use core_plagiarism\privacy\legacy_polyfill as privacy_polyfill;
-
+use core_plagiarism\privacy\plagiarism_user_provider;
 
 defined('MOODLE_INTERNAL') || die();
-
-if (interface_exists('\core_plagiarism\privacy\plagiarism_user_provider')) {
-    /**
-     * Interface user_provider (extends plagiarism_user_provider)
-     *
-     * This interface extends the core plagiarism user provider interface.
-     */
-    interface user_provider extends \core_plagiarism\privacy\plagiarism_user_provider {
-    }
-} else {
-    /**
-     * Interface user_provider
-     *
-     * This interface is used if the core plagiarism user provider interface does not exist.
-     */
-    /* phpcs:ignore */
-    interface user_provider {
-
-    }
-}
 
 /**
  * Class provider for exporting or deleting data
  * This plugin has data and must therefore define the metadata provider in order to describe it.
  * This is a plagiarism plugin. It interacts with the plagiarism subsystem rather than with core.
  */
-class provider implements metadata_provider, plagiarism_provider, user_provider {
+class provider implements metadata_provider, plagiarism_provider, plagiarism_user_provider {
     use local_polyfill;
     use privacy_polyfill;
 
@@ -142,7 +119,7 @@ class provider implements metadata_provider, plagiarism_provider, user_provider 
      * @param   array       $subcontext The subcontext within the context to export this information to.
      * @param   array       $linkarray  The weird and wonderful link array used to display information for a specific item.
      */
-    public static function export_plagiarism_user_data(int $userid, \context $context, array $subcontext, array $linkarray) {
+    public static function export_plagiarism_user_data(int $userid, \context $context, array $subcontext, array $linkarray): void {
 
         global $DB;
 
@@ -161,7 +138,7 @@ class provider implements metadata_provider, plagiarism_provider, user_provider 
      *
      * @param   \context    $context    The context to delete in.
      */
-    public static function delete_plagiarism_for_context(\context $context) {
+    public static function delete_plagiarism_for_context(\context $context): void {
 
         global $DB, $CFG;
 
@@ -178,7 +155,7 @@ class provider implements metadata_provider, plagiarism_provider, user_provider 
      * @param   int         $userid     The user to delete.
      * @param   \context    $context    The context to refine the deletion.
      */
-    public static function delete_plagiarism_for_user(int $userid, \context $context) {
+    public static function delete_plagiarism_for_user(int $userid, \context $context): void {
 
         global $DB, $CFG;
 
@@ -200,7 +177,7 @@ class provider implements metadata_provider, plagiarism_provider, user_provider 
      * @param  array    $userids   The users to delete.
      * @param  \context $context   The context to refine the deletion.
      */
-    public static function delete_plagiarism_for_users(array $userids, \context $context) {
+    public static function delete_plagiarism_for_users(array $userids, \context $context): void {
 
         global $DB, $CFG;
 

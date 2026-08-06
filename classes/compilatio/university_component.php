@@ -72,7 +72,7 @@ class university_component {
      * @param string $userid User identifier.
      * @return string|null Component value, null if not set or user field not found.
      */
-    public function retreive_university_component_for_user(string $userid) {
+    public function retreive_university_component_for_user(string $userid): ?string {
         if ($this->universitycomponentfield === get_string('university_composable_none', 'plagiarism_compilatio')) {
             return null;
         }
@@ -88,7 +88,7 @@ class university_component {
      *
      * @return array<string> List of user field names not blacklisted.
      */
-    public function user_field_provider() {
+    public function user_field_provider(): array {
         $blacklist = [
             'id',
             'auth',

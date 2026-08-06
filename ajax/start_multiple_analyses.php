@@ -32,6 +32,8 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 use plagiarism_compilatio\compilatio\analysis;
 use plagiarism_compilatio\compilatio\assignment\assign_filters;
 use plagiarism_compilatio\compilatio\assignment\assign_group_restriction;
+use core\exception\moodle_exception;
+use mod_quiz\quiz_attempt;
 
 require_login();
 require_sesskey();
@@ -84,9 +86,7 @@ if ($plugincm->analysistype == 'manual') {
         $quizattempts = $DB->get_records('quiz_attempts', ['quiz' => $quizid]);
 
         foreach ($quizattempts as $quizattempt) {
-            $attempt = $CFG->version < 2023100900 ?
-                \quiz_attempt::create($quizattempt->id) :
-                \mod_quiz\quiz_attempt::create($quizattempt->id);
+            $attempt = quiz_attempt::create($quizattempt->id);
 
             foreach ($attempt->get_slots() as $slot) {
                 if (in_array($attempt->get_question_attempt($slot)->get_question_id(), $selectedquestions)) {

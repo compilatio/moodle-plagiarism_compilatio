@@ -64,7 +64,7 @@ class file {
      * @param string|null $slot Slot ID for quiz content
      * @return Return cmpfile id send, false if not
      */
-    public static function send_file($cmid, $userid, $content, $filename = null, ?string $attemptid = null, ?string $slot = null) {
+    public static function send_file($cmid, $userid, $content, $filename = null, ?string $attemptid = null, ?string $slot = null): object|false {
 
         global $DB, $CFG;
 
@@ -195,7 +195,7 @@ class file {
      * @param array  $files Array of file records
      * @param string $cmid  cmid of the assignment
      */
-    public static function send_unsent_files($files, $cmid) {
+    public static function send_unsent_files($files, $cmid): void {
 
         global $DB;
 
@@ -217,10 +217,10 @@ class file {
      * Get file or text content and send it to Compilatio
      *
      * @param  mixed   $cmpfile       Compilatio file record
-     * @param  boolean $startanalysis Start analysis directly after uploading
-     * @return boolean Result of sending file or text content to Compilatio
+     * @param  bool $startanalysis Start analysis directly after uploading
+     * @return bool Result of sending file or text content to Compilatio
      */
-    public static function retrieve_and_send_file($cmpfile, $startanalysis = false) {
+    public static function retrieve_and_send_file($cmpfile, $startanalysis = false): bool {
 
         global $DB;
 
@@ -362,9 +362,9 @@ class file {
      * Check if file type is allowed.
      *
      * @param  string  $filename Filename of the document
-     * @return boolean  Return true type if file type is supported, false otherwise
+     * @return bool  Return true type if file type is supported, false otherwise
      */
-    public static function supported_file_type($filename) {
+    public static function supported_file_type($filename): bool {
 
         $pathinfo = pathinfo($filename);
 
@@ -380,7 +380,7 @@ class file {
      *
      * @return array Supported extensions
      */
-    public static function supported_extensions() {
+    public static function supported_extensions(): array {
         $filetypes = json_decode(get_config('plagiarism_compilatio', 'file_types'));
         return array_keys((array) $filetypes);
     }
@@ -405,7 +405,7 @@ class file {
         $status = null,
         $additionalparams = [],
         $multiple = false
-    ) {
+    ): mixed {
         global $DB;
         $params = ['cm' => $cmid];
 
@@ -456,7 +456,7 @@ class file {
         $quizparams,
         $userid = 0,
         $multiple = false
-    ) {
+    ): mixed {
         global $DB;
         $params = ['cm' => $cmid];
         $params['userid'] = $userid;
@@ -486,7 +486,7 @@ class file {
      * @param array             $params    Query parameters
      * @return mixed                      Single document object, array of document objects, or false/empty array if not found
      */
-    private function retreive_doc_following_params($DB, $multiple, $content, $params) {
+    private function retreive_doc_following_params($DB, $multiple, $content, $params): mixed {
         $fetchdocuments = function ($queryparams) use ($DB, $multiple) {
             return $multiple
                 ? $DB->get_records('plagiarism_compilatio_files', $queryparams)
@@ -511,7 +511,7 @@ class file {
      * @param  int $cmid    Course module ID
      * @return void
      */
-    private static function set_depositor_and_authors($userid, $cmid) {
+    private static function set_depositor_and_authors($userid, $cmid): void {
         global $DB;
 
         $depositor = $DB->get_record("user", ["id" => $userid], 'firstname, lastname, email');

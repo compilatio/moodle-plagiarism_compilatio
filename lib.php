@@ -33,8 +33,6 @@ use plagiarism_compilatio\compilatio\api;
 use plagiarism_compilatio\compilatio\course_module_settings;
 use plagiarism_compilatio\compilatio\file;
 use plagiarism_compilatio\output\document_frame;
-use plagiarism_compilatio\output\compilatio_frame;
-use plagiarism_compilatio\compilatio\analysis;
 
 /**
  * Compilatio Class
@@ -43,9 +41,9 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
     /**
      * This function should be used to initialize settings and check if plagiarism is enabled.
      *
-     * @return mixed - false if not enabled, or returns an array of relevant settings.
+     * @return array|false - false if not enabled, or returns an array of relevant settings.
      */
-    public function get_settings() {
+    public function get_settings(): array|false {
         static $plagiarismsettings;
 
         if (!empty($plagiarismsettings) || $plagiarismsettings === false) {
@@ -70,7 +68,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
      *
      * @return array
      */
-    public function config_options() {
+    public function config_options(): array {
         return [
             'activated',
             'showstudentscore',
@@ -94,7 +92,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
      * @param  array   $linkarray contains all relevant information for the plugin to generate a link.
      * @return string  HTML or blank.
      */
-    public function get_links($linkarray) {
+    public function get_links($linkarray): string {
         return document_frame::get_document_frame($linkarray);
     }
 
@@ -104,7 +102,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
      * @param int $cmid - course module id
      * @return string
      */
-    public function print_disclosure($cmid) {
+    public function print_disclosure($cmid): string {
         global $OUTPUT;
 
         $outputhtml = '';
@@ -123,35 +121,12 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
 }
 
 /**
- * DEPRECATED in Moodle versions > 4.4 2024042200 (required for versions < 4.4)
- * Output callback to insert a chunk of html at the start of the html document.
- * This allow us to display the Compilatio frame with statistics, alerts,
- * author search tool and buttons to launch all analyses and update submitted files status.
- *
- * @return string
- */
-function plagiarism_compilatio_before_standard_top_of_body_html() {
-    global $SESSION;
-
-    if (!optional_param('refreshAllDocs', false, PARAM_BOOL)) {
-        return compilatio_frame::get_frame();
-    }
-
-    foreach ($SESSION->compilatio_plagiarismfiles as $file) {
-        analysis::check_analysis($file);
-    }
-
-    return compilatio_frame::get_frame();
-}
-
-/**
  * Hook to save plagiarism specific settings on a module settings page
  *
  * @param stdClass $data
- * @param stdClass $course
  */
-function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
-    return course_module_settings::save_course_module_settings($data, $course);
+function plagiarism_compilatio_coursemodule_edit_post_actions($data) {
+    return course_module_settings::save_course_module_settings($data);
 }
 
 /**
@@ -160,7 +135,7 @@ function plagiarism_compilatio_coursemodule_edit_post_actions($data, $course) {
  * @param moodleform $formwrapper
  * @param MoodleQuickForm $mform
  */
-function plagiarism_compilatio_coursemodule_standard_elements($formwrapper, $mform) {
+function plagiarism_compilatio_coursemodule_standard_elements($formwrapper, $mform): void {
     course_module_settings::display_course_module_settings($formwrapper, $mform);
 }
 
@@ -170,16 +145,16 @@ function plagiarism_compilatio_coursemodule_standard_elements($formwrapper, $mfo
  * @param  int          $cmid           Course module (cm) ID
  * @return object|false  $plag_values    Plagiarism values or false if the plugin is not enabled for this cm
  */
-function compilatio_cm_use($cmid) {
+function compilatio_cm_use($cmid): object|false {
     global $DB;
 
     $cm = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => $cmid]);
 
-    if (!empty($cm->activated)) {
-        return $cm;
-    } else {
+    if (empty($cm->activated)) {
         return false;
     }
+
+    return $cm;
 }
 
 /**
@@ -187,7 +162,7 @@ function compilatio_cm_use($cmid) {
  *
  * @param string $cmid cmid of the assignment
  */
-function compilatio_get_unsent_documents($cmid) {
+function compilatio_get_unsent_documents($cmid): array {
     global $DB;
     $compilatiofile = new file();
 
@@ -339,7 +314,7 @@ function compilatio_get_unsent_documents($cmid) {
  * @param  int      $cmid Course module ID
  * @return boolean  Return true if enabled, false otherwise
  */
-function compilatio_enabled($cmid) {
+function compilatio_enabled($cmid): bool {
     global $DB;
     $cm = get_coursemodule_from_id(null, $cmid);
     // Get plugin activation info.
@@ -370,7 +345,7 @@ function compilatio_enabled($cmid) {
  *
  * @param \stdClass $course The course record.
  */
-function plagiarism_compilatio_pre_course_delete($course) {
+function plagiarism_compilatio_pre_course_delete($course): void {
     global $SESSION, $DB;
 
     if (class_exists('\tool_recyclebin\course_bin') && \tool_recyclebin\category_bin::is_enabled()) {
@@ -393,7 +368,7 @@ function plagiarism_compilatio_pre_course_delete($course) {
  *
  * @param array    $cmconfigs
  */
-function compilatio_delete_course_modules($cmconfigs) {
+function compilatio_delete_course_modules($cmconfigs): void {
     if (is_array($cmconfigs)) {
         global $DB;
         $compilatio = new api();
@@ -420,7 +395,7 @@ function compilatio_delete_course_modules($cmconfigs) {
  * @param array    $files
  * @param bool     $keepfilesindexed
  */
-function compilatio_delete_files($files, $keepfilesindexed = false) {
+function compilatio_delete_files($files, $keepfilesindexed = false): void {
     if (!is_array($files)) {
         return;
     }
@@ -454,12 +429,12 @@ function compilatio_delete_files($files, $keepfilesindexed = false) {
  * @param  string $hash Hash
  * @return bool         Return true if succeed, false otherwise
  */
-function compilatio_valid_md5($hash) {
+function compilatio_valid_md5($hash): bool {
     if (preg_match('/^[a-f0-9]{40}$/', $hash)) {
         return true;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 /**
@@ -468,7 +443,7 @@ function compilatio_valid_md5($hash) {
  * @param  string $date Date
  * @return string Return formated date
  */
-function compilatio_format_date($date) {
+function compilatio_format_date($date): string {
     $lang = substr(current_language(), 0, 2);
 
     $fmt = new IntlDateFormatter(
@@ -485,7 +460,7 @@ function compilatio_format_date($date) {
  *
  * @return string Return user language
  */
-function compilatio_retreive_user_language() {
+function compilatio_retreive_user_language(): string {
     $userlanguage = substr(current_language(), 0, 2);
     $compialtiolanguages = get_config('plagiarism_compilatio', 'supported_languages');
     $supportedlanguages = !empty($compialtiolanguages) ? json_decode($compialtiolanguages) : [];

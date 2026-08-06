@@ -50,9 +50,9 @@ class analysis {
      * Start an analyse
      *
      * @param  object $cmpfile     File
-     * @return mixed Return true if succeed, the analyse object
+     * @return object|string Return true if succeed, the analyse object
      */
-    public static function start_analysis($cmpfile) {
+    public static function start_analysis($cmpfile): object|string {
 
         global $DB;
 
@@ -94,7 +94,7 @@ class analysis {
      * @param  object $cmpfile File
      * @return object $cmpfile File with updated status, old cmpfile if get_document returns an error
      */
-    public static function check_analysis($cmpfile) {
+    public static function check_analysis($cmpfile): object {
 
         global $DB;
 

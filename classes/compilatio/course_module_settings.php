@@ -50,9 +50,8 @@ class course_module_settings {
      * Save Compilatio settings from a course module settings page
      *
      * @param stdClass $data
-     * @param stdClass $course
      */
-    public static function save_course_module_settings($data, $course) {
+    public static function save_course_module_settings($data): object {
         global $DB, $USER;
         $plugin = new \plagiarism_plugin_compilatio();
         if (!$plugin->get_settings()) {
@@ -98,8 +97,8 @@ class course_module_settings {
      * @param moodleform $formwrapper
      * @param MoodleQuickForm $mform
      */
-    public static function display_course_module_settings($formwrapper, $mform) {
-        global $DB, $USER;
+    public static function display_course_module_settings($formwrapper, $mform): void {
+        global $DB;
 
         $plugin = new \plagiarism_plugin_compilatio();
         $plagiarismsettings = $plugin->get_settings();
@@ -174,7 +173,7 @@ class course_module_settings {
      * @param string  $modulename
      * @param string  $teacheremail
      */
-    public static function get_form_elements($mform, $defaults = false, $modulename = null, $teacheremail = null) {
+    public static function get_form_elements($mform, $defaults = false, $modulename = null, $teacheremail = null): void {
         global $PAGE, $USER;
 
         $lang = substr(current_language(), 0, 2);
@@ -433,7 +432,7 @@ class course_module_settings {
      * @param stdClass $plugin Moodle plagiarism plugin class
      * @return void
      */
-    private static function set_config($DB, $USER, $data, $cmconfig, $newconfig, $plugin) {
+    private static function set_config($DB, $USER, $data, $cmconfig, $newconfig, $plugin): void {
         // Validation on thresholds.
         if (
             !isset($data->warningthreshold, $data->criticalthreshold) ||

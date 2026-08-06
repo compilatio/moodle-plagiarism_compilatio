@@ -26,14 +26,10 @@ defined('MOODLE_INTERNAL') || die();
 
 use plagiarism_compilatio\output\compilatio_frame;
 
-global $CFG;
-
-$callbacks = [];
-
-if ($CFG->version >= 2024042200) {
-    $callbacks[] = [
+$callbacks = [
+    [
         'hook' => core\hook\output\before_standard_top_of_body_html_generation::class,
         'callback' => [compilatio_frame::class, 'before_standard_top_of_body_html_generation'],
         'priority' => 0,
-    ];
-}
+    ],
+];

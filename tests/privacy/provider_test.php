@@ -28,7 +28,6 @@ namespace plagiarism_compilatio\privacy;
 use core_privacy\local\metadata\collection;
 use plagiarism_compilatio\privacy\provider;
 use core_privacy\local\request\writer;
-use core_privacy\local\request\userlist;
 
 defined('MOODLE_INTERNAL') || die();
 
