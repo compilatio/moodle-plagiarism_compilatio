@@ -11,6 +11,8 @@ CHANGES
 - [Fix] Missing params to reset course
 - [Fix] Use uniqueId in quiz filename
 - [Fix] Trigger analyses capability
+- [Fix] Add try catch in get_links to avoid displaying blocking errors
+- Update plugin to support only from Moodle 4.5
 
 3.3.1
 - [Fix] Fix for the requests to create and update a folder 
