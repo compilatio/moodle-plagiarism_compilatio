@@ -26,19 +26,12 @@
 namespace plagiarism_compilatio\compilatio;
 
 use stdClass;
+use plagiarism_compilatio\compilatio\api;
 
 /**
  * Builds detection options sent to the Compilatio folder API.
  */
 class folder_detections {
-    /**
-     * Maps Compilatio detection process names to local course module config fields.
-     */
-    private const CONFIG_FIELDS = [
-        'unrecognized_text_language' => 'utlenabled',
-        'ai_detection' => 'ai_detectionenabled',
-        'rewording' => 'rewordingenabled',
-    ];
 
     /**
      * Builds folder detection options from persisted course module settings.
@@ -47,20 +40,27 @@ class folder_detections {
      * @return array Detection options for api::set_folder().
      */
     public static function from_course_module_config(stdClass $cmconfig): array {
+
+        $apiuser = (new api())->get_apikey_user(false);
+        $managedbundle = new managed_bundle($apiuser);
+
         $detectionsenabled = [];
 
-        foreach (self::CONFIG_FIELDS as $process => $field) {
-            if (!property_exists($cmconfig, $field)) {
+        foreach ($managedbundle->get_bundle_detections() as $detection) {
+
+            if (false === $field = array_search($detection->process, managed_bundle::DETECTIONSTYPE)) {
                 continue;
             }
 
-            $detectionsenabled[] = [
-                'process' => $process,
-                'enabled' => (bool) $cmconfig->{$field},
-                'configurable' => true,
-            ];
-        }
+            if ($detection->configurable) {
 
+                $detectionsenabled[] = [
+                    'process' => $detection->process,
+                    'enabled' => (bool) $cmconfig->$field,
+                    'configurable' => true,
+                ];
+            }
+        }
         return $detectionsenabled;
     }
 }

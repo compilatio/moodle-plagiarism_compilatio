@@ -54,16 +54,15 @@ class compilatio_frame {
 
         global $SESSION;
 
-	if (null == get_config('plagiarism_compilatio', 'apikey')) {
-	    return;
-	}
-	
-	if (optional_param('refreshAllDocs', false, PARAM_BOOL)) {
+        if (null == get_config('plagiarism_compilatio', 'apikey')) {
+            return;
+        }
+
+        if (optional_param('refreshAllDocs', false, PARAM_BOOL)) {
             foreach ($SESSION->compilatio_plagiarismfiles as $file) {
                 analysis::check_analysis($file);
             }
         }
-
         $hook->add_html(self::get_frame());
     }
 

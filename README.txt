@@ -8,6 +8,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 3.3.2
+- [Fix] Use with Copyright(s) bundles
 - [Fix] Missing params to reset course
 - [Fix] Use uniqueId in quiz filename
 - [Fix] Trigger analyses capability

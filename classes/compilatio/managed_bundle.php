@@ -33,13 +33,14 @@ use stdClass;
  */
 class managed_bundle {
     /**
-     * Contain differents detections types.
+     * Contains bundle's detections types (values).
+     * Keys are the fields names in the cm_cfg table.
      */
     public const DETECTIONSTYPE = [
-        "similarity",
-        "unrecognized_text_language",
-        "ai_detection",
-        "rewording",
+        'similarityenabled' => 'similarity',
+        'utlenabled' => 'unrecognized_text_language',
+        'ai_detectionenabled' => 'ai_detection',
+        'rewordingenabled' => 'rewording',
     ];
 
     /**
@@ -72,17 +73,15 @@ class managed_bundle {
             return;
         }
 
-        foreach ($this->get_bundle_detections() as $detection) {
-            if (!in_array($detection->process, self::DETECTIONSTYPE)) {
-                continue;
-            }
+        foreach ($DB->get_records('plagiarism_compilatio_cm_cfg') as $configuration) {
 
-            foreach ($DB->get_records('plagiarism_compilatio_cm_cfg') as $configuration) {
-                $configuration->{$detection->process . 'enabled'} = 0;
+            foreach ($this->get_bundle_detections() as $detection) {
 
-                if ($detection->enabled) {
-                    $configuration->{$detection->process . 'enabled'} = 1;
+                if (false === $field = array_search($detection->process, self::DETECTIONSTYPE)) {
+                    continue;
                 }
+
+                $configuration->$field = array_search($detection->enabled, [false, true]);
 
                 $DB->update_record('plagiarism_compilatio_cm_cfg', $configuration);
             }

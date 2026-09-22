@@ -25,6 +25,8 @@
 
 namespace plagiarism_compilatio\compilatio;
 
+use core\check\performance\debugging;
+
 /**
  * api class
  */
@@ -83,7 +85,10 @@ class api {
         $endpoint = '/api/public/configuration';
         $configurationresponse = json_decode($this->build_curl($endpoint));
 
-        if (!$this->get_error_response($configurationlmsresponse, 200) && !$this->get_error_response($configurationresponse, 200)) {
+        if (
+            !$this->get_error_response($configurationlmsresponse, 200) &&
+            !$this->get_error_response($configurationresponse, 200)
+        ) {
             return (object) array_merge((array) $configurationlmsresponse->data, (array) $configurationresponse->data);
         }
         return false;
@@ -433,8 +438,8 @@ class api {
         $params = [
             'name' => $name,
             'thresholds' => [
-                'warning' => $warningthreshold,
-                'critical' => $criticalthreshold,
+                'warning' => (int) $warningthreshold,
+                'critical' => (int) $criticalthreshold,
             ],
             'default_indexing' => false,
             'auto_analysis' => false,
@@ -492,8 +497,8 @@ class api {
         $params = [
             'name' => $name,
             'thresholds' => [
-                'warning' => $warningthreshold,
-                'critical' => $criticalthreshold,
+                'warning' => (int) $warningthreshold,
+                'critical' => (int) $criticalthreshold,
             ],
             'default_indexing' => false,
             'auto_analysis' => false,
@@ -657,7 +662,14 @@ class api {
      * @param  int      $instancekey    Instance key
      * @return bool                     Return true if succeed, an error message otherwise
      */
-    public function set_moodle_configuration($releasephp, $releasemoodle, $releaseplugin, $language, $cronfrequency, $instancekey): bool {
+    public function set_moodle_configuration(
+        $releasephp,
+        $releasemoodle,
+        $releaseplugin,
+        $language,
+        $cronfrequency,
+        $instancekey
+    ): bool {
         $endpoint = '/api/private/moodle-configuration/';
         $params = [
             'php_version' => $releasephp,
@@ -703,7 +715,7 @@ class api {
 
         $response = json_decode($this->build_curl($endpoint));
 
-        if ($this->get_error_response($response, 200) === false) {
+        if ($this->get_error_response($response, 200) === false && isset($response->data->alerts)) {
             return $response->data->alerts;
         }
         return [];
@@ -778,14 +790,18 @@ class api {
      */
     private function get_error_response($response, int $expectedstatuscode): string|false {
         if (!isset($response->status->code, $response->status->message)) {
-            return 'Error response status not found';
+            $message = 'Error response status not found';
         } else if ($response->status->code === $expectedstatuscode) {
             return false;
         } else if ($response->status->message === 'Forbidden ! Your read only API key cannot modify this resource') {
             set_config('read_only_apikey', 1, 'plagiarism_compilatio');
         }
 
-        return $response->status->message;
+        $message = $response->status->message;
+
+        debugging(var_export($response, true), DEBUG_DEVELOPER);
+
+        return $message;
     }
 
     /**

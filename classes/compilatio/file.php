@@ -64,7 +64,14 @@ class file {
      * @param string|null $slot Slot ID for quiz content
      * @return Return cmpfile id send, false if not
      */
-    public static function send_file($cmid, $userid, $content, $filename = null, ?string $attemptid = null, ?string $slot = null): object|false {
+    public static function send_file(
+        $cmid,
+        $userid,
+        $content,
+        $filename = null,
+        ?string $attemptid = null,
+        ?string $slot = null
+    ): object|false {
 
         global $DB, $CFG;
 
