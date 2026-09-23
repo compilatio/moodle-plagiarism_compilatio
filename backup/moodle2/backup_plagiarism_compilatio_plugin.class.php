@@ -49,14 +49,19 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
             'folderid',
             'userid',
             'activated',
-            'showstudentreport',
             'showstudentscore',
-            'studentanalyses',
+            'showstudentreport',
+            'reporttype',
             'analysistype',
             'analysistime',
             'warningthreshold',
             'criticalthreshold',
             'defaultindexing',
+            'ignoredscores',
+            'similarityenabled',
+            'ai_detectionenabled',
+            'utlenabled',
+            'rewordingenabled',
         ]);
         $pluginwrapper->add_child($compilatioconfigs);
         $compilatioconfigs->add_child($compilatioconfig);

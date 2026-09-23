@@ -385,7 +385,9 @@ function compilatio_delete_course_modules($cmconfigs): void {
             compilatio_delete_files($files, $keepfileindexed);
 
             $compilatio->set_user_id($cmconfig->userid);
-            $compilatio->delete_folder($cmconfig->folderid);
+            if (!empty($cmconfig->folderid)) {
+                $compilatio->delete_folder($cmconfig->folderid);
+            }
             $DB->delete_records('plagiarism_compilatio_cm_cfg', ['id' => $cmconfig->id]);
         }
     }

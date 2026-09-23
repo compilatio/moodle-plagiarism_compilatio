@@ -652,19 +652,6 @@ class event_handler {
             return;
         }
 
-        // Look for duplicate course module settings.
-        $anothercompicmcfg = $DB->get_record(
-            'plagiarism_compilatio_cm_cfg',
-            [
-                'folderid' => $compicmcfg->folderid,
-                'userid' => $compicmcfg->userid,
-            ]
-        );
-
-        if (!is_object($anothercompicmcfg)) {
-            return;
-        }
-
         $compicmcfg->userid = null;
         $compicmcfg->folderid = null;
 
@@ -681,20 +668,26 @@ class event_handler {
 
         $compicmcfg->userid = $user->compilatioid;
 
+        $analysistime = null;
+        if (!empty($compicmcfg->analysistime)) {
+            $analysistime = date('Y-m-d H:i:s', $compicmcfg->analysistime);
+        }
+
         $folderid = $compilatio->set_folder(
             $event['other']['itemname'],
             $compicmcfg->defaultindexing,
             $compicmcfg->analysistype,
-            null,
+            $analysistime,
             folder_detections::from_course_module_config($compicmcfg),
             $compicmcfg->warningthreshold,
             $compicmcfg->criticalthreshold
         );
         if ($folderid !== false) {
             $compicmcfg->folderid = $folderid;
+            $DB->update_record('plagiarism_compilatio_cm_cfg', $compicmcfg);
+            unset($compilatio);
+        } else {
+            $DB->delete_records('plagiarism_compilatio_cm_cfg', ['cmid' => $coursemodule->id]);
         }
-
-        $DB->update_record('plagiarism_compilatio_cm_cfg', $compicmcfg);
-        unset($compilatio);
     }
 }
