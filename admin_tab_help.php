@@ -43,8 +43,10 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/admin_tabs.php');
 
 echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
 
-$compilatio = new api();
-$validapikey = $compilatio->check_apikey();
+$validapikey = false;
+if ((bool) get_config('plagiarism_compilatio', 'enabled')) {
+    $validapikey = (new api())->check_apikey();
+}
 
 if ($validapikey === true) {
     echo("<p class='mt-3'>
@@ -55,7 +57,7 @@ if ($validapikey === true) {
         </p>");
 } else {
     echo(get_string('helpcenter_error', 'plagiarism_compilatio')
-        . "<a href='https://support.compilatio.net/'>https://support.compilatio.net</a>");
+        . " <a href='https://support.compilatio.net/'>https://support.compilatio.net</a>");
 }
 echo("<p class='mt-3'>
         <a href='helpcenter.php?page=service_status' target='_blank' >
