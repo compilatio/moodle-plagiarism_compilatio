@@ -50,17 +50,21 @@ class update_meta extends \core\task\scheduled_task {
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
         // Update the 'Compilatio unavailable' marker in the database.
-        $compilatio = new api(null, 'test');
-        if ($compilatio->check_apikey() == 'Forbidden ! Your api key is invalid') {
+        if (false !== (new api(null, null))->get_config()) {
             set_config('connection_webservice', 1, 'plagiarism_compilatio');
         } else if (!$compilatio->is_in_maintenance()) {
             set_config('connection_webservice', 0, 'plagiarism_compilatio');
+            return;
         }
 
         $instancekey = get_config('plagiarism_compilatio', 'instance_key');
         if (empty($instancekey)) {
             $instancekey = sha1(microtime() . getmypid() . random_bytes(50));
             set_config('instance_key', $instancekey, 'plagiarism_compilatio');
+        }
+
+        if (false === (bool) get_config('plagiarism_compilatio', 'enabled')) {
+            return;
         }
 
         $compilatio = new api();

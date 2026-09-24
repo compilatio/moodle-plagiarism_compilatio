@@ -34,7 +34,7 @@ class api {
     /**
      * @var string $apikey API key
      */
-    private string $apikey;
+    private ?string $apikey;
 
     /**
      * @var string $urlrest Base REST url
@@ -67,11 +67,6 @@ class api {
 
         $this->urlrest = 'https://app.compilatio.net';
         $this->userid = $userid;
-
-        if (empty($apikey)) {
-            throw new \moodle_exception('missingapikey', 'plagiarism_compilatio');
-        }
-
         $this->apikey = $apikey;
     }
 
