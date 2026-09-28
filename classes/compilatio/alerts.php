@@ -176,9 +176,9 @@ class alerts {
             ];
         }
 
-        // Check for unsend documents.
+        // Check for unsend documents (without reading every submitted file on each display of the page).
         if ($this->module === 'assign') {
-            if (count(compilatio_get_unsent_documents($cmid)) === 0) {
+            if (!compilatio_has_unsent_documents($cmid)) {
                 return $alerts;
             }
 

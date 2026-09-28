@@ -54,13 +54,18 @@ class compilatio_frame {
 
         global $SESSION;
 
-        if (optional_param('refreshAllDocs', false, PARAM_BOOL)) {
-            foreach ($SESSION->compilatio_plagiarismfiles as $file) {
-                analysis::check_analysis($file);
+        try {
+            if (optional_param('refreshAllDocs', false, PARAM_BOOL)) {
+                foreach ($SESSION->compilatio_plagiarismfiles as $file) {
+                    analysis::check_analysis($file);
+                }
             }
-        }
 
-        $hook->add_html(self::get_frame());
+            $hook->add_html(self::get_frame());
+        } catch (\Throwable $e) {
+            // Compilatio must never prevent Moodle from displaying the page.
+            debugging('Compilatio: unable to display the Compilatio frame: ' . $e->getMessage(), DEBUG_DEVELOPER);
+        }
     }
 
     /**
@@ -227,9 +232,9 @@ class compilatio_frame {
             <span id='cmp-count-notifications' class='badge badge-pill badge-primary'></span>
         </span>";
 
-        // Check for unsend documents.
+        // Check for unsend documents (without reading every submitted file on each display of the page).
         if ('assign' === $module) {
-            $sendalldocs = count(compilatio_get_unsent_documents($cmid)) !== 0 ? true : false;
+            $sendalldocs = compilatio_has_unsent_documents($cmid);
         }
 
         // Display buttons.

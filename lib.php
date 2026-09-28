@@ -95,7 +95,13 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
      * @return string  HTML or blank.
      */
     public function get_links($linkarray) {
-        return document_frame::get_document_frame($linkarray);
+        try {
+            return document_frame::get_document_frame($linkarray);
+        } catch (\Throwable $e) {
+            // Compilatio must never prevent Moodle from displaying the submissions.
+            debugging('Compilatio: unable to display the document frame: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            return '';
+        }
     }
 
     /**
@@ -133,15 +139,19 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
 function plagiarism_compilatio_before_standard_top_of_body_html() {
     global $SESSION;
 
-    if (!optional_param('refreshAllDocs', false, PARAM_BOOL)) {
+    try {
+        if (optional_param('refreshAllDocs', false, PARAM_BOOL)) {
+            foreach ($SESSION->compilatio_plagiarismfiles as $file) {
+                analysis::check_analysis($file);
+            }
+        }
+
         return compilatio_frame::get_frame();
+    } catch (\Throwable $e) {
+        // Compilatio must never prevent Moodle from displaying the page.
+        debugging('Compilatio: unable to display the Compilatio frame: ' . $e->getMessage(), DEBUG_DEVELOPER);
+        return '';
     }
-
-    foreach ($SESSION->compilatio_plagiarismfiles as $file) {
-        analysis::check_analysis($file);
-    }
-
-    return compilatio_frame::get_frame();
 }
 
 /**
@@ -331,6 +341,74 @@ function compilatio_get_unsent_documents($cmid) {
     }
 
     return $notuploadedfiles;
+}
+
+/**
+ * Check whether an assignment has submissions unknown from Compilatio, without reading any file content.
+ *
+ * Used to decide whether to display the "send unsent documents" button and alert: it covers the same submissions
+ * as compilatio_get_unsent_documents(), but matches Compilatio records by owner and filename instead of computing
+ * content identifiers, which would read every submitted file each time the submissions page is displayed.
+ *
+ * @param  int  $cmid Course module ID of the assignment
+ * @return bool True if at least one file or online text has no Compilatio record
+ */
+function compilatio_has_unsent_documents($cmid) {
+    global $DB;
+
+    $cm = get_coursemodule_from_id('assign', $cmid);
+    if (!$cm) {
+        return false;
+    }
+
+    $teamsubmission = $DB->get_field('assign', 'teamsubmission', ['id' => $cm->instance]);
+    $params = [
+        'assignid' => $cm->instance,
+        'cmid' => $cm->id,
+        'contextid' => context_module::instance($cm->id)->id,
+        'courseid' => $cm->course,
+    ];
+
+    if ($teamsubmission) {
+        $ownersql = 's.groupid <> 0';
+        $recordownersql = 'pcf.userid = 0 AND pcf.groupid = s.groupid';
+    } else {
+        $ownersql = 'EXISTS (SELECT 1
+                               FROM {user_enrolments} ue
+                               JOIN {enrol} e ON e.id = ue.enrolid
+                              WHERE ue.userid = s.userid AND e.courseid = :courseid)';
+        $recordownersql = 'pcf.userid = s.userid';
+    }
+
+    $filesql = "SELECT 1
+                  FROM {assign_submission} s
+                  JOIN {files} f ON f.itemid = s.id
+                 WHERE s.assignment = :assignid
+                   AND $ownersql
+                   AND f.contextid = :contextid
+                   AND f.component = 'assignsubmission_file'
+                   AND f.filearea = 'submission_files'
+                   AND f.filename <> '.'
+                   AND NOT EXISTS (SELECT 1
+                                     FROM {plagiarism_compilatio_files} pcf
+                                    WHERE pcf.cm = :cmid AND $recordownersql AND pcf.filename = f.filename)";
+
+    if ($DB->record_exists_sql($filesql, $params)) {
+        return true;
+    }
+
+    $textfilename = $DB->sql_concat("'assign-'", 's.id', "'.htm'");
+    $textsql = "SELECT 1
+                  FROM {assign_submission} s
+                  JOIN {assignsubmission_onlinetext} ot ON ot.submission = s.id
+                 WHERE s.assignment = :assignid
+                   AND $ownersql
+                   AND " . $DB->sql_isnotempty('assignsubmission_onlinetext', 'ot.onlinetext', true, true) . "
+                   AND NOT EXISTS (SELECT 1
+                                     FROM {plagiarism_compilatio_files} pcf
+                                    WHERE pcf.cm = :cmid AND $recordownersql AND pcf.filename = $textfilename)";
+
+    return $DB->record_exists_sql($textsql, $params);
 }
 
 /**

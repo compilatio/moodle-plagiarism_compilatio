@@ -224,7 +224,8 @@ class document_frame {
                     $trigger = optional_param('sendcontent', 0, PARAM_TEXT);
                     $contentid = $identifier->create_from_linkarray($linkarray);
 
-                    if ($trigger === $contentid) {
+                    // Send only once: if sending fails, displaying the frame again must not resend it endlessly.
+                    if ($trigger === $contentid && empty($linkarray['cmp_send_attempted'])) {
                         $sql = 'SELECT assot.submission
                         FROM {assignsubmission_onlinetext} assot
                         JOIN {assign_submission} ass ON assot.submission = ass.id
@@ -234,6 +235,7 @@ class document_frame {
                         $filename = 'assign-' . $onlineassignment->submission . '.htm';
 
                         file::send_file($linkarray['cmid'], $userid, $linkarray['content'], $filename);
+                        $linkarray['cmp_send_attempted'] = true;
                         return self::get_document_frame($linkarray);
                     }
 
@@ -250,8 +252,10 @@ class document_frame {
                     // Catch GET 'sendfile'.
                     $trigger = optional_param('sendfile', 0, PARAM_TEXT);
                     $fileid = $linkarray['file']->get_id();
-                    if ($trigger === $fileid) {
+                    // Send only once: if sending fails, displaying the frame again must not resend it endlessly.
+                    if ($trigger === $fileid && empty($linkarray['cmp_send_attempted'])) {
                         file::send_unsent_files([$linkarray['file']], $linkarray['cmid']);
+                        $linkarray['cmp_send_attempted'] = true;
                         return self::get_document_frame($linkarray);
                     }
 

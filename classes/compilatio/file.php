@@ -68,6 +68,14 @@ class file {
 
         global $DB, $CFG;
 
+        if ($content instanceof stored_file && !self::is_content_readable($content)) {
+            debugging(
+                'Compilatio: the content of file ' . $content->get_id() . ' cannot be read, it is not sent.',
+                DEBUG_DEVELOPER
+            );
+            return false;
+        }
+
         $cm = get_coursemodule_from_id(null, $cmid);
 
         $submissionretreiver = new submission($DB);
@@ -200,17 +208,70 @@ class file {
         global $DB;
 
         foreach ($files as $file) {
-            $userid = $DB->get_field(
-                'assign_submission',
-                'userid',
-                ['id' => isset($file->onlinetext) ? $file->submission : $file->get_itemid()]
-            );
-            if ($file instanceof stored_file) {
-                self::send_file($cmid, $userid, $file);
-            } else {
-                self::send_file($cmid, $userid, $file->onlinetext);
+            try {
+                $userid = $DB->get_field(
+                    'assign_submission',
+                    'userid',
+                    ['id' => isset($file->onlinetext) ? $file->submission : $file->get_itemid()]
+                );
+                if ($file instanceof stored_file) {
+                    self::send_file($cmid, $userid, $file);
+                } else {
+                    self::send_file($cmid, $userid, $file->onlinetext);
+                }
+            } catch (\moodle_exception $e) {
+                // A document that can't be sent (e.g. file missing from moodledata) must not prevent sending the others.
+                debugging('Compilatio: document not sent: ' . $e->getMessage(), DEBUG_DEVELOPER);
             }
         }
+    }
+
+    /**
+     * Check that the content of a stored file can be read from the Moodle file system.
+     *
+     * @param  stored_file $file Moodle stored file
+     * @return bool
+     */
+    private static function is_content_readable(stored_file $file): bool {
+        return get_file_storage()->get_file_system()->is_file_readable_remotely_by_storedfile($file);
+    }
+
+    /**
+     * Compute the Compilatio identifier of a stored file, without failing when its content can't be read.
+     *
+     * A single file missing from moodledata must not break the pages displaying Compilatio documents:
+     * in that case, the Moodle content hash (legacy identifier format) is returned instead.
+     *
+     * @param  identifier  $identifier Identifier generator for the document owner and course module
+     * @param  stored_file $file       Moodle stored file
+     * @param  string|null $attemptid  Quiz attempt ID, for quiz identifiers
+     * @param  string|null $slot       Quiz slot, for quiz identifiers
+     * @return string
+     */
+    private static function get_file_identifier(
+        identifier $identifier,
+        stored_file $file,
+        ?string $attemptid = null,
+        ?string $slot = null
+    ): string {
+        $contentidentifier = null;
+        if (self::is_content_readable($file)) {
+            try {
+                $contentidentifier = isset($attemptid, $slot)
+                    ? $identifier->create_for_quiz($file, $attemptid, $slot)
+                    : $identifier->create_from_file($file);
+            } catch (\moodle_exception $e) {
+                $contentidentifier = null;
+            }
+        }
+
+        if ($contentidentifier !== null) {
+            return $contentidentifier;
+        }
+
+        debugging('Compilatio: the content of file ' . $file->get_id() . ' cannot be read.', DEBUG_DEVELOPER);
+
+        return $file->get_contenthash();
     }
 
     /**
@@ -290,7 +351,7 @@ class file {
                 $identifier = new identifier($cmpfile->userid, $cmpfile->cm);
 
                 $identifiers = [
-                    $identifier->create_from_file($storedfile),
+                    self::get_file_identifier($identifier, $storedfile),
                     $storedfile->get_contenthash(),
                 ];
 
@@ -338,6 +399,11 @@ class file {
 
             foreach ($files as $f) {
                 $file = $fs->get_file_by_id($f->id);
+
+                if (!$file || !self::is_content_readable($file)) {
+                    // Keep the Compilatio record: the file content is missing from moodledata and can't be sent.
+                    return false;
+                }
 
                 $DB->delete_records('plagiarism_compilatio_files', ['id' => $cmpfile->id]);
 
@@ -422,7 +488,7 @@ class file {
         $identifier = new identifier($userid, $cmid);
 
         if ($content instanceof stored_file) {
-            $params['identifier'] = $identifier->create_from_file($content);
+            $params['identifier'] = self::get_file_identifier($identifier, $content);
         } else {
             $params['identifier'] = $identifier->create_from_string($content);
         }
@@ -457,7 +523,9 @@ class file {
         $params['userid'] = $userid;
 
         $identifier = new identifier($userid, $cmid);
-        $params['identifier'] = $identifier->create_for_quiz($content, $quizparams['attemptid'], $quizparams['slot']);
+        $params['identifier'] = $content instanceof stored_file
+            ? self::get_file_identifier($identifier, $content, $quizparams['attemptid'], $quizparams['slot'])
+            : $identifier->create_for_quiz($content, $quizparams['attemptid'], $quizparams['slot']);
         $quizdocument = $this->retreive_doc_following_params($DB, $multiple, $content, $params);
 
         if ($quizdocument) {
@@ -466,7 +534,7 @@ class file {
 
         // Retreive for old identifier if quiz-specific identifier did not find any document.
         $params['identifier'] = $content instanceof stored_file ?
-            $identifier->create_from_file($content) :
+            self::get_file_identifier($identifier, $content) :
             $identifier->create_from_string($content);
 
         return $this->retreive_doc_following_params($DB, $multiple, $content, $params);
