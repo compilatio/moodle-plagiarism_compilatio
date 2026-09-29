@@ -24,11 +24,13 @@
  * @param string $_POST['docId']
  */
 
+define('AJAX_SCRIPT', true);
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 
 use plagiarism_compilatio\compilatio\analysis;
 
 require_login();
+require_sesskey();
 
 
 global $DB;

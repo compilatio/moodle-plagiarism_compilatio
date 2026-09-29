@@ -53,17 +53,6 @@ final class marketing_notification_test extends \advanced_testcase {
                     '<button>Action Button</button>';
 
     /**
-     * Expected HTML output after formatting by format_notification_body method.
-     *
-     * Contains the processed HTML with:
-     * - Links with target="_blank" and rel="noopener noreferrer" attributes
-     * - Buttons with Bootstrap CSS classes applied
-     */
-    public const BASE_OUTPUT_HTML = '<p>Test notification</p>' .
-                    '<a target="_blank" rel="noopener noreferrer" href="https://example.com">Click here</a>' .
-                    '<btn btn-primary>Action Button</btn btn-primary>';
-
-    /**
      * Set up test environment.
      */
     protected function setUp(): void {
@@ -85,10 +74,14 @@ final class marketing_notification_test extends \advanced_testcase {
         $notification = new marketing_notification('en', 'test-user-id');
         $result = $notification->format_notification_body(self::BASE_INPUT_HTML . '<img src="test.jpg" alt="Test image">');
 
-        /* phpcs:ignore */
-        $expectedresult = self::BASE_OUTPUT_HTML . '<img src="test.jpg" alt="Test image" style="max-width: 100%; max-height: 200px; height: auto; display: block; margin: 0 auto;">';
-
-        $this->assertEquals($expectedresult, $result);
+        $compactresult = str_replace(' ', '', $result);
+        $this->assertStringContainsString('target="_blank"', $result);
+        $this->assertStringContainsString('noopener', $result);
+        $this->assertStringContainsString('noreferrer', $result);
+        $this->assertStringContainsString('<span class="btn btn-primary">Action Button</span>', $result);
+        $this->assertStringContainsString('class="img-fluid d-block mx-auto"', $result);
+        $this->assertStringContainsString('max-height:200px', $compactresult);
+        $this->assertStringContainsString('height:auto', $compactresult);
     }
 
     /**
@@ -108,10 +101,10 @@ final class marketing_notification_test extends \advanced_testcase {
             '<img src="test.jpg" style="lalala" alt="Test image">'
         );
 
-        /* phpcs:ignore */
-        $expectedresult = self::BASE_OUTPUT_HTML . '<img src="test.jpg" style="lalala max-width: 100%; max-height: 200px; display: block; margin: 0 auto;" alt="Test image">';
-
-        $this->assertEquals($expectedresult, $result);
+        $compactresult = str_replace(' ', '', $result);
+        $this->assertStringContainsString('class="img-fluid d-block mx-auto"', $result);
+        $this->assertStringContainsString('max-height:200px', $compactresult);
+        $this->assertStringNotContainsString('lalala', $result);
     }
 
     /**
@@ -120,7 +113,7 @@ final class marketing_notification_test extends \advanced_testcase {
      * This test verifies that the format_notification_body method correctly:
      * - Adds target="_blank" and rel="noopener noreferrer" to links
      * - Converts button class to Bootstrap styled buttons
-     * - Does not override existing max-width in style attribute
+     * - Removes invalid CSS declarations during the final sanitisation
      *
      * @covers ::format_notification_body
      */
@@ -131,10 +124,27 @@ final class marketing_notification_test extends \advanced_testcase {
             '<img src="test.jpg" style="lalala max-width=lilili" alt="Test image">'
         );
 
-        $expectedresult = self::BASE_OUTPUT_HTML .
-            '<img src="test.jpg" style="lalala max-width=lilili" alt="Test image">';
+        $this->assertStringContainsString('class="img-fluid d-block mx-auto"', $result);
+        $this->assertStringNotContainsString('lalala', $result);
+        $this->assertStringNotContainsString('lilili', $result);
+    }
 
-        $this->assertEquals($expectedresult, $result);
+    /**
+     * Test that CSS from a notification cannot affect the surrounding Moodle page.
+     *
+     * @covers ::format_notification_body
+     */
+    public function test_format_notification_body_removes_global_css(): void {
+        $notification = new marketing_notification('en', 'test-user-id');
+        $body = '<style>body { display: none !important; }</style>' .
+            '<p onclick="alert(1)">Visible notification content</p>';
+
+        $result = $notification->format_notification_body($body);
+
+        $this->assertStringNotContainsString('<style', $result);
+        $this->assertStringNotContainsString('display: none', $result);
+        $this->assertStringNotContainsString('onclick', $result);
+        $this->assertStringContainsString('Visible notification content', $result);
     }
 
     /**

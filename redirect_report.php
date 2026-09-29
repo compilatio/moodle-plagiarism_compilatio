@@ -31,20 +31,31 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 use plagiarism_compilatio\compilatio\api;
 
-require_login();
+global $PAGE, $OUTPUT, $DB;
+
+$cmid = required_param('cmid', PARAM_INT);
+$docid = required_param('docid', PARAM_RAW);
+$reporttype = optional_param('type', 'detailed', PARAM_RAW);
+
+$cm = get_coursemodule_from_id(null, $cmid, 0, false, MUST_EXIST);
+$course = get_course($cm->course);
+$modulecontext = context_module::instance($cmid);
+
+require_login($course, true, $cm);
+
+$PAGE->set_url('/plagiarism/compilatio/redirect_report.php', [
+    'cmid' => $cmid,
+    'docid' => $docid,
+    'type' => $reporttype,
+]);
+$PAGE->set_context($modulecontext);
+$PAGE->set_pagelayout('incourse');
+
 if (isguestuser()) {
     redirect(new moodle_url('/'));
     die();
 }
 
-$cmid = required_param('cmid', PARAM_TEXT);
-
-global $OUTPUT;
-
-$docid = required_param('docid', PARAM_RAW);
-$reporttype = optional_param('type', 'detailed', PARAM_RAW);
-
-$modulecontext = context_module::instance($cmid);
 $isteacher = has_capability('plagiarism/compilatio:viewreport', $modulecontext);
 
 $userid = $DB->get_field('plagiarism_compilatio_cm_cfg', 'userid', ['cmid' => $cmid]);

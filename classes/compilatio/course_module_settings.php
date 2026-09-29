@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 use plagiarism_compilatio\compilatio\api;
+use plagiarism_compilatio\compilatio\managed_bundle;
 use moodle_url;
 
 /**
@@ -37,22 +38,11 @@ use moodle_url;
  */
 class course_module_settings {
     /**
-     * Contain all config key about configurable detections.
-     */
-    public const CONFIGDETECTIONSTYPEKEY = [
-        "similarityenabled",
-        "utlenabled",
-        "ai_detectionenabled",
-        "rewordingenabled",
-    ];
-
-    /**
      * Save Compilatio settings from a course module settings page
      *
      * @param stdClass $data
-     * @param stdClass $course
      */
-    public static function save_course_module_settings($data, $course) {
+    public static function save_course_module_settings($data): object {
         global $DB, $USER;
         $plugin = new \plagiarism_plugin_compilatio();
         if (!$plugin->get_settings()) {
@@ -98,8 +88,8 @@ class course_module_settings {
      * @param moodleform $formwrapper
      * @param MoodleQuickForm $mform
      */
-    public static function display_course_module_settings($formwrapper, $mform) {
-        global $DB, $USER;
+    public static function display_course_module_settings($formwrapper, $mform): void {
+        global $DB;
 
         $plugin = new \plagiarism_plugin_compilatio();
         $plagiarismsettings = $plugin->get_settings();
@@ -158,7 +148,7 @@ class course_module_settings {
         foreach ($plagiarismelements as $element) {
             // The setDefault is already made in get_configurable_detections_form.
             // To follow group administrator choices for configurable detections.
-            if (in_array($element, self::CONFIGDETECTIONSTYPEKEY) && !isset($config->$element)) {
+            if (in_array($element, array_keys(managed_bundle::DETECTIONSTYPE)) && !isset($config->$element)) {
                 continue;
             }
 
@@ -174,7 +164,7 @@ class course_module_settings {
      * @param string  $modulename
      * @param string  $teacheremail
      */
-    public static function get_form_elements($mform, $defaults = false, $modulename = null, $teacheremail = null) {
+    public static function get_form_elements($mform, $defaults = false, $modulename = null, $teacheremail = null): void {
         global $PAGE, $USER;
 
         $lang = substr(current_language(), 0, 2);
@@ -382,42 +372,42 @@ class course_module_settings {
         );
 
         foreach ($managedbundle->get_bundle_detections() as $detection) {
-            if (!in_array($detection->process, managed_bundle::DETECTIONSTYPE)) {
+            if (false === $field = array_search($detection->process, managed_bundle::DETECTIONSTYPE)) {
                 continue;
             }
 
             if ($detection->enabled && !$detection->configurable) {
                 $mform->addElement(
                     'select',
-                    $detection->process . 'enabled',
+                    $field,
                     get_string('detection_' . $detection->process . '_activated', 'plagiarism_compilatio'),
                     [1 => get_string('always_enabled', 'plagiarism_compilatio')]
                 );
-                $mform->setDefault($detection->process . 'enabled', 1);
+                $mform->setDefault($field, 1);
             } else if ($detection->enabled) {
                 $mform->addElement(
                     'select',
-                    $detection->process . 'enabled',
+                    $field,
                     get_string('detection_' . $detection->process . '_activated', 'plagiarism_compilatio'),
                     $ynoptions
                 );
-                $mform->setDefault($detection->process . 'enabled', 1);
+                $mform->setDefault($field, 1);
             } else if ($detection->configurable) {
                 $mform->addElement(
                     'select',
-                    $detection->process . 'enabled',
+                    $field,
                     get_string('detection_' . $detection->process . '_configurable', 'plagiarism_compilatio'),
                     $ynoptions
                 );
-                $mform->setDefault($detection->process . 'enabled', 0);
+                $mform->setDefault($field, 0);
             } else {
                 $mform->addElement(
                     'select',
-                    $detection->process . 'enabled',
+                    $field,
                     get_string('detection_' . $detection->process . '_desactivated', 'plagiarism_compilatio'),
                     [0 => get_string('no')]
                 );
-                $mform->setDefault($detection->process . 'enabled', 0);
+                $mform->setDefault($field, 0);
             }
         }
     }
@@ -429,11 +419,11 @@ class course_module_settings {
      * @param stdClass $USER Moodle connected user
      * @param stdClass $data Data from form
      * @param stdClass $cmconfig Actual course module configuration
-     * @param stdClass $newconfig New course module configuration
+     * @param bool     $newconfig New course module configuration
      * @param stdClass $plugin Moodle plagiarism plugin class
      * @return void
      */
-    private static function set_config($DB, $USER, $data, $cmconfig, $newconfig, $plugin) {
+    private static function set_config($DB, $USER, $data, $cmconfig, $newconfig, $plugin): void {
         // Validation on thresholds.
         if (
             !isset($data->warningthreshold, $data->criticalthreshold) ||
@@ -465,7 +455,9 @@ class course_module_settings {
         }
 
         if (isset($cmconfig->userid)) {
-            $compilatio ??= new api($cmconfig->userid);
+            if (!isset($compilatio)) {
+                $compilatio = new api($cmconfig->userid);
+            }
 
             // Get Datetime for Compilatio folder if it exist.
             $analysistime = $data->analysistime ?? null;
@@ -477,30 +469,38 @@ class course_module_settings {
             }
 
             $compilatiouser = $compilatio->get_apikey_user(false);
-            $detectiosnenabled = [];
+            $detectionssettings = [];
 
             if ($compilatiouser) {
                 $managedbundle = new managed_bundle($compilatiouser);
 
                 foreach ($managedbundle->get_bundle_detections() as $detection) {
-                    if (
-                        !in_array($detection->process, managed_bundle::DETECTIONSTYPE) ||
-                        ($managedbundle->is_anasim_recipe() && in_array($detection->process, ['ai_detection', 'rewording']))
-                    ) {
+                    if (false === $field = array_search($detection->process, managed_bundle::DETECTIONSTYPE)) {
                         continue;
                     }
 
-                    if ($managedbundle->is_anasim_recipe() || 'similarity' === $detection->process) {
-                        $data->{$detection->process . 'enabled'} = '1';
-                        continue;
+                    // Assign bundle's value.
+                    $detectionvalue = $detection->enabled;
+                    // Overwrite with form value.
+                    if (isset($data->$field)) {
+                        $detectionvalue = (bool) $data->$field;
                     }
+                    // Create or update form value.
+                    $data->$field = array_search($detectionvalue, [false, true]);
 
                     if ($detection->configurable) {
-                        $detectiosnenabled[] = [
+                        $detectionssettings[] = [
                             'process' => $detection->process,
-                            'enabled' => (bool) $data->{$detection->process . 'enabled'},
+                            'enabled' => $detectionvalue,
                             'configurable' => true,
                         ];
+                    }
+                }
+
+                // Set missing detections to 0.
+                foreach (array_keys(managed_bundle::DETECTIONSTYPE) as $field) {
+                    if (!isset($data->$field)) {
+                        $data->$field = 0;
                     }
                 }
             }
@@ -511,7 +511,7 @@ class course_module_settings {
                     $data->defaultindexing,
                     $data->analysistype,
                     $analysistime,
-                    $detectiosnenabled,
+                    $detectionssettings,
                     $data->warningthreshold,
                     $data->criticalthreshold
                 );
@@ -525,7 +525,7 @@ class course_module_settings {
                     $data->defaultindexing,
                     $data->analysistype,
                     $analysistime,
-                    $detectiosnenabled,
+                    $detectionssettings,
                     $data->warningthreshold,
                     $data->criticalthreshold
                 );

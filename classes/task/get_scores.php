@@ -35,7 +35,7 @@ class get_scores extends \core\task\scheduled_task {
      * Get the task name
      * @return string Name
      */
-    public function get_name() {
+    public function get_name(): string {
         return get_string('get_scores', 'plagiarism_compilatio');
     }
 
@@ -43,7 +43,7 @@ class get_scores extends \core\task\scheduled_task {
      * Execute the task
      * @return void
      */
-    public function execute() {
+    public function execute(): void {
 
         global $DB, $CFG;
 

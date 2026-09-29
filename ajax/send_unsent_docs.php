@@ -24,12 +24,14 @@
  * @param string $_POST['cmid']
  */
 
+define('AJAX_SCRIPT', true);
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
 use plagiarism_compilatio\compilatio\file;
 
 require_login();
+require_sesskey();
 
 $cmid = required_param('cmid', PARAM_TEXT);
 $context = context_module::instance($cmid);
@@ -53,3 +55,4 @@ if ($countsuccess > 0) {
         ],
     ];
 }
+echo json_encode(['success' => true]);

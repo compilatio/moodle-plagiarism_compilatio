@@ -33,7 +33,7 @@ use plagiarism_compilatio\compilatio\managed_bundle;
  * @param  int  $oldversion Old version
  * @return bool Return true if succeed, false otherwise
  */
-function xmldb_plagiarism_compilatio_upgrade($oldversion) {
+function xmldb_plagiarism_compilatio_upgrade($oldversion): bool {
     global $CFG, $DB, $OUTPUT;
     $dbman = $DB->get_manager();
 
@@ -236,11 +236,6 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021012500, 'plagiarism', 'compilatio');
     }
 
-    if ($oldversion < 2021021800) {
-        compilatio_update_meta();
-        upgrade_plugin_savepoint(true, 2021021800, 'plagiarism', 'compilatio');
-    }
-
     if ($oldversion < 2021062300) {
         $cms = $DB->get_records_sql('SELECT distinct cm FROM {plagiarism_compilatio_config}');
         foreach ($cms as $cm) {
@@ -412,7 +407,7 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion) {
 
         $DB->execute($sql);
 
-        upgrade_plugin_savepoint(true, 2024011700, 'plagiarism', 'compilatio');
+        upgrade_plugin_savepoint(true, 2025061200, 'plagiarism', 'compilatio');
     }
 
     if ($oldversion < 2026012300) {

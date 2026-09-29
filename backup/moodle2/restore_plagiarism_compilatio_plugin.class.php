@@ -31,7 +31,7 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
      * Returns the paths to be handled by the plugin at question level
      * @return  void
      */
-    protected function define_course_plugin_structure() {
+    protected function define_course_plugin_structure(): array {
         $paths = [];
 
         // Add own format stuff.
@@ -47,7 +47,7 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
      * @param  object $data Data
      * @return void
      */
-    public function process_compilatioconfig($data) {
+    public function process_compilatioconfig($data): void {
         $data = (object)$data;
 
         if ($this->task->is_samesite()) { // Files can only be restored if this is the same site as was backed up.
@@ -60,7 +60,7 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
      * Returns the paths to be handled by the plugin at module level
      * @return  array Paths
      */
-    protected function define_module_plugin_structure() {
+    protected function define_module_plugin_structure(): array {
         $paths = [];
 
         // Add own format stuff.
@@ -80,12 +80,11 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
      * @param  object $data Data
      * @return void
      */
-    public function process_compilatiomodule($data) {
+    public function process_compilatiomodule($data): void {
         global $DB;
 
         if ($this->task->is_samesite()) { // Files can only be restored if this is the same site as was backed up.
             $data = (object)$data;
-            $oldid = $data->id;
             $data->cmid = $this->task->get_moduleid();
 
             $DB->insert_record('plagiarism_compilatio_cm_cfg', $data);
@@ -97,12 +96,11 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
      * @param  object $data Data
      * @return void
      */
-    public function process_compilatiofiles($data) {
+    public function process_compilatiofiles($data): void {
         global $DB;
 
         if ($this->task->is_samesite()) { // Files can only be restored if this is the same site as was backed up.
             $data = (object)$data;
-            $oldid = $data->id;
             $data->cm = $this->task->get_moduleid();
             $data->userid = $this->get_mappingid('user', $data->userid);
 

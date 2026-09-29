@@ -48,11 +48,9 @@ if (isset($plagiarismsettings['enabled'])) {
 }
 
 // Connection test.
-$compilatio = new api(null, 'test');
-if ($compilatio->check_apikey() == 'Forbidden ! Your api key is invalid') {
+$connectionsuccess = false;
+if (false !== (new api(null, null))->get_config()) {
     $connectionsuccess = true;
-} else {
-    $connectionsuccess = false;
 }
 
 // Test if Compilatio is enabled for assign.
@@ -84,12 +82,7 @@ if (isset($plagiarismsettings['enable_mod_quiz'])) {
 }
 
 // API key test.
-$compilatio = new api();
-if ($compilatio->check_apikey() === true) {
-    $apikeysuccess = true;
-} else {
-    $apikeysuccess = false;
-}
+$apikeysuccess = !empty(get_config('plagiarism_compilatio', 'apikey')) && (new api())->check_apikey();
 
 echo $OUTPUT->header();
 $currenttab = 'compilatioautodiagnosis';

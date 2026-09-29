@@ -40,7 +40,7 @@ class document_frame {
      * @param string  $linkarray
      * @return string Return the HTML formatted string.
      */
-    public static function get_document_frame($linkarray) {
+    public static function get_document_frame($linkarray): string {
         global $DB, $CFG, $PAGE, $USER;
         $output = '';
 
@@ -167,17 +167,18 @@ class document_frame {
 
         // Get compilatio file record.
         if (isset($linkarray['area']) && isset($linkarray['itemid'])) {
+            $attemptid = $linkarray['cmp_attemptid'] ?? $linkarray['area'];
             $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
                 $linkarray['cmid'],
                 $content,
-                ['attemptid' => $linkarray['area'], 'slot' => $linkarray['itemid']],
+                ['attemptid' => $attemptid, 'slot' => $linkarray['itemid']],
                 $userid
             );
             if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
                 $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
                     $linkarray['cmid'],
                     $linkarray['cmp_filename'],
-                    ['attemptid' => $linkarray['area'], 'slot' => $linkarray['itemid']],
+                    ['attemptid' => $attemptid, 'slot' => $linkarray['itemid']],
                     $userid
                 );
             }
@@ -303,7 +304,7 @@ class document_frame {
         $canviewreport,
         $isteacher,
         $url
-    ) {
+    ): string {
         global $DB, $CFG;
 
         $compilatio = new api();
@@ -330,19 +331,14 @@ class document_frame {
 
                 $href = "{$CFG->httpswwwroot}/plagiarism/compilatio/redirect_report.php?" . http_build_query($params);
 
-                // Plugin v2 docs management.
-                if (isset($cmpfile->reporturl)) {
-                    $href = $cmpfile->reporturl;
-                }
-
                 // Display fake report button if under maintenance.
                 if ($compilatio->is_in_maintenance()) {
                     $documentframe =
                         "<div
                             class='cmp-btn cmp-btn-doc cmp-btn-primary disabled'
-                            title='" . self::formatstring('disabled_in_maintenance') .
+                            title='" . self::format_string('disabled_in_maintenance') .
                         "'>"
-                            . icons::report() . self::formatstring('report', 'core') .
+                            . icons::report() . self::format_string('report', 'core') .
                         "</div>";
                 } else {
                     $documentframe =
@@ -352,7 +348,7 @@ class document_frame {
                             data-testid='compilatio-report-button'
                             class='cmp-btn cmp-btn-doc cmp-btn-primary'
                         >"
-                            . icons::report() . self::formatstring('report', 'core') .
+                            . icons::report() . self::format_string('report', 'core') .
                         "</a>";
                 }
             }
@@ -363,27 +359,27 @@ class document_frame {
                 $documentframe =
                     "<div
                         title='"
-                            . self::formatstring(
+                            . self::format_string(
                                 'title_planned',
                                 'plagiarism_compilatio',
                                 userdate($config->analysistime)
                             ) . "'
                         class='cmp-color-secondary'>
                         <i class='cmp-icon-lg mx-2 fa fa-clock-o'></i>"
-                        . self::formatstring('btn_planned') .
+                        . self::format_string('btn_planned') .
                     "</div>";
                 $bgcolor = 'primary';
-            } else if ($cantriggeranalysis || !$isteacher) {
+            } else if ($cantriggeranalysis) {
                 $documentframe =
                     "<div
                         title='" . ($compilatio->is_in_maintenance() ?
-                            self::formatstring('disabled_in_maintenance') :
-                            self::formatstring('title_sent')) . "'
+                            self::format_string('disabled_in_maintenance') :
+                            self::format_string('title_sent')) . "'
                         class='cmp-btn cmp-btn-doc cmp-btn-primary cmp-start-btn'
                         data-testid='compilatio-analysis-button'
                     >
                         <i class='cmp-icon-lg mr-1 fa fa-play-circle'></i>"
-                        . self::formatstring('btn_sent') .
+                        . self::format_string('btn_sent') .
                     "</div>";
             } else {
                 return '';
@@ -392,11 +388,11 @@ class document_frame {
             $documentframe =
                 "<div
                     data-testid='compilatio-analysis-status'
-                    title='" . self::formatstring('title_' . $status) . "'
+                    title='" . self::format_string('title_' . $status) . "'
                     class='cmp-color-secondary cmp-action-btn'
                 >
                     <i class='cmp-icon-lg mx-2 fa fa-spinner fa-spin'></i>"
-                    . self::formatstring('btn_' . $status) .
+                    . self::format_string('btn_' . $status) .
                 "</div>";
             $bgcolor = 'primary';
         } else if (isset($status) && strpos($status, "error") === 0) {
@@ -410,12 +406,12 @@ class document_frame {
 
             $documentframe =
                 "<div title='"
-                    . self::formatstring(
+                    . self::format_string(
                         'title_' . $status,
                         'plagiarism_compilatio',
                         $value ?? null
                     ) . "' class='cmp-color-error mx-2 text-nowrap'>
-                    <i class='mx-2 fa fa-exclamation-triangle'></i>" . self::formatstring('btn_' . $status) . "</div>";
+                    <i class='mx-2 fa fa-exclamation-triangle'></i>" . self::format_string('btn_' . $status) . "</div>";
             $bgcolor = 'error';
         } else if (isset($url) && ($cantriggeranalysis || !$isteacher)) {
             // Display fake unset button if under maintenance.
@@ -423,21 +419,21 @@ class document_frame {
                 $documentframe =
                     "<div
                         class='cmp-btn cmp-btn-doc cmp-btn-primary disabled'
-                        title='" . self::formatstring('disabled_in_maintenance') .
+                        title='" . self::format_string('disabled_in_maintenance') .
                     "'>"
                         . "<i class='mr-2 fa fa-paper-plane'></i>"
-                        . self::formatstring('btn_unsent') .
+                        . self::format_string('btn_unsent') .
                     "</div>";
             } else {
                 $documentframe =
                     "<a
                         href='" . $url . "'
                         target='_self'
-                        title='" . self::formatstring('title_unsent') . "'
+                        title='" . self::format_string('title_unsent') . "'
                         class='cmp-btn cmp-btn-doc cmp-btn-primary'
                     >
                         <i class='mr-2 fa fa-paper-plane'></i>"
-                        . self::formatstring('btn_unsent') .
+                        . self::format_string('btn_unsent') .
                     "</a>";
             }
         } else {
@@ -454,7 +450,12 @@ class document_frame {
                 $compilatio = new api($config->userid);
                 $document = $compilatio->get_document($cmpfile->externalid);
                 $cmpfile->indexed = $document->indexed;
-                $DB->update_record('plagiarism_compilatio_files', $cmpfile);
+                $DB->set_field(
+                    'plagiarism_compilatio_files',
+                    'indexed',
+                    $cmpfile->indexed,
+                    ['id' => $cmpfile->id]
+                );
             }
 
             $indexed = $cmpfile->indexed ? true : false;
@@ -479,22 +480,22 @@ class document_frame {
      * @param  mixed  $indexingstate Indexing state
      * @return string                Return the HTML
      */
-    private static function get_indexing_state($indexingstate) {
+    private static function get_indexing_state($indexingstate): string {
         $html = ''; // Do not show indexing state for a "non-teacher" user.
 
-        $compialtio = new api();
+        $compilatio = new api();
 
         if (isset($indexingstate)) {
             if ($indexingstate === true) {
                 $class = 'cmp-library-in fa-check-circle';
-                $title = self::formatstring('indexed_document');
+                $title = self::format_string('indexed_document');
             } else if ($indexingstate === false) {
                 $class = 'cmp-library-out fa-times-circle';
-                $title = self::formatstring('not_indexed_document');
+                $title = self::format_string('not_indexed_document');
             }
 
-            if ($compialtio->is_in_maintenance()) {
-                $title = self::formatstring('disabled_in_maintenance');
+            if ($compilatio->is_in_maintenance()) {
+                $title = self::format_string('disabled_in_maintenance');
             }
 
             $html = "<div class='cmp-library' title='" . $title . "'>
@@ -515,7 +516,7 @@ class document_frame {
      * @param  boolean $nowrap
      * @return string  Return score area HTML string
      */
-    public static function get_score($cmpfile, $config, $isteacher, $nowrap = false) {
+    public static function get_score($cmpfile, $config, $isteacher, $nowrap = false): string {
 
         $compilatio = new api();
 
@@ -527,11 +528,11 @@ class document_frame {
 
         $ignoredscores = empty($cmpfile->ignoredscores) ? [] : explode(',', $cmpfile->ignoredscores);
 
-        $title = self::formatstring('title_score', 'plagiarism_compilatio', $cmpfile->globalscore);
+        $title = self::format_string('title_score', 'plagiarism_compilatio', $cmpfile->globalscore);
         $title .= $isteacher ?
             ( $compilatio->is_in_maintenance() ?
-                ' ' . self::formatstring('disabled_in_maintenance')
-                : ' ' . self::formatstring('title_score_teacher'))
+                ' ' . self::format_string('disabled_in_maintenance')
+                : ' ' . self::format_string('title_score_teacher'))
             : '';
 
         $html = "
@@ -562,18 +563,18 @@ class document_frame {
             }
         }
 
-        $tooltip = "<b>{$cmpfile->globalscore}" . self::formatstring('tooltip_detailed_scores') . "</b><br>";
-        $ignoredtooltip = "<b>" . self::formatstring('excluded_from_score') . ' </b><br>';
+        $tooltip = "<b>{$cmpfile->globalscore}" . self::format_string('tooltip_detailed_scores') . "</b><br>";
+        $ignoredtooltip = "<b>" . self::format_string('excluded_from_score') . ' </b><br>';
 
         foreach ($scores as $score) {
-            $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : self::formatstring('unmeasured');
-            $message = self::formatstring($score) . " : <b>{$message}</b><br>";
+            $message = isset($cmpfile->$score) ? $cmpfile->$score . '%' : self::format_string('unmeasured');
+            $message = self::format_string($score) . " : <b>{$message}</b><br>";
 
             in_array($score, $ignoredscores) ? $ignoredtooltip .= $message : $tooltip .= $message;
         }
 
         if ($recipe !== 'anasim-premium') {
-            $tooltip .= self::formatstring('aiscore') . " : <b>" . self::formatstring('ai_score_not_included') . "</b><br>";
+            $tooltip .= self::format_string('aiscore') . " : <b>" . self::format_string('ai_score_not_included') . "</b><br>";
         }
 
         if (!empty($ignoredscores)) {
@@ -596,7 +597,11 @@ class document_frame {
      * @param  ?string $a         optional string to include in translation
      * @return string Formated string
      */
-    private static function formatstring(string $stringid, string $component = 'plagiarism_compilatio', ?string $a = null) {
+    private static function format_string(
+        string $stringid,
+        string $component = 'plagiarism_compilatio',
+        ?string $a = null
+    ): string {
         $str = get_string($stringid, $component, $a);
         if (preg_match("/&#[0-9]+;|&[a-z]+;/", $str)) {
             return $str;
@@ -612,6 +617,13 @@ class document_frame {
      */
     private static function manage_quiz($linkarray) {
         global $DB;
+
+        if (!empty($linkarray['area'])) {
+            $attemptid = $DB->get_field('quiz_attempts', 'id', ['uniqueid' => $linkarray['area']]);
+            if (!empty($attemptid)) {
+                $linkarray['cmp_attemptid'] = $attemptid;
+            }
+        }
 
         if (empty($linkarray['cmid']) || empty($linkarray['content'])) {
             $quba = \question_engine::load_questions_usage_by_activity($linkarray['area']);

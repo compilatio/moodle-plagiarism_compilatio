@@ -24,6 +24,7 @@
  * @param string $_POST['cmid']
  */
 
+define('AJAX_SCRIPT', true);
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
 
@@ -32,13 +33,14 @@ use plagiarism_compilatio\compilatio\api;
 use plagiarism_compilatio\compilatio\analysis;
 
 require_login();
+require_sesskey();
 
 $cmid = required_param('cmid', PARAM_TEXT);
 
 $contextmodule = context_module::instance($cmid);
 require_capability('plagiarism/compilatio:triggeranalysis', context::instance_by_id($contextmodule->id));
 
-global $DB;
+global $DB, $SESSION;
 
 $compilatio = new api();
 
@@ -95,3 +97,5 @@ if (!empty($files)) {
         ];
     }
 }
+
+echo json_encode(['success' => true]);

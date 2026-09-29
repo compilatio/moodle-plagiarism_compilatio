@@ -61,7 +61,7 @@ class alerts {
      * @param int $cmid The course module ID to check for specific alerts (e.g., 'assign', 'quiz')
      * @return array Array of alerts
      */
-    public function get($SESSION, $cmid) {
+    public function get($SESSION, $cmid): array {
         $compilatioalerts = $this->compilatioapi->get_alerts($this->language);
 
         $alerts = [];
@@ -92,7 +92,7 @@ class alerts {
      * @param int $index The index of the alert (used for unique IDs)
      * @return string The HTML string for the alert
      */
-    public function get_alert_body($alert, $index) {
+    public function get_alert_body($alert, $index): string {
          return "<div class='cmp-alert cmp-alert-" . $alert['class'] . "'>
                 <span class='mr-1 d-flex'>
                     <i class='cmp-alert-icon fa-lg fa " . $this->get_icon($alert['class']) . "'></i>" . $alert['content'] .
@@ -112,7 +112,7 @@ class alerts {
      * @param string $typealert The type of alert (e.g., 'info', 'warning', 'danger', 'maintenance', 'success')
      * @return string The icon class for the alert
      */
-    private function get_icon($typealert) {
+    private function get_icon($typealert): string {
         switch ($typealert) {
             case 'info':
                 $icon = 'fa-bell';
@@ -138,7 +138,7 @@ class alerts {
      * @param int $cmid The course module ID to check for specific alerts (e.g., 'assign', 'quiz')
      * @return array Array of alerts
      */
-    private function get_internal_moodle_alerts($SESSION, $cmid) {
+    private function get_internal_moodle_alerts($SESSION, $cmid): array {
         $alerts = [];
 
         if (isset($SESSION->compilatio_alerts)) {

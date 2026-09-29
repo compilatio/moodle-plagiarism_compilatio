@@ -40,7 +40,7 @@ class compilatio_defaults_form extends \moodleform {
      * Define the form
      * @return void
      */
-    protected function definition() {
+    protected function definition(): void {
         $mform = & $this->_form;
         course_module_settings::get_form_elements($mform, true);
         $this->add_action_buttons(true);

@@ -26,9 +26,8 @@
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 /** @var stdClass $plugin */
-$plugin->version    = 2026062500;
-$plugin->requires   = 2022041900;
-$plugin->cron       = 300; // Only run every 5 minutes.
+$plugin->version    = 2026092400;
+$plugin->requires   = 2024100700; // Moodle 4.5.0.
 $plugin->component  = 'plagiarism_compilatio';
 $plugin->maturity   = MATURITY_STABLE;
-$plugin->release    = '3.3.1';
+$plugin->release    = '3.3.2';

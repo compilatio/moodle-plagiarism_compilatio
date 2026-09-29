@@ -31,7 +31,7 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
      * Define the plugin's structure
      * @return object Structure object
      */
-    protected function define_module_plugin_structure() {
+    protected function define_module_plugin_structure(): object {
         // To know if we are including userinfo.
         $userinfo = $this->get_setting_value('userinfo');
 
@@ -49,14 +49,19 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
             'folderid',
             'userid',
             'activated',
-            'showstudentreport',
             'showstudentscore',
-            'studentanalyses',
+            'showstudentreport',
+            'reporttype',
             'analysistype',
             'analysistime',
             'warningthreshold',
             'criticalthreshold',
             'defaultindexing',
+            'ignoredscores',
+            'similarityenabled',
+            'ai_detectionenabled',
+            'utlenabled',
+            'rewordingenabled',
         ]);
         $pluginwrapper->add_child($compilatioconfigs);
         $compilatioconfigs->add_child($compilatioconfig);
@@ -91,7 +96,7 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
      * Define course plugin structure
      * @return object Plugin structure object
      */
-    protected function define_course_plugin_structure() {
+    protected function define_course_plugin_structure(): object {
         // Define the virtual plugin element without conditions as the global class checks already.
         $plugin = $this->get_plugin_element();
 

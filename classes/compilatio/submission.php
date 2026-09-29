@@ -56,7 +56,7 @@ class submission {
      *
      * @return object Submission record, null if a quiz (quiz don't had submissions) or throw exception
      */
-    public function get($cm, $content, $userid, $filename) {
+    public function get($cm, $content, $userid, $filename): ?object {
 
         if (!$cm) {
             throw new moodle_exception("Course module not found");
@@ -90,7 +90,7 @@ class submission {
      *
      * @return object|null Submission record or null if not found
      */
-    private function get_from_assignment($content, $moduleinstance, $userid, $filename) {
+    private function get_from_assignment($content, $moduleinstance, $userid, $filename): ?object {
         $submission = null;
         $onlinetext = true;
 
@@ -152,7 +152,7 @@ class submission {
      *
      * @return object|null Submission record or null if not found
      */
-    private function get_from_workshop($content, $moduleinstance, $userid, $filename) {
+    private function get_from_workshop($content, $moduleinstance, $userid, $filename): ?object {
         $submission = null;
         $onlinetext = true;
 
@@ -202,7 +202,7 @@ class submission {
      *
      * @return object|null Submission record or null if not found
      */
-    private function get_from_forum($content, $moduleinstance, $userid, $filename) {
+    private function get_from_forum($content, $moduleinstance, $userid, $filename): ?object {
         $submission = null;
         $onlinetext = true;
 
@@ -252,7 +252,7 @@ class submission {
      *
      * @return object|null Submission record or null if not found
      */
-    private function get_by_id($content, $table) {
+    private function get_by_id($content, $table): ?object {
         $filerecord = $this->moodledatabase->get_record('files', ['id' => $content->get_id()]);
         if ($filerecord) {
             $submission = $this->moodledatabase->get_record($table, ['id' => $filerecord->itemid]);
@@ -271,7 +271,7 @@ class submission {
      *
      * @return object|null Submission record or null if not found
      */
-    private function get_by_content($content, $moduleinstance, $sql, $text) {
+    private function get_by_content($content, $moduleinstance, $sql, $text): ?object {
         $contentidentifier = sha1($content);
 
         $submissions = $this->moodledatabase->get_records_sql($sql, [$moduleinstance->id]);
@@ -292,7 +292,7 @@ class submission {
      *
      * @return object|null Submission record or null if not found
      */
-    private function get_by_filename($filename, $table) {
+    private function get_by_filename($filename, $table): ?object {
         // Extract submission ID from filename based on the table type.
         $pattern = '';
 

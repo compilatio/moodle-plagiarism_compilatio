@@ -1,4 +1,4 @@
-Compilatio.net Plagiarism plugin for Moodle 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 5.0, 5.1
+Compilatio.net Plagiarism plugin for Moodle 4.5, 5.0, 5.1, 5.2
 
 Author: Compilatio <support@compilatio.net>
 Copyright 2026 Compilatio.net https://www.compilatio.net
@@ -7,6 +7,15 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+3.3.2
+- [Fix] Avoid throw exception when plugin is not yet configured
+- [Fix] Use with Copyright(s) bundles
+- [Fix] Missing params to reset course
+- [Fix] Use uniqueId in quiz filename
+- [Fix] Trigger analyses capability
+- [Fix] Add try catch in get_links to avoid displaying blocking errors
+- Update plugin to support only from Moodle 4.5
+
 3.3.1
 - [Fix] Fix for the requests to create and update a folder 
 - [Fix] Fix redirections to reports and helpcenter

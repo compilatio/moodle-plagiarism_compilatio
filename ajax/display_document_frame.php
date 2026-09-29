@@ -23,6 +23,7 @@
  *
  */
 
+define('AJAX_SCRIPT', true);
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 
 use plagiarism_compilatio\output\document_frame;
@@ -32,17 +33,19 @@ if (isguestuser()) {
     redirect(new moodle_url('/'));
     die();
 }
-
 $cmpfileid = required_param('cmpfileid', PARAM_RAW);
 $cantriggeranalysis = required_param('cantriggeranalysis', PARAM_BOOL);
 $canviewreport = required_param('canviewreport', PARAM_BOOL);
 $isteacher = required_param('isteacher', PARAM_BOOL);
 $url = required_param('url', PARAM_RAW);
 
-echo document_frame::display_document_frame(
-    $cantriggeranalysis,
-    $cmpfileid,
-    $canviewreport,
-    $isteacher,
-    $url
-);
+echo json_encode([
+    'html' => document_frame::display_document_frame(
+        $cantriggeranalysis,
+        $cmpfileid,
+        $canviewreport,
+        $isteacher,
+        $url
+    ),
+    'error' => null,
+]);

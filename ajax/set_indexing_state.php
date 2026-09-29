@@ -26,11 +26,13 @@
  * @return  boolean
  */
 
+define('AJAX_SCRIPT', true);
 require_once(dirname(dirname(__FILE__)) . '/../../config.php');
 
 use plagiarism_compilatio\compilatio\api;
 
 require_login();
+require_sesskey();
 global $DB;
 
 $docid = optional_param('docId', '', PARAM_TEXT);
@@ -52,7 +54,7 @@ if (isset($docid) && isset($indexingstatepost)) {
     $response = new stdClass();
     if ($compilatio->set_indexing_state($file->externalid, $indexingstate) === true) {
         $file->indexed = $indexingstate;
-        $DB->update_record('plagiarism_compilatio_files', $file);
+        $DB->set_field('plagiarism_compilatio_files', 'indexed', $indexingstate, ['id' => $file->id]);
         $response->status = 'ok';
         if ($indexingstate == '0') {
             $response->text = get_string('not_indexed_document', 'plagiarism_compilatio');

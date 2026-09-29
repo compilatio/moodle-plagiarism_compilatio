@@ -54,7 +54,7 @@ class cmpfile {
     /**
      * @var ?string $groupid
      */
-    public ?string $groupid;
+    public ?string $groupid = null;
 
     /**
      * @var string $identifier
@@ -69,7 +69,7 @@ class cmpfile {
     /**
      * @var string $externalid
      */
-    public string $externalid;
+    public ?string $externalid = null;
 
     /**
      * @var string $status
@@ -77,34 +77,34 @@ class cmpfile {
     public string $status;
 
     /**
-     * @var ?int $globalscore
+     * @var int $globalscore
      */
-    public ?int $globalscore;
+    public int $globalscore = 0;
 
     /**
      * @var ?int $simscore
      */
-    public ?int $simscore;
+    public ?int $simscore = null;
 
     /**
      * @var ?int $utlscore
      */
-    public ?int $utlscore;
+    public ?int $utlscore = null;
 
     /**
      * @var ?int $aiscore
      */
-    public ?int $aiscore;
+    public ?int $aiscore = null;
 
     /**
-     * @var ?int $ignoredscores
+     * @var string $ignoredscores
      */
-    public ?int $ignoredscores;
+    public string $ignoredscores = '';
 
     /**
      * @var ?string $analysisid
      */
-    public ?string $analysisid;
+    public ?string $analysisid = null;
 
     /**
      * @var int $timesubmitted
@@ -115,11 +115,6 @@ class cmpfile {
      * @var int $indexed
      */
     public int $indexed;
-
-    /**
-     * @var ?string $reporturl
-     */
-    public ?string $reporturl;
 
     /**
      * Create the file submited to Compilatio
@@ -212,7 +207,7 @@ class cmpfile {
      * @param string $userid User ID
      * @return void
      */
-    private function setauthors($submission, $userid) {
+    private function setauthors($submission, $userid): void {
         $groupid = null;
 
         if (!empty($submission->groupid)) {

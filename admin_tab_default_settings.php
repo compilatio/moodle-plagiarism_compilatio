@@ -33,45 +33,49 @@ require_once($CFG->dirroot . '/plagiarism/compilatio/admin_forms.php');
 require_login();
 admin_externalpage_setup('plagiarismcompilatio');
 
-$mform = new compilatio_defaults_form(null);
-
-// Get the defaults - cmid(0) is the default list.
-$defaultconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => 0]);
-if (!empty($defaultconfig)) {
-    $mform->set_data($defaultconfig);
-}
-
 echo $OUTPUT->header();
 $currenttab = 'compilatiodefaults';
 require_once($CFG->dirroot . '/plagiarism/compilatio/admin_tabs.php');
 
-if (($data = $mform->get_data()) && confirm_sesskey()) {
-    $plugin = new plagiarism_plugin_compilatio();
+if ((bool) get_config('plagiarism_compilatio', 'enabled')) {
+    $mform = new compilatio_defaults_form(null);
 
-    $data->analysistype = 'manual';
-
+    // Get the defaults - cmid(0) is the default list.
     $defaultconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => 0]);
-
-    $newconfig = false;
-    if (empty($defaultconfig)) {
-        $defaultconfig = new stdClass();
-        $defaultconfig->cmid = 0;
-        $newconfig = true;
+    if (!empty($defaultconfig)) {
+        $mform->set_data($defaultconfig);
     }
 
-    foreach ($plugin->config_options() as $element) {
-        $defaultconfig->$element = $data->$element ?? null;
-    }
+    if (($data = $mform->get_data()) && confirm_sesskey()) {
+        $plugin = new plagiarism_plugin_compilatio();
 
-    if ($newconfig) {
-        $DB->insert_record('plagiarism_compilatio_cm_cfg', $defaultconfig);
-    } else {
-        $DB->update_record('plagiarism_compilatio_cm_cfg', $defaultconfig);
-    }
+        $data->analysistype = 'manual';
 
-    echo $OUTPUT->notification(get_string('defaultupdated', 'plagiarism_compilatio'), 'notifysuccess');
+        $defaultconfig = $DB->get_record('plagiarism_compilatio_cm_cfg', ['cmid' => 0]);
+
+        $newconfig = false;
+        if (empty($defaultconfig)) {
+            $defaultconfig = new stdClass();
+            $defaultconfig->cmid = 0;
+            $newconfig = true;
+        }
+
+        foreach ($plugin->config_options() as $element) {
+            $defaultconfig->$element = $data->$element ?? null;
+        }
+
+        if ($newconfig) {
+            $DB->insert_record('plagiarism_compilatio_cm_cfg', $defaultconfig);
+        } else {
+            $DB->update_record('plagiarism_compilatio_cm_cfg', $defaultconfig);
+        }
+
+        echo $OUTPUT->notification(get_string('defaultupdated', 'plagiarism_compilatio'), 'notifysuccess');
+    }
+    echo $OUTPUT->box(get_string('defaults_desc', 'plagiarism_compilatio'));
+
+    $mform->display();
+} else {
+        echo("<p>" . get_string('plugin_disabled', 'plagiarism_compilatio') . "</p>");
 }
-echo $OUTPUT->box(get_string('defaults_desc', 'plagiarism_compilatio'));
-
-$mform->display();
 echo $OUTPUT->footer();

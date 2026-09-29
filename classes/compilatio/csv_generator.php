@@ -38,7 +38,7 @@ class csv_generator {
      * @param  string $content  CSV content
      * @return void
      */
-    protected static function get_header($filename, $content) {
+    protected static function get_header($filename, $content): void {
         $filename = preg_replace('/[\r\n]/', '', $filename);
 
         header('HTTP/1.1 200 OK');
@@ -63,7 +63,7 @@ class csv_generator {
      * @param string $module type of course module
      * @return  void
      */
-    public static function generate_cm_csv($cmid, $module) {
+    public static function generate_cm_csv($cmid, $module): void {
         global $DB;
 
         $sql = "
@@ -155,7 +155,7 @@ class csv_generator {
      * @param  array $userssubmittedtest Users
      * @return void
      */
-    public static function generate_cm_csv_per_student($cmid, $userssubmittedtest) {
+    public static function generate_cm_csv_per_student($cmid, $userssubmittedtest): void {
         global $DB;
 
         // Get the name of the activity in order to generate header line and the filename.
@@ -231,7 +231,7 @@ class csv_generator {
      *
      * @return void
      */
-    public static function generate_global_csv() {
+    public static function generate_global_csv(): void {
         $rows = statistics::get_global_statistics(false);
 
         $filename = "compilatio_moodle_" . date("Y_m_d") . ".csv";
@@ -253,7 +253,7 @@ class csv_generator {
      *
      * @return void
      */
-    public static function generate_global_raw_csv() {
+    public static function generate_global_raw_csv(): void {
         global $DB;
 
         $dbconfig = $DB->export_dbconfig();
@@ -349,7 +349,7 @@ class csv_generator {
      *
      * @return void
      */
-    public static function generate_database_data_csv() {
+    public static function generate_database_data_csv(): void {
         global $DB;
 
         $compilatiotables = ["cm_cfg", "files", "user"];
