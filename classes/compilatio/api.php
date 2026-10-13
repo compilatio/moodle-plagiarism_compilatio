@@ -25,8 +25,6 @@
 
 namespace plagiarism_compilatio\compilatio;
 
-use core\check\performance\debugging;
-
 /**
  * api class
  */

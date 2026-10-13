@@ -96,9 +96,13 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
         try {
             return document_frame::get_document_frame($linkarray);
         } catch (\Throwable $e) {
-            debugging('plagiarims_compilatio', $e->getMessage(), DEBUG_DEVELOPER);
+            debugging(
+                'plagiarism_compilatio: ' . $e->getMessage(),
+                DEBUG_DEVELOPER
+            );
+
+            return '';
         }
-        return '';
     }
 
     /**
