@@ -48,6 +48,7 @@ class update_meta extends \core\task\scheduled_task {
         global $CFG;
 
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+        $compilatio = new api();
 
         // Update the 'Compilatio unavailable' marker in the database.
         if (false !== (new api(null, null))->get_config()) {
@@ -67,7 +68,6 @@ class update_meta extends \core\task\scheduled_task {
             return;
         }
 
-        $compilatio = new api();
         $compilatio->check_apikey();
         $compilatio->set_moodle_configuration(
             phpversion(),

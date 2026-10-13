@@ -794,8 +794,6 @@ class api {
 
         $message = $response->status->message;
 
-        debugging(var_export($response, true), DEBUG_DEVELOPER);
-
         return $message;
     }
 
