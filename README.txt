@@ -8,6 +8,7 @@ Compilatio is a commercial Plagiarism Prevention product - you must have a paid 
 
 CHANGES
 3.3.3
+- [Fix] Correcting the status of queued documents containing not enough words
 - [Fix] Error display when invalid apikey is set
 - [Fix] Unable to relaunch documents from technicals tool
 
