@@ -113,19 +113,7 @@ echo $OUTPUT->header();
 
 $currenttab = 'compilatioadmintest';
 require_once($CFG->dirroot . '/plagiarism/compilatio/admin_tabs.php');
-
-echo $OUTPUT->box_start('generalbox boxaligncenter', 'intro');
-
-echo '<h3>' . get_string('reset_documents_in_error', 'plagiarism_compilatio') . '</h3>';
-
-$mform->display();
-
-foreach ($alerts ?? [] as $alert) {
-    echo "<div class='cmp-alert cmp-alert-" . $alert['class'] . "'>
-        <span class='mr-1 d-flex'>" . $alert['content'] . "</span>
-    </div>";
-}
-
+echo $OUTPUT->box_start('generalbox boxaligncenter', 'download-plugin-tables');
 echo '<h3>' . get_string('download_compilatio_database_title', 'plagiarism_compilatio') . '</h3>
     <div class="d-flex align-items-center pt-4">
         <p class="mb-0">' . get_string('download_compilatio_database_content', 'plagiarism_compilatio') . '</p>
@@ -137,5 +125,17 @@ echo '<h3>' . get_string('download_compilatio_database_title', 'plagiarism_compi
         </form>
     </div>';
 
+echo $OUTPUT->box_end();
+echo '<hr />';
+echo $OUTPUT->box_start('generalbox boxaligncenter', 'resend-documents-or-relaunch-analyses');
+echo '<h3>' . get_string('reset_documents_in_error', 'plagiarism_compilatio') . '</h3>';
+
+$mform->display();
+
+foreach ($alerts ?? [] as $alert) {
+    echo "<div class='cmp-alert cmp-alert-" . $alert['class'] . "'>
+        <span class='mr-1 d-flex'>" . $alert['content'] . "</span>
+    </div>";
+}
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();
