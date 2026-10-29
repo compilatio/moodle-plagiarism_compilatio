@@ -319,8 +319,7 @@ class event_handler {
                     // Normal submission.
                     $filetodelete = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'userid' => $userid]);
                 }
-                $keepfileindexed = boolval(get_config('plagiarism_compilatio', 'keep_docs_indexed'));
-                compilatio_delete_files($filetodelete, $keepfileindexed);
+                compilatio_delete_files($filetodelete, false);
             }
         }
 
