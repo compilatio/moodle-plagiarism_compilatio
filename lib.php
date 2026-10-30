@@ -93,16 +93,7 @@ class plagiarism_plugin_compilatio extends plagiarism_plugin {
      * @return string  HTML or blank.
      */
     public function get_links($linkarray): string {
-        try {
-            return document_frame::get_document_frame($linkarray);
-        } catch (\Throwable $e) {
-            debugging(
-                'plagiarism_compilatio: ' . $e->getMessage(),
-                DEBUG_DEVELOPER
-            );
-
-            return '';
-        }
+        return document_frame::get_document_frame($linkarray);
     }
 
     /**
