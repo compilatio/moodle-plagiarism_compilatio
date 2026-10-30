@@ -167,46 +167,46 @@ class document_frame {
 
         // Get compilatio file record.
         try {
-        if (isset($linkarray['area']) && isset($linkarray['itemid'])) {
-            $attemptid = $linkarray['cmp_attemptid'] ?? $linkarray['area'];
-            $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
-                $linkarray['cmid'],
-                $content,
-                ['attemptid' => $attemptid, 'slot' => $linkarray['itemid']],
-                $userid
-            );
-            if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
+            if (isset($linkarray['area']) && isset($linkarray['itemid'])) {
+                $attemptid = $linkarray['cmp_attemptid'] ?? $linkarray['area'];
                 $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
                     $linkarray['cmid'],
-                    $linkarray['cmp_filename'],
+                    $content,
                     ['attemptid' => $attemptid, 'slot' => $linkarray['itemid']],
                     $userid
                 );
-            }
-        } else {
-            $cmpfile = $compilatiofile->compilatio_get_document(
-                $linkarray['cmid'],
-                $content,
-                $userid,
-                null,
-                ['groupid' => $groupid]
-            );
-
-            if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
+                if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
+                    $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
+                        $linkarray['cmid'],
+                        $linkarray['cmp_filename'],
+                        ['attemptid' => $attemptid, 'slot' => $linkarray['itemid']],
+                        $userid
+                    );
+                }
+            } else {
                 $cmpfile = $compilatiofile->compilatio_get_document(
                     $linkarray['cmid'],
-                    $linkarray['cmp_filename'],
+                    $content,
                     $userid,
                     null,
-                    ['groupid' => $groupid],
-                    false
+                    ['groupid' => $groupid]
                 );
-            }
 
-            if (empty($cmpfile)) { // Try to get record without userid in forums.
-                $cmpfile = $compilatiofile->compilatio_get_document($linkarray['cmid'], $content, $userid);
+                if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
+                    $cmpfile = $compilatiofile->compilatio_get_document(
+                        $linkarray['cmid'],
+                        $linkarray['cmp_filename'],
+                        $userid,
+                        null,
+                        ['groupid' => $groupid],
+                        false
+                    );
+                }
+
+                if (empty($cmpfile)) { // Try to get record without userid in forums.
+                    $cmpfile = $compilatiofile->compilatio_get_document($linkarray['cmid'], $content, $userid);
+                }
             }
-        }
         } catch (\Throwable $e) {
 
             $output = '<div class="cmp-area cmp-border-error" title="' . self::format_string('title_error_file_content') . '">
