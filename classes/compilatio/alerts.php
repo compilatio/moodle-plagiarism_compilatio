@@ -184,9 +184,9 @@ class alerts {
                 }
 
                 $alerts[] = [
-                'class' => 'danger',
-                'content' => get_string('unsent_docs', 'plagiarism_compilatio'),
-            ];
+                    'class' => 'danger',
+                    'content' => get_string('unsent_docs', 'plagiarism_compilatio'),
+                ];
             } catch (\Throwable $e) {
                 $alerts[] = [
                     'class' => 'danger',
