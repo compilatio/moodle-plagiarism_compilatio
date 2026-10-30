@@ -166,45 +166,61 @@ class document_frame {
         $compilatiofile = new file();
 
         // Get compilatio file record.
-        if (isset($linkarray['area']) && isset($linkarray['itemid'])) {
-            $attemptid = $linkarray['cmp_attemptid'] ?? $linkarray['area'];
-            $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
-                $linkarray['cmid'],
-                $content,
-                ['attemptid' => $attemptid, 'slot' => $linkarray['itemid']],
-                $userid
-            );
-            if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
+        try {
+            if (isset($linkarray['area']) && isset($linkarray['itemid'])) {
+                $attemptid = $linkarray['cmp_attemptid'] ?? $linkarray['area'];
                 $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
                     $linkarray['cmid'],
-                    $linkarray['cmp_filename'],
+                    $content,
                     ['attemptid' => $attemptid, 'slot' => $linkarray['itemid']],
                     $userid
                 );
-            }
-        } else {
-            $cmpfile = $compilatiofile->compilatio_get_document(
-                $linkarray['cmid'],
-                $content,
-                $userid,
-                null,
-                ['groupid' => $groupid]
-            );
-
-            if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
+                if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
+                    $cmpfile = $compilatiofile->compilatio_get_document_in_quiz(
+                        $linkarray['cmid'],
+                        $linkarray['cmp_filename'],
+                        ['attemptid' => $attemptid, 'slot' => $linkarray['itemid']],
+                        $userid
+                    );
+                }
+            } else {
                 $cmpfile = $compilatiofile->compilatio_get_document(
                     $linkarray['cmid'],
-                    $linkarray['cmp_filename'],
+                    $content,
                     $userid,
                     null,
-                    ['groupid' => $groupid],
-                    false
+                    ['groupid' => $groupid]
                 );
-            }
 
-            if (empty($cmpfile)) { // Try to get record without userid in forums.
-                $cmpfile = $compilatiofile->compilatio_get_document($linkarray['cmid'], $content, $userid);
+                if (empty($cmpfile) && isset($linkarray['cmp_filename'])) {
+                    $cmpfile = $compilatiofile->compilatio_get_document(
+                        $linkarray['cmid'],
+                        $linkarray['cmp_filename'],
+                        $userid,
+                        null,
+                        ['groupid' => $groupid],
+                        false
+                    );
+                }
+
+                if (empty($cmpfile)) { // Try to get record without userid in forums.
+                    $cmpfile = $compilatiofile->compilatio_get_document($linkarray['cmid'], $content, $userid);
+                }
             }
+        } catch (\Throwable $e) {
+
+            $output = '<div class="cmp-area cmp-border-error" title="' . self::format_string('title_error_file_content') . '">
+                <img
+                    class="cmp-small-logo"
+                    data-testid="compilatio-logo"
+                    src="' . new moodle_url("/plagiarism/compilatio/pix/Logo_C.svg") . '"
+                />
+                <div class="cmp-color-error mx-2 text-nowrap">
+                    <i class="mx-2 fa fa-exclamation-triangle"></i>
+                    ' . self::format_string('error_file_content') . '
+                </div>
+            </div>';
+            return $output;
         }
 
         $url = null;
@@ -467,7 +483,7 @@ class document_frame {
                 <img
                     class="cmp-small-logo"
                     data-testid="compilatio-logo"
-                    src="' . new moodle_url("/plagiarism/compilatio/pix/c.svg") . '"
+                    src="' . new moodle_url("/plagiarism/compilatio/pix/Logo_C.svg") . '"
                 >
                 ' . self::get_indexing_state($indexed) . $score . $documentframe . '
             </div>';
