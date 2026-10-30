@@ -178,14 +178,21 @@ class alerts {
 
         // Check for unsend documents.
         if ($this->module === 'assign') {
-            if (count(compilatio_get_unsent_documents($cmid)) === 0) {
-                return $alerts;
-            }
+            try {
+                if (count(compilatio_get_unsent_documents($cmid)) === 0) {
+                    return $alerts;
+                }
 
-            $alerts[] = [
+                $alerts[] = [
                 'class' => 'danger',
                 'content' => get_string('unsent_docs', 'plagiarism_compilatio'),
             ];
+            } catch (\Throwable $e) {
+                $alerts[] = [
+                    'class' => 'danger',
+                    'content' => get_string('title_error_file_content', 'plagiarism_compilatio'),
+                ];
+            }
         }
 
         return $alerts;
