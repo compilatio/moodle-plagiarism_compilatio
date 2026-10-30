@@ -91,7 +91,10 @@ class event_handler {
 
         // Course module delete.
         if ($event['objecttable'] == 'course_modules') {
-            if (class_exists('\tool_recyclebin\course_bin') && \tool_recyclebin\course_bin::is_enabled()) {
+            if (
+                class_exists('\tool_recyclebin\course_bin') && \tool_recyclebin\course_bin::is_enabled()
+                && isset($SESSION->compilatio_bin_created)
+            ) {
                 $DB->set_field(
                     'plagiarism_compilatio_cm_cfg',
                     'recyclebinid',
