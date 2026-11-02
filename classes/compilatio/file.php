@@ -240,6 +240,7 @@ class file {
                 JOIN {modules} m ON m.id = cm.module
                 WHERE cm.id = ?";
             $modulename = $DB->get_field_sql($sql, [$cmpfile->cm]);
+            $content = null;
 
             switch ($modulename) {
                 case 'assign':
@@ -349,20 +350,25 @@ class file {
                 $DB->delete_records('plagiarism_compilatio_files', ['id' => $cmpfile->id]);
 
                 $newcmpfile = self::send_file($cmpfile->cm, $cmpfile->userid, $file);
-
-                if (is_object($newcmpfile) && $startanalysis) {
-                    $newcmpfile->status = 'to_analyze';
-                    $DB->set_field(
-                        'plagiarism_compilatio_files',
-                        'status',
-                        $newcmpfile->status,
-                        ['id' => $newcmpfile->id]
-                    );
-                }
-
-                return is_object($newcmpfile);
+                break;
             }
         }
+
+        if (!is_object($newcmpfile)) {
+            return false;
+        }
+
+        if ($startanalysis) {
+            $newcmpfile->status = 'to_analyze';
+            $DB->set_field(
+                'plagiarism_compilatio_files',
+                'status',
+                $newcmpfile->status,
+                ['id' => $newcmpfile->id]
+            );
+        }
+
+        return true;
     }
 
     /**

@@ -25,8 +25,6 @@
 
 namespace plagiarism_compilatio\compilatio;
 
-use core\check\performance\debugging;
-
 /**
  * api class
  */
@@ -793,8 +791,6 @@ class api {
         }
 
         $message = $response->status->message;
-
-        debugging(var_export($response, true), DEBUG_DEVELOPER);
 
         return $message;
     }

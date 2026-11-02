@@ -65,7 +65,10 @@ class analysis {
         if ($analyse === true) {
             $cmpfile->status = 'queue';
             $cmpfile->timesubmitted = time();
-        } else if (strpos($analyse, 'Document doesn\'t exceed minimum word limit') !== false) {
+        } else if (
+                strpos($analyse, 'Document doesn\'t exceed minimum word limit') !== false ||
+                strpos($analyse, 't contain any words.') !== false
+            ) {
             $cmpfile->status = 'error_too_short';
         } else if (strpos($analyse, 'Document exceed maximum word limit') !== false) {
             $cmpfile->status = 'error_too_long';
@@ -104,10 +107,21 @@ class analysis {
 
         $doc = $compilatio->get_document($cmpfile->externalid);
 
+        if ($doc == 'Compilation services undergoing maintenance') {
+            return $cmpfile;
+        }
+
         if ($doc == 'Not Found') {
             $cmpfile->status = 'error_not_found';
-        } else if ($doc == 'Compilation services undergoing maintenance') {
-            return $cmpfile;
+        } else if (isset($doc->tags) && in_array('extraction_error', $doc->tags)) {
+            $cmpfile->status = 'error_extraction_failed';
+        } else if (isset($doc->words_count)) {
+            if ($doc->words_count < get_config('plagiarism_compilatio', 'min_word')) {
+                $cmpfile->status = 'error_too_short';
+            }
+            if ($doc->words_count > get_config('plagiarism_compilatio', 'max_word')) {
+                $cmpfile->status = 'error_too_long';
+            }
         }
 
         $recipe = array_key_first((array)$doc->analyses);

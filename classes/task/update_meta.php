@@ -48,6 +48,7 @@ class update_meta extends \core\task\scheduled_task {
         global $CFG;
 
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
+        $compilatio = new api();
 
         $compilatio = new api();
 
@@ -68,7 +69,6 @@ class update_meta extends \core\task\scheduled_task {
         if (false === (bool) get_config('plagiarism_compilatio', 'enabled')) {
             return;
         }
-
 
         $compilatio->check_apikey();
         $compilatio->set_moodle_configuration(

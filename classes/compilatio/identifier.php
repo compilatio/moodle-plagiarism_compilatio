@@ -116,7 +116,7 @@ class identifier {
             $filestream = $content->get_content_file_handle();
 
             if (false === $filestream) {
-                throw new moodle_exception('Canno\'t get stored file content.');
+                throw new moodle_exception('Can\'t get stored file content.');
             }
 
             rewind($filestream);
@@ -145,7 +145,7 @@ class identifier {
     private function create_from_stored_file($filestream): string {
 
         if (false === $filestream) {
-            throw new moodle_exception('Canno\'t get stored file content.');
+            throw new moodle_exception('Can\'t get stored file content.');
         }
 
         rewind($filestream);

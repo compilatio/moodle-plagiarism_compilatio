@@ -7,6 +7,15 @@ License: http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 Compilatio is a commercial Plagiarism Prevention product - you must have a paid subscription to be able to use this plugin.
 
 CHANGES
+3.3.3
+- [Fix] Do not archive drafts documents
+- [Fix] Correcting the status of queued documents containing not enough words
+- [Fix] Error display when invalid apikey is set
+- [Fix] Unable to relaunch documents from technicals tool
+- Improve technical tools readability
+- Display error message for unretrievable contents rather than throw exception
+- Update Compilatio logos
+
 3.3.2
 - [Fix] Avoid throw exception when plugin is not yet configured
 - [Fix] Use with Copyright(s) bundles
