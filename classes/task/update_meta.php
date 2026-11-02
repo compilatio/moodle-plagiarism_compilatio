@@ -50,8 +50,10 @@ class update_meta extends \core\task\scheduled_task {
         require_once($CFG->dirroot . '/plagiarism/compilatio/lib.php');
         $compilatio = new api();
 
+        $compilatio = new api();
+
         // Update the 'Compilatio unavailable' marker in the database.
-        if (false !== (new api(null, null))->get_config()) {
+        if (false !== $compilatio->get_config()) {
             set_config('connection_webservice', 1, 'plagiarism_compilatio');
         } else if (!$compilatio->is_in_maintenance()) {
             set_config('connection_webservice', 0, 'plagiarism_compilatio');
