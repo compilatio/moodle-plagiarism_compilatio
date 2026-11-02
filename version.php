@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 /** @var stdClass $plugin */
-$plugin->version    = 2026102900;
+$plugin->version    = 2026103000;
 $plugin->requires   = 2024100700; // Moodle 4.5.0.
 $plugin->component  = 'plagiarism_compilatio';
 $plugin->maturity   = MATURITY_STABLE;

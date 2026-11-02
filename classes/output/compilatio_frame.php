@@ -174,7 +174,7 @@ class compilatio_frame {
         $output .= "<div id='cmp-tabs' data-toggle='tooltip'>";
 
         // Display logo.
-        $output .= "<img id='cmp-logo' src='" . new moodle_url('/plagiarism/compilatio/pix/compilatio.png') . "'>";
+        $output .= "<img id='cmp-logo' src='" . new moodle_url('/plagiarism/compilatio/pix/Logo_Compilatio.svg') . "'>";
 
         // Help icon.
         $output .= "<i id='show-help' title='" . get_string('compilatio_help_assign', 'plagiarism_compilatio') .
@@ -232,7 +232,11 @@ class compilatio_frame {
 
         // Check for unsend documents.
         if ('assign' === $module) {
-            $sendalldocs = count(compilatio_get_unsent_documents($cmid)) !== 0 ? true : false;
+            try {
+                $sendalldocs = count(compilatio_get_unsent_documents($cmid)) !== 0 ? true : false;
+            } catch (\Throwable $e) {
+                $sendalldocs = false;
+            }
         }
 
         // Display buttons.

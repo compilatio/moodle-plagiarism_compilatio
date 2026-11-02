@@ -13,6 +13,8 @@ CHANGES
 - [Fix] Error display when invalid apikey is set
 - [Fix] Unable to relaunch documents from technicals tool
 - Improve technical tools readability
+- Display error message for unretrievable contents rather than throw exception
+- Update Compilatio logos
 
 3.3.2
 - [Fix] Avoid throw exception when plugin is not yet configured
