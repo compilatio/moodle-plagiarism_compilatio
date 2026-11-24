@@ -117,6 +117,11 @@ class cmpfile {
     public int $indexed;
 
     /**
+     * @var ?int $itemid Id of the item the file is attached to (forum post id for forum attachments)
+     */
+    public ?int $itemid = null;
+
+    /**
      * Create the file submited to Compilatio
      *
      * @param string $cmid Compilatio File
@@ -153,6 +158,14 @@ class cmpfile {
             $content instanceof stored_file ? $content : null
         );
         $this->setauthors($submission, $userid);
+
+        if (
+            $content instanceof stored_file
+            && $content->get_component() === 'mod_forum'
+            && $content->get_filearea() === 'attachment'
+        ) {
+            $this->itemid = (int) $content->get_itemid();
+        }
 
         return $this;
     }

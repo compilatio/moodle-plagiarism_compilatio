@@ -61,10 +61,10 @@ class event_handler {
                 $sql = "SELECT  pcf.id, pcf.externalid, pcf.cm
                     FROM {plagiarism_compilatio_files} pcf
                     JOIN {plagiarism_compilatio_cm_cfg} cfg ON cfg.cmid = pcf.cm
-                    WHERE pcf.cm = ? AND (filename LIKE ? OR filename LIKE ?) AND recyclebinid IS NULL";
+                    WHERE pcf.cm = ? AND (filename LIKE ? OR filename LIKE ? OR pcf.itemid = ?) AND recyclebinid IS NULL";
 
                 $filename = 'forum-' . $event['objectid'];
-                $files = $DB->get_records_sql($sql, [$cmid, $filename . '-%', $filename . '.htm']);
+                $files = $DB->get_records_sql($sql, [$cmid, $filename . '-%', $filename . '.htm', $event['objectid']]);
             }
         }
 
@@ -493,8 +493,7 @@ class event_handler {
         if ($event['objecttable'] == 'forum_posts') {
             $mdlfiles = $fs->get_area_files($event["contextid"], $event["component"], 'attachment', $event["objectid"]);
 
-            $sql = "SELECT * FROM {plagiarism_compilatio_files} WHERE cm = ? AND filename NOT LIKE 'forum-%'";
-            $allcmpfiles = $DB->get_records_sql($sql, [$cmid]);
+            $allcmpfiles = $DB->get_records('plagiarism_compilatio_files', ['cm' => $cmid, 'itemid' => $event['objectid']]);
         }
 
         if ($event['objecttable'] == 'workshop_submissions') {

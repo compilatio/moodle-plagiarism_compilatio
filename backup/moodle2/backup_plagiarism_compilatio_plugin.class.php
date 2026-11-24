@@ -82,6 +82,7 @@ class backup_plagiarism_compilatio_plugin extends backup_plagiarism_plugin {
             'timesubmitted',
             'indexed',
             'reporturl',
+            'itemid',
         ]);
 
         $pluginwrapper->add_child($compilatiofiles);

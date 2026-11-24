@@ -107,4 +107,29 @@ class restore_plagiarism_compilatio_plugin extends restore_plagiarism_plugin {
             $DB->insert_record('plagiarism_compilatio_files', $data);
         }
     }
+
+    /**
+     * Remap the item ids of restored files once the forum posts have been restored
+     * @return void
+     */
+    public function after_restore_module(): void {
+        global $DB;
+
+        if (!$this->task->is_samesite()) {
+            return;
+        }
+
+        $files = $DB->get_records_select(
+            'plagiarism_compilatio_files',
+            'cm = ? AND itemid IS NOT NULL',
+            [$this->task->get_moduleid()],
+            '',
+            'id, itemid'
+        );
+
+        foreach ($files as $file) {
+            $newitemid = $this->get_mappingid('forum_post', $file->itemid);
+            $DB->set_field('plagiarism_compilatio_files', 'itemid', $newitemid ?: null, ['id' => $file->id]);
+        }
+    }
 }

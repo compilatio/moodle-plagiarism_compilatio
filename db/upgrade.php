@@ -426,6 +426,39 @@ function xmldb_plagiarism_compilatio_upgrade($oldversion): bool {
         upgrade_plugin_savepoint(true, 2026012300, 'plagiarism', 'compilatio');
     }
 
+    if ($oldversion < 2026112400) {
+        $table = new xmldb_table('plagiarism_compilatio_files');
+        $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, '10', null, false, false, null, 'indexed');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Link existing forum attachments to their post when it can be determined without ambiguity.
+        $sql = "SELECT pcf.id, MIN(f.itemid) AS itemid
+                  FROM {plagiarism_compilatio_files} pcf
+                  JOIN {course_modules} cm ON cm.id = pcf.cm
+                  JOIN {modules} m ON m.id = cm.module AND m.name = 'forum'
+                  JOIN {context} ctx ON ctx.instanceid = cm.id AND ctx.contextlevel = :contextlevel
+                  JOIN {files} f ON f.contextid = ctx.id
+                       AND f.component = 'mod_forum'
+                       AND f.filearea = 'attachment'
+                       AND f.filename = pcf.filename
+                       AND f.userid = pcf.userid
+                 WHERE pcf.itemid IS NULL
+                   AND pcf.filename NOT LIKE 'forum-%'
+              GROUP BY pcf.id
+                HAVING COUNT(DISTINCT f.itemid) = 1";
+
+        $records = $DB->get_recordset_sql($sql, ['contextlevel' => CONTEXT_MODULE]);
+        foreach ($records as $record) {
+            $DB->set_field('plagiarism_compilatio_files', 'itemid', $record->itemid, ['id' => $record->id]);
+        }
+        $records->close();
+
+        upgrade_plugin_savepoint(true, 2026112400, 'plagiarism', 'compilatio');
+    }
+
     foreach ($tablestodelete as $table) {
         $dbman->drop_table($table);
     }

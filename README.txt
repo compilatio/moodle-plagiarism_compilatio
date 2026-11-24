@@ -12,6 +12,7 @@ CHANGES
 - [Fix] Correcting the status of queued documents containing not enough words
 - [Fix] Error display when invalid apikey is set
 - [Fix] Unable to relaunch documents from technicals tool
+- [Fix] Deleted document from forums where not delete in Compilatio
 - Improve technical tools readability
 - Display error message for unretrievable contents rather than throw exception
 - Update Compilatio logos
