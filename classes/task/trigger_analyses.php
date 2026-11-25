@@ -32,6 +32,11 @@ use plagiarism_compilatio\compilatio\analysis;
  */
 class trigger_analyses extends \core\task\scheduled_task {
     /**
+     * Delay before considering a file stuck in the queue (in seconds)
+     */
+    const STUCK_QUEUE_DELAY = 3 * 3600;
+
+    /**
      * Get the task name
      * @return string Name
      */
@@ -62,6 +67,34 @@ class trigger_analyses extends \core\task\scheduled_task {
 
         foreach ($files as $file) {
             analysis::start_analysis($file);
+        }
+
+        $this->restart_stuck_auto_analyses();
+    }
+
+    /**
+     * Request again the analysis of documents stuck in queue in auto-analysis.
+     * @return void
+     */
+    private function restart_stuck_auto_analyses(): void {
+        global $DB;
+
+        $sql = "SELECT file.* FROM {plagiarism_compilatio_files} file
+            JOIN {plagiarism_compilatio_cm_cfg} config ON config.cmid = file.cm
+            WHERE file.status = 'queue'
+                AND file.analysisid IS NULL
+                AND file.externalid IS NOT NULL
+                AND file.timesubmitted < ?
+                AND config.activated = '1'
+                AND config.analysistype = 'auto'";
+        $files = $DB->get_records_sql($sql, [time() - self::STUCK_QUEUE_DELAY]);
+
+        foreach ($files as $file) {
+            error_log('restarting stuck analysis for file ' . $file->id);
+            $result = analysis::start_analysis($file);
+            if (!in_array($result, ['queue', 'error_too_short', 'error_too_long', 'error_extraction_failed'], true)) {
+                error_log('failed to restart analysis for file ' . $file->id . ': ' . $result);
+            }
         }
     }
 }

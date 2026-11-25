@@ -16,6 +16,7 @@ CHANGES
 - Improve technical tools readability
 - Display error message for unretrievable contents rather than throw exception
 - Update Compilatio logos
+- Relaunch automaticly documents stuck for more than 3 hours in queue on auto analysis
 
 3.3.2
 - [Fix] Avoid throw exception when plugin is not yet configured

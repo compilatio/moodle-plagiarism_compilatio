@@ -783,16 +783,18 @@ class api {
      */
     private function get_error_response($response, int $expectedstatuscode): string|false {
         if (!isset($response->status->code, $response->status->message)) {
-            $message = 'Error response status not found';
-        } else if ($response->status->code === $expectedstatuscode) {
+            return 'Error response status not found';
+        }
+
+        if ($response->status->code === $expectedstatuscode) {
             return false;
-        } else if ($response->status->message === 'Forbidden ! Your read only API key cannot modify this resource') {
+        }
+
+        if ($response->status->message === 'Forbidden ! Your read only API key cannot modify this resource') {
             set_config('read_only_apikey', 1, 'plagiarism_compilatio');
         }
 
-        $message = $response->status->message;
-
-        return $message;
+        return (string) $response->status->message;
     }
 
     /**
@@ -951,7 +953,7 @@ class api {
 
         $decodedresult = json_decode($result);
 
-        $isinmaintenance = $decodedresult->status->code === 503
+        $isinmaintenance = ($decodedresult->status->code ?? null) === 503
             && isset($decodedresult->data->maintenance)
             && $decodedresult->data->maintenance;
 
